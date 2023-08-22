@@ -8,3 +8,5 @@ NOTE: The latest release of Randoop does not implement functionality for Oriente
 you should download and build Randoop from Github and replace $RANDOOP_JAR with the absolute path.
 
 Everything else should work. Let me know if there are any bugs.
+
+You must have JDK 8 as your default java/javac for commons-cli to build.
