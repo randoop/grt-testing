@@ -16,3 +16,6 @@ tests/src
 
 # subdirectory created by scripts/mutation.sh
 scripts/jarfiles
+
+# output from runnin jacoco
+jacoco.exec
