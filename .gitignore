@@ -8,8 +8,6 @@ syntax: glob
 *.log
 *.new
 *.old
-*.orig
-*.sav
 
 # subdirectory with source repositories
 tests/src
