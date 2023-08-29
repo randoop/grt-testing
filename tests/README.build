@@ -13,3 +13,4 @@ something wrong that needs to be investigated.
 
 The resulting .jar file will be in the target subdirectory.
 
+NOTE: For shiro-root-1.2.3 you must 'cd core' before running the build command.
