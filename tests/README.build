@@ -5,7 +5,7 @@ Maven (mvn) builds
 ------------------
 If the project uses Maven to build, usually indicated by a pom.xml file in
 the root, a useful build command is:
-  mvn clean package -Dmaven.test.failure.ignore=true |& tee <your log file name>
+  mvn clean package -Dmaven.test.failure.ignore -Dmaven.javadoc.skip |& tee <your log file name>
 
 The failure.ignore option allows the .jar file to be built even if there are
 some test errors.  However, if there are lots of errors, there is probably
