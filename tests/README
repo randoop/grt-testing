@@ -28,7 +28,7 @@ JSAP-2.1.jar                    Java Simple Arg. Parser (2.1)       ant
 jvc-1.1.jar                     Java View Control (1.1)             ant
 SAT4JCore (2.3.5)               org.ow2.sat4j (head at 2.3.5)       maven
 shiro-core-1.2.6.jar            Apache Shiro-core (1.2.6)           maven
-slf4j-api-1.7.12.jar            Slf4j-api (1.7.12)
-tinySQL-2.26.jar                Tiny Sql (2.26)
+slf4j-api-1.7.12.jar            Slf4j-api (1.7.12)                  maven
+tinySQL-2.26.jar                Tiny Sql (2.26)                     make
 ~
 
