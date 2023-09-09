@@ -4,8 +4,8 @@ We have located 27 of them, but the number of classes, instructions, and/or
 branches for 5 of the files do not appear to match the ones in the table.
 Thus, this directory currently has 22 test cases:
 
-jar file                        source                              build system
---------------------------------------------------------------------------------
+jar file                        software (version)             source
+-----------------------------------------------------------------------------------------------------------------------
 bcel-5.2.jar                    Apache BCEL (5.2)
 ClassViewer.jar                 ClassViewer (5.0.5b)
 commons-cli-1.2.jar             Apache Commons Cli (1.2)            maven
@@ -21,12 +21,12 @@ guava-16.0.1.jar                Guava (16.0.1)
 hamcrest-core-1.3.jar           Hamcrest-core (1.3)
 javassist-3.19.0-GA.jar         Javassit (3.19)
 jaxen-1.1.6.jar                 Jaxen (1.1.6)
-jcommander-1.35.jar             Jcommander (1.35)
+jcommander-1.35.jar             Jcommander (1.35)              git@github.com:cbeust/jcommander.git (git co jcommander-1.35)
 jdom-1.0.jar                    Jdom (1.0)                          ant
 joda-time-2.3.jar               Joda Time (2.3)                     maven
 JSAP-2.1.jar                    Java Simple Arg. Parser (2.1)       ant
 jvc-1.1.jar                     Java View Control (1.1)             ant
-SAT4JCore (2.3.5)               org.ow2.sat4j (head at 2.3.5)       maven
+SAT4JCore (2.3.5)               SAT4J Core (2.3.5)             https://gitlab.ow2.org/sat4j/sat4j.git (git co 2_3_5)
 shiro-core-1.2.6.jar            Apache Shiro-core (1.2.6)           maven
 slf4j-api-1.7.12.jar            Slf4j-api (1.7.12)                  maven
 tinySQL-2.26.jar                Tiny Sql (2.26)                     make
