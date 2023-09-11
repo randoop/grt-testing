@@ -26,6 +26,7 @@ jdom-1.0.jar                    Jdom (1.0)                          ant
 joda-time-2.3.jar               Joda Time (2.3)                     maven
 JSAP-2.1.jar                    Java Simple Arg. Parser (2.1)       ant
 jvc-1.1.jar                     Java View Control (1.1)             ant
+nekomud-r16.jar                 Multi-User Dungeon server R16  svn checkout https://svn.code.sf.net/p/nekomud/code/trunk nekomud-r16
 SAT4JCore (2.3.5)               SAT4J Core (2.3.5)             https://gitlab.ow2.org/sat4j/sat4j.git (git co 2_3_5)
 shiro-core-1.2.6.jar            Apache Shiro-core (1.2.6)           maven
 slf4j-api-1.7.12.jar            Slf4j-api (1.7.12)                  maven
