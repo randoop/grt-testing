@@ -9,7 +9,7 @@ have built do not appear to match the ones in the table.
 jar file                  software (version)             source
 -----------------------------------------------------------------------------------------------------------------------
 a4j-1.0b                  Amazon AWS 4 Java (1.0b)       //sourceforge.net/projects/a4j/files/latest/download/a4j-1.0b1.zip
-bcel-5.2                  Apache BCEL (5.2)
+bcel-5.2                  Apache BCEL (5.2)              //github.com/apache/commons-bcel/archive/refs/tags/BCEL_5_2.zip
 ClassViewer               ClassViewer (5.0.5b)
 commons-cli-1.2           Apache Commons Cli (1.2)       //archive.apache.org/dist/commons/cli/source/commons-cli-1.2-src.zip
 commons-codec-1.9         Apache C. Codec (1.9)          //archive.apache.org/dist/commons/codec/source/commons-codec-1.9-src.zip

@@ -20,6 +20,7 @@ The resulting .jar file will be in the target subdirectory.
 Test directory            Build instructions
 ------------------------------------------------------------
 a4j-1.0b:                 ant createJar   (result is in dist subdir)
+bcel-5.2:                 ant jar         (result is in target subdir)
 commons-cli-1.2:          (uses mvn)
 commons-codec-1.9:        (uses mvn)
 commons-collections4-4.0: (uses mvn)
@@ -42,7 +43,6 @@ slf4j-api-1.7.12:         (uses mvn - but 'cd slf4j-api' first)
 tinySQL-2.26:             ./build.sh      (result is in classes subdir)
 
 can't build/missing source:
-bcel-5.2:                 doesn't build yet
 ClassViewer-5.0.5b:       doesn't build yet
 dcParseArgs               Dcparseargs (10/2008)
 easymock-3.2              Easymock (3.2)
