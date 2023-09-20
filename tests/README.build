@@ -33,6 +33,7 @@ commons-primitives-1.0:   ant jar         (result is in target subdir)
 dcParseArgs-10.2008       ant createJar   (result is in dist subdir)
 easymock-3.2              (uses mvn)      (result is in easymock/target subdir)
 fixsuite-r48              ant jar         (result is in jar subdir)
+guava-16.0.1              (uses mvn)
 jaxax.mail-1.5.1:         (uses mvn)
 jaxen-1.1.6:              (uses mvn)
 jcommander-1.35:          (uses mvn)
@@ -48,7 +49,6 @@ slf4j-api-1.7.12:         (uses mvn - but 'cd slf4j-api' first)
 tinySQL-2.26:             ./build.sh      (result is in classes subdir)
 
 can't build/missing source:
-guava-16.0.1              Guava (16.0.1)
 hamcrest-core-1.3         Hamcrest-core (1.3)
 javassist-3.19.0-GA       Javassit (3.19)
 
