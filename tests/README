@@ -1,6 +1,6 @@
 The jar files in this directory were used as 'real-world' test cases by the
 authors of the GRT paper.  There are 32 files listed in TABLE II of the paper.
-We have located 30 of them, but no source for 2 of the 30 (so far).
+We have located 30 of them, but no source for 1 of the 30 (so far).
 
 The number of classes, instructions, and/or branches for ? of the jar files we
 have built do not appear to match the ones in the table.
@@ -23,7 +23,7 @@ dcParseArgs-10.2008       Dcparseargs (10/2008)          //sourceforge.net/proje
 easymock-3.2              Easymock (3.2)                 //github.com/easymock/easymock/archive/refs/tags/easymock-3.2.zip
 fixsuite-r48              Fixsuite (R48)                 svn checkout https://svn.code.sf.net/p/fixsuite/code/trunk fixsuite-r48
 guava-16.0.1              Guava (16.0.1)                 //repo1.maven.org/maven2/com/google/guava/guava/16.0.1/guava-16.0.1-sources.jar
-hamcrest-core-1.3         Hamcrest-core (1.3)
+hamcrest-core-1.3         Hamcrest-core (1.3)            //github.com/hamcrest/JavaHamcrest/archive/refs/tags/hamcrest-java-1.3.zip
 javassist-3.19.0-GA       Javassit (3.19)
 jaxax.mail-1.5.1          Javax Mail (1.5.1)             //repo1.maven.org/maven2/com/sun/mail/javax.mail/1.5.1/javax.mail-1.5.1-sources.jar
 jaxen-1.1.6               Jaxen (1.1.6)                  //repo1.maven.org/maven2/jaxen/jaxen/1.1.6/jaxen-1.1.6-sources.jar
