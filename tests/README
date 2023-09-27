@@ -2,8 +2,9 @@ The jar files in this directory were used as 'real-world' test cases by the
 authors of the GRT paper.  There are 32 files listed in TABLE II of the paper.
 We have located 30 of them.
 
-The number of classes, instructions, and/or branches for 2 of the jar files we
+The number of classes, instructions, and/or branches for 3 of the jar files we
 have built do not appear to match the ones used in the GRT paper:
+fixsuite-r48              Fixsuite (R48)
 pmd-core-5.2.2            Pmd DCD 5.2.2
 sat4j.core-2.3.5          SAT4J Core (2.3.5)
 
