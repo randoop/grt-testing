@@ -1,3 +1,4 @@
+# TODO: Add a Makefile target, at least for downloading Major.
 As of right now, the only things you need to change in order to reproduce my results is the path of Major and the Apache 
 Commons Cli v 1.2. You can download Major here: https://mutation-testing.org/downloads/. For the Apache Commons Cli, I downloaded
 "commons-cli-1.2-src.zip" here: https://archive.apache.org/dist/commons/cli/source/.
@@ -6,7 +7,5 @@ TLDR: Replace the MAJOR_HOME, PROJECT_SRC, and JAVA_SRC_FILES variables with the
 
 NOTE: The latest release of Randoop does not implement functionality for Orienteering. If you wish to work with Orienteering,
 you should download and build Randoop from Github and replace $RANDOOP_JAR with the absolute path.
-
-Everything else should work. Let me know if there are any bugs.
 
 You must have JDK 8 as your default java/javac for commons-cli to build.
