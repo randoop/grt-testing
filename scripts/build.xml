@@ -5,14 +5,14 @@
       Use -Dmutator="mml:<path-to-mml-file>" to set a
       particular (compiled) mml-file.
      ############################################## -->
-    <property name="major.jar" value="../major/lib/major.jar"/>
+    <property name="major.jar" value="build/major/lib/major.jar"/>
     <property name="mutator" value=""/>
     <property name="plugin" value="-Xplugin:MajorPlugin ${mutator}"/>
 
 
 <!-- Target to clean up -->
     <target name="clean" description="Clean">
-        <delete dir="bin"/>
+        <delete dir="build/bin"/>
         <delete>
             <fileset dir="." includes="*.csv"/>
             <fileset dir="." includes="*.log"/>
@@ -21,14 +21,14 @@
 
 <!-- Target to initialize build -->
     <target name="init">
-        <mkdir dir="bin"/>
+        <mkdir dir="build/bin"/>
     </target>
 
 <!-- Target to compile the project -->
     <target name="compile" depends="init" description="Compile">
         <javac includeantruntime="true" 
                srcdir="${src}"
-              destdir="bin"
+              destdir="build/bin"
                 debug="yes">
             <classpath location="${major.jar}"/>
             <compilerarg value="${plugin}"/>
@@ -39,7 +39,7 @@
     <target name="compile.tests" depends="compile" description="Compile all tests">
         <javac includeantruntime="true" 
                srcdir="${test}"
-              destdir="bin"
+              destdir="build/bin"
                 debug="yes">
         </javac>
     </target>
@@ -50,10 +50,15 @@
         <junit  printsummary="false" 
         		showoutput="false" 
         		mutationAnalysis="true"
-                summaryFile="summary.csv" 
-                mutantDetailsFile="details.csv">
+                serializedMapsFile="results/preprocessing.ser"
+                mutantsLogFile="mutants.log"
+                summaryFile="results/summary.csv" 
+                mutantDetailsFile="results/details.csv"
+                covMapFile="results/covMap.csv"
+                testMapFile="results/testMap.csv"
+                killMapFile="results/killMap.csv">
                 
-            <classpath path="bin"/>
+            <classpath path="build/bin"/>
             <batchtest fork="false">
                 <fileset dir="${test}">
                     <include name="**/*Test*.java"/>
@@ -69,7 +74,7 @@
         		showoutput="true" 
                 haltonfailure="false">
             <formatter type="plain" usefile="false"/>
-            <classpath path="bin"/>
+            <classpath path="build/bin"/>
 			
 			<batchtest fork="no">
                 <fileset dir="${test}">
