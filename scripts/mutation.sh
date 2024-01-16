@@ -13,8 +13,6 @@
 # All other files logged to the "results" subdirectory are specific to the most recent iteration of the experiment. 
 # See "reproinstructions.txt" for more instructions on how to run this script.
 
-make
-
 # Link to the major directory
 MAJOR_HOME=$(realpath "build/major/")
 
@@ -40,7 +38,7 @@ SRC_JAR=$(realpath "../tests/$1")
 JAVA_SRC_DIR="$2"
 
 # Number of classes in given jar file
-NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep '.class' | wc -l)
+NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
 
 # Time limit for running Randoop
 TIME_LIMIT=$((NUM_CLASSES * SECONDS_CLASS))
@@ -58,33 +56,33 @@ touch results/info.txt
 # shellcheck disable=SC2034 # i counts iterations but is not otherwise used.
 for i in $(seq 1 $NUM_LOOP)
 do
-    rm -rf $CURR_DIR/build/test*
+    rm -rf "$CURR_DIR"/build/test*
 
     # TODO: There should eventually be a command-line argument that chooses among the variants of Ranndoop.
 
     echo "Using Bloodhound"
     echo
     TEST_DIRECTORY="$CURR_DIR/build/testBloodhound"
-    mkdir $TEST_DIRECTORY
-    $CLI_INPUTS --method-selection=BLOODHOUND --junit-output-dir=$TEST_DIRECTORY
+    mkdir "$TEST_DIRECTORY"
+    $CLI_INPUTS --method-selection=BLOODHOUND --junit-output-dir="$TEST_DIRECTORY"
 
     # echo "Using Orienteering"
     # echo
     # TEST_DIRECTORY="$CURR_DIR/build/testOrienteering"
-    # mkdir $TEST_DIRECTORY
-    # $CLI_INPUTS --input-selection=ORIENTEERING --junit-output-dir=$TEST_DIRECTORY
+    # mkdir "$TEST_DIRECTORY"
+    # $CLI_INPUTS --input-selection=ORIENTEERING --junit-output-dir="$TEST_DIRECTORY"
 
     # echo "Using Bloodhound and Orienteering"
     # echo
     # TEST_DIRECTORY="$CURR_DIR/build/testBloodhoundOrienteering"
-    # mkdir $TEST_DIRECTORY
-    # $CLI_INPUTS --input-selection=ORIENTEERING --method-selection=BLOODHOUND --junit-output-dir=$TEST_DIRECTORY
+    # mkdir "$TEST_DIRECTORY"
+    # $CLI_INPUTS --input-selection=ORIENTEERING --method-selection=BLOODHOUND --junit-output-dir="$TEST_DIRECTORY"
 
     # echo "Using Baseline Randoop"
     # echo
     # TEST_DIRECTORY="$CURR_DIR/build/testBaseline"
-    # mkdir $TEST_DIRECTORY
-    # $CLI_INPUTS --junit-output-dir=$TEST_DIRECTORY
+    # mkdir "$TEST_DIRECTORY"
+    # $CLI_INPUTS --junit-output-dir="$TEST_DIRECTORY"
 
     echo    
     echo "Compiling and mutating project"

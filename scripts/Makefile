@@ -1,32 +1,40 @@
 all: build/jacocoagent.jar build/randoop-all-4.3.2.jar build/major results/
 
+# Gets the Jacoco agent jar for recording execution coverage (for Bloodhound).
+# Stores this in the build subdirectory
 build/jacocoagent.jar:
 	mkdir -p build
-	cd build && wget -O jacoco-0.8.10.zip https://search.maven.org/remotecontent?filepath=org/jacoco/jacoco/0.8.10/jacoco-0.8.10.zip
+	cd build && wget -nv -O jacoco-0.8.10.zip https://search.maven.org/remotecontent?filepath=org/jacoco/jacoco/0.8.10/jacoco-0.8.10.zip
 	cd build && unzip -o jacoco-0.8.10.zip lib/jacocoagent.jar && mv lib/jacocoagent.jar . && rmdir lib
 
+# Gets the jarfile for Randoop 4.3.2 and stores it in the build subdirectory
 build/randoop-all-4.3.2.jar:
 	mkdir -p build
-	cd build && wget https://github.com/randoop/randoop/releases/download/v4.3.2/randoop-all-4.3.2.jar
+	cd build && wget -nv https://github.com/randoop/randoop/releases/download/v4.3.2/randoop-all-4.3.2.jar
 
+# Gets the latest version of major and stores it in the build subdirectory
 build/major:
 	mkdir -p build
-	cd build && wget http://mutation-testing.org/major-latest.zip
+	cd build && wget -nv http://mutation-testing.org/major-latest.zip
 	cd build && unzip -o major-latest.zip
 
+# Creates subdirectory to store results
 results/:
 	mkdir -p results
 
+# Removes build and results subdirectories
 clean:
 	rm -rf build && rm -rf results
 
 SH_SCRIPTS   = $(shell grep -r -l '^\#! \?\(/bin/\|/usr/bin/env \)sh'   * | grep -v /.git/ | grep -v '~$$' | grep -v '\.tar$$' | grep -v addrfilter | grep -v cronic-orig | grep -v gradlew | grep -v mail-stackoverflow.sh)
 BASH_SCRIPTS = $(shell grep -r -l '^\#! \?\(/bin/\|/usr/bin/env \)bash' * | grep -v /.git/ | grep -v '~$$' | grep -v '\.tar$$' | grep -v addrfilter | grep -v cronic-orig | grep -v gradlew | grep -v mail-stackoverflow.sh)
 
+# Performs style checks on shell scripts
 shell-script-style:
 	shellcheck -x -P SCRIPTDIR --format=gcc ${SH_SCRIPTS} ${BASH_SCRIPTS}
-	checkbashisms ${SH_SCRIPTS} /dev/null
+	checkbashisms ${SH_SCRIPTS}
 
+# Displays a list of shell (SH_SCRIPTS) and bash (BASH_SCRIPTS) scripts in the project.
 showvars:
 	@echo "SH_SCRIPTS=${SH_SCRIPTS}"
 	@echo "BASH_SCRIPTS=${BASH_SCRIPTS}"

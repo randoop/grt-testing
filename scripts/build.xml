@@ -10,7 +10,7 @@
     <property name="plugin" value="-Xplugin:MajorPlugin ${mutator}"/>
 
 
-<!-- Target to clean up -->
+<!-- Removes build/bin directory and any .csv and .log files in the current directory -->
     <target name="clean" description="Clean">
         <delete dir="build/bin"/>
         <delete>
@@ -19,12 +19,13 @@
 	    </delete>
     </target>
 
-<!-- Target to initialize build -->
+<!-- Creates build/bin directory -->
     <target name="init">
         <mkdir dir="build/bin"/>
     </target>
 
-<!-- Target to compile the project -->
+<!-- Given the path to the project's Java source code (specified using -Dsrc), uses Major to generate mutants 
+and put them in the directory build/bin -->
     <target name="compile" depends="init" description="Compile">
         <javac includeantruntime="true" 
                srcdir="${src}"
@@ -35,7 +36,8 @@
         </javac>
     </target>
 
-<!-- Target to compile the test suite -->
+<!-- Given the path to the Randoop-generated tests (specified using -Dtest), compiles and puts them in the 
+directory build/bin -->
     <target name="compile.tests" depends="compile" description="Compile all tests">
         <javac includeantruntime="true" 
                srcdir="${test}"
@@ -44,7 +46,7 @@
         </javac>
     </target>
 
-<!-- The adapted mutation test target -->
+<!-- Runs mutation analysis on all the mutants using the test suite -->
     <target name="mutation.test" description="Run mutation analysis for all unit test cases">
         <echo message="Running mutation analysis ..."/>
         <junit  printsummary="false" 
@@ -67,20 +69,4 @@
         </junit>
     </target>
 
-<!-- The original test target -->
-    <target name="test" depends="compile.tests" description="Run all unit test cases">
-        <echo message="Running unit tests ..."/>
-        <junit  printsummary="true" 
-        		showoutput="true" 
-                haltonfailure="false">
-            <formatter type="plain" usefile="false"/>
-            <classpath path="build/bin"/>
-			
-			<batchtest fork="no">
-                <fileset dir="${test}">
-                    <include name="**/*Test*.java"/>
-                </fileset>
-            </batchtest>
-        </junit>
-    </target>
 </project>
