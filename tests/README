@@ -20,7 +20,7 @@ commons-collections4-4.0  Apache C. Collection (4.0)     //archive.apache.org/di
 commons-compress-1.8      Apache C. Compress (1.8)       //archive.apache.org/dist/commons/compress/source/commons-compress-1.8-src.zip
 commons-lang3-3.0         Apache C. Lang (3.0)           //archive.apache.org/dist/commons/lang/source/commons-lang3-3.0-src.zip
 commons-math3-3.2         Apache C. Math (3.2)           //archive.apache.org/dist/commons/math/source/commons-math3-3.2-src.zip
-commons-primitives-1.0    Apache C. Primitive (1.0)      //archive.apache.org/dist/commons/primitive/source/commons-primitives-1.0-src.zip
+commons-primitives-1.0    Apache C. Primitive (1.0)      //archive.apache.org/dist/commons/primitives/source/commons-primitives-1.0-src.zip
 dcParseArgs-10.2008       Dcparseargs (10/2008)          //sourceforge.net/projects/dcparseargs/files/Source/First%20upload/dcParseArgs_src.tar.bz2
 easymock-3.2              Easymock (3.2)                 //github.com/easymock/easymock/archive/refs/tags/easymock-3.2.zip
 fixsuite-r48              Fixsuite (R48)                 svn checkout https://svn.code.sf.net/p/fixsuite/code/trunk fixsuite-r48

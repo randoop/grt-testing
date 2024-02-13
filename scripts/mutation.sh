@@ -26,16 +26,18 @@ RANDOOP_JAR=$(realpath "build/randoop-all-4.3.2.jar")
 JACOCO_JAR=$(realpath "build/jacocoagent.jar")
 
 # The paper runs Randoop on 4 different time limits. These are: 2 s/class, 10 s/class, 30 s/class, and 60 s/class
-SECONDS_CLASS="2"
+SECONDS_CLASS="1"
 
 # Number of times to run experiments (10 in GRT paper)
-NUM_LOOP=2
+NUM_LOOP=1
 
 # Link to src jar
-SRC_JAR=$(realpath "../tests/$1")
+SRC_JAR=$(realpath "$1")
 
 # Link to src files for mutation generation and analysis
-JAVA_SRC_DIR="$2"
+JAVA_SRC_DIR=$(realpath "$2")
+
+ALT_CLASSPATH=$(realpath "$3")
 
 # Number of classes in given jar file
 NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
@@ -60,11 +62,11 @@ do
 
     # TODO: There should eventually be a command-line argument that chooses among the variants of Ranndoop.
 
-    echo "Using Bloodhound"
-    echo
-    TEST_DIRECTORY="$CURR_DIR/build/testBloodhound"
-    mkdir "$TEST_DIRECTORY"
-    $CLI_INPUTS --method-selection=BLOODHOUND --junit-output-dir="$TEST_DIRECTORY"
+    # echo "Using Bloodhound"
+    # echo
+    # TEST_DIRECTORY="$CURR_DIR/build/testBloodhound"
+    # mkdir "$TEST_DIRECTORY"
+    # $CLI_INPUTS --method-selection=BLOODHOUND --junit-output-dir="$TEST_DIRECTORY"
 
     # echo "Using Orienteering"
     # echo
@@ -78,17 +80,17 @@ do
     # mkdir "$TEST_DIRECTORY"
     # $CLI_INPUTS --input-selection=ORIENTEERING --method-selection=BLOODHOUND --junit-output-dir="$TEST_DIRECTORY"
 
-    # echo "Using Baseline Randoop"
-    # echo
-    # TEST_DIRECTORY="$CURR_DIR/build/testBaseline"
-    # mkdir "$TEST_DIRECTORY"
-    # $CLI_INPUTS --junit-output-dir="$TEST_DIRECTORY"
+    echo "Using Baseline Randoop"
+    echo
+    TEST_DIRECTORY="$CURR_DIR/build/testBaseline"
+    mkdir "$TEST_DIRECTORY"
+    $CLI_INPUTS --junit-output-dir="$TEST_DIRECTORY"
 
     echo    
     echo "Compiling and mutating project"
     echo "(ant -Dmutator=\"=mml:\$MAJOR_HOME/mml/all.mml.bin\" clean compile)"
     echo
-    "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" clean compile
+    "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -Dalt="$ALT_CLASSPATH" clean compile
     
     echo
     echo "Compiling tests"
@@ -104,6 +106,7 @@ do
     cat results/summary.csv >> results/info.txt
 
 # Clean up dangling files
-mv jacoco.exec major.log mutants.log results
+rm jacoco.exec major.log mutants.log
+rm results/summary.csv results/covMap.csv results/testMap.csv results/details.csv results/preprocessing.ser
 
 done

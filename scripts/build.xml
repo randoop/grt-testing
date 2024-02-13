@@ -31,7 +31,10 @@ and put them in the directory build/bin -->
                srcdir="${src}"
               destdir="build/bin"
                 debug="yes">
-            <classpath location="${major.jar}"/>
+            <classpath>
+                <pathelement location="${major.jar}"/>
+                <pathelement location="${alt}"/>
+            </classpath>
             <compilerarg value="${plugin}"/>
         </javac>
     </target>
@@ -63,7 +66,7 @@ directory build/bin -->
             <classpath path="build/bin"/>
             <batchtest fork="false">
                 <fileset dir="${test}">
-                    <include name="**/*Test*.java"/>
+                    <include name="**/RegressionTest.java"/>
                 </fileset>
             </batchtest>
         </junit>
