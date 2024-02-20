@@ -96,12 +96,12 @@ do
     echo "Compiling tests"
     echo "(ant compile.tests)"
     echo
-    "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" compile.tests
+    "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -Dalt="$ALT_CLASSPATH" compile.tests
 
     echo
     echo "Run tests with mutation analysis"
     echo "(ant mutation.test)"
-    "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" mutation.test
+    "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dalt="$ALT_CLASSPATH" mutation.test
 
     cat results/summary.csv >> results/info.txt
 
