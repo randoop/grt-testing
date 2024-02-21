@@ -48,6 +48,9 @@ TIME_LIMIT=$((NUM_CLASSES * SECONDS_CLASS))
 # Variable that stores command line inputs common among all commands
 CLI_INPUTS="java -Xbootclasspath/a:$JACOCO_JAR -javaagent:$JACOCO_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=$TIME_LIMIT"
 
+# Variable that stores any additional arguments to calling Randoop
+ADDITIONAL_ARGS="$4"
+
 echo "Using Randoop to generate tests"
 echo
 
@@ -84,7 +87,7 @@ do
     echo
     TEST_DIRECTORY="$CURR_DIR/build/testBaseline"
     mkdir "$TEST_DIRECTORY"
-    $CLI_INPUTS --junit-output-dir="$TEST_DIRECTORY"
+    $CLI_INPUTS $ADDITIONAL_ARGS --junit-output-dir="$TEST_DIRECTORY"
 
     echo    
     echo "Compiling and mutating project"

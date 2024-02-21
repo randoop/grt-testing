@@ -13,4 +13,4 @@ if [ ! -d "$dir" ]; then
     git clone "$repo" "$dir"
 fi
 
-./mutation.sh "$jarfile" "$srcDir" ""
+./mutation.sh "$jarfile" "$srcDir" "" ""
