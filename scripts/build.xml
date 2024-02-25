@@ -33,7 +33,9 @@ and put them in the directory build/bin -->
                 debug="yes">
             <classpath>
                 <pathelement location="${major.jar}"/>
-                <pathelement location="${alt}"/>
+                <fileset dir="${alt}">
+                    <include name="*.jar"/>
+                </fileset>
             </classpath>
             <compilerarg value="${plugin}"/>
         </javac>
@@ -47,7 +49,9 @@ directory build/bin -->
               destdir="build/bin"
                 debug="yes">
             <classpath>
-                <pathelement location="${alt}"/>
+                <fileset dir="${alt}">
+                    <include name="*.jar"/>
+                </fileset>
             </classpath>
         </javac>
     </target>
@@ -67,7 +71,9 @@ directory build/bin -->
                 killMapFile="results/killMap.csv">        
             <classpath>
                 <pathelement path="build/bin"/>
-                <pathelement location="${alt}"/>
+                <fileset dir="${alt}">
+                    <include name="*.jar"/>
+                </fileset>
             </classpath>
             <batchtest fork="false">
                 <fileset dir="${test}">

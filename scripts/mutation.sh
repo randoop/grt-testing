@@ -37,7 +37,7 @@ SRC_JAR=$(realpath "$1")
 # Link to src files for mutation generation and analysis
 JAVA_SRC_DIR=$(realpath "$2")
 
-ALT_CLASSPATH=$(realpath "$3")
+ALT_JARFILES=$(realpath "$3")
 
 # Number of classes in given jar file
 NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
@@ -46,7 +46,7 @@ NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
 TIME_LIMIT=$((NUM_CLASSES * SECONDS_CLASS))
 
 # Variable that stores command line inputs common among all commands
-CLI_INPUTS="java -Xbootclasspath/a:$JACOCO_JAR -javaagent:$JACOCO_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=$TIME_LIMIT"
+CLI_INPUTS="java -Xbootclasspath/a:$JACOCO_JAR -javaagent:$JACOCO_JAR -classpath $SRC_JAR:$ALT_JARFILES/*:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=$TIME_LIMIT"
 
 # Variable that stores any additional arguments to calling Randoop
 ADDITIONAL_ARGS="$4"
@@ -93,18 +93,18 @@ do
     echo "Compiling and mutating project"
     echo "(ant -Dmutator=\"=mml:\$MAJOR_HOME/mml/all.mml.bin\" clean compile)"
     echo
-    "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -Dalt="$ALT_CLASSPATH" clean compile
+    "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -Dalt="$ALT_JARFILES" clean compile
     
     echo
     echo "Compiling tests"
     echo "(ant compile.tests)"
     echo
-    "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -Dalt="$ALT_CLASSPATH" compile.tests
+    "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -Dalt="$ALT_JARFILES" compile.tests
 
     echo
     echo "Run tests with mutation analysis"
     echo "(ant mutation.test)"
-    "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dalt="$ALT_CLASSPATH" mutation.test
+    "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dalt="$ALT_JARFILES" mutation.test
 
     cat results/summary.csv >> results/info.txt
 
