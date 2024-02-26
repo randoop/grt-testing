@@ -37,6 +37,7 @@ SRC_JAR=$(realpath "$1")
 # Link to src files for mutation generation and analysis
 JAVA_SRC_DIR=$(realpath "$2")
 
+# Variable containing the directory of any additional jarfiles needed for source compilation
 ALT_JARFILES=$(realpath "$3")
 
 # Number of classes in given jar file
