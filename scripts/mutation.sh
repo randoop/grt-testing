@@ -52,6 +52,10 @@ CLI_INPUTS="java -Xbootclasspath/a:$JACOCO_JAR -javaagent:$JACOCO_JAR -classpath
 # Variable that stores any additional arguments to calling Randoop
 ADDITIONAL_ARGS="$4"
 
+JAVA_VER=$(java -version 2>&1 | head -1 | cut -d'"' -f2 | sed '/^1\./s///' | cut -d'.' -f1 | sed 's/-ea//')
+[ "$JAVA_VER" = "8" ] || echo "Use Java 8, not $JAVA_VER.  Aborting."
+[ "$JAVA_VER" = "8" ] || exit 2
+
 echo "Using Randoop to generate tests"
 echo
 
