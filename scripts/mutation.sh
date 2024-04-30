@@ -52,6 +52,10 @@ CLI_INPUTS="java -Xbootclasspath/a:$JACOCO_JAR -javaagent:$JACOCO_JAR -classpath
 # Variable that stores any additional arguments to calling Randoop
 ADDITIONAL_ARGS="$4"
 
+JAVA_VER=$(java -version 2>&1 | head -1 | cut -d'"' -f2 | sed '/^1\./s///' | cut -d'.' -f1 | sed 's/-ea//')
+[ "$JAVA_VER" = "8" ] || echo "Use Java 8, not $JAVA_VER.  Aborting."
+[ "$JAVA_VER" = "8" ] || exit 2
+
 echo "Using Randoop to generate tests"
 echo
 
@@ -89,6 +93,18 @@ do
     TEST_DIRECTORY="$CURR_DIR/build/testBaseline"
     mkdir "$TEST_DIRECTORY"
     $CLI_INPUTS $ADDITIONAL_ARGS --junit-output-dir="$TEST_DIRECTORY"
+
+    javac -cp $JAVAPARSER_JAR MethodExtractor.java
+
+    files=$(find $TEST_DIRECTORY -maxdepth 1 -type f -name "RegressionTest*.java" ! -name "RegressionTest.java")
+
+    for file in $files; do
+        base_name=$(basename "$file" .java)
+        java -classpath .:$JAVAPARSER_JAR MethodExtractor "$base_name"
+        mv "${base_name}.java" "$TEST_DIRECTORY"
+    done
+
+    rm Temp.java Temp.class MethodExtractor.class
 
     echo    
     echo "Compiling and mutating project"

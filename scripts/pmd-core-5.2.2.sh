@@ -2,6 +2,10 @@
 
 # This script does mutation testing with using the pmd-core-5.2.2 project.
 
+JAVA_VER=$(java -version 2>&1 | head -1 | cut -d'"' -f2 | sed '/^1\./s///' | cut -d'.' -f1 | sed 's/-ea//')
+[ "$JAVA_VER" = "8" ] || echo "Use Java 8, not $JAVA_VER.  Aborting."
+[ "$JAVA_VER" = "8" ] || exit 2
+
 dir=$(realpath "../tests/src/pmd-dcd-5.2.2")
 repo="https://github.com/randoop/grt-pmd-dcd-5.2.2"
 jarfile=$(realpath "../tests/pmd-core-5.2.2.jar")
