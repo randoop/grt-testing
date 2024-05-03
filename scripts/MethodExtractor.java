@@ -7,12 +7,17 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Optional;
 
+/**
+ * This class takes a test suite as input and eliminates the methods in that test suite
+ * that fail in isolation.
+ */
 public class MethodExtractor {
 
     public static void main(String[] args) throws IOException {
         // Parse the Java source file
         String currFile = args[0];
-        CompilationUnit cu = StaticJavaParser.parse(new File("/mnt/c/Users/varun/OneDrive/UW/GRTResearch/grt-testing/scripts/build/testBaseline/" + currFile + ".java"));
+        String testDirectory = args[1];
+        CompilationUnit cu = StaticJavaParser.parse(new File(testDirectory + currFile + ".java"));
 
         FileWriter passingWriter = new FileWriter(currFile + ".java");
         passingWriter.write("import org.junit.FixMethodOrder;\n");
@@ -30,7 +35,7 @@ public class MethodExtractor {
             // Write method to a new file
             try {
                 writeMethodToTempFile(methodSignature, optionalMethodBody);
-                if (compileAndRunTemp()) {
+                if (compileAndRunTemp(args[2])) {
                     passingWriter.write("\t@Test\n");
                     passingWriter.write("\tpublic " + methodSignature + " throws Throwable");
                     for (String line : optionalMethodBody.orElse("").split("\n")) {
@@ -71,14 +76,14 @@ public class MethodExtractor {
         }
     }
 
-    private static boolean compileAndRunTemp() throws IOException, InterruptedException {
-        Process compileProcess = Runtime.getRuntime().exec("javac -cp /mnt/c/Users/varun/OneDrive/UW/GRTResearch/grt-testing/tests/ClassViewer-5.0.5b.jar:/mnt/c/Users/varun/Downloads/junit-4.12.jar Temp.java");
+    private static boolean compileAndRunTemp(String jarfiles) throws IOException, InterruptedException {
+        Process compileProcess = Runtime.getRuntime().exec("javac -cp " + jarfiles + " Temp.java");
         int compileExitValue = compileProcess.waitFor();
         if (compileExitValue != 0) {
             // If it enters here, this is technically unexpected behavior
             return false;
         }
-        Process runProcess = Runtime.getRuntime().exec("java -classpath .:/mnt/c/Users/varun/OneDrive/UW/GRTResearch/grt-testing/tests/ClassViewer-5.0.5b.jar:/mnt/c/Users/varun/OneDrive/UW/GRTResearch/grt-testing/scripts/build/randoop-all-4.3.2.jar org.junit.runner.JUnitCore Temp");
+        Process runProcess = Runtime.getRuntime().exec("java -classpath .:" + jarfiles + " org.junit.runner.JUnitCore Temp");
         int runExitValue = runProcess.waitFor();
         if (runExitValue != 0) {
             // Test fails in isolation, so exclude it

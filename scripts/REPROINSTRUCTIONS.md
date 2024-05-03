@@ -13,9 +13,7 @@ Please follow these steps:
 
 This section provides information on what to expect when using this script.
 
-1. **Makefile**: The script initially runs make, after which two subdirectories are created: build and results. The build subdirectory contains `major/` (Major), `randoop-all-4.3.2.jar` (the jarfile for Randoop), and 
-`jacocoagent.jar` (the jarfile for the Jacoco Agent, which is used to track coverage). The results 
-subdirectory is initially empty.
+1. **Makefile**: The script initially runs make, after which two subdirectories are created: build and results. The build subdirectory contains `major/` (Major), `randoop-all-4.3.2.jar` (the jarfile for Randoop), `jacocoagent.jar` (the jarfile for the Jacoco Agent, which is used to track coverage), and `javaparser-core-3.25.10.jar` (used to compile MethodExtractor.java). The results subdirectory is initially empty.
 
 2. **git**: The script then attempts to clone the source code for the associated project into `grt-testing/tests/src` using git. If it already exists, it skips this step. As discussed below, build.xml and mutation.sh use this source code to generate mutants.
 
@@ -27,13 +25,17 @@ the clean and compile targets in `build.xml`. Given the path to the project's Ja
 targets use Major to generate mutants and put them in the directory `build/bin`. Next, it invokes the
 compile.tests target to compile all of the Randoop-generated tests and also puts them in the directory
 `build/bin`. Finally, it invokes the mutation.test target which runs the mutation analysis on all
-the mutants using the test suite. 
+the mutants using the test suite.
 
-5. **build.xml**: The build.xml is used by mutation.sh to generate mutants using Major and run 
+5. **MethodExtractor.java**: The script calls MethodExtractor.java immediately after Randoop generates a test suite. 
+MethodExtractor.java takes a test suite as input and removes any methods in the test suite that fail in isolation.
+I added this step in the pipeline because Major appears to run the tests in the test suite in isolation.
+
+6. **build.xml**: The build.xml is used by mutation.sh to generate mutants using Major and run 
 Randoop-generated tests on those mutants. More information about each target can be found
 in the build.xml file.
 
-6. **Output**: After every iteration of the experiment, a summary of the results are appended to a file
+7. **Output**: After every iteration of the experiment, a summary of the results are appended to a file
 "results/info.txt".
 
 ---------------------------------------------------------------------------------------------------
@@ -44,3 +46,7 @@ If you wish to work with Orienteering, you should download and build Randoop fro
 replace $RANDOOP_JAR with the absolute path.
 
 2. You must have JDK 8 as your default java/javac for Major to work.
+
+3. Right now, ClassViewer-5.0.5b.sh is not working. I am only including it in this repository for debugging purposes
+(I am trying to figure out why some tests in the Randoop-generated test suite throw an AssertionFailedError when
+used by Major).

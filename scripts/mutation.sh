@@ -25,6 +25,12 @@ RANDOOP_JAR=$(realpath "build/randoop-all-4.3.2.jar")
 # Link to jacoco agent jar. This is necessary for Bloodhound
 JACOCO_JAR=$(realpath "build/jacocoagent.jar")
 
+# Link to junit jar. 
+JUNIT_JAR=$(realpath "build/major/lib/ant-junit.jar")
+
+# Link to javaparser jar. This is necessary for eliminating methods that fail in isolation.
+JAVAPARSER_JAR=$(realpath "build/javaparser-core-3.25.10.jar")
+
 # The paper runs Randoop on 4 different time limits. These are: 2 s/class, 10 s/class, 30 s/class, and 60 s/class
 SECONDS_CLASS="1"
 
@@ -72,25 +78,25 @@ do
 
     # echo "Using Bloodhound"
     # echo
-    # TEST_DIRECTORY="$CURR_DIR/build/testBloodhound"
+    # TEST_DIRECTORY="$CURR_DIR/build/testBloodhound/"
     # mkdir "$TEST_DIRECTORY"
     # $CLI_INPUTS --method-selection=BLOODHOUND --junit-output-dir="$TEST_DIRECTORY"
 
     # echo "Using Orienteering"
     # echo
-    # TEST_DIRECTORY="$CURR_DIR/build/testOrienteering"
+    # TEST_DIRECTORY="$CURR_DIR/build/testOrienteering/"
     # mkdir "$TEST_DIRECTORY"
     # $CLI_INPUTS --input-selection=ORIENTEERING --junit-output-dir="$TEST_DIRECTORY"
 
     # echo "Using Bloodhound and Orienteering"
     # echo
-    # TEST_DIRECTORY="$CURR_DIR/build/testBloodhoundOrienteering"
+    # TEST_DIRECTORY="$CURR_DIR/build/testBloodhoundOrienteering/"
     # mkdir "$TEST_DIRECTORY"
     # $CLI_INPUTS --input-selection=ORIENTEERING --method-selection=BLOODHOUND --junit-output-dir="$TEST_DIRECTORY"
 
     echo "Using Baseline Randoop"
     echo
-    TEST_DIRECTORY="$CURR_DIR/build/testBaseline"
+    TEST_DIRECTORY="$CURR_DIR/build/testBaseline/"
     mkdir "$TEST_DIRECTORY"
     $CLI_INPUTS $ADDITIONAL_ARGS --junit-output-dir="$TEST_DIRECTORY"
 
@@ -100,7 +106,11 @@ do
 
     for file in $files; do
         base_name=$(basename "$file" .java)
-        java -classpath .:$JAVAPARSER_JAR MethodExtractor "$base_name"
+        jarfiles="$SRC_JAR:$RANDOOP_JAR:$JUNIT_JAR"
+        if [[ -n $ALT_JARFILES ]]; then
+            jarfiles="$jarfiles:$ALT_JARFILES"
+        fi
+        java -classpath .:$JAVAPARSER_JAR MethodExtractor "$base_name" "$TEST_DIRECTORY" "$jarfiles"
         mv "${base_name}.java" "$TEST_DIRECTORY"
     done
 

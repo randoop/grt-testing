@@ -1,4 +1,4 @@
-all: build/jacocoagent.jar build/randoop-all-4.3.2.jar build/major results/
+all: build/javaparser-core-3.25.10.jar build/jacocoagent.jar build/randoop-all-4.3.2.jar build/major results/
 
 # Gets the Jacoco agent jar for recording execution coverage (for Bloodhound).
 # Stores this in the build subdirectory
@@ -17,6 +17,10 @@ build/major:
 	mkdir -p build
 	cd build && wget -nv http://mutation-testing.org/major-latest.zip
 	cd build && unzip -o major-latest.zip
+
+build/javaparser-core-3.25.10.jar:
+	mkdir -p build
+	cd build && wget -nv https://repo1.maven.org/maven2/com/github/javaparser/javaparser-core/3.25.10/javaparser-core-3.25.10.jar
 
 # Creates subdirectory to store results
 results/:
