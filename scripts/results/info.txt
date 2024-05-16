@@ -1,2 +1,0 @@
-MutantsGenerated,MutantsRetained,MutantsCovered,MutantsKilled,MutantsLive,RuntimePreprocSeconds,RuntimeAnalysisSeconds
-960,960,0,0,0,0.00,0.00

@@ -18,3 +18,9 @@ scripts/build
 
 # output from runnin jacoco
 jacoco.exec
+
+scripts/randooplog.txt
+scripts/results/info.txt
+scripts/results/randooplog.txt
+scripts/results/selection.txt
+scripts/selection.txt

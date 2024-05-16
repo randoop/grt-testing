@@ -7,15 +7,15 @@ JAVA_VER=$(java -version 2>&1 | head -1 | cut -d'"' -f2 | sed '/^1\./s///' | cut
 [ "$JAVA_VER" = "8" ] || exit 2
 
 dir="../tests/src/commons-cli-1.2"
-repo="https://github.com/randoop/grt-commons-cli-1.2.git"
-# repo="git@github.com:randoop/grt-commons-cli-1.2.git"
+repo1="https://github.com/randoop/grt-commons-cli-1.2.git"
+repo2="git@github.com:randoop/grt-commons-cli-1.2.git"
 jarfile="../tests/commons-cli-1.2.jar"
 srcDir="../tests/src/commons-cli-1.2/src/java"
 
 make
 
 if [ ! -d "$dir" ]; then
-    git clone "$repo" "$dir"
+    git clone "$repo1" "$dir" || git clone "$repo2" "$dir"
 fi
 
 ./mutation.sh "$jarfile" "$srcDir" "" ""

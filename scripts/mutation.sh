@@ -20,8 +20,10 @@ MAJOR_HOME=$(realpath "build/major/")
 CURR_DIR=$(realpath "$(pwd)")
 
 # Link to the randoop jar
-RANDOOP_JAR=$(realpath "/Users/ziheji/Desktop/academic/Research/randoop/build/libs/randoop-all-4.3.2.jar")
-# RANDOOP_JAR=$(realpath "/scratch/mernst/clones/testing/randoop-fork-kuro1fury-branch-constant-mining-v2/build/libs/randoop-all-4.3.3.jar")
+RANDOOP_JAR=$(realpath "build/randoop-all-4.3.2.jar")
+RANDOOP_JAR1="/Users/ziheji/Desktop/academic/Research/randoop/build/libs/randoop-all-4.3.2.jar"
+RANDOOP_JAR2="/scratch/mernst/clones/testing/randoop-fork-kuro1fury-branch-constant-mining-v2/build/libs/randoop-all-4.3.3.jar"
+RANDOOP_JAR="${RANDOOP_JAR1}:${RANDOOP_JAR2}:${RANDOOP_JAR}"
 
 # Link to jacoco agent jar. This is necessary for Bloodhound
 JACOCO_JAR=$(realpath "build/jacocoagent.jar")
@@ -101,6 +103,7 @@ do
     echo
     TEST_DIRECTORY="$CURR_DIR/build/testBaseline/"
     mkdir "$TEST_DIRECTORY"
+    # shellcheck disable=SC2086
     $CLI_INPUTS $ADDITIONAL_ARGS --junit-output-dir="$TEST_DIRECTORY"
 
     javac -cp "$JAVAPARSER_JAR" MethodExtractor.java
@@ -123,7 +126,7 @@ do
 
     echo    
     echo "Compiling and mutating project"
-    echo "(ant -Dmutator=\"=mml:\$MAJOR_HOME/mml/all.mml.bin\" clean compile)"
+    echo '(ant -Dmutator="=mml:'"$MAJOR_HOME"'/mml/all.mml.bin" clean compile)'
     echo
     "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -Dalt="$ALT_JARFILES" clean compile
     
