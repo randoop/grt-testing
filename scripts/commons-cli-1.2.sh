@@ -8,6 +8,7 @@ JAVA_VER=$(java -version 2>&1 | head -1 | cut -d'"' -f2 | sed '/^1\./s///' | cut
 
 dir="../tests/src/commons-cli-1.2"
 repo="https://github.com/randoop/grt-commons-cli-1.2.git"
+# repo="git@github.com:randoop/grt-commons-cli-1.2.git"
 jarfile="../tests/commons-cli-1.2.jar"
 srcDir="../tests/src/commons-cli-1.2/src/java"
 
