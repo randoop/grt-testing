@@ -20,7 +20,7 @@ MAJOR_HOME=$(realpath "build/major/")
 CURR_DIR=$(realpath "$(pwd)")
 
 # Link to the randoop jar
-RANDOOP_JAR=$(realpath "build/randoop-all-4.3.2.jar")
+RANDOOP_JAR=$(realpath "/Users/ziheji/Desktop/academic/Research/randoop/build/libs/randoop-all-4.3.2.jar")
 
 # Link to jacoco agent jar. This is necessary for Bloodhound
 JACOCO_JAR=$(realpath "build/jacocoagent.jar")
@@ -53,7 +53,9 @@ NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
 TIME_LIMIT=$((NUM_CLASSES * SECONDS_CLASS))
 
 # Variable that stores command line inputs common among all commands
-CLI_INPUTS="java -Xbootclasspath/a:$JACOCO_JAR -javaagent:$JACOCO_JAR -classpath $SRC_JAR:$ALT_JARFILES/*:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=$TIME_LIMIT"
+#CLI_INPUTS="java -Xbootclasspath/a:$JACOCO_JAR -javaagent:$JACOCO_JAR -classpath $SRC_JAR:$ALT_JARFILES/*:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --constant-mining=true --literals-level=ALL --constant_mining_probability=1 --time-limit=$TIME_LIMIT"
+CLI_INPUTS="java -Xbootclasspath/a:$JACOCO_JAR -javaagent:$JACOCO_JAR -classpath $SRC_JAR:$ALT_JARFILES/*:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --constant-mining=true --literals-level=ALL --constant_mining_probability=0.3 --log=randooplog.txt --selection-log=selection.txt --time-limit=$TIME_LIMIT"
+#CLI_INPUTS="java -Xbootclasspath/a:$JACOCO_JAR -javaagent:$JACOCO_JAR -classpath $SRC_JAR:$ALT_JARFILES/*:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=$TIME_LIMIT"
 
 # Variable that stores any additional arguments to calling Randoop
 ADDITIONAL_ARGS="$4"
@@ -114,6 +116,8 @@ do
         mv "${base_name}.java" "$TEST_DIRECTORY"
     done
 
+    cp randooplog.txt results/randooplog.txt
+    cp selection.txt results/selection.txt
     rm Temp.java Temp.class MethodExtractor.class
 
     echo    
@@ -127,6 +131,8 @@ do
     echo "(ant compile.tests)"
     echo
     "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -Dalt="$ALT_JARFILES" compile.tests
+
+
 
     echo
     echo "Run tests with mutation analysis"

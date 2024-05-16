@@ -1,0 +1,671 @@
+<h1 id="overview">Overview</h1>
+<p>Major is an efficient and flexible mutation analysis framework that supports:</p>
+<ol type="1">
+<li><p>generating and embedding mutants during compilation;</p></li>
+<li><p>exporting source-code mutants;</p></li>
+<li><p>suppressing equivalent mutants;</p></li>
+<li><p>computing the mutant-detection rate and the set of live mutants for a given a set of tests;</p></li>
+<li><p>computing a complete mutant-test detection matrix for a given set of tests.</p></li>
+</ol>
+<p>The Major mutation framework provides three main components:</p>
+<ol type="1">
+<li><p>Mutator: a mutator plugin for the <code>javac</code> Java compiler.</p></li>
+<li><p>Mml: a DSL for customizing mutant generation.</p></li>
+<li><p>Analyzer: a test runner that efficiently determines live mutants, the mutant-detection ratio, or a full mutant-test matrix.</p></li>
+</ol>
+<h2 id="installation">Installation</h2>
+<p>The installation is simple — all you need is included in the Major release package!</p>
+<ul>
+<li><p>Download <a href="https://mutation-testing.org/major-latest.zip"><em>major.zip</em></a> (the most recent release).</p></li>
+<li><p>Unzip <em>major.zip</em>, which creates the <strong>major</strong> directory:</p>
+<ul>
+<li><strong>bin</strong> (executables for Major’s components)
+<ul>
+<li><em>ant</em></li>
+<li><em>major</em></li>
+<li><em>mmlc</em></li>
+</ul></li>
+<li><strong>config</strong> (archive and sources of Major’s run-time class)</li>
+<li><strong>doc</strong> (manual of the current version)
+<ul>
+<li><em>major.html</em></li>
+</ul></li>
+<li><strong>example</strong> (examples for using Major}
+<ul>
+<li><strong>ant</strong>
+<ul>
+<li>…</li>
+<li><em>run.sh</em></li>
+</ul></li>
+<li><strong>standalone</strong>
+<ul>
+<li>…</li>
+<li><em>run.sh</em></li>
+</ul></li>
+<li><em>runAll.sh</em></li>
+</ul></li>
+<li><strong>lib</strong> (libraries used by Major)</li>
+<li><strong>mml</strong> (example mml files)</li>
+</ul></li>
+</ul>
+<h2 id="getting-started">Getting started</h2>
+<p>Verify that you are using a Java-8 compiler by running <code>javac -version</code>.</p>
+<p>The <strong>example</strong> directory provides two examples for how to use Major to perform mutation analysis:</p>
+<ul>
+<li><p><strong>ant</strong>: mutation analysis using Apache Ant.</p></li>
+<li><p><strong>standalone</strong>: mutation analysis using Major standalone.</p></li>
+</ul>
+<p>Execute <code>runAll.sh</code> within the <strong>example</strong> directory to run all examples or <code>run.sh</code> in a subdirectory for a particular example.</p>
+<h1 id="tutorial">Tutorial</h1>
+<p>This step by step tutorial demonstrates how to use Major for:</p>
+<ul>
+<li><p><a href="#create-an-mml-file-optional">Customizing mutant generation using an mml file</a></p></li>
+<li><p><a href="#generate-mutants">Generating mutants with Major’s mutator</a></p></li>
+<li><p><a href="#analyze-mutants">Analyzing mutants with Major’s default analyzer</a></p></li>
+</ul>
+<p>All examples in this tutorial use the triangle program (<strong>example</strong> directory) and the provided mml files (<strong>mml</strong> directory).</p>
+<h2 id="create-an-mml-file-optional">Create an MML File (Optional)</h2>
+<p>Major’s domain specific language (mml) supports customizing mutant generation. Suppose only return statements, relational operators, and conditional operators should be mutated within the method <code>classify</code> of the class <code>triangle.Triangle</code>. The following mml file expresses these requirements:</p>
+<pre><code>targetOp{
+    // Define the replacements for ROR
+    BIN(&gt;)-&gt;{&gt;=,!=,FALSE};
+    BIN(&lt;)-&gt;{&lt;=,!=,FALSE};
+    BIN(&gt;=)-&gt;{&gt;,==,TRUE};
+    BIN(&lt;=)-&gt;{&lt;,==,TRUE};
+    BIN(==)-&gt;{&lt;=,&gt;=,FALSE,LHS,RHS};
+    BIN(!=)-&gt;{&lt;,&gt;,TRUE,LHS,RHS};
+    // Define the replacements for COR
+    BIN(&amp;&amp;)-&gt;{==,LHS,RHS,FALSE};
+    BIN(||)-&gt;{!=,LHS,RHS,TRUE};
+    // Define the type of statement that STD should delete
+    DEL(RETURN);
+
+    // Enable the STD, COR, and ROR mutation operators
+    STD;
+    COR;
+    ROR;
+}
+// Call the defined operator group for the target method
+targetOp&lt;&quot;triangle.Triangle::classify(int,int,int)&quot;&gt;;</code></pre>
+<p>Customizing mml files is <strong>optional</strong>. Major is released with useful default mml files.</p>
+<p>Major’s mml compiler (mmlc) validates an mml file and compiles it into a binary representation:</p>
+<pre><code>major$ mmlc tutorial.mml tutorial.mml.bin</code></pre>
+<p>Note that the second argument is optional – if omitted, the compiler will add <em>.bin</em> to the input file name.</p>
+<h2 id="generate-mutants">Generate mutants</h2>
+<p>Major’s mutator uses the compiled mml file (<em>tutorial.mml.bin</em>) to configure the mutant-generation process.</p>
+<h3 id="command-line">Command line</h3>
+<p>The following command generates and compiles all mutants, using the <em>tutorial.mml.bin</em> file:</p>
+<pre><code>major$ major --mml tutorial.mml.bin -d bin src/triangle/Triangle.java
+Generated 86 mutants (128 ms)</code></pre>
+<h3 id="ant-build-file">Ant build file</h3>
+<p>To invoke Major’s mutator from an Apache Ant compile target, adapt the <em>build.xml</em> build file as follows:</p>
+<pre><code>&lt;property name=&quot;major.jar&quot; value=&quot;&lt;path to major.jar&gt;&quot;/&gt;
+&lt;property name=&quot;mml&quot; value=&quot;&lt;path to compiled mml file&gt;&quot;/&gt;
+
+&lt;target name=&quot;compile&quot; depends=&quot;init&quot; description=&quot;Compile&quot;&gt;
+    &lt;javac srcdir=&quot;src&quot; destdir=&quot;bin&quot; debug=&quot;yes&quot;&gt;
+
+      &lt;classpath location=&quot;${major.jar}&quot;/&gt;
+
+      &lt;compilerarg value=&quot;-Xplugin:MajorPlugin mml:${mml}&quot;/&gt;
+
+    &lt;/javac&gt;
+&lt;/target&gt;</code></pre>
+<p>The following command generates and compiles all mutants, using the <em>tutorial.mml.bin</em> file:</p>
+<pre><code>major$ ant -Dmml=tutorial.mml.bin compile
+
+compile:
+    [javac] Compiling 1 source file to bin
+    [javac] Generated 86 mutants (149 ms)
+
+BUILD SUCCESSFUL
+Total time: 0 seconds</code></pre>
+<h3 id="inspect-generated-mutants">Inspect generated mutants</h3>
+<p>Major’s mutator plugin reports the number of generated mutants and the total time (mutant generation and compilation). Additionally, it produces a log file <em>mutants.log</em>, which contains detailed information about the generated mutants. Here is an example for the mutants generated for the tutorial program:</p>
+<pre><code>major$ head -3 mutants.log
+1:ROR:&lt;=(int,int):&lt;(int,int):triangle.Triangle@classify(int,int,int):11:a &lt;= 0 |==&gt; a &lt; 0
+2:ROR:&lt;=(int,int):==(int,int):triangle.Triangle@classify(int,int,int):11:a &lt;= 0 |==&gt; a == 0
+3:ROR:&lt;=(int,int):TRUE(int,int):triangle.Triangle@classify(int,int,int):11:a &lt;= 0 |==&gt; true</code></pre>
+<h3 id="export-source-code-mutants">Export source-code mutants</h3>
+<p>Major supports exporting generated mutants to individual source-code files. This feature is disabled by default. See the documentation for more details.</p>
+<h2 id="analyze-mutants">Analyze mutants</h2>
+<p>The <em>build.xml</em> file has to provide a suitable test target that enables Major’s analyzer. The analyzer takes the set of generated mutants and executes a given test suite against them. The following <code>mutation.test</code> target enables the mutation analysis and exports the results to <em>summary.csv</em>, and <em>details.csv</em> (see the documentation for configuration details):</p>
+<pre><code>&lt;target name=&quot;mutation.test&quot; description=&quot;Run mutation analysis&quot;&gt;
+    &lt;echo message=&quot;Running mutation analysis ...&quot;/&gt;                
+    &lt;junit printsummary=&quot;false&quot; 
+           showoutput=&quot;false&quot;            
+           mutationAnalysis=&quot;true&quot; 
+           summaryFile=&quot;summary.csv&quot; 
+           mutantDetailsFile=&quot;details.csv&quot;&gt;                                                      
+
+           &lt;classpath path=&quot;bin&quot;/&gt;                                    
+           &lt;batchtest fork=&quot;false&quot;&gt;                                   
+               &lt;fileset dir=&quot;test&quot;&gt;                                   
+                   &lt;include name=&quot;**/*Test*.java&quot;/&gt;                   
+               &lt;/fileset&gt;                                             
+           &lt;/batchtest&gt;                                               
+    &lt;/junit&gt;                                                       
+&lt;/target&gt;</code></pre>
+<p>Using Major’s default analyzer, the following command invokes the <code>mutation.test</code> target:</p>
+<pre><code>major$ ant mutation.test
+mutation.test:
+     [echo] Running mutation analysis ...
+    [junit] MAJOR: Mutation analysis enabled
+    [junit] MAJOR: ------------------------------------------------------------
+    [junit] MAJOR: Run 1 ordered test(s)to verify independence
+    [junit] MAJOR: ------------------------------------------------------------
+    [junit] MAJOR: Preprocessing time: 0.02 seconds
+    [junit] MAJOR: ------------------------------------------------------------
+    [junit] MAJOR: Serialize preprocessing results to preprocessing.ser
+    [junit] MAJOR: ------------------------------------------------------------
+    [junit] MAJOR: Mutants generated: 86
+    [junit] MAJOR: Mutants covered:   86 (100.00%)
+    [junit] MAJOR: ------------------------------------------------------------
+    [junit] MAJOR: Export coverage map to covMap.csv
+    [junit] MAJOR: Export test map to testMap.csv
+    [junit] MAJOR: ------------------------------------------------------------
+    [junit] MAJOR: Run mutation analysis with 86 mutant(s) and 1 test(s).
+    [junit] MAJOR: ------------------------------------------------------------
+    [junit] MAJOR: 1/1 - triangle.test.TestSuite (2ms / 86):
+    [junit] MAJOR: 189 (76 / 86 / 86) -&gt; AVG-RTPM: 2ms
+    [junit] MAJOR: Mutants killed (FAIL-EXC-TIME) / live: 76 (76-0-0) / 10
+    [junit] MAJOR: ------------------------------------------------------------
+    [junit] MAJOR: Summary:
+    [junit] MAJOR:
+    [junit] MAJOR: Analysis time                 : 0.19 seconds
+    [junit] MAJOR: Mutation score                : 88.37% (88.37%)
+    [junit] MAJOR: Mutants killed (FAIL-EXC-TIME): 76 (76-0-0)
+    [junit] MAJOR: Mutants live                  : 10
+    [junit] MAJOR: Mutant executions             : 86
+    [junit] MAJOR: ------------------------------------------------------------
+    [junit] MAJOR: Export summary of results to summary.csv
+    [junit] MAJOR: Export mutant details to details.csv
+    [junit] MAJOR: ------------------------------------------------------------
+    [junit] MAJOR: Done!
+    [junit] MAJOR: ------------------------------------------------------------
+BUILD SUCCESSFUL
+Total time: 0 seconds</code></pre>
+<p>As configured in the <em>build.xml</em> file, the results of the mutation analysis are exported to the files <em>summary.csv</em> and <em>details.csv</em>, which provide the following information:</p>
+<ul>
+<li><p><em>summary.csv</em>: Summary of mutation analysis results.</p></li>
+<li><p><em>killed.csv</em>: The reason why a mutant is detected (assertion failure, exception, or timeout) or live.</p></li>
+</ul>
+<h1 id="mutator-plugin">Mutator Plugin</h1>
+<p>Major’s mutator is a javac compiler plugin that traverses and translates the abstract syntax tree (AST). All mutants are embedded into the AST and compiled to byte-code. Individual mutants can be enabled at runtime without recompilation.</p>
+<h2 id="configuration">Configuration</h2>
+<p>The mutator plugin supports the following configuration options:</p>
+<ul>
+<li><p><code>mml:&lt;FILE&gt;</code>: run mutators specified in the compiled mml file</p></li>
+<li><p><code>mutants.log:&lt;FILE&gt;</code>: The location of the mutants.log file (default: ./mutants.log)</p></li>
+<li><p><code>export.mutants</code>: If set, Major exports each generated mutant as a source code file</p></li>
+<li><p><code>mutants.directory:&lt;DIR&gt;</code>: The export directory for the source-code mutants (default: ./mutants)</p></li>
+<li><p><code>export.context</code>: If set, Major exports context information for each generated mutant</p></li>
+<li><p><code>context.file:&lt;FILE&gt;</code>: The location of the mutant-context file (default: ./mutants.context)</p></li>
+<li><p><code>strict.checks</code>: If set, Major discards mutants that would not be compilable if created at the source-code level.</p></li>
+<li><p><code>enable.decl.refactor</code>: If set, Major attempts to refactor large static declarations that it thinks will trigger a “code too large” error from the inclusion of mutations</p></li>
+<li><p><code>decl.refactor.params:MAX_TOTAL_ELEMS,MAX_INDIVIDUAL_ELEMS</code>: a comma seperated list of refactor parameters to override defaults</p>
+<ul>
+<li><code>MAX_TOTAL_ELEMS</code>: the threshold total number of mutated constants across all declarations in any given method (default 1000)</li>
+<li><code>MAX_INDIVIDUAL_ELEMS</code>: the threshold number of mutated constants for any given declaration (default 50)</li>
+</ul></li>
+<li><p><code>enable.method.refactor</code>: If set, Major attempts to refactor large methods that it thinks will trigger a “code too large” error from the inclusion of mutations</p></li>
+<li><p><code>method.refactor.params:MUTANT_THRESHOLD,MUTANTS_PER_METHOD</code>: a comma seperated list of refactor parameters to override defaults</p>
+<ul>
+<li><code>MUTANT_THRESHOLD</code>: the threshold total number of mutants in a method to trigger a refactor (default 1000)</li>
+<li><code>MUTANTS_PER_METHOD</code>: the number of mutants to allow in the refactored versions of large methods (default 250)</li>
+</ul></li>
+<li><p><code>logging:ARG1,ARG2,ARG3...</code>: a semicolon-separated argument list</p>
+<ul>
+<li><code>file:FILE</code> specify the file name to save the log to</li>
+<li><code>file-level:LEVEL</code> specify the minimal level to write to file</li>
+<li><code>console-level:LEVEL</code> specify the minimal level to log to console</li>
+<li><code>console-format:LEVEL</code> specify the formatter for console logging</li>
+<li><code>file-format:LEVEL</code> specify the formatter for file logging</li>
+</ul></li>
+</ul>
+<p><strong>Logging levels:</strong> <code>all</code>, <code>finest</code>, <code>finer</code>, <code>fine</code>, <code>warning</code>, <code>severe</code>, and <code>none</code></p>
+<p><strong>Logging formatters:</strong> <code>xml</code>, <code>color</code>, <code>verbose-color</code>, <code>oneline</code>, <code>verbose</code>, <code>simple</code></p>
+<p><a href="#major-mutation-language-mml">Mml files</a> define which mutation operators to enabled and what program elements to mutate. This allows for a fine-grained definition and a flexible application of mutation operators. Example mml files are provided in the release. Note that Major’s mutator interprets pre-compiled mml files. Use the mml compiler <code>mmlc</code> to validate and compile a mml file.</p>
+<h2 id="mutation-operators">Mutation Operators</h2>
+<p>Major supports the following mutation operator groups, each of which groups multiple related mutation operators:</p>
+<h4 id="aor-arithmetic-operator-replacement"><strong>AOR</strong>: Arithmetic Operator Replacement</h4>
+<ul>
+<li><p>Replaces a binary arithmetic operator with compatible alternatives.</p></li>
+<li><p>Examples:</p>
+<ul>
+<li><code>a + b</code> ==&gt; <code>a - b</code></li>
+<li><code>a % b</code> ==&gt; <code>a * b</code></li>
+</ul></li>
+</ul>
+<h4 id="cor-conditional-operator-replacement"><strong>COR</strong>: Conditional Operator Replacement</h4>
+<ul>
+<li><p>Replaces a conditional operator with compatible alternatives. Also replaces atomic boolean conditions with <code>true</code> and <code>false</code> (e.g., <code>if(flag)</code> or <code>if(isSet())</code>.</p></li>
+<li><p>Examples:</p>
+<ul>
+<li><code>a || b</code> ==&gt; <code>a &amp;&amp; b</code></li>
+<li><code>if(flag)</code> ==&gt; <code>if(true)</code></li>
+</ul></li>
+</ul>
+<h4 id="lor-logical-operator-replacement"><strong>LOR</strong>: Logical Operator Replacement</h4>
+<ul>
+<li><p>Replaces a binary logical operator with compatible alternatives.</p></li>
+<li><p>Examples:</p>
+<ul>
+<li><code>a ^ b</code> ==&gt; <code>a | b</code></li>
+</ul></li>
+</ul>
+<h4 id="ror-relational-operator-replacement"><strong>ROR</strong>: Relational Operator Replacement</h4>
+<ul>
+<li><p>Replaces a relational operator with compatible alternatives.</p></li>
+<li><p>Examples:</p>
+<ul>
+<li><code>a == b</code> ==&gt; <code>a &gt;= b</code></li>
+</ul></li>
+</ul>
+<h4 id="sor-shift-operator-replacement"><strong>SOR</strong>: Shift Operator Replacement</h4>
+<ul>
+<li><p>Replaces a bit-shift operator with compatible alternatives.</p></li>
+<li><p>Examples:</p>
+<ul>
+<li><code>a &gt;&gt; b</code> ==&gt; <code>a &lt;&lt; b</code></li>
+</ul></li>
+</ul>
+<h4 id="oru-operator-replacement-unary"><strong>ORU</strong>: Operator Replacement Unary</h4>
+<ul>
+<li><p>Replaces a unary operator with compatible alternatives.</p></li>
+<li><p>Examples:</p>
+<ul>
+<li><code>-a</code> ==&gt; <code>~a</code></li>
+</ul></li>
+</ul>
+<h4 id="lvr-literal-value-replacement"><strong>LVR</strong>: Literal Value Replacement</h4>
+<ul>
+<li>Replaces a literal with a default value.
+<ul>
+<li>A numerical literal is replaced with a positive number, a negative number, and zero:
+<ul>
+<li>val = 0 ==&gt; 1 and -1</li>
+<li>val &lt; 0 ==&gt; 0 and -val</li>
+<li>val &gt; 0 ==&gt; 0 and -val</li>
+</ul></li>
+<li>A boolean literal is replaced with its logical complement.</li>
+<li>A String literal is replaced with the empty String.</li>
+</ul></li>
+</ul>
+<h4 id="evr-expression-value-replacement"><strong>EVR</strong>: Expression Value Replacement</h4>
+<ul>
+<li><p>Replaces an expression (in an otherwise unmutated statement) with a default value.</p></li>
+<li><p>Examples:</p>
+<ul>
+<li><code>return a</code> ==&gt; <code>return 0</code></li>
+<li><code>int a = b</code> ==&gt; <code>int a = 0</code></li>
+</ul></li>
+</ul>
+<h4 id="std-statement-deletion"><strong>STD</strong>: STatement Deletion</h4>
+<ul>
+<li>Deletes (omits) a single statement of the following kind:
+<ul>
+<li><code>return</code></li>
+<li><code>break</code></li>
+<li><code>continue</code></li>
+<li>Method call</li>
+<li>Assignment</li>
+<li>Pre/post increment</li>
+<li>Pre/post decrement</li>
+</ul></li>
+<li>Examples:
+<ul>
+<li><code>return a</code></li>
+<li><code>break</code></li>
+<li><code>continue</code></li>
+<li><code>foo(a,b)</code></li>
+<li><code>a = b</code></li>
+<li><code>++a</code></li>
+<li><code>a--</code></li>
+</ul></li>
+</ul>
+<h2 id="logging-of-generated-mutants">Logging of Generated Mutants</h2>
+<p>Major’s mutator generates a log file <em>mutants.log</em>, which provides detailed information about the generated mutants and uses a colon (‘:’) as separator. The log file contains one row per generated mutant; each row contains 7 columns with the following information:</p>
+<ol type="1">
+<li><p>Mutants’ unique number (id)</p></li>
+<li><p>Name of the applied mutation operator</p></li>
+<li><p>Original operator symbol</p></li>
+<li><p>Replacement operator symbol</p></li>
+<li><p>Fully qualified name of the mutated method</p></li>
+<li><p>Line number in original source file</p></li>
+<li><p>Summary of the applied transformation (<code>&lt;from&gt; |==&gt; &lt;to&gt;</code>)</p></li>
+</ol>
+<p>Here is a log-entry example for an ROR mutation that has the mutant id 11 and was generated on line 18 in a method named <code>classify</code> of the class <code>Triangle</code>:</p>
+<pre><code>11:ROR:&lt;=(int,int):&lt;(int,int):Triangle@classify:18:a &lt;= 0 |==&gt; a &lt; 0</code></pre>
+<h2 id="exporting-source-code-mutants">Exporting Source Code Mutants</h2>
+<p>Mutants can be exported as individual source-code files. This feature is <strong>disabled by default</strong>; to enable it, <strong>set the export.mutants option</strong>. If enabled, Major duplicates the original source file for each mutant, injects the mutant into the copy, and exports the resulting faulty copy (to <code>./mutants</code> by default). Use the <code>mutants.directory:&lt;DIR&gt;</code> option to control the output directory. Major automatically creates the export directory and parent directories if necessary.</p>
+<p>Note that mutating a large code base and exporting all mutants to individual source files increases the mutation/compilation time and requires significantly more disk space than the log file.</p>
+<h2 id="build-system-integration">Build System Integration</h2>
+<p>Major’s compiler plugin can be used standalone or in a build system.</p>
+<h3 id="gradle">Gradle</h3>
+<p>TODO</p>
+<h3 id="apache-maven">Apache Maven</h3>
+<p>TODO</p>
+<h3 id="apache-ant">Apache Ant</h3>
+<p>Consider the following <code>compile</code> target in an Apache Ant <em>build.xml</em> file:</p>
+<pre><code>&lt;target name=&quot;compile&quot; depends=&quot;init&quot; description=&quot;Compile&quot;&gt;       
+    &lt;javac srcdir=&quot;src&quot; destdir=&quot;bin&quot; debug=&quot;yes&quot;&gt;
+    &lt;/javac&gt;                                                       
+&lt;/target&gt; </code></pre>
+<p>Add the following options to enable Major’s mutator plugin:</p>
+<pre><code>&lt;property name=&quot;major.jar&quot; value=&quot;&lt;path to major.jar&gt;&quot;/&gt;
+&lt;property name=&quot;mml&quot; value=&quot;&lt;path to compiled mml file&gt;&quot;/&gt;
+
+&lt;target name=&quot;compile&quot; depends=&quot;init&quot; description=&quot;Compile&quot;&gt;
+    &lt;javac srcdir=&quot;src&quot; destdir=&quot;bin&quot; debug=&quot;yes&quot;&gt;
+      &lt;classpath location=&quot;${major.jar}&quot;/&gt;
+      &lt;compilerarg value=&quot;-Xplugin:MajorPlugin mml:${mml}&quot;/&gt;
+    &lt;/javac&gt;
+&lt;/target&gt;</code></pre>
+<h2 id="run-time-configuration">Run-time Configuration</h2>
+<p>Mutated class files reference Major’s run-time configuration class to access mutant identifiers (<code>_M_NO</code>) and/or monitor mutation coverage (<code>COVERED</code>). The archive and source files of the default implementation are provided in the <em>config</em> directory. It can be extended to perform additional analyses. Note that the configuration class does <strong>not</strong> need to be available on the classpath during mutant generation (the mutator does not try to resolve this class at compile-time, but rather creates AST nodes for mutant identifiers and coverage invocations based on the interface defined by this class.</p>
+<h1 id="major-mutation-language-mml">Major Mutation Language (MML)</h1>
+<p>Major’s domain-specific language <em>mml</em> supports fine-grained configuration of the mutant generation process. A mml file contains a sequence of statements, where each statement represents one of:</p>
+<ol type="1">
+<li><p>Variable definition, e.g., for scopes or replacements.</p></li>
+<li><p>Replacement definition for mutation operators.</p></li>
+<li><p>Definition of statement types for the STD mutation operator.</p></li>
+<li><p>Definition of literal types for the LVR mutation operator.</p></li>
+<li><p>Invocation of a pre-defined or custom mutation operator (group).</p></li>
+<li><p>Definition of a custom mutation operator.</p></li>
+<li><p>Line comment.</p></li>
+</ol>
+<p>The first five statement types are terminated by a semicolon, an operator group definition is encapsulated by curly braces, and a line comment is terminated by the end-of-line.</p>
+<h2 id="statement-scopes">Statement scopes</h2>
+<p>Mml provides statement scopes for replacement definitions and operator invocations to support the mutation of a certain package, class, or method within a program. The following diagram shows the definition of a statement scope:</p>
+<p><img src="img/scope.png" width="400" /></p>
+<p>Scope corresponds to a package, class, or method. A scope is defined as a fully qualified name – referred to as flatname. A flatname can be either provided as a quoted String or as a variable. Note that a statement scope is optional. If no statement scope is provided, the corresponding definition or invocation is applied to the root package.</p>
+<p>The following diagram shows the syntax rules for a flatname:</p>
+<p><img src="img/flat.png" width="550" /></p>
+<p>The naming conventions for valid identifiers (<code>IDENT</code>) follow those of the Java programming language, given that a flatname identifies a program element. The following four examples show valid flatnames for a package, a class, a set of overloaded methods, and a particular method:</p>
+<ul>
+<li><p><code>"java.lang"</code></p></li>
+<li><p><code>"java.lang.String"</code></p></li>
+<li><p><code>"java.lang.String@substring"</code></p></li>
+<li><p><code>"java.lang.String::substring(int,int)"</code></p></li>
+</ul>
+<p>The flatname syntax also supports the identification of innerclasses and constructors, consistent with the naming conventions of Java. For Example, the subsequent definitions address an inner class, a constructor, and a static class initializer:</p>
+<ul>
+<li><p><code>"foo.Bar$InnerClass"</code></p></li>
+<li><p><code>"foo.Bar@&lt;init&gt;"</code></p></li>
+<li><p><code>"foo.Bar@&lt;clinit&gt;"</code></p></li>
+</ul>
+<h2 id="overriding-and-extending-definitions">Overriding and Extending Definitions</h2>
+<p>For a given scope, mutation operators can be enabled (<code>+</code>, which is the default if the flag is omitted, or disabled (<code>-</code>). In the following example, the AOR mutation operator is generally enabled for the package <code>org</code> but specifically disabled for the class <code>Foo</code> within that package:</p>
+<pre><code>    +AOR&lt;&quot;org&quot;&gt;;
+    -AOR&lt;&quot;org.Foo&quot;&gt;;</code></pre>
+<p>Note that the flag (prefix) for enabling/disabling operators is optional. The default flag (<code>+</code>) for enabling operators improves readability but can be omitted. That is, <code>+AOR&lt;"org"&gt;;</code> and <code>AOR&lt;"org"&gt;;</code> are equivalent statements.</p>
+<p>For replacement definitions, there are two possibilities: Individual replacements can be added (<code>+</code>) to an existing list or the entire replacement list can be overridden (<code>!</code>) – the latter is the default if this optional flag is omitted. In the following example, the general definition of replacements for the package <code>org</code> is extended for the class <code>Foo</code> but overriden for the class <code>Bar</code>. (The replacement lists that are effectively applied to the package and classes are given in comments.)</p>
+<pre><code>     BIN(*)&lt;&quot;org&quot;&gt;     -&gt; {+,/};    // * -&gt; {+,/}
+    +BIN(*)&lt;&quot;org.Foo&quot;&gt; -&gt; {%};      // * -&gt; {+,/,%}
+    !BIN(*)&lt;&quot;org.Bar&quot;&gt; -&gt; {-};      // * -&gt; {-}</code></pre>
+<h2 id="custom-mutation-operator-groups">Custom Mutation Operator Groups</h2>
+<p>Mml allows the definition of custom operator groups to minimize code duplication (e.g., identical definitions for multiple scopes). A custom operator group may contain any statement that is valid in an mml file, except for a call of another custom operator group. A custom operator group has a unique identifier and its statements are enclosed by curly braces:</p>
+<pre><code>    myOp {
+        BIN(*) -&gt; {+,/};
+        AOR;
+    }</code></pre>
+<h2 id="example-mml-files">Example MML Files</h2>
+<p>The following example mml file performs three tasks:</p>
+<ol type="1">
+<li><p>Define specific replacements for AOR and ROR.</p></li>
+<li><p>Invoke AOR and ROR, using the defined replacements.</p></li>
+<li><p>Invoke the LVR operator without restrictions.</p></li>
+</ol>
+<pre><code>// Define own replacement list for AOR
+BIN(*) -&gt; {/,%};
+BIN(/) -&gt; {*,%};
+BIN(%) -&gt; {*,/};
+
+// Define own replacement list for ROR
+BIN(&gt;)  -&gt; {&lt;=,!=,==};
+BIN(==) -&gt; {&lt;,!=,&gt;};       
+
+// Define types of literals that should be mutated by the LVR operator.
+// Literal type is one of {BOOLEAN, NUMBER, STRING}.
+LIT(NUMBER);
+LIT(BOOLEAN);
+
+// Enable and invoke mutation operators
+AOR;
+ROR;
+LVR;</code></pre>
+<p>The next example uses the scoping feature in line 8 and 13-20, and defines a variable in line 11 to avoid code duplication in the subsequent scope declarations. Both features are useful if only a certain package, class, or method should be mutated.</p>
+<pre><code>// Definitions for the root node                                                           
+BIN(&gt;=)-&gt;{TRUE,&gt;,==};                                                                      
+BIN(&lt;=)-&gt;{TRUE,&lt;,==};                                                                      
+BIN(!=)-&gt;{TRUE,&lt;,&gt; };                                                                      
+LIT(NUMBER);
+LVR;                                                                                       
+                                                                                           
+// Definition for the package org                                                          
+ROR&lt;&quot;org&quot;&gt;;                                                                                
+                                                                                           
+// Variable definition for the class Foo                                                           
+foo=&quot;org.x.y.z.Foo&quot;; 
+
+// Scoping for replacement lists                                                                     
+BIN(&amp;&amp;)&lt;foo&gt;-&gt;{LHS,RHS,==,FALSE};                                                          
+BIN(||)&lt;foo&gt;-&gt;{LHS,RHS,!=,TRUE };                                                          
+
+// Scoping for mutation operators
+-LVR&lt;foo&gt;;                                                                                 
+ROR&lt;foo&gt;;                                                                                       
+COR&lt;foo&gt;;</code></pre>
+<p>The last example demonstrates the custom operator feature, which is useful if the same group of operations (definitions or invocations) should be applied to multiple scopes.</p>
+<pre><code>myOp{                                                                                      
+    // Definitions for the operator group                                                  
+    BIN(&gt;=)-&gt;{TRUE,&gt;,==};                                                                  
+    BIN(&lt;=)-&gt;{TRUE,&lt;,==};                                                                  
+    BIN(!=)-&gt;{TRUE,&lt;,&gt; };                                                                  
+    BIN(&amp;&amp;)-&gt;{LHS,RHS,==,FALSE};                                                           
+    BIN(||)-&gt;{LHS,RHS,!=,TRUE };                                                           
+    // Mutation operators enabled in this group                                                                                       
+    ROR;                                                                                   
+    COR;                                                                                   
+}                                                                                          
+                                                                                           
+// Calls of the defined operator group                                            
+myOp&lt;&quot;org&quot;&gt;;                                                                               
+myOp&lt;&quot;de&quot;&gt;;                                                                                
+myOp&lt;&quot;com&quot;&gt;;</code></pre>
+<h1 id="default-analyzer">Default Analyzer</h1>
+<p>Major provides a default analyzer, which extends the Apache Ant junit task. This analyzer supports JUnit 3 and 4 tests. % Note that this analyzer does currently not support forking a JVM when executing JUnit tests, meaning that the <code>fork</code> option must be set to <code>false</code>.</p>
+<h2 id="configuration-options">Configuration Options</h2>
+<p>This table summarizes the configuration options for Major’s default analyzer. (Please refer to the official documentation of the junit task for all other options.)</p>
+<table>
+<colgroup>
+<col style="width: 14%" />
+<col style="width: 61%" />
+<col style="width: 12%" />
+<col style="width: 11%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"><strong>Option</strong></th>
+<th style="text-align: left;"><strong>Description</strong></th>
+<th style="text-align: left;"><strong>Values</strong></th>
+<th style="text-align: left;"><strong>Default</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">mutationAnalysis</td>
+<td style="text-align: left;">Enable mutation analysis. If set to false, all options are ignored.</td>
+<td style="text-align: left;"><code>[true|false]</code></td>
+<td style="text-align: left;"><code>false</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">analysisType</td>
+<td style="text-align: left;">Run preprocessing and mutation analysis or only one of the two.</td>
+<td style="text-align: left;">  <code>[preproc_mutation|preproc|mutation]</code></td>
+<td style="text-align: left;"><code>preproc_mutation</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">serializedMapsFile</td>
+<td style="text-align: left;">File name for serialized preprocessing results.</td>
+<td style="text-align: left;"><code>&lt;String&gt;</code></td>
+<td style="text-align: left;"><em>preprocessing.ser</em></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">mutantsLogFile</td>
+<td style="text-align: left;">The path for the <em>mutants.log</em> file produced my Major’s mutator.</td>
+<td style="text-align: left;"><code>&lt;String&gt;</code></td>
+<td style="text-align: left;"><em>mutants.log</em></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">testOrder</td>
+<td style="text-align: left;">Order and granularity of tests.</td>
+<td style="text-align: left;"><code>[original|random|sort_classes|sort_methods]</code></td>
+<td style="text-align: left;"><code>original</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">debug</td>
+<td style="text-align: left;">Enable debugging output.</td>
+<td style="text-align: left;"><code>[true|false]</code></td>
+<td style="text-align: left;"><code>false</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">timeoutFactor</td>
+<td style="text-align: left;">Multiplier for the (original) test runtime to compute the test timeout.</td>
+<td style="text-align: left;"><code>&lt;int&gt;</code></td>
+<td style="text-align: left;"><code>8</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">timeoutOffset</td>
+<td style="text-align: left;">Offset in ms added to the computed test timeout.</td>
+<td style="text-align: left;"><code>&lt;int&gt;</code></td>
+<td style="text-align: left;"><code>0</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">excludeFailingTests</td>
+<td style="text-align: left;">Exclude all failing tests (haltonfailure must be false).</td>
+<td style="text-align: left;"><code>[true|false]</code></td>
+<td style="text-align: left;"><code>true</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">excludeMutantsFile</td>
+<td style="text-align: left;">Exclude all mutants listed in this file (1 mutant id per row).</td>
+<td style="text-align: left;"> <code>&lt;String&gt;</code></td>
+<td style="text-align: left;"><code>null</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">includeMutantsFile</td>
+<td style="text-align: left;">Include only mutants listed in this file (1 mutant id per row).</td>
+<td style="text-align: left;"><code>&lt;String&gt;</code></td>
+<td style="text-align: left;"><code>null</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">excludeTestsFile</td>
+<td style="text-align: left;">Exclude all tests listed in this file (1 test id per row).</td>
+<td style="text-align: left;"><code>&lt;String&gt;</code></td>
+<td style="text-align: left;"><code>null</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">includeTestsFile</td>
+<td style="text-align: left;">Include only tests listed in this file (1 test id per row).</td>
+<td style="text-align: left;"><code>&lt;String&gt;</code></td>
+<td style="text-align: left;"><code>null</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">summaryFile</td>
+<td style="text-align: left;">Export summary of results to this file (csv).</td>
+<td style="text-align: left;"><code>&lt;String&gt;</code></td>
+<td style="text-align: left;"><em>summary.csv</em></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">executionDetailsFile</td>
+<td style="text-align: left;">Export detailed execution information to this file (csv).</td>
+<td style="text-align: left;"><code>&lt;String&gt;</code></td>
+<td style="text-align: left;"><code>null</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">mutantDetailsFile</td>
+<td style="text-align: left;">Export classification details for each mutant to this file (csv).</td>
+<td style="text-align: left;"><code>&lt;String&gt;</code></td>
+<td style="text-align: left;"><code>null</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">covMapFile</td>
+<td style="text-align: left;">File name for mutant-coverage matrix (csv).</td>
+<td style="text-align: left;"><code>&lt;String&gt;</code></td>
+<td style="text-align: left;"><em>covMap.csv</em></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">testMapFile</td>
+<td style="text-align: left;">File name for mapping of test id to test name (csv).</td>
+<td style="text-align: left;"><code>&lt;String&gt;</code></td>
+<td style="text-align: left;"><em>testMap.csv</em></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">exportKillMap</td>
+<td style="text-align: left;">Export mutant-kill matrix (<strong>executes every test on every covered mutant!</strong>).</td>
+<td style="text-align: left;"><code>[true|false]</code></td>
+<td style="text-align: left;"><code>false</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">killMapFile</td>
+<td style="text-align: left;">File name for mutant-kill matrix (csv).</td>
+<td style="text-align: left;"><code>&lt;String&gt;</code></td>
+<td style="text-align: left;"><em>killMap.csv</em></td>
+</tr>
+</tbody>
+</table>
+<h4 id="analysistype">analysisType:</h4>
+<p>Allows running both steps of the analysis (preprocessing and mutation), which is the default, or only one of the two. For large code bases for which the mutation analysis itself should be parallelized, running preprocessing just once and caching the result (<code>serializedMapsFile</code>) will greatly speed up analysis time. If set to <code>mutation</code>, the serialized maps must be provided.</p>
+<h4 id="testorder">testOrder:</h4>
+<ul>
+<li><code>sort_methods</code> reports results at test-method granularity.</li>
+<li><code>sort_classes</code> reports results at test-class granularity.</li>
+<li><code>original</code> and <code>random</code> report results at the granularity as defined by the build.xml file.</li>
+</ul>
+<h2 id="setting-up-an-analysis-target">Setting Up an Analysis Target</h2>
+<p>Most Apache Ant build files provide a <code>test</code> target, which executes the corresponding unit tests. Even if no such target exists, it can be easily set up to execute a set of given unit tests. The following code snippet shows an example <code>test</code> target (See <a href="http://ant.apache.org/manual/Tasks/junit.html">junit.html</a> for a detailed description of this task):</p>
+<pre><code>&lt;target name=&quot;test&quot; description=&quot;Run all unit test cases&quot;&gt;         
+    &lt;junit printsummary=&quot;true&quot;                                    
+             showoutput=&quot;true&quot;                                      
+          haltonfailure=&quot;true&quot;&gt;                              
+        
+        &lt;formatter type=&quot;plain&quot; usefile=&quot;true&quot;/&gt;                  
+        &lt;classpath path=&quot;bin&quot;/&gt;                                                                                                       
+        &lt;batchtest fork=&quot;no&quot;&gt;                                      
+            &lt;fileset dir=&quot;test&quot;&gt;                                   
+                &lt;include name=&quot;**/*Test*.java&quot;/&gt;                   
+            &lt;/fileset&gt;                                             
+        &lt;/batchtest&gt;                                               
+    &lt;/junit&gt;                                                       
+&lt;/target&gt;</code></pre>
+<p>To enable mutation analysis, set the option <code>mutationAnalysis</code> to <code>true</code>. For clarity, it is best to duplicate and then adapt an existing <code>test</code> target.</p>
+<pre><code>&lt;target name=&quot;mutation.test&quot; description=&quot;Run mutation analysis&quot;&gt;         
+    &lt;junit printsummary=&quot;false&quot;                                    
+             showoutput=&quot;false&quot;                                      
+          haltonfailure=&quot;true&quot;
+
+       mutationAnalysis=&quot;true&quot;
+            summaryFile=&quot;summary.csv&quot; 
+      mutantDetailsFile=&quot;details.csv&quot;&gt;
+
+        &lt;classpath path=&quot;bin&quot;/&gt; 
+        &lt;batchtest fork=&quot;no&quot;&gt;                                      
+            &lt;fileset dir=&quot;test&quot;&gt;                                   
+                &lt;include name=&quot;**/*Test*.java&quot;/&gt;                   
+            &lt;/fileset&gt;                                             
+        &lt;/batchtest&gt;                                               
+    &lt;/junit&gt;                                                       
+&lt;/target&gt;</code></pre>
+<h2 id="performance-optimization">Performance Optimization</h2>
+<p>Mutation analysis repeatedly executes the tests on mutated code. For performance reasons, consider the following when setting up the mutation analysis target:</p>
+<ul>
+<li><p>Turn off logging output (options <code>showsummary</code>, <code>showoutput</code>, etc.)</p></li>
+<li><p>Do not use result formatters (nested task <code>formatter</code>, especially the <code>usefile</code> option)</p></li>
+</ul>
+<p>Due to frequent class loading and thread executions, the following JVM options are recommended, in particular for large projects:</p>
+<ul>
+<li><p>-XX:ReservedCodeCacheSize=256M</p></li>
+<li><p>-XX:MaxPermSize=1G</p></li>
+</ul>

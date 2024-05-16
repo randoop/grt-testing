@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+BASE=$(cd $(dirname $0)/.. && pwd)
+JAVA_ARGS=()
+MML="$1"
+
+if [ -z "$MML" ]; then
+    printf "usage: ./mmlc file.mml\n"
+    exit 1
+fi
+
+java -jar "$BASE/lib/major.jar" --mmlc "$MML"
