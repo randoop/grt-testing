@@ -20,7 +20,7 @@ MAJOR_HOME=$(realpath "build/major/")
 CURR_DIR=$(realpath "$(pwd)")
 
 # Link to the randoop jar
-RANDOOP_JAR=$(realpath "/Users/ziheji/Desktop/academic/Research/randoop/build/libs/randoop-all-4.3.2.jar")
+RANDOOP_JAR=$(realpath "/scratch/mernst/clones/testing/randoop-fork-kuro1fury-branch-constant-mining-v2/build/libs/randoop-all-4.3.3.jar")
 
 # Link to jacoco agent jar. This is necessary for Bloodhound
 JACOCO_JAR=$(realpath "build/jacocoagent.jar")
@@ -102,9 +102,9 @@ do
     mkdir "$TEST_DIRECTORY"
     $CLI_INPUTS $ADDITIONAL_ARGS --junit-output-dir="$TEST_DIRECTORY"
 
-    javac -cp $JAVAPARSER_JAR MethodExtractor.java
+    javac -cp "$JAVAPARSER_JAR" MethodExtractor.java
 
-    files=$(find $TEST_DIRECTORY -maxdepth 1 -type f -name "RegressionTest*.java" ! -name "RegressionTest.java")
+    files=$(find "$TEST_DIRECTORY" -maxdepth 1 -type f -name "RegressionTest*.java" ! -name "RegressionTest.java")
 
     for file in $files; do
         base_name=$(basename "$file" .java)
@@ -112,7 +112,7 @@ do
         if [[ -n $ALT_JARFILES ]]; then
             jarfiles="$jarfiles:$ALT_JARFILES"
         fi
-        java -classpath .:$JAVAPARSER_JAR MethodExtractor "$base_name" "$TEST_DIRECTORY" "$jarfiles"
+        java -classpath .:"$JAVAPARSER_JAR" MethodExtractor "$base_name" "$TEST_DIRECTORY" "$jarfiles"
         mv "${base_name}.java" "$TEST_DIRECTORY"
     done
 
