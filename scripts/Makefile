@@ -1,13 +1,13 @@
-all: build/jacocoagent.jar build/randoop-all-4.3.2.jar build/major results/
+all: build/jacocoagent.jar build/randoop-all-4.3.3.jar build/major results/
 
 build/jacocoagent.jar:
 	mkdir -p build
 	cd build && wget -O jacoco-0.8.10.zip https://search.maven.org/remotecontent?filepath=org/jacoco/jacoco/0.8.10/jacoco-0.8.10.zip
 	cd build && unzip -o jacoco-0.8.10.zip lib/jacocoagent.jar && mv lib/jacocoagent.jar . && rmdir lib
 
-build/randoop-all-4.3.2.jar:
+build/randoop-all-4.3.3.jar:
 	mkdir -p build
-	cd build && wget https://github.com/randoop/randoop/releases/download/v4.3.2/randoop-all-4.3.2.jar
+	cd build && wget https://github.com/randoop/randoop/releases/download/v4.3.3/randoop-all-4.3.3.jar
 
 build/major:
 	mkdir -p build

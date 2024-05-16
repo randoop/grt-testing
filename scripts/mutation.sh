@@ -22,7 +22,7 @@ MAJOR_HOME=$(realpath "build/major/")
 CURR_DIR=$(realpath "$(pwd)")
 
 # Link to the randoop jar
-RANDOOP_JAR=$(realpath "build/randoop-all-4.3.2.jar")
+RANDOOP_JAR=$(realpath "build/randoop-all-4.3.3.jar")
 
 # Link to jacoco agent jar. This is necessary for Bloodhound
 JACOCO_JAR=$(realpath "build/jacocoagent.jar")
@@ -58,15 +58,15 @@ touch results/info.txt
 # shellcheck disable=SC2034 # i counts iterations but is not otherwise used.
 for i in $(seq 1 $NUM_LOOP)
 do
-    rm -rf $CURR_DIR/build/test*
+    rm -rf "$CURR_DIR"/build/test*
 
     # TODO: There should eventually be a command-line argument that chooses among the variants of Ranndoop.
 
     echo "Using Bloodhound"
     echo
-    TEST_DIRECTORY="$CURR_DIR/build/testBloodhound"
-    mkdir $TEST_DIRECTORY
-    $CLI_INPUTS --method-selection=BLOODHOUND --junit-output-dir=$TEST_DIRECTORY
+    TEST_DIRECTORY="$CURR_DIR"/build/testBloodhound
+    mkdir "$TEST_DIRECTORY"
+    $CLI_INPUTS --method-selection=BLOODHOUND --junit-output-dir="$TEST_DIRECTORY"
 
     # echo "Using Orienteering"
     # echo
