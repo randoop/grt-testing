@@ -1,0 +1,24 @@
+name: Java CI with Gradle
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        java: [ '8' ]
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 1
+        show-progress: false
+    - name: Set up JDK
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: ${{ matrix.java }}
+    - run: cd scripts && ./commons-cli-1.2.sh
