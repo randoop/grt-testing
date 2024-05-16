@@ -20,7 +20,8 @@ MAJOR_HOME=$(realpath "build/major/")
 CURR_DIR=$(realpath "$(pwd)")
 
 # Link to the randoop jar
-RANDOOP_JAR=$(realpath "/scratch/mernst/clones/testing/randoop-fork-kuro1fury-branch-constant-mining-v2/build/libs/randoop-all-4.3.3.jar")
+RANDOOP_JAR=$(realpath "/Users/ziheji/Desktop/academic/Research/randoop/build/libs/randoop-all-4.3.2.jar")
+# RANDOOP_JAR=$(realpath "/scratch/mernst/clones/testing/randoop-fork-kuro1fury-branch-constant-mining-v2/build/libs/randoop-all-4.3.3.jar")
 
 # Link to jacoco agent jar. This is necessary for Bloodhound
 JACOCO_JAR=$(realpath "build/jacocoagent.jar")
