@@ -14,8 +14,8 @@ srcDir="../tests/src/commons-cli-1.2/src/java"
 
 make
 
-if [ ! -d "$dir" ]; then
-    git clone "$repo1" "$dir" || git clone "$repo2" "$dir"
-fi
+#if [ ! -d "$dir" ]; then
+#    git clone "$repo1" "$dir" || git clone "$repo2" "$dir"
+#fi
 
 ./mutation.sh "$jarfile" "$srcDir" "" ""

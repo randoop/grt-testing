@@ -10,7 +10,7 @@ syntax: glob
 *.old
 
 # subdirectory with source repositories
-tests/src
+#tests/src
 
 # subdirectory created by scripts/mutation.sh
 scripts/jarfiles
