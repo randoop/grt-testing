@@ -20,7 +20,8 @@ MAJOR_HOME=$(realpath "build/major/")
 CURR_DIR=$(realpath "$(pwd)")
 
 # Link to the randoop jar
-RANDOOP_JAR1="../tests/randoop-all-4.3.3.jar"
+#LOCAL_RANDOOP_JAR="/Users/ziheji/Desktop/academic/Research/randoop/build/libs/randoop-all-4.3.3.jar"
+RANDOOP_JAR1="../tests/constant-mining/randoop-all-4.3.3.jar"
 RANDOOP_JAR2="/scratch/mernst/clones/testing/randoop-fork-kuro1fury-branch-constant-mining-v2/build/libs/randoop-all-4.3.3.jar"
 RANDOOP_JAR=$(realpath "build/randoop-all-4.3.2.jar")
 #if [ -f ${RANDOOP_JAR1} ] ; then
@@ -29,6 +30,7 @@ RANDOOP_JAR=$(realpath "build/randoop-all-4.3.2.jar")
 #  RANDOOP_JAR=${RANDOOP_JAR2}
 #fi
 
+#RANDOOP_JAR=${LOCAL_RANDOOP_JAR}
 RANDOOP_JAR=${RANDOOP_JAR1}
 
 # Link to jacoco agent jar. This is necessary for Bloodhound
@@ -63,7 +65,7 @@ TIME_LIMIT=$((NUM_CLASSES * SECONDS_CLASS))
 
 # Variable that stores command line inputs common among all commands
 #CLI_INPUTS="java -Xbootclasspath/a:$JACOCO_JAR -javaagent:$JACOCO_JAR -classpath $SRC_JAR:$ALT_JARFILES/*:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --constant-mining=true --literals-level=ALL --constant_mining_probability=1 --time-limit=$TIME_LIMIT"
-CLI_INPUTS="java -Xbootclasspath/a:$JACOCO_JAR -javaagent:$JACOCO_JAR -classpath $SRC_JAR:$ALT_JARFILES/*:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --constant-mining=true --literals-level=ALL --constant_mining_probability=0.3 --log=randooplog.txt --selection-log=selection.txt --time-limit=$TIME_LIMIT"
+CLI_INPUTS="java -Xbootclasspath/a:$JACOCO_JAR -javaagent:$JACOCO_JAR -classpath $SRC_JAR:$ALT_JARFILES/*:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --constant-mining=true --literals-level=CLASS --constant_mining_probability=0.3 --log=randooplog.txt --selection-log=selection.txt --time-limit=$TIME_LIMIT"
 #CLI_INPUTS="java -Xbootclasspath/a:$JACOCO_JAR -javaagent:$JACOCO_JAR -classpath $SRC_JAR:$ALT_JARFILES/*:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=$TIME_LIMIT"
 
 # Variable that stores any additional arguments to calling Randoop
