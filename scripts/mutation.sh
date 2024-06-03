@@ -13,6 +13,8 @@
 # All other files logged to the "results" subdirectory are specific to the most recent iteration of the experiment. 
 # See "reproinstructions.txt" for more instructions on how to run this script.
 
+make
+
 # Link to the major directory
 MAJOR_HOME=$(realpath "build/major/")
 
@@ -87,25 +89,25 @@ do
 
     # echo "Using Bloodhound"
     # echo
-    # TEST_DIRECTORY="$CURR_DIR/build/testBloodhound/"
+    # TEST_DIRECTORY="$CURR_DIR"/build/testBloodhound
     # mkdir "$TEST_DIRECTORY"
     # $CLI_INPUTS --method-selection=BLOODHOUND --junit-output-dir="$TEST_DIRECTORY"
 
     # echo "Using Orienteering"
     # echo
-    # TEST_DIRECTORY="$CURR_DIR/build/testOrienteering/"
+    # TEST_DIRECTORY="$CURR_DIR"/build/testOrienteering
     # mkdir "$TEST_DIRECTORY"
     # $CLI_INPUTS --input-selection=ORIENTEERING --junit-output-dir="$TEST_DIRECTORY"
 
     # echo "Using Bloodhound and Orienteering"
     # echo
-    # TEST_DIRECTORY="$CURR_DIR/build/testBloodhoundOrienteering/"
+    # TEST_DIRECTORY="$CURR_DIR"/build/testBloodhoundOrienteering
     # mkdir "$TEST_DIRECTORY"
     # $CLI_INPUTS --input-selection=ORIENTEERING --method-selection=BLOODHOUND --junit-output-dir="$TEST_DIRECTORY"
 
     echo "Using Baseline Randoop"
     echo
-    TEST_DIRECTORY="$CURR_DIR/build/testBaseline/"
+    TEST_DIRECTORY="$CURR_DIR"/build/testBaseline
     mkdir "$TEST_DIRECTORY"
     # shellcheck disable=SC2086
     $CLI_INPUTS $ADDITIONAL_ARGS --junit-output-dir="$TEST_DIRECTORY"

@@ -36,7 +36,7 @@ BASH_SCRIPTS = $(shell grep -r -l '^\#! \?\(/bin/\|/usr/bin/env \)bash' * | grep
 # Performs style checks on shell scripts
 shell-script-style:
 	shellcheck -x -P SCRIPTDIR --format=gcc ${SH_SCRIPTS} ${BASH_SCRIPTS}
-	checkbashisms ${SH_SCRIPTS}
+	checkbashisms ${SH_SCRIPTS} /dev/null
 
 # Displays a list of shell (SH_SCRIPTS) and bash (BASH_SCRIPTS) scripts in the project.
 showvars:
