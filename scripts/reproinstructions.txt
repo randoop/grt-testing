@@ -16,5 +16,6 @@ This document provides detailed instructions on how to run the mutation testing 
 
 **NOTE**: The latest release of Randoop does not implement functionality for Orienteering. If you wish to work with Orienteering,
 you should download and build Randoop from Github and replace $RANDOOP_JAR with the absolute path.
+For Demand-driven (PR #1260), GRT Fuzzing (PR #1304), and Elephant Brain (PR #1347), checkout the respective pull requests from the Randoop repository.
 
 You must have JDK 8 as your default java/javac for commons-cli to build.

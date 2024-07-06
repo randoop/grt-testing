@@ -80,6 +80,24 @@ do
     # mkdir "$TEST_DIRECTORY"
     # $CLI_INPUTS --input-selection=ORIENTEERING --method-selection=BLOODHOUND --junit-output-dir="$TEST_DIRECTORY"
 
+    # echo "Using Demand Driven"
+    # echo
+    # TEST_DIRECTORY="$CURR_DIR"/build/testDemandDriven
+    # mkdir "$TEST_DIRECTORY"
+    # $CLI_INPUTS --demand-driven=true --junit-output-dir="$TEST_DIRECTORY"
+
+    # echo "Using GRT Fuzzing"
+    # echo
+    # TEST_DIRECTORY="$CURR_DIR"/build/testGrtFuzzing
+    # mkdir "$TEST_DIRECTORY"
+    # $CLI_INPUTS --grt-fuzzing=true --grt-fuzzing-stddev=30.0 --junit-output-dir="$TEST_DIRECTORY"
+
+    # echo "Using Elephant Brain"
+    # echo
+    # TEST_DIRECTORY="$CURR_DIR"/build/testElephantBrain
+    # mkdir "$TEST_DIRECTORY"
+    # $CLI_INPUTS --elephant-brain=true --junit-output-dir="$TEST_DIRECTORY"
+
     # echo "Using Baseline Randoop"
     # echo
     # TEST_DIRECTORY="$CURR_DIR/build/testBaseline"
