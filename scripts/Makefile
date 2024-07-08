@@ -1,4 +1,4 @@
-all: build/javaparser-core-3.25.10.jar build/jacocoagent.jar build/randoop-all-4.3.2.jar build/major results/
+all: build/javaparser-core-3.25.10.jar build/jacocoagent.jar build/randoop-all-4.3.3.jar build/major results/
 
 # Gets the Jacoco agent jar for recording execution coverage (for Bloodhound).
 # Stores this in the build subdirectory
@@ -7,10 +7,10 @@ build/jacocoagent.jar:
 	cd build && wget -nv -O jacoco-0.8.10.zip https://search.maven.org/remotecontent?filepath=org/jacoco/jacoco/0.8.10/jacoco-0.8.10.zip
 	cd build && unzip -o jacoco-0.8.10.zip lib/jacocoagent.jar && mv lib/jacocoagent.jar . && rmdir lib
 
-# Gets the jarfile for Randoop 4.3.2 and stores it in the build subdirectory
-build/randoop-all-4.3.2.jar:
+# Gets the jarfile for Randoop and stores it in the build subdirectory
+build/randoop-all-4.3.3.jar:
 	mkdir -p build
-	cd build && wget -nv https://github.com/randoop/randoop/releases/download/v4.3.2/randoop-all-4.3.2.jar
+	cd build && wget -nv https://github.com/randoop/randoop/releases/download/v4.3.3/randoop-all-4.3.3.jar
 
 # Gets the latest version of major and stores it in the build subdirectory
 build/major:

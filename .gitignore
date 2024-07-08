@@ -16,6 +16,9 @@ syntax: glob
 scripts/jarfiles
 scripts/build
 
+scripts/build/
+scripts/results/
+
 # output from runnin jacoco
 jacoco.exec
 
