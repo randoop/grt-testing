@@ -1,7 +1,18 @@
-The sources for these projects are several years old.  It almost all cases
-Java 8 is required to build. Also, the environment variable JAVA_HOME should
-be set; for example:
-export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+If you wish to build any of the test jars from source, you should clone them
+from github.com/randoop. The sources for these projects are several years old
+and in some cases we have made modifications to get them to compile correctly.
+
+The name of the source repository for a given test case is the test directory
+name as noted below, prepended with 'grt-'. So to get the source for bcel-5.2,
+for example:
+  cd src
+  git clone https://github.com/randoop/grt-bcel-5.2 bcel-5.2
+  cd bcel-5.2
+
+Then follow the build instructions for the particicular tests case as noted below.
+It should be noted that in almost all cases Java 8 is required to build. Also,
+the environment variable JAVA_HOME should be set; for example:
+  export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 
 Maven (mvn) builds
 ------------------

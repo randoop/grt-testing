@@ -16,15 +16,15 @@
 make
 
 # Link to the major directory
-MAJOR_HOME=$(realpath "build/major/")
+MAJOR_HOME=$(realpath "build/major")
 
 # Link to current directory
 CURR_DIR=$(realpath "$(pwd)")
 
 # Link to the randoop jar
-RANDOOP_JAR1="/Users/ziheji/Desktop/academic/Research/randoop/build/libs/randoop-all-4.3.2.jar"
+RANDOOP_JAR1="/Users/ziheji/Desktop/academic/Research/randoop/build/libs/randoop-all-4.3.3.jar"
 RANDOOP_JAR2="/scratch/mernst/clones/testing/randoop-fork-kuro1fury-branch-constant-mining-v2/build/libs/randoop-all-4.3.3.jar"
-RANDOOP_JAR=$(realpath "build/randoop-all-4.3.2.jar")
+RANDOOP_JAR=$(realpath "build/randoop-all-4.3.3.jar")
 if [ -f ${RANDOOP_JAR1} ] ; then
   RANDOOP_JAR=${RANDOOP_JAR1}
 elif [ -f ${RANDOOP_JAR2} ] ; then
@@ -87,11 +87,11 @@ do
 
     # TODO: There should eventually be a command-line argument that chooses among the variants of Ranndoop.
 
-    # echo "Using Bloodhound"
-    # echo
-    # TEST_DIRECTORY="$CURR_DIR"/build/testBloodhound
-    # mkdir "$TEST_DIRECTORY"
-    # $CLI_INPUTS --method-selection=BLOODHOUND --junit-output-dir="$TEST_DIRECTORY"
+    echo "Using Bloodhound"
+    echo
+    TEST_DIRECTORY="$CURR_DIR"/build/testBloodhound
+    mkdir "$TEST_DIRECTORY"
+    $CLI_INPUTS --method-selection=BLOODHOUND --junit-output-dir="$TEST_DIRECTORY"
 
     # echo "Using Orienteering"
     # echo
@@ -104,6 +104,27 @@ do
     # TEST_DIRECTORY="$CURR_DIR"/build/testBloodhoundOrienteering
     # mkdir "$TEST_DIRECTORY"
     # $CLI_INPUTS --input-selection=ORIENTEERING --method-selection=BLOODHOUND --junit-output-dir="$TEST_DIRECTORY"
+    # TEST_DIRECTORY="$CURR_DIR"/build/testBloodhoundOrienteering
+    # mkdir "$TEST_DIRECTORY"
+    # $CLI_INPUTS --input-selection=ORIENTEERING --method-selection=BLOODHOUND --junit-output-dir="$TEST_DIRECTORY"
+
+    # echo "Using Demand Driven"
+    # echo
+    # TEST_DIRECTORY="$CURR_DIR"/build/testDemandDriven
+    # mkdir "$TEST_DIRECTORY"
+    # $CLI_INPUTS --demand-driven=true --junit-output-dir="$TEST_DIRECTORY"
+
+    # echo "Using GRT Fuzzing"
+    # echo
+    # TEST_DIRECTORY="$CURR_DIR"/build/testGrtFuzzing
+    # mkdir "$TEST_DIRECTORY"
+    # $CLI_INPUTS --grt-fuzzing=true --grt-fuzzing-stddev=30.0 --junit-output-dir="$TEST_DIRECTORY"
+
+    # echo "Using Elephant Brain"
+    # echo
+    # TEST_DIRECTORY="$CURR_DIR"/build/testElephantBrain
+    # mkdir "$TEST_DIRECTORY"
+    # $CLI_INPUTS --elephant-brain=true --junit-output-dir="$TEST_DIRECTORY"
 
     echo "Using Baseline Randoop"
     echo
