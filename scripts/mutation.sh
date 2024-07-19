@@ -121,6 +121,7 @@ do
     echo "(ant mutation.test)"
     "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" mutation.test
 
+    # info.txt contains a record of each version of summary.csv that existed.
     cat results/summary.csv >> results/info.txt
 
 # Clean up dangling files
