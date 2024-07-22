@@ -8,7 +8,7 @@ This document provides detailed instructions on how to run the mutation testing 
 
 2. **Running the Script**: Navigate to the directory containing the script and run the following command:
     ```
-    ./mutation.sh [jarfile name] [Linux directory of project's Java source code]
+    ./mutation.sh [jarfile name] [Linux directory of project's Java source code] [Linux directory of project's dependency files]
     ```
     Replace `[jarfile name]` and `[Linux directory of project's Java source code]` with your actual values.
 
