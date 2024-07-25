@@ -1,63 +1,100 @@
 <project name="Script" default="compile" basedir=".">
 
-<!-- ##############################################
-      Path to major.jar and (optional) mml file
-      Use -Dmutator="mml:<path-to-mml-file>" to set a
-      particular (compiled) mml-file.
-     ############################################## -->
+    <!-- Path to major.jar and (optional) mml file -->
     <property name="major.jar" value="build/major/lib/major.jar"/>
     <property name="mutator" value=""/>
     <property name="plugin" value="-Xplugin:MajorPlugin ${mutator}"/>
 
+    <!-- JaCoCo setup -->
+    <property name="jacoco.destfile" value="results/jacoco.exec"/>
+    <property name="jacoco.reportdir" value="results/jacoco-report"/>
+    <taskdef resource="org/jacoco/ant/antlib.xml">
+        <classpath path="${major.jar}"/>
+    </taskdef>
 
-<!-- Target to clean up -->
+    <!-- Target to clean up -->
     <target name="clean" description="Clean">
         <delete dir="build/bin"/>
         <delete>
             <fileset dir="." includes="*.csv"/>
             <fileset dir="." includes="*.log"/>
-	    </delete>
+        </delete>
     </target>
 
-<!-- Target to initialize build -->
+    <!-- Target to initialize build -->
     <target name="init">
         <mkdir dir="build/bin"/>
     </target>
 
-<!-- Target to compile the project -->
+    <!-- Target to compile the project -->
     <target name="compile" depends="init" description="Compile">
-        <javac includeantruntime="true" 
+        <javac includeantruntime="true"
                srcdir="${src}"
-              destdir="build/bin"
-                debug="yes">
+               destdir="build/bin"
+               debug="yes">
             <classpath location="${major.jar}"/>
             <compilerarg value="${plugin}"/>
         </javac>
     </target>
 
-<!-- Target to compile the test suite -->
+    <!-- Target to compile the test suite -->
     <target name="compile.tests" depends="compile" description="Compile all tests">
-        <javac includeantruntime="true" 
+        <javac includeantruntime="true"
                srcdir="${test}"
-              destdir="build/bin"
-                debug="yes">
+               destdir="build/bin"
+               debug="yes">
         </javac>
     </target>
 
-<!-- The adapted mutation test target -->
+    <!-- Target for JaCoCo coverage analysis -->
+    <target name="jacoco" depends="compile.tests" description="Run tests with JaCoCo agent">
+        <mkdir dir="${jacoco.reportdir}"/>
+
+        <java classname="org.junit.runner.JUnitCore" fork="true">
+            <jvmarg value="-javaagent:${JACOCO_JAR}=destfile=${jacoco.destfile}"/>
+            <classpath>
+                <pathelement path="build/bin"/>
+                <pathelement location="${JACOCO_JAR}"/>
+            </classpath>
+            <batchtest>
+                <fileset dir="${test}">
+                    <include name="**/*Test*.class"/>
+                </fileset>
+            </batchtest>
+        </java>
+
+        <echo message="Generating JaCoCo report..."/>
+        <jacoco:report>
+            <executiondata>
+                <file file="${jacoco.destfile}"/>
+            </executiondata>
+            <structure name="${ant.project.name}">
+                <classfiles>
+                    <fileset dir="build/bin"/>
+                </classfiles>
+                <sourcefiles>
+                    <fileset dir="src"/>
+                </sourcefiles>
+            </structure>
+            <html destdir="${jacoco.reportdir}"/>
+            <csv destfile="results/coverage.csv"/>
+        </jacoco:report>
+    </target>
+
+    <!-- The adapted mutation test target -->
     <target name="mutation.test" description="Run mutation analysis for all unit test cases">
         <echo message="Running mutation analysis ..."/>
-        <junit  printsummary="false" 
-        		showoutput="false" 
-        		mutationAnalysis="true"
+        <junit  printsummary="false"
+                showoutput="false"
+                mutationAnalysis="true"
                 serializedMapsFile="results/preprocessing.ser"
                 mutantsLogFile="mutants.log"
-                summaryFile="results/summary.csv" 
+                summaryFile="results/summary.csv"
                 mutantDetailsFile="results/details.csv"
                 covMapFile="results/covMap.csv"
                 testMapFile="results/testMap.csv"
                 killMapFile="results/killMap.csv">
-                
+
             <classpath path="build/bin"/>
             <batchtest fork="false">
                 <fileset dir="${test}">
@@ -67,20 +104,20 @@
         </junit>
     </target>
 
-<!-- The original test target -->
+    <!-- The original test target -->
     <target name="test" depends="compile.tests" description="Run all unit test cases">
         <echo message="Running unit tests ..."/>
-        <junit  printsummary="true" 
-        		showoutput="true" 
+        <junit  printsummary="true"
+                showoutput="true"
                 haltonfailure="false">
             <formatter type="plain" usefile="false"/>
             <classpath path="build/bin"/>
-			
-			<batchtest fork="no">
+            <batchtest fork="no">
                 <fileset dir="${test}">
                     <include name="**/*Test*.java"/>
                 </fileset>
             </batchtest>
         </junit>
     </target>
+
 </project>
