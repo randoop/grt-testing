@@ -4,13 +4,13 @@
 # test suites can be generated with Bloodhound, Orienteering, neither (baseline), or both.
 # Mutation testing is used on projects provided in table 2 of the GRT paper.
 
-# This script will create Randoop's test suites in a "build/test*" subdirectory. 
+# This script will create Randoop's test suites in a "build/test*" subdirectory.
 # Compiled tests and code will be stored in the "build/bin" subdirectory.
 # The script will generate various mutants of the source project using Major and run these tests on those mutants.
 
-# Finally, each experiment can run a given amount of times and a given amount of seconds per class. 
+# Finally, each experiment can run a given amount of times and a given amount of seconds per class.
 # Various statistics of each iteration will be logged to a file "results/info.txt".
-# All other files logged to the "results" subdirectory are specific to the most recent iteration of the experiment. 
+# All other files logged to the "results" subdirectory are specific to the most recent iteration of the experiment.
 # See "reproinstructions.txt" for more instructions on how to run this script.
 
 make
@@ -28,10 +28,10 @@ RANDOOP_JAR=$(realpath "build/randoop-all-4.3.2.jar")
 JACOCO_JAR=$(realpath "build/jacocoagent.jar")
 
 # The paper runs Randoop on 4 different time limits. These are: 2 s/class, 10 s/class, 30 s/class, and 60 s/class
-SECONDS_CLASS="2"
+SECONDS_CLASS="1"
 
 # Number of times to run experiments (10 in GRT paper)
-NUM_LOOP=2
+NUM_LOOP=1
 
 # Link to src jar
 SRC_JAR=$(realpath "../tests/$1")
@@ -51,19 +51,19 @@ CLI_INPUTS="java -Xbootclasspath/a:$JACOCO_JAR -javaagent:$JACOCO_JAR -classpath
 echo "Using Randoop to generate tests"
 echo
 
-# Output file for runtime information 
+# Output file for runtime information
 rm results/info.txt
 touch results/info.txt
 
 JAR_DIR="$3"
-CLASSPATH=$(echo $JAR_DIR/*.jar | tr ' ' ':')
+CLASSPATH=$(echo "$JAR_DIR"/*.jar | tr ' ' ':')
 
 # shellcheck disable=SC2034 # i counts iterations but is not otherwise used.
 for i in $(seq 1 $NUM_LOOP)
 do
     rm -rf "$CURR_DIR"/build/test*
 
-    # TODO: There should eventually be a command-line argument that chooses among the variants of Ranndoop.
+    # TODO: There should eventually be a command-line argument that chooses among the variants of Randoop.
 
     echo "Using Bloodhound"
     echo
@@ -107,27 +107,30 @@ do
     # mkdir "$TEST_DIRECTORY"
     # $CLI_INPUTS --junit-output-dir="$TEST_DIRECTORY"
 
-    echo    
-    echo "Compiling and mutating project"
-    echo '(ant -Dmutator="=mml:'"$MAJOR_HOME"'/mml/all.mml.bin" clean compile)'
-    echo
-    "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" clean compile
-    
-    echo
-    echo "Compiling tests"
-    echo "(ant compile.tests)"
-    echo
-    "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" compile.tests
+#    echo
+#    echo "Compiling and mutating project"
+#    echo '(ant -Dmutator="=mml:'"$MAJOR_HOME"'/mml/all.mml.bin" clean compile)'
+#    echo
+#    "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" clean compile
+#
+#    echo
+#    echo "Compiling tests"
+#    echo "(ant compile.tests)"
+#    echo
+#    "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" compile.tests
+#
+#    "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" test
 
-    echo
-    echo "Run tests with mutation analysis"
-    echo "(ant mutation.test)"
-    "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -lib "$CLASSPATH" mutation.test
+    "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" report
+#    echo
+#    echo "Run tests with mutation analysis"
+#    echo "(ant mutation.test)"
+#    "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -lib "$CLASSPATH" mutation.test
 
     # info.txt contains a record of each version of summary.csv that existed.
-    cat results/summary.csv >> results/info.txt
+    #cat results/summary.csv >> results/info.txt
 
 # Clean up dangling files
-mv jacoco.exec major.log mutants.log results
+mv suppression.log mutants.log major.log #results results/jacoco.exec
 
 done

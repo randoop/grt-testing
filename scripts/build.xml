@@ -1,92 +1,67 @@
-<project name="Script" default="compile" basedir=".">
+<project name="Script" default="compile" basedir="." xmlns:jacoco="antlib:org.jacoco.ant">
 
-    <!-- Path to major.jar and (optional) mml file -->
+<!-- ##############################################
+      Path to major.jar and (optional) mml file
+      Use -Dmutator="mml:<path-to-mml-file>" to set a
+      particular (compiled) mml-file.
+     ############################################## -->
     <property name="major.jar" value="build/major/lib/major.jar"/>
     <property name="mutator" value=""/>
     <property name="plugin" value="-Xplugin:MajorPlugin ${mutator}"/>
-
-    <!-- JaCoCo setup -->
     <property name="jacoco.destfile" value="results/jacoco.exec"/>
-    <property name="jacoco.reportdir" value="results/jacoco-report"/>
-    <taskdef resource="org/jacoco/ant/antlib.xml">
-        <classpath path="${major.jar}"/>
+
+    <!-- Import JaCoCo Ant tasks -->
+    <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
+        <classpath path="build/jacocoant.jar"/>
     </taskdef>
+
 
     <!-- Target to clean up -->
     <target name="clean" description="Clean">
         <delete dir="build/bin"/>
+        <delete dir="results"/>
+        <echo message="Cleaning up ..."/>
         <delete>
             <fileset dir="." includes="*.csv"/>
             <fileset dir="." includes="*.log"/>
-        </delete>
+<!--            <fileset dir="." includes="*.exec"/>-->
+	    </delete>
     </target>
 
-    <!-- Target to initialize build -->
-    <target name="init">
+<!-- Target to initialize build -->
+    <target name="init" depends="clean">
         <mkdir dir="build/bin"/>
+        <mkdir dir="results/jacoco"/>
+<!--        <echo file="${jacoco.destfile}"/>-->
     </target>
 
-    <!-- Target to compile the project -->
+<!-- Target to compile the project -->
     <target name="compile" depends="init" description="Compile">
         <javac includeantruntime="true"
                srcdir="${src}"
-               destdir="build/bin"
-               debug="yes">
+              destdir="build/bin"
+                debug="yes">
             <classpath location="${major.jar}"/>
             <compilerarg value="${plugin}"/>
         </javac>
     </target>
 
-    <!-- Target to compile the test suite -->
+<!-- Target to compile the test suite -->
     <target name="compile.tests" depends="compile" description="Compile all tests">
         <javac includeantruntime="true"
                srcdir="${test}"
-               destdir="build/bin"
-               debug="yes">
+              destdir="build/bin"
+                debug="yes"
+             verbose="true">
         </javac>
     </target>
 
-    <!-- Target for JaCoCo coverage analysis -->
-    <target name="jacoco" depends="compile.tests" description="Run tests with JaCoCo agent">
-        <mkdir dir="${jacoco.reportdir}"/>
-
-        <java classname="org.junit.runner.JUnitCore" fork="true">
-            <jvmarg value="-javaagent:${JACOCO_JAR}=destfile=${jacoco.destfile}"/>
-            <classpath>
-                <pathelement path="build/bin"/>
-                <pathelement location="${JACOCO_JAR}"/>
-            </classpath>
-            <batchtest>
-                <fileset dir="${test}">
-                    <include name="**/*Test*.class"/>
-                </fileset>
-            </batchtest>
-        </java>
-
-        <echo message="Generating JaCoCo report..."/>
-        <jacoco:report>
-            <executiondata>
-                <file file="${jacoco.destfile}"/>
-            </executiondata>
-            <structure name="${ant.project.name}">
-                <classfiles>
-                    <fileset dir="build/bin"/>
-                </classfiles>
-                <sourcefiles>
-                    <fileset dir="src"/>
-                </sourcefiles>
-            </structure>
-            <html destdir="${jacoco.reportdir}"/>
-            <csv destfile="results/coverage.csv"/>
-        </jacoco:report>
-    </target>
-
-    <!-- The adapted mutation test target -->
+<!-- The adapted mutation test target -->
     <target name="mutation.test" description="Run mutation analysis for all unit test cases">
         <echo message="Running mutation analysis ..."/>
         <junit  printsummary="false"
-                showoutput="false"
-                mutationAnalysis="true"
+        		showoutput="false"
+        		mutationAnalysis="true"
                 serializedMapsFile="results/preprocessing.ser"
                 mutantsLogFile="mutants.log"
                 summaryFile="results/summary.csv"
@@ -104,20 +79,57 @@
         </junit>
     </target>
 
-    <!-- The original test target -->
+<!-- The original test target -->
     <target name="test" depends="compile.tests" description="Run all unit test cases">
         <echo message="Running unit tests ..."/>
-        <junit  printsummary="true"
-                showoutput="true"
-                haltonfailure="false">
-            <formatter type="plain" usefile="false"/>
-            <classpath path="build/bin"/>
-            <batchtest fork="no">
-                <fileset dir="${test}">
-                    <include name="**/*Test*.java"/>
-                </fileset>
-            </batchtest>
-        </junit>
+        <jacoco:coverage destfile="${jacoco.destfile}">
+            <junit  printsummary="true"
+                    showoutput="true"
+                    haltonfailure="false"
+                    fork="true" forkmode="once">
+                <formatter type="plain" usefile="false"/>
+                <classpath path="build/bin"/>
+
+                <batchtest fork="no">
+                    <fileset dir="${test}">
+                        <include name="**/*Test*.java"/>
+                    </fileset>
+                </batchtest>
+            </junit>
+        </jacoco:coverage>
+    </target>
+
+    <target name="report" depends="test">
+        <!-- Step 3: Create coverage report -->
+        <jacoco:report>
+
+            <!-- This task needs the collected execution data and ... -->
+            <executiondata>
+                <file file="${jacoco.destfile}" />
+            </executiondata>
+
+            <!-- the class files and optional source files ... -->
+
+            <structure name="Tests">
+                <classfiles>
+                    <fileset dir="build/bin"/>
+                </classfiles>
+                <sourcefiles>
+                    <fileset dir="${test}">
+                        <include name="**/*.java"/>
+                    </fileset>
+                    <fileset dir="${src}">
+                        <include name="**/*.java"/>
+                    </fileset>
+                </sourcefiles>
+            </structure>
+
+            <!-- to produce reports in different formats. -->
+
+            <html destdir="results/jacoco" />
+            <csv destfile="results/report.csv" />
+<!--            <xml destfile="${result.report.dir}/report.xml" />-->
+        </jacoco:report>
     </target>
 
 </project>
