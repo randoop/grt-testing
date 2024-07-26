@@ -50,9 +50,10 @@
     <target name="compile.tests" depends="compile" description="Compile all tests">
         <javac includeantruntime="true"
                srcdir="${test}"
-              destdir="build/bin"
-                debug="yes"
-             verbose="true">
+               destdir="build/bin"
+               debug="yes"
+               verbose="true"
+               encoding="iso-8859-1">
         </javac>
     </target>
 
