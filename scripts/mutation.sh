@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# For documentation of how to run this script, see file `reproinstructions.txt`.
+
 # This script does mutation testing with Randoop-generated test suites. Different
 # test suites can be generated with Bloodhound, Orienteering, neither (baseline), or both.
 # Mutation testing is used on projects provided in table 2 of the GRT paper.
@@ -11,9 +13,10 @@
 # Finally, each experiment can run a given amount of times and a given amount of seconds per class.
 # Various statistics of each iteration will be logged to a file "results/info.txt".
 # All other files logged to the "results" subdirectory are specific to the most recent iteration of the experiment.
-# See "reproinstructions.txt" for more instructions on how to run this script.
 
 make
+
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 # Link to the major directory
 MAJOR_HOME=$(realpath "build/major/")
@@ -34,7 +37,7 @@ SECONDS_CLASS="1"
 NUM_LOOP=1
 
 # Link to src jar
-SRC_JAR=$(realpath "../tests/$1")
+SRC_JAR=$(realpath "$SCRIPTDIR/../tests/$1")
 
 # Link to src files for mutation generation and analysis
 JAVA_SRC_DIR="$2"
@@ -46,7 +49,7 @@ NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
 TIME_LIMIT=$((NUM_CLASSES * SECONDS_CLASS))
 
 # Variable that stores command line inputs common among all commands
-CLI_INPUTS="java -Xbootclasspath/a:$JACOCO_JAR -javaagent:$JACOCO_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=$TIME_LIMIT"
+RANDOOP_COMMAND="java -Xbootclasspath/a:$JACOCO_JAR -javaagent:$JACOCO_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=$TIME_LIMIT"
 
 echo "Using Randoop to generate tests"
 echo
@@ -69,43 +72,43 @@ do
     echo
     TEST_DIRECTORY="$CURR_DIR"/build/testBloodhound
     mkdir "$TEST_DIRECTORY"
-    $CLI_INPUTS --method-selection=BLOODHOUND --junit-output-dir="$TEST_DIRECTORY"
+    $RANDOOP_COMMAND --method-selection=BLOODHOUND --junit-output-dir="$TEST_DIRECTORY" > output-bloodhound.log 2>&1
 
     # echo "Using Orienteering"
     # echo
     # TEST_DIRECTORY="$CURR_DIR"/build/testOrienteering
     # mkdir "$TEST_DIRECTORY"
-    # $CLI_INPUTS --input-selection=ORIENTEERING --junit-output-dir="$TEST_DIRECTORY"
+    # $RANDOOP_COMMAND --input-selection=ORIENTEERING --junit-output-dir="$TEST_DIRECTORY"
 
     # echo "Using Bloodhound and Orienteering"
     # echo
     # TEST_DIRECTORY="$CURR_DIR"/build/testBloodhoundOrienteering
     # mkdir "$TEST_DIRECTORY"
-    # $CLI_INPUTS --input-selection=ORIENTEERING --method-selection=BLOODHOUND --junit-output-dir="$TEST_DIRECTORY"
+    # $RANDOOP_COMMAND --input-selection=ORIENTEERING --method-selection=BLOODHOUND --junit-output-dir="$TEST_DIRECTORY"
 
     # echo "Using Demand Driven"
     # echo
     # TEST_DIRECTORY="$CURR_DIR"/build/testDemandDriven
     # mkdir "$TEST_DIRECTORY"
-    # $CLI_INPUTS --demand-driven=true --junit-output-dir="$TEST_DIRECTORY"
+    # $RANDOOP_COMMAND --demand-driven=true --junit-output-dir="$TEST_DIRECTORY"
 
     # echo "Using GRT Fuzzing"
     # echo
     # TEST_DIRECTORY="$CURR_DIR"/build/testGrtFuzzing
     # mkdir "$TEST_DIRECTORY"
-    # $CLI_INPUTS --grt-fuzzing=true --grt-fuzzing-stddev=30.0 --junit-output-dir="$TEST_DIRECTORY"
+    # $RANDOOP_COMMAND --grt-fuzzing=true --grt-fuzzing-stddev=30.0 --junit-output-dir="$TEST_DIRECTORY"
 
     # echo "Using Elephant Brain"
     # echo
     # TEST_DIRECTORY="$CURR_DIR"/build/testElephantBrain
     # mkdir "$TEST_DIRECTORY"
-    # $CLI_INPUTS --elephant-brain=true --junit-output-dir="$TEST_DIRECTORY"
+    # $RANDOOP_COMMAND --elephant-brain=true --junit-output-dir="$TEST_DIRECTORY"
 
     # echo "Using Baseline Randoop"
     # echo
     # TEST_DIRECTORY="$CURR_DIR/build/testBaseline"
     # mkdir "$TEST_DIRECTORY"
-    # $CLI_INPUTS --junit-output-dir="$TEST_DIRECTORY"
+    # $RANDOOP_COMMAND --junit-output-dir="$TEST_DIRECTORY"
 
 #    echo
 #    echo "Compiling and mutating project"
@@ -131,6 +134,6 @@ do
     #cat results/summary.csv >> results/info.txt
 
 # Clean up dangling files
-mv suppression.log mutants.log major.log #results results/jacoco.exec
+mv jacoco.exec major.log mutants.log suppression.log results
 
 done
