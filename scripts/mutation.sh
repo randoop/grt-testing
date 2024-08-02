@@ -14,6 +14,10 @@
 # Various statistics of each iteration will be logged to a file "results/info.csv".
 # All other files logged to the "results" subdirectory are specific to the most recent iteration of the experiment.
 
+# Fail this script on errors.
+set -e
+set -o pipefail
+
 make
 
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
