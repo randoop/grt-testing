@@ -19,28 +19,26 @@
     <!-- Target to clean up -->
     <target name="clean" description="Clean">
         <delete dir="build/bin"/>
-        <delete dir="results"/>
         <echo message="Cleaning up ..."/>
         <delete>
             <fileset dir="." includes="*.csv"/>
             <fileset dir="." includes="*.log"/>
-<!--            <fileset dir="." includes="*.exec"/>-->
 	    </delete>
     </target>
 
 <!-- Target to initialize build -->
     <target name="init" depends="clean">
         <mkdir dir="build/bin"/>
-        <mkdir dir="results/jacoco"/>
-<!--        <echo file="${jacoco.destfile}"/>-->
+        <mkdir dir="results"/>
     </target>
 
 <!-- Target to compile the project -->
     <target name="compile" depends="init" description="Compile">
         <javac includeantruntime="true"
                srcdir="${src}"
-              destdir="build/bin"
-                debug="yes">
+               destdir="build/bin"
+               debug="yes"
+               encoding="iso-8859-1">
             <classpath location="${major.jar}"/>
             <compilerarg value="${plugin}"/>
         </javac>
@@ -52,8 +50,7 @@
                srcdir="${test}"
                destdir="build/bin"
                debug="yes"
-               verbose="true"
-               encoding="iso-8859-1">
+               verbose="true">
         </javac>
     </target>
 
@@ -64,7 +61,7 @@
         		showoutput="false"
         		mutationAnalysis="true"
                 serializedMapsFile="results/preprocessing.ser"
-                mutantsLogFile="mutants.log"
+                mutantsLogFile="results/mutants.log"
                 summaryFile="results/summary.csv"
                 mutantDetailsFile="results/details.csv"
                 covMapFile="results/covMap.csv"
@@ -99,38 +96,4 @@
             </junit>
         </jacoco:coverage>
     </target>
-
-    <target name="report" depends="test">
-        <!-- Step 3: Create coverage report -->
-        <jacoco:report>
-
-            <!-- This task needs the collected execution data and ... -->
-            <executiondata>
-                <file file="${jacoco.destfile}" />
-            </executiondata>
-
-            <!-- the class files and optional source files ... -->
-
-            <structure name="Tests">
-                <classfiles>
-                    <fileset dir="build/bin"/>
-                </classfiles>
-                <sourcefiles>
-                    <fileset dir="${test}">
-                        <include name="**/*.java"/>
-                    </fileset>
-                    <fileset dir="${src}">
-                        <include name="**/*.java"/>
-                    </fileset>
-                </sourcefiles>
-            </structure>
-
-            <!-- to produce reports in different formats. -->
-
-            <html destdir="results/jacoco" />
-            <csv destfile="results/report.csv" />
-<!--            <xml destfile="${result.report.dir}/report.xml" />-->
-        </jacoco:report>
-    </target>
-
 </project>

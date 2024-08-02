@@ -11,7 +11,7 @@
 # The script will generate various mutants of the source project using Major and run these tests on those mutants.
 
 # Finally, each experiment can run a given amount of times and a given amount of seconds per class.
-# Various statistics of each iteration will be logged to a file "results/info.txt".
+# Various statistics of each iteration will be logged to a file "results/info.csv".
 # All other files logged to the "results" subdirectory are specific to the most recent iteration of the experiment.
 
 make
@@ -25,10 +25,13 @@ MAJOR_HOME=$(realpath "build/major/")
 CURR_DIR=$(realpath "$(pwd)")
 
 # Link to the randoop jar
-RANDOOP_JAR=$(realpath "build/randoop-all-4.3.2.jar")
+RANDOOP_JAR=$(realpath "build/randoop-all-4.3.3.jar")
 
 # Link to jacoco agent jar. This is necessary for Bloodhound
-JACOCO_JAR=$(realpath "build/jacocoagent.jar")
+JACOCO_AGENT_JAR=$(realpath "build/jacocoagent.jar")
+
+# Link to jacoco cli jar. This is necessary for coverage report generation
+JACOCO_CLI_JAR=$(realpath "build/jacococli.jar")
 
 # The paper runs Randoop on 4 different time limits. These are: 2 s/class, 10 s/class, 30 s/class, and 60 s/class
 SECONDS_CLASS="1"
@@ -47,93 +50,138 @@ NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
 
 # Time limit for running Randoop
 TIME_LIMIT=$((NUM_CLASSES * SECONDS_CLASS))
-
+RANDOOP_VERSIONS_DIR=$(realpath "$SCRIPTDIR/../RandoopVersions")
 # Variable that stores command line inputs common among all commands
-RANDOOP_COMMAND="java -Xbootclasspath/a:$JACOCO_JAR -javaagent:$JACOCO_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=$TIME_LIMIT"
+RANDOOP_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOCO_AGENT_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=$TIME_LIMIT"
 
 echo "Using Randoop to generate tests"
 echo
 
 # Output file for runtime information
-rm results/info.txt
-touch results/info.txt
+rm results/info.csv
+if [ ! -f "results/info.csv" ]; then
+    touch results/info.csv
+    echo -e "RandoopVersion,FileName,InstructionCoverage,BranchCoverage,MutationScore" > results/info.csv
+fi
+
+
 
 JAR_DIR="$3"
 CLASSPATH=$(echo "$JAR_DIR"/*.jar | tr ' ' ':')
-
+VERSIONS=8
 # shellcheck disable=SC2034 # i counts iterations but is not otherwise used.
 for i in $(seq 1 $NUM_LOOP)
 do
-    rm -rf "$CURR_DIR"/build/test*
+  for j in $(seq 1 $VERSIONS)
+  do
+      rm -rf "$CURR_DIR"/build/test*
+      #The compiled randoop versions in the RANDOOP_VERSIONS_DIR are compiled with the relevant options enabled
+      if [ "$j" -eq 1 ]; then
+          RANDOOP_VERSION="BLOODHOUND"
+          echo "Using $RANDOOP_VERSION"
+          echo
+          TEST_DIRECTORY="$CURR_DIR/build/testBloodhound"
+          mkdir -p "$TEST_DIRECTORY"
+          $RANDOOP_COMMAND --method-selection=BLOODHOUND --junit-output-dir="$TEST_DIRECTORY" > output-bloodhound.log 2>&1
 
-    # TODO: There should eventually be a command-line argument that chooses among the variants of Randoop.
+      elif [ "$j" -eq 2 ]; then
+          RANDOOP_VERSION="ORIENTEERING"
+          echo "Using $RANDOOP_VERSION"
+          echo
+          TEST_DIRECTORY="$CURR_DIR/build/testOrienteering"
+          mkdir -p "$TEST_DIRECTORY"
+          $RANDOOP_COMMAND --input-selection=ORIENTEERING --junit-output-dir="$TEST_DIRECTORY"
 
-    echo "Using Bloodhound"
-    echo
-    TEST_DIRECTORY="$CURR_DIR"/build/testBloodhound
-    mkdir "$TEST_DIRECTORY"
-    $RANDOOP_COMMAND --method-selection=BLOODHOUND --junit-output-dir="$TEST_DIRECTORY" > output-bloodhound.log 2>&1
+      elif [ "$j" -eq 3 ]; then
+          RANDOOP_VERSION="BLOODHOUND_AND_ORIENTEERING"
+          echo "Using $RANDOOP_VERSION"
+          echo
+          TEST_DIRECTORY="$CURR_DIR/build/testBloodhoundOrienteering"
+          mkdir -p "$TEST_DIRECTORY"
+          $RANDOOP_COMMAND --input-selection=ORIENTEERING --method-selection=BLOODHOUND --junit-output-dir="$TEST_DIRECTORY"
 
-    # echo "Using Orienteering"
-    # echo
-    # TEST_DIRECTORY="$CURR_DIR"/build/testOrienteering
-    # mkdir "$TEST_DIRECTORY"
-    # $RANDOOP_COMMAND --input-selection=ORIENTEERING --junit-output-dir="$TEST_DIRECTORY"
+      elif [ "$j" -eq 4 ]; then
+          RANDOOP_VERSION="DETECTIVE"
+          RANDOOP_JAR="$RANDOOP_VERSIONS_DIR"/Detective.jar
+          RANDOOP_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOCO_AGENT_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=$TIME_LIMIT"
+          echo "Using $RANDOOP_VERSION"
+          echo
+          TEST_DIRECTORY="$CURR_DIR/build/testDemandDriven"
+          mkdir -p "$TEST_DIRECTORY"
+          $RANDOOP_COMMAND --junit-output-dir="$TEST_DIRECTORY"
 
-    # echo "Using Bloodhound and Orienteering"
-    # echo
-    # TEST_DIRECTORY="$CURR_DIR"/build/testBloodhoundOrienteering
-    # mkdir "$TEST_DIRECTORY"
-    # $RANDOOP_COMMAND --input-selection=ORIENTEERING --method-selection=BLOODHOUND --junit-output-dir="$TEST_DIRECTORY"
+      elif [ "$j" -eq 5 ]; then
+          RANDOOP_VERSION="GRT_FUZZING"
+          RANDOOP_JAR="$RANDOOP_VERSIONS_DIR"/Fuzzing.jar
+          RANDOOP_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOCO_AGENT_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=$TIME_LIMIT"
+          echo "Using $RANDOOP_VERSION"
+          echo
+          TEST_DIRECTORY="$CURR_DIR/build/testGrtFuzzing"
+          mkdir -p "$TEST_DIRECTORY"
+          $RANDOOP_COMMAND --junit-output-dir="$TEST_DIRECTORY"
 
-    # echo "Using Demand Driven"
-    # echo
-    # TEST_DIRECTORY="$CURR_DIR"/build/testDemandDriven
-    # mkdir "$TEST_DIRECTORY"
-    # $RANDOOP_COMMAND --demand-driven=true --junit-output-dir="$TEST_DIRECTORY"
+      elif [ "$j" -eq 6 ]; then
+          RANDOOP_VERSION="ELEPHANT_BRAIN"
+          RANDOOP_JAR="$RANDOOP_VERSIONS_DIR"/Elephant-Brain.jar
+          RANDOOP_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOCO_AGENT_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=$TIME_LIMIT"
+          echo "Using $RANDOOP_VERSION"
+          echo
+          TEST_DIRECTORY="$CURR_DIR"/build/testElephantBrain
+          mkdir "$TEST_DIRECTORY"
+          $RANDOOP_COMMAND --junit-output-dir="$TEST_DIRECTORY"
 
-    # echo "Using GRT Fuzzing"
-    # echo
-    # TEST_DIRECTORY="$CURR_DIR"/build/testGrtFuzzing
-    # mkdir "$TEST_DIRECTORY"
-    # $RANDOOP_COMMAND --grt-fuzzing=true --grt-fuzzing-stddev=30.0 --junit-output-dir="$TEST_DIRECTORY"
+      elif [ "$j" -eq 7 ]; then
+          RANDOOP_VERSION="CONSTANT_MINING"
+          RANDOOP_JAR="$RANDOOP_VERSIONS_DIR"/Constant-Mining.jar
+          RANDOOP_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOCO_AGENT_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=$TIME_LIMIT"
+          echo "Using $RANDOOP_VERSION"
+          echo
+          TEST_DIRECTORY="$CURR_DIR/build/testDemandDriven"
+          mkdir -p "$TEST_DIRECTORY"
+          $RANDOOP_COMMAND --junit-output-dir="$TEST_DIRECTORY"
 
-    # echo "Using Elephant Brain"
-    # echo
-    # TEST_DIRECTORY="$CURR_DIR"/build/testElephantBrain
-    # mkdir "$TEST_DIRECTORY"
-    # $RANDOOP_COMMAND --elephant-brain=true --junit-output-dir="$TEST_DIRECTORY"
+      elif [ "$j" -eq 8 ]; then
+          RANDOOP_VERSION="BASELINE"
+          echo "Using $RANDOOP_VERSION"
+          echo
+          TEST_DIRECTORY="$CURR_DIR/build/testBaseline"
+          mkdir "$TEST_DIRECTORY"
+          $RANDOOP_COMMAND --junit-output-dir="$TEST_DIRECTORY"
+      # Add additional configurations here as needed
+      fi
 
-    # echo "Using Baseline Randoop"
-    # echo
-    # TEST_DIRECTORY="$CURR_DIR/build/testBaseline"
-    # mkdir "$TEST_DIRECTORY"
-    # $RANDOOP_COMMAND --junit-output-dir="$TEST_DIRECTORY"
+      "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" test >/dev/null 2>&1
+      wait
+      mv jacoco.exec major.log mutants.log suppression.log results
+      java -jar "$JACOCO_CLI_JAR" report "results/jacoco.exec" --classfiles "$SRC_JAR" --sourcefiles "$JAVA_SRC_DIR" --csv results/report.csv
 
-#    echo
-#    echo "Compiling and mutating project"
-#    echo '(ant -Dmutator="=mml:'"$MAJOR_HOME"'/mml/all.mml.bin" clean compile)'
-#    echo
-#    "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" clean compile
-#
-#    echo
-#    echo "Compiling tests"
-#    echo "(ant compile.tests)"
-#    echo
-#    "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" compile.tests
-#
-#    "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" test
+      # Calculate Instruction Coverage
+      inst_missed=$(awk -F, 'NR>1 {sum+=$4} END {print sum}' results/report.csv)
+      inst_covered=$(awk -F, 'NR>1 {sum+=$5} END {print sum}' results/report.csv)
+      instruction_coverage=$(echo "scale=2; $inst_covered / ($inst_missed + $inst_covered) * 100" | bc)
 
-    "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" report
-#    echo
-#    echo "Run tests with mutation analysis"
-#    echo "(ant mutation.test)"
-#    "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -lib "$CLASSPATH" mutation.test
+      # Calculate Branch Coverage
+      branch_missed=$(awk -F, 'NR>1 {sum+=$6} END {print sum}' results/report.csv)
+      branch_covered=$(awk -F, 'NR>1 {sum+=$7} END {print sum}' results/report.csv)
+      branch_coverage=$(echo "scale=2; $branch_covered / ($branch_missed + $branch_covered) * 100" | bc)
 
-    # info.txt contains a record of each version of summary.csv that existed.
-    #cat results/summary.csv >> results/info.txt
+      echo "Instruction Coverage: $instruction_coverage%"
+      echo "Branch Coverage: $branch_coverage%"
 
-# Clean up dangling files
-mv jacoco.exec major.log mutants.log suppression.log results
+      echo
+      echo "Run tests with mutation analysis"
+      echo "(ant mutation.test)"
+      "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -lib "$CLASSPATH" mutation.test >/dev/null 2>&1
 
+      # Calculate Mutation Score
+      mutants_covered=$(awk -F, 'NR==2 {print $3}' results/summary.csv)
+      mutants_killed=$(awk -F, 'NR==2 {print $4}' results/summary.csv)
+      mutation_score=$(echo "scale=2; $mutants_killed / $mutants_covered * 100" | bc)
+
+      echo "Mutation Score: $mutation_score%"
+
+      row="$RANDOOP_VERSION,$(basename "$SRC_JAR"),$instruction_coverage%,$branch_coverage%,$mutation_score%"
+      # info.csv contains a record of each pass.
+      echo -e "$row" >> results/info.csv
+  done
 done
