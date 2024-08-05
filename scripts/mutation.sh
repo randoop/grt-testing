@@ -56,7 +56,7 @@ echo "Using Randoop to generate tests"
 echo
 
 # Output file for runtime information 
-rm results/info.txt
+rm -f results/info.txt
 touch results/info.txt
 
 JAR_DIR="$3"
@@ -128,10 +128,14 @@ do
     echo "(ant mutation.test)"
     "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -lib "$CLASSPATH" mutation.test
 
+    "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" test >/dev/null 2>&1
+    mv jacoco.exec results
+    java -jar "$JACOCO_CLI_JAR" report "results/jacoco.exec" --classfiles "$SRC_JAR" --sourcefiles "$JAVA_SRC_DIR" --csv results/report.csv
+
     # info.txt contains a record of each version of summary.csv that existed.
     cat results/summary.csv >> results/info.txt
 
 # Clean up dangling files
-mv jacoco.exec major.log mutants.log results
+mv major.log mutants.log results
 
 done

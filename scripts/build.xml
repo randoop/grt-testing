@@ -1,4 +1,4 @@
-<project name="Script" default="compile" basedir=".">
+<project name="Script" default="compile" basedir="." xmlns:jacoco="antlib:org.jacoco.ant">
 
 <!-- ##############################################
       Path to major.jar and (optional) mml file
@@ -8,9 +8,15 @@
     <property name="major.jar" value="build/major/lib/major.jar"/>
     <property name="mutator" value=""/>
     <property name="plugin" value="-Xplugin:MajorPlugin ${mutator}"/>
+    <property name="jacoco.destfile" value="results/jacoco.exec"/>
+
+    <!-- Import JaCoCo Ant tasks -->
+    <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
+        <classpath path="build/jacocoant.jar"/>
+    </taskdef>
 
 
-<!-- Target to clean up -->
+    <!-- Target to clean up -->
     <target name="clean" description="Clean">
         <delete dir="build/bin"/>
         <delete>
@@ -70,17 +76,22 @@
 <!-- The original test target -->
     <target name="test" depends="compile.tests" description="Run all unit test cases">
         <echo message="Running unit tests ..."/>
-        <junit  printsummary="true" 
-        		showoutput="true" 
-                haltonfailure="false">
-            <formatter type="plain" usefile="false"/>
-            <classpath path="build/bin"/>
-			
-			<batchtest fork="no">
-                <fileset dir="${test}">
-                    <include name="**/*Test*.java"/>
-                </fileset>
-            </batchtest>
-        </junit>
+        <jacoco:coverage destfile="${jacoco.destfile}">
+            <junit  printsummary="true"
+                    showoutput="true"
+                    haltonfailure="false"
+                    fork="true" forkmode="once">
+                <formatter type="plain" usefile="false"/>
+                <classpath path="build/bin"/>
+
+
+                <batchtest fork="no">
+                    <fileset dir="${test}">
+                        <include name="**/*Test*.java"/>
+                    </fileset>
+                </batchtest>
+            </junit>
+        </jacoco:coverage>
     </target>
+
 </project>
