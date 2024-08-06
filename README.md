@@ -10,3 +10,5 @@ For instructions on using the scripts, refer to `reproinstructions.txt`.
 
 ### Building Tests
 To obtain the sources to be tested, follow the guidelines in `tests/README.build`.
+
+For tests, see the `tests/` directory.
