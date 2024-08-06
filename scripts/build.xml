@@ -24,7 +24,8 @@
         <mkdir dir="build/bin"/>
     </target>
 
-<!-- Target to compile the project -->
+<!-- Target to compile the project. Include the following compile options for projects that
+don't use UTF-8 encoding: encoding="iso-8859-1"-->
     <target name="compile" depends="init" description="Compile">
         <javac includeantruntime="true"
                srcdir="${src}"
