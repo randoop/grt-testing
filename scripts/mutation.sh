@@ -17,6 +17,12 @@
 set -e
 set -o pipefail
 
+JAVA_VER=$(java -version 2>&1 | head -1 | cut -d'"' -f2 | sed '/^1\./s///' | cut -d'.' -f1 | sed 's/-ea//')
+if ! [ "$JAVA_VER" = "8" ] ; then
+  echo "Use Java 8."
+  exit 1
+fi
+
 make
 
 # Link to the major directory
@@ -60,7 +66,8 @@ rm results/info.txt
 touch results/info.txt
 
 JAR_DIR="$3"
-CLASSPATH=$(echo $JAR_DIR/*.jar | tr ' ' ':')
+# shellcheck disable=SC2086
+CLASSPATH="$(echo $JAR_DIR/*.jar | tr ' ' ':')"
 
 # shellcheck disable=SC2034 # i counts iterations but is not otherwise used.
 for i in $(seq 1 $NUM_LOOP)
