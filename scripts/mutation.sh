@@ -29,7 +29,10 @@ CURR_DIR=$(realpath "$(pwd)")
 RANDOOP_JAR=$(realpath "build/randoop-all-4.3.3.jar")
 
 # Link to jacoco agent jar. This is necessary for Bloodhound
-JACOCO_JAR=$(realpath "build/jacocoagent.jar")
+JACOCO_AGENT_JAR=$(realpath "build/jacocoagent.jar")
+
+# Link to jacoco cli jar. This is necessary for coverage report generation
+JACOCO_CLI_JAR=$(realpath "build/jacococli.jar")
 
 # The paper runs Randoop on 4 different time limits. These are: 2 s/class, 10 s/class, 30 s/class, and 60 s/class
 SECONDS_CLASS="2"
@@ -50,7 +53,7 @@ NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
 TIME_LIMIT=$((NUM_CLASSES * SECONDS_CLASS))
 
 # Variable that stores command line inputs common among all commands
-CLI_INPUTS="java -Xbootclasspath/a:$JACOCO_JAR -javaagent:$JACOCO_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=$TIME_LIMIT"
+CLI_INPUTS="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOCO_AGENT_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=$TIME_LIMIT"
 
 echo "Using Randoop to generate tests"
 echo
