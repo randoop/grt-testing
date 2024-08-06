@@ -17,6 +17,13 @@
 set -e
 set -o pipefail
 
+# Check for Java 8
+JAVA_VERSION=$(java -version 2>&1 | awk -F'[._"]' 'NR==1{print ($2 == "version" && $3 < 9) ? $4 : $3}')
+if [ "$JAVA_VERSION" -ne 8 ]; then
+  echo "Requires Java 8. Please use Java 8 to proceed."
+  exit 1
+fi
+
 make
 
 # Link to the major directory
