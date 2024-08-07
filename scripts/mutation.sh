@@ -26,6 +26,8 @@ fi
 
 make
 
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
 # Link to the major directory
 MAJOR_HOME=$(realpath "build/major/")
 
@@ -45,7 +47,7 @@ SECONDS_CLASS="2"
 NUM_LOOP=2
 
 # Link to src jar
-SRC_JAR=$(realpath "../tests/$1")
+SRC_JAR=$(realpath "$SCRIPTDIR/../tests/$1")
 
 # Link to src files for mutation generation and analysis
 JAVA_SRC_DIR="$2"
