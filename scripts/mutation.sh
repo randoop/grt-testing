@@ -140,5 +140,4 @@ do
 
 # Clean up dangling files
 mv jacoco.exec major.log mutants.log results
-find . -type f -print0 | grep -z -v -F -f keep.txt | xargs -0 rm
 done
