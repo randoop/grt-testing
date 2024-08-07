@@ -67,7 +67,7 @@ rm results/info.txt
 touch results/info.txt
 
 JAR_DIR="$3"
-CLASSPATH=$(echo $JAR_DIR/*.jar | tr ' ' ':')
+CLASSPATH="$(echo "$JAR_DIR"/*.jar | tr ' ' ':')"
 
 # shellcheck disable=SC2034 # i counts iterations but is not otherwise used.
 for i in $(seq 1 $NUM_LOOP)
