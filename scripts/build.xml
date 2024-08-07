@@ -41,8 +41,7 @@
         <javac includeantruntime="true"
                srcdir="${test}"
                destdir="build/bin"
-               debug="yes"
-               verbose="true">
+               debug="yes">
         </javac>
     </target>
 
