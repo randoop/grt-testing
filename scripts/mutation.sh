@@ -63,7 +63,8 @@ echo "Using Randoop to generate tests"
 echo
 
 # Output file for runtime information 
-rm results/info.txt
+rm -f results/info.txt
+mkdir -p results/
 touch results/info.txt
 
 JAR_DIR="$3"
