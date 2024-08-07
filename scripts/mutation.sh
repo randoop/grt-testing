@@ -140,4 +140,5 @@ do
 
 # Clean up dangling files
 mv jacoco.exec major.log mutants.log results
+
 done
