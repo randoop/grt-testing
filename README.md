@@ -9,4 +9,6 @@ This repository contains test cases and scripts designed for testing Randoop, sp
 For instructions on using the scripts, refer to `reproinstructions.txt`.
 
 ### Building Tests
-To obtain the sources to be tested, follow the guidelines in `tests/README.build`.
+The subject programs used by the GRT paper appear in the `tests/` directory.
+
+To obtain the sources of the subject programs, see `tests/README.build`.
