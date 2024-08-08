@@ -59,13 +59,12 @@
         		showoutput="false"
         		mutationAnalysis="true"
                 serializedMapsFile="results/preprocessing.ser"
-                mutantsLogFile="results/mutants.log"
+                mutantsLogFile="mutants.log"
                 summaryFile="results/summary.csv"
                 mutantDetailsFile="results/details.csv"
                 covMapFile="results/covMap.csv"
                 testMapFile="results/testMap.csv"
                 killMapFile="results/killMap.csv">
-
             <classpath path="build/bin"/>
             <batchtest fork="false">
                 <fileset dir="${test}">

@@ -45,10 +45,10 @@ JACOCO_AGENT_JAR=$(realpath "build/jacocoagent.jar")
 JACOCO_CLI_JAR=$(realpath "build/jacococli.jar")
 
 # The paper runs Randoop on 4 different time limits. These are: 2 s/class, 10 s/class, 30 s/class, and 60 s/class
-SECONDS_CLASS="1"
+SECONDS_CLASS="2"
 
 # Number of times to run experiments (10 in GRT paper)
-NUM_LOOP=1
+NUM_LOOP=2
 
 # Link to src jar
 SRC_JAR=$(realpath "$SCRIPTDIR/../tests/$1")
@@ -61,7 +61,7 @@ NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
 
 # Time limit for running Randoop
 TIME_LIMIT=$((NUM_CLASSES * SECONDS_CLASS))
-RANDOOP_VERSIONS_DIR=$(realpath "$SCRIPTDIR/../RandoopVersions")
+
 # Variable that stores command line inputs common among all commands
 RANDOOP_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOCO_AGENT_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=$TIME_LIMIT"
 
@@ -74,8 +74,6 @@ if [ ! -f "results/info.csv" ]; then
     touch results/info.csv
     echo -e "RandoopVersion,FileName,InstructionCoverage,BranchCoverage,MutationScore" > results/info.csv
 fi
-
-
 
 JAR_DIR="$3"
 CLASSPATH="$(echo "$JAR_DIR"/*.jar | tr ' ' ':')"
@@ -129,48 +127,36 @@ do
     # mkdir "$TEST_DIRECTORY"
     # $RANDOOP_COMMAND --junit-output-dir="$TEST_DIRECTORY"
 
-      elif [ "$j" -eq 8 ]; then
-          RANDOOP_VERSION="BASELINE"
-          echo "Using $RANDOOP_VERSION"
-          echo
-          TEST_DIRECTORY="$CURR_DIR/build/testBaseline"
-          mkdir "$TEST_DIRECTORY"
-          $RANDOOP_COMMAND --junit-output-dir="$TEST_DIRECTORY"
-      # Add additional configurations here as needed
-      fi
+    "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" test >/dev/null 2>&1
+    mv jacoco.exec major.log mutants.log suppression.log results
+    java -jar "$JACOCO_CLI_JAR" report "results/jacoco.exec" --classfiles "$SRC_JAR" --sourcefiles "$JAVA_SRC_DIR" --csv results/report.csv
 
-      "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" test >/dev/null 2>&1
-      wait
-      mv jacoco.exec major.log mutants.log suppression.log results
-      java -jar "$JACOCO_CLI_JAR" report "results/jacoco.exec" --classfiles "$SRC_JAR" --sourcefiles "$JAVA_SRC_DIR" --csv results/report.csv
+    # Calculate Instruction Coverage
+    inst_missed=$(awk -F, 'NR>1 {sum+=$4} END {print sum}' results/report.csv)
+    inst_covered=$(awk -F, 'NR>1 {sum+=$5} END {print sum}' results/report.csv)
+    instruction_coverage=$(echo "scale=2; $inst_covered / ($inst_missed + $inst_covered) * 100" | bc)
 
-      # Calculate Instruction Coverage
-      inst_missed=$(awk -F, 'NR>1 {sum+=$4} END {print sum}' results/report.csv)
-      inst_covered=$(awk -F, 'NR>1 {sum+=$5} END {print sum}' results/report.csv)
-      instruction_coverage=$(echo "scale=2; $inst_covered / ($inst_missed + $inst_covered) * 100" | bc)
+    # Calculate Branch Coverage
+    branch_missed=$(awk -F, 'NR>1 {sum+=$6} END {print sum}' results/report.csv)
+    branch_covered=$(awk -F, 'NR>1 {sum+=$7} END {print sum}' results/report.csv)
+    branch_coverage=$(echo "scale=2; $branch_covered / ($branch_missed + $branch_covered) * 100" | bc)
 
-      # Calculate Branch Coverage
-      branch_missed=$(awk -F, 'NR>1 {sum+=$6} END {print sum}' results/report.csv)
-      branch_covered=$(awk -F, 'NR>1 {sum+=$7} END {print sum}' results/report.csv)
-      branch_coverage=$(echo "scale=2; $branch_covered / ($branch_missed + $branch_covered) * 100" | bc)
+    echo "Instruction Coverage: $instruction_coverage%"
+    echo "Branch Coverage: $branch_coverage%"
 
-      echo "Instruction Coverage: $instruction_coverage%"
-      echo "Branch Coverage: $branch_coverage%"
+    echo
+    echo "Run tests with mutation analysis"
+    echo "(ant mutation.test)"
+    "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -lib "$CLASSPATH" mutation.test >/dev/null 2>&1
 
-      echo
-      echo "Run tests with mutation analysis"
-      echo "(ant mutation.test)"
-      "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -lib "$CLASSPATH" mutation.test >/dev/null 2>&1
+    # Calculate Mutation Score
+    mutants_covered=$(awk -F, 'NR==2 {print $3}' results/summary.csv)
+    mutants_killed=$(awk -F, 'NR==2 {print $4}' results/summary.csv)
+    mutation_score=$(echo "scale=2; $mutants_killed / $mutants_covered * 100" | bc)
 
-      # Calculate Mutation Score
-      mutants_covered=$(awk -F, 'NR==2 {print $3}' results/summary.csv)
-      mutants_killed=$(awk -F, 'NR==2 {print $4}' results/summary.csv)
-      mutation_score=$(echo "scale=2; $mutants_killed / $mutants_covered * 100" | bc)
+    echo "Mutation Score: $mutation_score%"
 
-      echo "Mutation Score: $mutation_score%"
-
-      row="$RANDOOP_VERSION,$(basename "$SRC_JAR"),$instruction_coverage%,$branch_coverage%,$mutation_score%"
-      # info.csv contains a record of each pass.
-      echo -e "$row" >> results/info.csv
-  done
+    row="$RANDOOP_VERSION,$(basename "$SRC_JAR"),$instruction_coverage%,$branch_coverage%,$mutation_score%"
+    # info.csv contains a record of each pass.
+    echo -e "$row" >> results/info.csv
 done
