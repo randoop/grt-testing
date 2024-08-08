@@ -29,16 +29,15 @@
 <!-- Target to initialize build -->
     <target name="init" depends="clean">
         <mkdir dir="build/bin"/>
-        <mkdir dir="results"/>
     </target>
 
-<!-- Target to compile the project -->
+<!-- Target to compile the project. -->
     <target name="compile" depends="init" description="Compile">
+        <!-- For projects that don't use UTF-8 encoding, add: encoding="iso-8859-1" -->
         <javac includeantruntime="true"
                srcdir="${src}"
                destdir="build/bin"
-               debug="yes"
-               encoding="iso-8859-1">
+               debug="yes">
             <classpath location="${major.jar}"/>
             <compilerarg value="${plugin}"/>
         </javac>
@@ -49,8 +48,7 @@
         <javac includeantruntime="true"
                srcdir="${test}"
                destdir="build/bin"
-               debug="yes"
-               verbose="true">
+               debug="yes">
         </javac>
     </target>
 
