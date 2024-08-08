@@ -1,5 +1,10 @@
 syntax: glob
 
+# MacOS files
+__MACOSX
+.DS_Store
+Thumbs.db
+
 # Ignore temp files from editors and other tools
 *~
 
