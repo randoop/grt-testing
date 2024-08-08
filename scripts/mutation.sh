@@ -49,7 +49,7 @@ NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
 # Time limit for running Randoop
 TIME_LIMIT=$((NUM_CLASSES * SECONDS_CLASS))
 
-# Variable that stores command line inputs common among all commands
+# Directory that stores compiled versions of Randoop
 RANDOOP_VERSIONS_DIR=$(realpath "$SCRIPTDIR/../RandoopVersions")
 
 # Variable that stores command line inputs common among all commands
