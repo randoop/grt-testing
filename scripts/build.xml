@@ -15,11 +15,9 @@
         <classpath path="build/jacocoant.jar"/>
     </taskdef>
 
-
     <!-- Target to clean up -->
     <target name="clean" description="Clean">
         <delete dir="build/bin"/>
-        <echo message="Cleaning up ..."/>
         <delete>
             <fileset dir="." includes="*.csv"/>
             <fileset dir="." includes="*.log"/>
