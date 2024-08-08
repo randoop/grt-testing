@@ -32,11 +32,12 @@ MAJOR_HOME=$(realpath "build/major/")
 # Link to current directory
 CURR_DIR=$(realpath "$(pwd)")
 
-# Link to the randoop jar
+# Link to the randoop jar. FIX BEFORE PUSHING
 RANDOOP_JAR=$(realpath "build/randoop-all-4.3.3.jar")
+#RANDOOP_JAR=realpath "/Users/yashmathur/Documents/researchNew/grt-testing/RandoopVersions/randoop-all-4.3.3.jar"
 
 # Link to jacoco agent jar. This is necessary for Bloodhound
-JACOCO_JAR=$(realpath "build/jacocoagent.jar")
+JACOCO_AGENT_JAR=$(realpath "build/jacocoagent.jar")
 
 # The paper runs Randoop on 4 different time limits. These are: 2 s/class, 10 s/class, 30 s/class, and 60 s/class
 SECONDS_CLASS="2"
@@ -56,107 +57,54 @@ NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
 # Time limit for running Randoop
 TIME_LIMIT=$((NUM_CLASSES * SECONDS_CLASS))
 
-# Directory that stores compiled versions of Randoop
-RANDOOP_VERSIONS_DIR=$(realpath "$SCRIPTDIR/../RandoopVersions")
-
-# Variable that stores command line inputs common among all commands
-RANDOOP_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOCO_AGENT_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=$TIME_LIMIT"
-
 echo "Using Randoop to generate tests"
 echo
 
 # Output file for runtime information 
-rm results/info.txt
+rm -f results/info.txt
 touch results/info.txt
 
 JAR_DIR="$3"
 CLASSPATH=$(echo $JAR_DIR/*.jar | tr ' ' ':')
 
+RANDOOP_VERSIONS=("BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING" "BASELINE")
 # shellcheck disable=SC2034 # i counts iterations but is not otherwise used.
 for i in $(seq 1 $NUM_LOOP)
 do
-     for j in $(seq 1 $VERSIONS)
+     for RANDOOP_VERSION in "${RANDOOP_VERSIONS[@]}"
      do
          rm -rf "$CURR_DIR"/build/test*
+         echo "Using $RANDOOP_VERSION"
+         echo
+         TEST_DIRECTORY="$CURR_DIR/build/test/$RANDOOP_VERSION"
+         mkdir -p "$TEST_DIRECTORY"
+
+         # Variable that stores command line inputs common among all commands
+         RANDOOP_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOCO_AGENT_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=$TIME_LIMIT --junit-output-dir=$TEST_DIRECTORY"
          #The compiled randoop versions in the RANDOOP_VERSIONS_DIR are compiled with the relevant options enabled
-         if [ "$j" -eq 1 ]; then
-             RANDOOP_VERSION="BLOODHOUND"
-             echo "Using $RANDOOP_VERSION"
-             echo
-             TEST_DIRECTORY="$CURR_DIR/build/testBloodhound"
-             mkdir -p "$TEST_DIRECTORY"
-             $RANDOOP_COMMAND --method-selection=BLOODHOUND --junit-output-dir="$TEST_DIRECTORY" > output-bloodhound.log 2>&1
+         if [ "$RANDOOP_VERSION" == "BLOODHOUND" ]; then
+             $RANDOOP_COMMAND --method-selection=BLOODHOUND
 
+         elif [ "$RANDOOP_VERSION" == "ORIENTEERING" ]; then
+             $RANDOOP_COMMAND --input-selection=ORIENTEERING
 
-         elif [ "$j" -eq 2 ]; then
-             RANDOOP_VERSION="ORIENTEERING"
-             echo "Using $RANDOOP_VERSION"
-             echo
-             TEST_DIRECTORY="$CURR_DIR/build/testOrienteering"
-             mkdir -p "$TEST_DIRECTORY"
-             $RANDOOP_COMMAND --input-selection=ORIENTEERING --junit-output-dir="$TEST_DIRECTORY"
+         elif [ "$RANDOOP_VERSION" == "BLOODHOUND_AND_ORIENTEERING" ]; then
+             $RANDOOP_COMMAND --input-selection=ORIENTEERING --method-selection=BLOODHOUND
 
+         elif [ "$RANDOOP_VERSION" == "DETECTIVE" ]; then
+             $RANDOOP_COMMAND --demand-driven=true
 
-         elif [ "$j" -eq 3 ]; then
-             RANDOOP_VERSION="BLOODHOUND_AND_ORIENTEERING"
-             echo "Using $RANDOOP_VERSION"
-             echo
-             TEST_DIRECTORY="$CURR_DIR/build/testBloodhoundOrienteering"
-             mkdir -p "$TEST_DIRECTORY"
-             $RANDOOP_COMMAND --input-selection=ORIENTEERING --method-selection=BLOODHOUND --junit-output-dir="$TEST_DIRECTORY"
+         elif [ "$RANDOOP_VERSION" == "GRT_FUZZING" ]; then
+             $RANDOOP_COMMAND --grt-fuzzing=true
 
+         elif [ "$RANDOOP_VERSION" == "ELEPHANT_BRAIN" ]; then
+             $RANDOOP_COMMAND --elephant-brain=true
 
-         elif [ "$j" -eq 4 ]; then
-             RANDOOP_VERSION="DETECTIVE"
-             RANDOOP_JAR="$RANDOOP_VERSIONS_DIR"/Detective.jar
-             RANDOOP_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOCO_AGENT_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=$TIME_LIMIT"
-             echo "Using $RANDOOP_VERSION"
-             echo
-             TEST_DIRECTORY="$CURR_DIR/build/testDemandDriven"
-             mkdir -p "$TEST_DIRECTORY"
-             $RANDOOP_COMMAND --junit-output-dir="$TEST_DIRECTORY"
+         elif [ "$RANDOOP_VERSION" == "CONSTANT_MINING" ]; then
+             $RANDOOP_COMMAND --constant-mining=true
 
-
-         elif [ "$j" -eq 5 ]; then
-             RANDOOP_VERSION="GRT_FUZZING"
-             RANDOOP_JAR="$RANDOOP_VERSIONS_DIR"/Fuzzing.jar
-             RANDOOP_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOCO_AGENT_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=$TIME_LIMIT"
-             echo "Using $RANDOOP_VERSION"
-             echo
-             TEST_DIRECTORY="$CURR_DIR/build/testGrtFuzzing"
-             mkdir -p "$TEST_DIRECTORY"
-             $RANDOOP_COMMAND --junit-output-dir="$TEST_DIRECTORY"
-
-
-         elif [ "$j" -eq 6 ]; then
-             RANDOOP_VERSION="ELEPHANT_BRAIN"
-             RANDOOP_JAR="$RANDOOP_VERSIONS_DIR"/Elephant-Brain.jar
-             RANDOOP_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOCO_AGENT_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=$TIME_LIMIT"
-             echo "Using $RANDOOP_VERSION"
-             echo
-             TEST_DIRECTORY="$CURR_DIR"/build/testElephantBrain
-             mkdir "$TEST_DIRECTORY"
-             $RANDOOP_COMMAND --junit-output-dir="$TEST_DIRECTORY"
-
-
-         elif [ "$j" -eq 7 ]; then
-             RANDOOP_VERSION="CONSTANT_MINING"
-             RANDOOP_JAR="$RANDOOP_VERSIONS_DIR"/Constant-Mining.jar
-             RANDOOP_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOCO_AGENT_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=$TIME_LIMIT"
-             echo "Using $RANDOOP_VERSION"
-             echo
-             TEST_DIRECTORY="$CURR_DIR/build/testDemandDriven"
-             mkdir -p "$TEST_DIRECTORY"
-             $RANDOOP_COMMAND --junit-output-dir="$TEST_DIRECTORY"
-
-
-         elif [ "$j" -eq 8 ]; then
-             RANDOOP_VERSION="BASELINE"
-             echo "Using $RANDOOP_VERSION"
-             echo
-             TEST_DIRECTORY="$CURR_DIR/build/testBaseline"
-             mkdir "$TEST_DIRECTORY"
-             $RANDOOP_COMMAND --junit-output-dir="$TEST_DIRECTORY"
+         elif [ "$RANDOOP_VERSION" == "BASELINE" ]; then
+             $RANDOOP_COMMAND
          # Add additional configurations here as needed
          fi
 
