@@ -8,9 +8,6 @@ fixsuite-r48              Fixsuite (R48)
 pmd-core-5.2.2            Pmd DCD 5.2.2
 sat4j.core-2.3.5          SAT4J Core (2.3.5)
 
-This directory contains `.jar` files with the compiled version (only) of the code of the subject programs.
-This table tells where to find the corresponding source (`.java` files).
-
 jar file                  software (version)             source
 -----------------------------------------------------------------------------------------------------------------------
 a4j-1.0b                  Amazon AWS 4 Java (1.0b)       //sourceforge.net/projects/a4j/files/latest/download/a4j-1.0b1.zip
