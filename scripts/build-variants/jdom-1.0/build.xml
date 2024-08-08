@@ -29,10 +29,10 @@
         <javac includeantruntime="true" 
                srcdir="${src}"
               destdir="build/bin"
-                debug="yes"
-               encoding="iso-8859-1">
+                debug="yes">
             <classpath location="${major.jar}"/>
             <compilerarg value="${plugin}"/>
+            <exclude name="**/Jaxen*"/>
         </javac>
     </target>
 

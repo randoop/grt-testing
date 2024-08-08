@@ -1,0 +1,22 @@
+--- build.xml	2024-08-07 17:40:15.104194517 -0700
++++ build-variants/commons-math3-3.2/build.xml	2024-08-07 18:23:38.684084607 -0700
+@@ -7,7 +7,7 @@
+      ############################################## -->
+     <property name="major.jar" value="build/major/lib/major.jar"/>
+     <property name="mutator" value=""/>
+-    <property name="plugin" value="-Xplugin:MajorPlugin ${mutator}"/>
++    <property name="plugin" value="-Xplugin:MajorPlugin ${mutator} Major enable.decl.refactor enable.method.refactor"/>
+ 
+ 
+ <!-- Target to clean up -->
+@@ -29,7 +29,9 @@
+         <javac includeantruntime="true" 
+                srcdir="${src}"
+               destdir="build/bin"
+-                debug="yes">
++                debug="yes"
++                source="1.5"
++                target="1.5">
+             <classpath location="${major.jar}"/>
+             <compilerarg value="${plugin}"/>
+         </javac>

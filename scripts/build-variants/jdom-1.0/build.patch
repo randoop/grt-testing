@@ -1,0 +1,10 @@
+--- build.xml	2024-08-07 17:40:15.104194517 -0700
++++ build-variants/jdom-1.0/build.xml	2024-08-07 19:04:24.913980086 -0700
+@@ -32,6 +32,7 @@
+                 debug="yes">
+             <classpath location="${major.jar}"/>
+             <compilerarg value="${plugin}"/>
++            <exclude name="**/Jaxen*"/>
+         </javac>
+     </target>
+ 
