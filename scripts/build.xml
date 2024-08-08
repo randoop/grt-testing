@@ -24,12 +24,13 @@
         <mkdir dir="build/bin"/>
     </target>
 
-<!-- Target to compile the project -->
+<!-- Target to compile the project. -->
     <target name="compile" depends="init" description="Compile">
-        <javac includeantruntime="true" 
+        <!-- For projects that don't use UTF-8 encoding, add: encoding="iso-8859-1" -->
+        <javac includeantruntime="true"
                srcdir="${src}"
-              destdir="build/bin"
-                debug="yes">
+               destdir="build/bin"
+               debug="yes">
             <classpath location="${major.jar}"/>
             <compilerarg value="${plugin}"/>
         </javac>
@@ -37,10 +38,10 @@
 
 <!-- Target to compile the test suite -->
     <target name="compile.tests" depends="compile" description="Compile all tests">
-        <javac includeantruntime="true" 
+        <javac includeantruntime="true"
                srcdir="${test}"
-              destdir="build/bin"
-                debug="yes">
+               destdir="build/bin"
+               debug="yes">
         </javac>
     </target>
 
