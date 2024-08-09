@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# For documentation of how to run this script, see file `reproinstructions.txt`.
+
 # This script does mutation testing with Randoop-generated test suites. Different
 # test suites can be generated with Bloodhound, Orienteering, neither (baseline), or both.
 # Mutation testing is used on projects provided in table 2 of the GRT paper.
@@ -10,8 +12,7 @@
 
 # Finally, each experiment can run a given amount of times and a given amount of seconds per class. 
 # Various statistics of each iteration will be logged to a file "results/info.txt".
-# All other files logged to the "results" subdirectory are specific to the most recent iteration of the experiment. 
-# See "reproinstructions.txt" for more instructions on how to run this script.
+# All other files logged to the "results" subdirectory are specific to the most recent iteration of the experiment.
 
 # Fail this script on errors.
 set -e
@@ -25,6 +26,8 @@ if [ "$JAVA_VERSION" -ne 8 ]; then
 fi
 
 make
+
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 # Link to the major directory
 MAJOR_HOME=$(realpath "build/major/")
@@ -45,7 +48,7 @@ SECONDS_CLASS="2"
 NUM_LOOP=2
 
 # Link to src jar
-SRC_JAR=$(realpath "../tests/$1")
+SRC_JAR=$(realpath "$SCRIPTDIR/../tests/$1")
 
 # Link to src files for mutation generation and analysis
 JAVA_SRC_DIR="$2"
@@ -61,10 +64,11 @@ echo
 
 # Output file for runtime information 
 rm -f results/info.txt
+mkdir -p results/
 touch results/info.txt
 
 JAR_DIR="$3"
-CLASSPATH=$(echo $JAR_DIR/*.jar | tr ' ' ':')
+CLASSPATH="$(echo "$JAR_DIR"/*.jar | tr ' ' ':')"
 
 # The different versions of Randoop to use. Adjust according to the versions you are testing.
 RANDOOP_VERSIONS=("BLOODHOUND" "BASELINE") #"ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
