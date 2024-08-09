@@ -78,7 +78,7 @@ for i in $(seq 1 $NUM_LOOP)
 do
     rm -rf "$CURR_DIR"/build/test*
 
-    # TODO: There should eventually be a command-line argument that chooses among the variants of Ranndoop.
+    # TODO: There should eventually be a command-line argument that chooses among the variants of Randoop.
 
     echo "Using Bloodhound"
     echo
