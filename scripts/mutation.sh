@@ -35,7 +35,7 @@ MAJOR_HOME=$(realpath "build/major/")
 # Link to current directory
 CURR_DIR=$(realpath "$(pwd)")
 
-# Link to the randoop jar.
+# Link to current version randoop jar. Replace with different version if new GRT component is being tested.
 RANDOOP_JAR=$(realpath "build/randoop-all-4.3.3.jar")
 
 # Link to jacoco agent jar. This is necessary for Bloodhound
@@ -85,30 +85,30 @@ do
 
          # Variable that stores command line inputs common among all commands
          RANDOOP_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOCO_AGENT_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=$TIME_LIMIT --junit-output-dir=$TEST_DIRECTORY"
-         #The compiled randoop versions in the RANDOOP_VERSIONS_DIR are compiled with the relevant options enabled
+
          if [ "$RANDOOP_VERSION" == "BLOODHOUND" ]; then
              $RANDOOP_COMMAND --method-selection=BLOODHOUND
+
          elif [ "$RANDOOP_VERSION" == "BASELINE" ]; then
              $RANDOOP_COMMAND
-#         # Use only if you have the replaced RANDOOP_JAR with the relevant version of Randoop
-#         elif [ "$RANDOOP_VERSION" == "ORIENTEERING" ]; then
-#             $RANDOOP_COMMAND --input-selection=ORIENTEERING
-#
-#         elif [ "$RANDOOP_VERSION" == "BLOODHOUND_AND_ORIENTEERING" ]; then
-#             $RANDOOP_COMMAND --input-selection=ORIENTEERING --method-selection=BLOODHOUND
-#
-#         elif [ "$RANDOOP_VERSION" == "DETECTIVE" ]; then
-#             $RANDOOP_COMMAND --demand-driven=true
-#
-#         elif [ "$RANDOOP_VERSION" == "GRT_FUZZING" ]; then
-#             $RANDOOP_COMMAND --grt-fuzzing=true
-#
-#         elif [ "$RANDOOP_VERSION" == "ELEPHANT_BRAIN" ]; then
-#             $RANDOOP_COMMAND --elephant-brain=true
-#
-#         elif [ "$RANDOOP_VERSION" == "CONSTANT_MINING" ]; then
-#             $RANDOOP_COMMAND --constant-mining=true
-#
+
+         elif [ "$RANDOOP_VERSION" == "ORIENTEERING" ]; then
+             $RANDOOP_COMMAND --input-selection=ORIENTEERING
+
+         elif [ "$RANDOOP_VERSION" == "BLOODHOUND_AND_ORIENTEERING" ]; then
+             $RANDOOP_COMMAND --input-selection=ORIENTEERING --method-selection=BLOODHOUND
+
+         elif [ "$RANDOOP_VERSION" == "DETECTIVE" ]; then
+             $RANDOOP_COMMAND --demand-driven=true
+
+         elif [ "$RANDOOP_VERSION" == "GRT_FUZZING" ]; then
+             $RANDOOP_COMMAND --grt-fuzzing=true
+
+         elif [ "$RANDOOP_VERSION" == "ELEPHANT_BRAIN" ]; then
+             $RANDOOP_COMMAND --elephant-brain=true
+
+         elif [ "$RANDOOP_VERSION" == "CONSTANT_MINING" ]; then
+             $RANDOOP_COMMAND --constant-mining=true
 
 #         # Add additional configurations here as needed
          fi
