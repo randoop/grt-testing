@@ -1,9 +1,9 @@
 Project names,Status,Notes
 a4j-1.0b,Working,
 asm-5.0.1,Working,Bloodhound fails
-bcel-5.2,,
-ClassViewer-5.0.5b,,
-commons-cli-1.2,,
+bcel-5.2,Working,
+ClassViewer-5.0.5b,Working,Bloodhound does not terminate
+commons-cli-1.2,Working,
 commons-codec-1.9,,
 commons-collections4-4.0,,
 commons-compress-1.8,,

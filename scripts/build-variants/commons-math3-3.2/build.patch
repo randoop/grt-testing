@@ -12,11 +12,11 @@
 @@ -29,7 +29,9 @@
          <javac includeantruntime="true" 
                 srcdir="${src}"
-               destdir="build/bin"
--                debug="yes">
-+                debug="yes"
-+                source="1.5"
-+                target="1.5">
+                destdir="build/bin"
+-               debug="yes">
++               debug="yes"
++               source="1.5"
++               target="1.5">
              <classpath location="${major.jar}"/>
              <compilerarg value="${plugin}"/>
          </javac>
