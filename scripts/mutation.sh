@@ -134,12 +134,12 @@ do
     # Calculate Instruction Coverage
     inst_missed=$(awk -F, 'NR>1 {sum+=$4} END {print sum}' results/report.csv)
     inst_covered=$(awk -F, 'NR>1 {sum+=$5} END {print sum}' results/report.csv)
-    instruction_coverage=$(echo "scale=2; $inst_covered / ($inst_missed + $inst_covered) * 100" | bc)
+    instruction_coverage=$(echo "scale=4; $inst_covered / ($inst_missed + $inst_covered) * 100" | bc)
 
     # Calculate Branch Coverage
     branch_missed=$(awk -F, 'NR>1 {sum+=$6} END {print sum}' results/report.csv)
     branch_covered=$(awk -F, 'NR>1 {sum+=$7} END {print sum}' results/report.csv)
-    branch_coverage=$(echo "scale=2; $branch_covered / ($branch_missed + $branch_covered) * 100" | bc)
+    branch_coverage=$(echo "scale=4; $branch_covered / ($branch_missed + $branch_covered) * 100" | bc)
 
     echo "Instruction Coverage: $instruction_coverage%"
     echo "Branch Coverage: $branch_coverage%"
@@ -152,7 +152,7 @@ do
     # Calculate Mutation Score
     mutants_covered=$(awk -F, 'NR==2 {print $3}' results/summary.csv)
     mutants_killed=$(awk -F, 'NR==2 {print $4}' results/summary.csv)
-    mutation_score=$(echo "scale=2; $mutants_killed / $mutants_covered * 100" | bc)
+    mutation_score=$(echo "scale=4; $mutants_killed / $mutants_covered * 100" | bc)
 
     echo "Mutation Score: $mutation_score%"
 
