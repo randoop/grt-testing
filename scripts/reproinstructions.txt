@@ -3,7 +3,7 @@
 This document provides detailed instructions on how to run the mutation testing script. Please follow these steps:
 
 1. **Script Parameters**: The script takes two parameters:
-    - `[jarfile name]`: The name of the jar file of the project for which you want to generate tests and perform mutation testing. These should be one of the jarfiles in the `grt-testing/tests` subdirectory
+    - `[jarfile name]`: The name of the jar file of the project for which you want to generate tests and perform mutation testing. These should be one of the jarfiles in the `grt-testing/subject-programs` subdirectory
     - `[Linux directory of project's Java source code]`: The Linux directory where that project's Java source code is located. This is used for mutation generation and analysis.
 
 2. **Running the Script**: Navigate to the directory containing the script and run the following command:
