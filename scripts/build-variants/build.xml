@@ -14,7 +14,7 @@
     <target name="clean" description="Clean">
         <delete dir="build/bin"/>
         <delete>
-            <fileset dir="." includes="*.csv"/>
+            <fileset dir="." includes="*.csv" excludes="project-config-status.csv"/>
             <fileset dir="." includes="*.log"/>
 	    </delete>
     </target>
@@ -28,8 +28,8 @@
     <target name="compile" depends="init" description="Compile">
         <javac includeantruntime="true" 
                srcdir="${src}"
-              destdir="build/bin"
-                debug="yes">
+               destdir="build/bin"
+               debug="yes">
             <classpath location="${major.jar}"/>
             <compilerarg value="${plugin}"/>
         </javac>
@@ -37,10 +37,10 @@
 
 <!-- Target to compile the test suite -->
     <target name="compile.tests" depends="compile" description="Compile all tests">
-        <javac includeantruntime="true" 
+        <javac includeantruntime="true"
                srcdir="${test}"
-              destdir="build/bin"
-                debug="yes">
+               destdir="build/bin"
+               debug="yes">
         </javac>
     </target>
 

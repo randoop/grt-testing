@@ -14,7 +14,7 @@
     <target name="clean" description="Clean">
         <delete dir="build/bin"/>
         <delete>
-            <fileset dir="." includes="*.csv"/>
+            <fileset dir="." includes="*.csv" excludes="project-config-status.csv"/>
             <fileset dir="." includes="*.log"/>
 	    </delete>
     </target>
