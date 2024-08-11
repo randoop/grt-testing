@@ -136,7 +136,7 @@ do
 
         # info.txt contains a record of each version of summary.csv that existed.
         cat results/summary.csv >> results/info.txt
-     done
+    done
 
 # Clean up dangling files
 mv jacoco.exec major.log mutants.log results
