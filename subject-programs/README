@@ -1,0 +1,50 @@
+The jar files in this directory were used as 'real-world' test cases by the
+authors of the GRT paper.  There are 32 files listed in TABLE II of the paper.
+We have located 30 of them.
+
+If you wish to build the test jar files directly from source, please see
+the file README.build is this directory.
+
+The number of classes, instructions, and/or branches for 3 of the jar files we
+have built do not appear to match the ones used in the GRT paper:
+fixsuite-r48              Fixsuite (R48)
+pmd-core-5.2.2            Pmd DCD 5.2.2
+sat4j.core-2.3.5          SAT4J Core (2.3.5)
+
+jar file                  software (version)
+-------------------------------------------------------
+a4j-1.0b                  Amazon AWS 4 Java (1.0b)
+asm-5.0.1                 ASM (5.0.1)
+bcel-5.2                  Apache BCEL (5.2)
+ClassViewer-5.0.5b        ClassViewer (5.0.5b)
+commons-cli-1.2           Apache Commons Cli (1.2)
+commons-codec-1.9         Apache C. Codec (1.9)
+commons-collections4-4.0  Apache C. Collection (4.0)
+commons-compress-1.8      Apache C. Compress (1.8)
+commons-lang3-3.0         Apache C. Lang (3.0)
+commons-math3-3.2         Apache C. Math (3.2)
+commons-primitives-1.0    Apache C. Primitive (1.0)
+dcParseArgs-10.2008       Dcparseargs (10/2008)
+easymock-3.2              Easymock (3.2)
+fixsuite-r48              Fixsuite (R48)
+guava-16.0.1              Guava (16.0.1)
+hamcrest-core-1.3         Hamcrest-core (1.3)
+javassist-3.19            Javassit (3.19)
+jaxax.mail-1.5.1          Javax Mail (1.5.1)
+jaxen-1.1.6               Jaxen (1.1.6)
+jcommander-1.35           Jcommander (1.35)
+jdom-1.0                  Jdom (1.0)
+joda-time-2.3             Joda Time (2.3)
+JSAP-2.1                  Java Simple Arg. Parser (2.1)
+jvc-1.1                   Java View Control (1.1)
+nekomud-r16               Multi-User Dungeon server R16
+pmd-core-5.2.2            Pmd DCD 5.2.2
+sat4j.core-2.3.5          SAT4J Core (2.3.5)
+shiro-core-1.2.6          Apache Shiro-core (1.2.6)
+slf4j-api-1.7.12          Slf4j-api (1.7.12)
+tinySQL-2.26              Tiny Sql (2.26)
+
+missing
+-----------------------------------------------------
+mango-2.1                 Mango (2.1 03.2014)
+scch-collection-1.0       SCCH collection (1.0)
