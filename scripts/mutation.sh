@@ -117,16 +117,16 @@ do
             exit 1
         fi
 
-         echo
-         echo "Compiling and mutating project"
-         echo '(ant -Dmutator="=mml:'"$MAJOR_HOME"'/mml/all.mml.bin" clean compile)'
-         echo
-         "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" clean compile
+        echo
+        echo "Compiling and mutating project"
+        echo '(ant -Dmutator="=mml:'"$MAJOR_HOME"'/mml/all.mml.bin" clean compile)'
+        echo
+        "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" clean compile
 
-         echo
-         echo "Compiling tests"
-         echo "(ant compile.tests)"
-         echo
+        echo
+        echo "Compiling tests"
+        echo "(ant compile.tests)"
+        echo
         "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" compile.tests
 
         echo
