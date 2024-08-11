@@ -53,16 +53,16 @@
 <!-- The adapted mutation test target -->
     <target name="mutation.test" description="Run mutation analysis for all unit test cases">
         <echo message="Running mutation analysis ..."/>
-        <junit  printsummary="false"
-                showoutput="false"
-                mutationAnalysis="true"
-                serializedMapsFile="results/preprocessing.ser"
-                mutantsLogFile="mutants.log"
-                summaryFile="results/summary.csv"
-                mutantDetailsFile="results/details.csv"
-                covMapFile="results/covMap.csv"
-                testMapFile="results/testMap.csv"
-                killMapFile="results/killMap.csv">
+        <junit printsummary="false"
+               showoutput="false"
+               mutationAnalysis="true"
+               serializedMapsFile="results/preprocessing.ser"
+               mutantsLogFile="mutants.log"
+               summaryFile="results/summary.csv"
+               mutantDetailsFile="results/details.csv"
+               covMapFile="results/covMap.csv"
+               testMapFile="results/testMap.csv"
+               killMapFile="results/killMap.csv">
             <classpath path="build/bin"/>
             <batchtest fork="false">
                 <fileset dir="${test}">
