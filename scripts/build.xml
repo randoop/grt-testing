@@ -16,7 +16,7 @@
         <delete>
             <fileset dir="." includes="*.csv"/>
             <fileset dir="." includes="*.log"/>
-	    </delete>
+        </delete>
     </target>
 
 <!-- Target to initialize build -->
@@ -48,17 +48,16 @@
 <!-- The adapted mutation test target -->
     <target name="mutation.test" description="Run mutation analysis for all unit test cases">
         <echo message="Running mutation analysis ..."/>
-        <junit  printsummary="false" 
-        		showoutput="false" 
-        		mutationAnalysis="true"
+        <junit  printsummary="false"
+                showoutput="false"
+                mutationAnalysis="true"
                 serializedMapsFile="results/preprocessing.ser"
                 mutantsLogFile="mutants.log"
-                summaryFile="results/summary.csv" 
+                summaryFile="results/summary.csv"
                 mutantDetailsFile="results/details.csv"
                 covMapFile="results/covMap.csv"
                 testMapFile="results/testMap.csv"
                 killMapFile="results/killMap.csv">
-                
             <classpath path="build/bin"/>
             <batchtest fork="false">
                 <fileset dir="${test}">
@@ -71,13 +70,12 @@
 <!-- The original test target -->
     <target name="test" depends="compile.tests" description="Run all unit test cases">
         <echo message="Running unit tests ..."/>
-        <junit  printsummary="true" 
-        		showoutput="true" 
+        <junit  printsummary="true"
+                showoutput="true"
                 haltonfailure="false">
             <formatter type="plain" usefile="false"/>
             <classpath path="build/bin"/>
-			
-			<batchtest fork="no">
+            <batchtest fork="no">
                 <fileset dir="${test}">
                     <include name="**/*Test*.java"/>
                 </fileset>

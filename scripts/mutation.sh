@@ -6,11 +6,11 @@
 # test suites can be generated with Bloodhound, Orienteering, neither (baseline), or both.
 # Mutation testing is used on projects provided in table 2 of the GRT paper.
 
-# This script will create Randoop's test suites in a "build/test*" subdirectory. 
+# This script will create Randoop's test suites in a "build/test*" subdirectory.
 # Compiled tests and code will be stored in the "build/bin" subdirectory.
 # The script will generate various mutants of the source project using Major and run these tests on those mutants.
 
-# Finally, each experiment can run a given amount of times and a given amount of seconds per class. 
+# Finally, each experiment can run a given amount of times and a given amount of seconds per class.
 # Various statistics of each iteration will be logged to a file "results/info.txt".
 # All other files logged to the "results" subdirectory are specific to the most recent iteration of the experiment.
 
@@ -62,7 +62,7 @@ TIME_LIMIT=$((NUM_CLASSES * SECONDS_CLASS))
 echo "Using Randoop to generate tests"
 echo
 
-# Output file for runtime information 
+# Output file for runtime information
 rm -f results/info.txt
 mkdir -p results/
 touch results/info.txt
