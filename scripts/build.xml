@@ -25,7 +25,7 @@
     </target>
 
 <!-- Target to initialize build -->
-    <target name="init" depends="clean">
+    <target name="init">
         <mkdir dir="build/bin"/>
     </target>
 
