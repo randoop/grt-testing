@@ -10,12 +10,12 @@
     <property name="plugin" value="-Xplugin:MajorPlugin ${mutator}"/>
     <property name="jacoco.destfile" value="results/jacoco.exec"/>
 
-    <!-- Import JaCoCo Ant tasks -->
+<!-- Import JaCoCo Ant tasks -->
     <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
         <classpath path="build/jacocoant.jar"/>
     </taskdef>
 
-    <!-- Target to clean up -->
+<!-- Target to clean up -->
     <target name="clean" description="Clean">
         <delete dir="build/bin"/>
         <delete>
