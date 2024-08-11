@@ -6,11 +6,11 @@
 # test suites can be generated with Bloodhound, Orienteering, neither (baseline), or both.
 # Mutation testing is used on projects provided in table 2 of the GRT paper.
 
-# This script will create Randoop's test suites in a "build/test*" subdirectory. 
+# This script will create Randoop's test suites in a "build/test*" subdirectory.
 # Compiled tests and code will be stored in the "build/bin" subdirectory.
 # The script will generate various mutants of the source project using Major and run these tests on those mutants.
 
-# Finally, each experiment can run a given amount of times and a given amount of seconds per class. 
+# Finally, each experiment can run a given amount of times and a given amount of seconds per class.
 # Various statistics of each iteration will be logged to a file "results/info.txt".
 # All other files logged to the "results" subdirectory are specific to the most recent iteration of the experiment.
 
@@ -65,7 +65,7 @@ RANDOOP_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOCO_AGE
 echo "Using Randoop to generate tests"
 echo
 
-# Output file for runtime information 
+# Output file for runtime information
 rm -f results/info.txt
 mkdir -p results/
 touch results/info.txt
@@ -122,12 +122,12 @@ do
     # mkdir "$TEST_DIRECTORY"
     # $RANDOOP_COMMAND --junit-output-dir="$TEST_DIRECTORY"
 
-    echo    
+    echo
     echo "Compiling and mutating project"
     echo '(ant -Dmutator="=mml:'"$MAJOR_HOME"'/mml/all.mml.bin" clean compile)'
     echo
     "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" clean compile
-    
+
     echo
     echo "Compiling tests"
     echo "(ant compile.tests)"
