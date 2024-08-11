@@ -75,43 +75,45 @@ RANDOOP_VERSIONS=("BLOODHOUND" "BASELINE") #"ORIENTEERING" "BLOODHOUND_AND_ORIEN
 # shellcheck disable=SC2034 # i counts iterations but is not otherwise used.
 for i in $(seq 1 $NUM_LOOP)
 do
-     for RANDOOP_VERSION in "${RANDOOP_VERSIONS[@]}"
-     do
-         rm -rf "$CURR_DIR"/build/test*
-         echo "Using $RANDOOP_VERSION"
-         echo
-         TEST_DIRECTORY="$CURR_DIR/build/test/$RANDOOP_VERSION"
-         mkdir -p "$TEST_DIRECTORY"
+    for RANDOOP_VERSION in "${RANDOOP_VERSIONS[@]}"
+    do
+        rm -rf "$CURR_DIR"/build/test*
+        echo "Using $RANDOOP_VERSION"
+        echo
+        TEST_DIRECTORY="$CURR_DIR/build/test/$RANDOOP_VERSION"
+        mkdir -p "$TEST_DIRECTORY"
 
-         # Variable that stores command line inputs common among all commands
-         RANDOOP_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOCO_AGENT_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=$TIME_LIMIT --junit-output-dir=$TEST_DIRECTORY"
+        # Variable that stores command line inputs common among all commands
+        RANDOOP_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOCO_AGENT_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=$TIME_LIMIT --junit-output-dir=$TEST_DIRECTORY"
 
-         if [ "$RANDOOP_VERSION" == "BLOODHOUND" ]; then
-             $RANDOOP_COMMAND --method-selection=BLOODHOUND
+        if [ "$RANDOOP_VERSION" == "BLOODHOUND" ]; then
+            $RANDOOP_COMMAND --method-selection=BLOODHOUND
 
-         elif [ "$RANDOOP_VERSION" == "BASELINE" ]; then
-             $RANDOOP_COMMAND
+        elif [ "$RANDOOP_VERSION" == "BASELINE" ]; then
+            $RANDOOP_COMMAND
 
-         elif [ "$RANDOOP_VERSION" == "ORIENTEERING" ]; then
-             $RANDOOP_COMMAND --input-selection=ORIENTEERING
+        elif [ "$RANDOOP_VERSION" == "ORIENTEERING" ]; then
+            $RANDOOP_COMMAND --input-selection=ORIENTEERING
 
-         elif [ "$RANDOOP_VERSION" == "BLOODHOUND_AND_ORIENTEERING" ]; then
-             $RANDOOP_COMMAND --input-selection=ORIENTEERING --method-selection=BLOODHOUND
+        elif [ "$RANDOOP_VERSION" == "BLOODHOUND_AND_ORIENTEERING" ]; then
+            $RANDOOP_COMMAND --input-selection=ORIENTEERING --method-selection=BLOODHOUND
 
-         elif [ "$RANDOOP_VERSION" == "DETECTIVE" ]; then
-             $RANDOOP_COMMAND --demand-driven=true
+        elif [ "$RANDOOP_VERSION" == "DETECTIVE" ]; then
+            $RANDOOP_COMMAND --demand-driven=true
 
-         elif [ "$RANDOOP_VERSION" == "GRT_FUZZING" ]; then
-             $RANDOOP_COMMAND --grt-fuzzing=true
+        elif [ "$RANDOOP_VERSION" == "GRT_FUZZING" ]; then
+            $RANDOOP_COMMAND --grt-fuzzing=true
 
-         elif [ "$RANDOOP_VERSION" == "ELEPHANT_BRAIN" ]; then
-             $RANDOOP_COMMAND --elephant-brain=true
+        elif [ "$RANDOOP_VERSION" == "ELEPHANT_BRAIN" ]; then
+            $RANDOOP_COMMAND --elephant-brain=true
 
-         elif [ "$RANDOOP_VERSION" == "CONSTANT_MINING" ]; then
-             $RANDOOP_COMMAND --constant-mining=true
+        elif [ "$RANDOOP_VERSION" == "CONSTANT_MINING" ]; then
+            $RANDOOP_COMMAND --constant-mining=true
 
-#         # Add additional configurations here as needed
-         fi
+        else
+            echo "Unknown RANDOOP_VERSION = $RANDOOP_VERSION"
+            exit 1
+        fi
 
          echo
          echo "Compiling and mutating project"
