@@ -35,7 +35,7 @@ MAJOR_HOME=$(realpath "build/major/")
 # Link to current directory
 CURR_DIR=$(realpath "$(pwd)")
 
-# Link to the randoop jar
+# Link to current version randoop jar. Replace with different version if new GRT component is being tested.
 RANDOOP_JAR=$(realpath "build/randoop-all-4.3.3.jar")
 
 # Link to jacoco agent jar. This is necessary for Bloodhound
@@ -78,54 +78,49 @@ fi
 JAR_DIR="$3"
 CLASSPATH="$(echo "$JAR_DIR"/*.jar | tr ' ' ':')"
 
+# The different versions of Randoop to use. Adjust according to the versions you are testing.
+RANDOOP_VERSIONS=("BLOODHOUND" "BASELINE") #"ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
 # shellcheck disable=SC2034 # i counts iterations but is not otherwise used.
 for i in $(seq 1 $NUM_LOOP)
 do
-    rm -rf "$CURR_DIR"/build/test*
+    for RANDOOP_VERSION in "${RANDOOP_VERSIONS[@]}"
+    do
+        rm -rf "$CURR_DIR"/build/test*
+        echo "Using $RANDOOP_VERSION"
+        echo
+        TEST_DIRECTORY="$CURR_DIR/build/test/$RANDOOP_VERSION"
+        mkdir -p "$TEST_DIRECTORY"
 
-    # TODO: There should eventually be a command-line argument that chooses among the variants of Ranndoop.
+        RANDOOP_COMMAND_2="$RANDOOP_COMMAND --junit-output-dir=$TEST_DIRECTORY"
 
-    echo "Using Bloodhound"
-    echo
-    TEST_DIRECTORY="$CURR_DIR"/build/testBloodhound
-    mkdir "$TEST_DIRECTORY"
-    $RANDOOP_COMMAND --method-selection=BLOODHOUND --junit-output-dir="$TEST_DIRECTORY"
+        if [ "$RANDOOP_VERSION" == "BLOODHOUND" ]; then
+            $RANDOOP_COMMAND_2 --method-selection=BLOODHOUND
 
-    # echo "Using Orienteering"
-    # echo
-    # TEST_DIRECTORY="$CURR_DIR"/build/testOrienteering
-    # mkdir "$TEST_DIRECTORY"
-    # $RANDOOP_COMMAND --input-selection=ORIENTEERING --junit-output-dir="$TEST_DIRECTORY"
+        elif [ "$RANDOOP_VERSION" == "BASELINE" ]; then
+            $RANDOOP_COMMAND_2
 
-    # echo "Using Bloodhound and Orienteering"
-    # echo
-    # TEST_DIRECTORY="$CURR_DIR"/build/testBloodhoundOrienteering
-    # mkdir "$TEST_DIRECTORY"
-    # $RANDOOP_COMMAND --input-selection=ORIENTEERING --method-selection=BLOODHOUND --junit-output-dir="$TEST_DIRECTORY"
+        elif [ "$RANDOOP_VERSION" == "ORIENTEERING" ]; then
+            $RANDOOP_COMMAND_2 --input-selection=ORIENTEERING
 
-    # echo "Using Demand Driven"
-    # echo
-    # TEST_DIRECTORY="$CURR_DIR"/build/testDemandDriven
-    # mkdir "$TEST_DIRECTORY"
-    # $RANDOOP_COMMAND --demand-driven=true --junit-output-dir="$TEST_DIRECTORY"
+        elif [ "$RANDOOP_VERSION" == "BLOODHOUND_AND_ORIENTEERING" ]; then
+            $RANDOOP_COMMAND_2 --input-selection=ORIENTEERING --method-selection=BLOODHOUND
 
-    # echo "Using GRT Fuzzing"
-    # echo
-    # TEST_DIRECTORY="$CURR_DIR"/build/testGrtFuzzing
-    # mkdir "$TEST_DIRECTORY"
-    # $RANDOOP_COMMAND --grt-fuzzing=true --grt-fuzzing-stddev=30.0 --junit-output-dir="$TEST_DIRECTORY"
+        elif [ "$RANDOOP_VERSION" == "DETECTIVE" ]; then
+            $RANDOOP_COMMAND_2 --demand-driven=true
 
-    # echo "Using Elephant Brain"
-    # echo
-    # TEST_DIRECTORY="$CURR_DIR"/build/testElephantBrain
-    # mkdir "$TEST_DIRECTORY"
-    # $RANDOOP_COMMAND --elephant-brain=true --junit-output-dir="$TEST_DIRECTORY"
+        elif [ "$RANDOOP_VERSION" == "GRT_FUZZING" ]; then
+            $RANDOOP_COMMAND_2 --grt-fuzzing=true
 
-    # echo "Using Baseline Randoop"
-    # echo
-    # TEST_DIRECTORY="$CURR_DIR/build/testBaseline"
-    # mkdir "$TEST_DIRECTORY"
-    # $RANDOOP_COMMAND --junit-output-dir="$TEST_DIRECTORY"
+        elif [ "$RANDOOP_VERSION" == "ELEPHANT_BRAIN" ]; then
+            $RANDOOP_COMMAND_2 --elephant-brain=true
+
+        elif [ "$RANDOOP_VERSION" == "CONSTANT_MINING" ]; then
+            $RANDOOP_COMMAND_2 --constant-mining=true
+
+        else
+            echo "Unknown RANDOOP_VERSION = $RANDOOP_VERSION"
+            exit 1
+        fi
 
     "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" test
     mv jacoco.exec major.log suppression.log results
