@@ -48,7 +48,7 @@ SECONDS_CLASS="2"
 NUM_LOOP=2
 
 # Link to src jar
-SRC_JAR=$(realpath "$SCRIPTDIR/../tests/$1")
+SRC_JAR=$(realpath "$SCRIPTDIR/../subject-programs/$1")
 
 # Link to src files for mutation generation and analysis
 JAVA_SRC_DIR="$2"

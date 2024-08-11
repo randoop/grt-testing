@@ -70,9 +70,9 @@
 <!-- The original test target -->
     <target name="test" depends="compile.tests" description="Run all unit test cases">
         <echo message="Running unit tests ..."/>
-        <junit  printsummary="true"
-                showoutput="true"
-                haltonfailure="false">
+        <junit printsummary="true"
+               showoutput="true"
+               haltonfailure="false">
             <formatter type="plain" usefile="false"/>
             <classpath path="build/bin"/>
             <batchtest fork="no">
