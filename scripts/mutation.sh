@@ -59,6 +59,9 @@ NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
 # Time limit for running Randoop
 TIME_LIMIT=$((NUM_CLASSES * SECONDS_CLASS))
 
+# Variable that stores command line inputs common among all commands
+RANDOOP_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOCO_AGENT_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=$TIME_LIMIT"
+
 echo "Using Randoop to generate tests"
 echo
 
@@ -83,32 +86,31 @@ do
         TEST_DIRECTORY="$CURR_DIR/build/test/$RANDOOP_VERSION"
         mkdir -p "$TEST_DIRECTORY"
 
-        # Variable that stores command line inputs common among all commands
-        RANDOOP_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOCO_AGENT_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=$TIME_LIMIT --junit-output-dir=$TEST_DIRECTORY"
+        RANDOOP_COMMAND_2="$RANDOOP_COMMAND --junit-output-dir=$TEST_DIRECTORY"
 
         if [ "$RANDOOP_VERSION" == "BLOODHOUND" ]; then
-            $RANDOOP_COMMAND --method-selection=BLOODHOUND
+            $RANDOOP_COMMAND_2 --method-selection=BLOODHOUND
 
         elif [ "$RANDOOP_VERSION" == "BASELINE" ]; then
-            $RANDOOP_COMMAND
+            $RANDOOP_COMMAND_2
 
         elif [ "$RANDOOP_VERSION" == "ORIENTEERING" ]; then
-            $RANDOOP_COMMAND --input-selection=ORIENTEERING
+            $RANDOOP_COMMAND_2 --input-selection=ORIENTEERING
 
         elif [ "$RANDOOP_VERSION" == "BLOODHOUND_AND_ORIENTEERING" ]; then
-            $RANDOOP_COMMAND --input-selection=ORIENTEERING --method-selection=BLOODHOUND
+            $RANDOOP_COMMAND_2 --input-selection=ORIENTEERING --method-selection=BLOODHOUND
 
         elif [ "$RANDOOP_VERSION" == "DETECTIVE" ]; then
-            $RANDOOP_COMMAND --demand-driven=true
+            $RANDOOP_COMMAND_2 --demand-driven=true
 
         elif [ "$RANDOOP_VERSION" == "GRT_FUZZING" ]; then
-            $RANDOOP_COMMAND --grt-fuzzing=true
+            $RANDOOP_COMMAND_2 --grt-fuzzing=true
 
         elif [ "$RANDOOP_VERSION" == "ELEPHANT_BRAIN" ]; then
-            $RANDOOP_COMMAND --elephant-brain=true
+            $RANDOOP_COMMAND_2 --elephant-brain=true
 
         elif [ "$RANDOOP_VERSION" == "CONSTANT_MINING" ]; then
-            $RANDOOP_COMMAND --constant-mining=true
+            $RANDOOP_COMMAND_2 --constant-mining=true
 
         else
             echo "Unknown RANDOOP_VERSION = $RANDOOP_VERSION"
