@@ -139,7 +139,7 @@ do
         echo '(ant -Dmutator="=mml:'"$MAJOR_HOME"'/mml/all.mml.bin" clean compile)'
         echo
         "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" test
-        mv jacoco.exec major.log suppression.log results
+        mv jacoco.exec results
         java -jar "$JACOCO_CLI_JAR" report "results/jacoco.exec" --classfiles "$SRC_JAR" --sourcefiles "$JAVA_SRC_DIR" --csv results/report.csv
 
         # Calculate Instruction Coverage
@@ -161,7 +161,7 @@ do
         echo "Run tests with mutation analysis"
         echo "(ant mutation.test)"
         "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -lib "$CLASSPATH" mutation.test
-        mv mutants.log results
+
         # Calculate Mutation Score
         mutants_covered=$(awk -F, 'NR==2 {print $3}' results/summary.csv)
         mutants_killed=$(awk -F, 'NR==2 {print $4}' results/summary.csv)
@@ -174,4 +174,7 @@ do
         # info.csv contains a record of each pass.
         echo -e "$row" >> results/info.csv
     done
+
+# Clean up dangling files
+mv suppression.log major.log mutants.log results
 done
