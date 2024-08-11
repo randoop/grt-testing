@@ -21,7 +21,7 @@
         <delete>
             <fileset dir="." includes="*.csv"/>
             <fileset dir="." includes="*.log"/>
-	    </delete>
+        </delete>
     </target>
 
 <!-- Target to initialize build -->
@@ -54,8 +54,8 @@
     <target name="mutation.test" description="Run mutation analysis for all unit test cases">
         <echo message="Running mutation analysis ..."/>
         <junit  printsummary="false"
-        		showoutput="false"
-        		mutationAnalysis="true"
+                showoutput="false"
+                mutationAnalysis="true"
                 serializedMapsFile="results/preprocessing.ser"
                 mutantsLogFile="mutants.log"
                 summaryFile="results/summary.csv"
