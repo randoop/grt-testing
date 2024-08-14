@@ -175,6 +175,6 @@ do
         echo -e "$row" >> results/info.csv
     done
 
-# Clean up dangling files
-mv suppression.log major.log mutants.log results
+    # Move all output files into results/ directory.
+    mv suppression.log major.log mutants.log results
 done
