@@ -36,7 +36,10 @@ MAJOR_HOME=$(realpath "build/major/")
 CURR_DIR=$(realpath "$(pwd)")
 
 # Link to the randoop jar
+RANDOOP_JAR=$(realpath "build/randoop-all-4.3.3-constructor.jar")
 RANDOOP_JAR=$(realpath "build/randoop-all-4.3.3.jar")
+#RANDOOP_JAR=$(realpath "../../randoop/build/libs/randoop-all-4.3.3.jar")
+#RANDOOP_JAR=$(realpath "../../grt-testing/scripts/build/randoop-all-4.3.3.jar")
 
 # Link to jacoco agent jar. This is necessary for Bloodhound
 JACOCO_AGENT_JAR=$(realpath "build/jacocoagent.jar")
@@ -45,7 +48,7 @@ JACOCO_AGENT_JAR=$(realpath "build/jacocoagent.jar")
 SECONDS_CLASS="2"
 
 # Number of times to run experiments (10 in GRT paper)
-NUM_LOOP=2
+NUM_LOOP=1
 
 # Link to src jar
 SRC_JAR=$(realpath "$SCRIPTDIR/../tests/$1")
@@ -60,7 +63,8 @@ NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
 TIME_LIMIT=$((NUM_CLASSES * SECONDS_CLASS))
 
 # Variable that stores command line inputs common among all commands
-RANDOOP_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOCO_AGENT_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=$TIME_LIMIT"
+RANDOOP_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOCO_AGENT_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=5 --deterministic=false --randomseed=0"
+
 
 echo "Using Randoop to generate tests"
 echo
@@ -80,11 +84,11 @@ do
 
     # TODO: There should eventually be a command-line argument that chooses among the variants of Randoop.
 
-    echo "Using Bloodhound"
-    echo
-    TEST_DIRECTORY="$CURR_DIR"/build/testBloodhound
-    mkdir "$TEST_DIRECTORY"
-    $RANDOOP_COMMAND --method-selection=BLOODHOUND --junit-output-dir="$TEST_DIRECTORY"
+#    echo "Using Bloodhound"
+#    echo
+#    TEST_DIRECTORY="$CURR_DIR"/build/testBloodhound
+#    mkdir "$TEST_DIRECTORY"
+#    $RANDOOP_COMMAND --method-selection=BLOODHOUND --junit-output-dir="$TEST_DIRECTORY"
 
     # echo "Using Orienteering"
     # echo
@@ -116,16 +120,18 @@ do
     # mkdir "$TEST_DIRECTORY"
     # $RANDOOP_COMMAND --elephant-brain=true --junit-output-dir="$TEST_DIRECTORY"
 
-    # echo "Using Baseline Randoop"
-    # echo
-    # TEST_DIRECTORY="$CURR_DIR/build/testBaseline"
-    # mkdir "$TEST_DIRECTORY"
-    # $RANDOOP_COMMAND --junit-output-dir="$TEST_DIRECTORY"
+     echo "Using Baseline Randoop"
+     echo
+     TEST_DIRECTORY="$CURR_DIR/build/testBaseline"
+     mkdir "$TEST_DIRECTORY"
+     $RANDOOP_COMMAND --junit-output-dir="$TEST_DIRECTORY"
 
     echo    
     echo "Compiling and mutating project"
     echo '(ant -Dmutator="=mml:'"$MAJOR_HOME"'/mml/all.mml.bin" clean compile)'
     echo
+    echo "-------------------------------------------------------------------------------------------------"
+    echo $JAVA_SRC_DIR
     "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" clean compile
     
     echo

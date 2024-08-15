@@ -5,7 +5,7 @@
      <property name="major.jar" value="build/major/lib/major.jar"/>
      <property name="mutator" value=""/>
 -    <property name="plugin" value="-Xplugin:MajorPlugin ${mutator}"/>
-+    <property name="plugin" value="-Xplugin:MajorPlugin ${mutator} Major enable.decl.refactor enable.method.refactor"/>
++    <property name="plugin" value="-Xplugin:MajorPlugin ${mutator} enable.decl.refactor enable.method.refactor"/>
  
  
  <!-- Target to clean up -->
