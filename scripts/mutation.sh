@@ -36,6 +36,7 @@ MAJOR_HOME=$(realpath "build/major/")
 CURR_DIR=$(realpath "$(pwd)")
 
 # Link to the randoop jar
+# TODO: Will remove unnecessary jars when the PR is merged
 RANDOOP_JAR=$(realpath "build/randoop-all-4.3.3-constructor.jar")
 RANDOOP_JAR=$(realpath "build/randoop-all-4.3.3.jar")
 #RANDOOP_JAR=$(realpath "../../randoop/build/libs/randoop-all-4.3.3.jar")
@@ -84,11 +85,11 @@ do
 
     # TODO: There should eventually be a command-line argument that chooses among the variants of Randoop.
 
-#    echo "Using Bloodhound"
-#    echo
-#    TEST_DIRECTORY="$CURR_DIR"/build/testBloodhound
-#    mkdir "$TEST_DIRECTORY"
-#    $RANDOOP_COMMAND --method-selection=BLOODHOUND --junit-output-dir="$TEST_DIRECTORY"
+    # echo "Using Bloodhound"
+    # echo
+    # TEST_DIRECTORY="$CURR_DIR"/build/testBloodhound
+    # mkdir "$TEST_DIRECTORY"
+    # $RANDOOP_COMMAND --method-selection=BLOODHOUND --junit-output-dir="$TEST_DIRECTORY"
 
     # echo "Using Orienteering"
     # echo
@@ -120,11 +121,11 @@ do
     # mkdir "$TEST_DIRECTORY"
     # $RANDOOP_COMMAND --elephant-brain=true --junit-output-dir="$TEST_DIRECTORY"
 
-     echo "Using Baseline Randoop"
-     echo
-     TEST_DIRECTORY="$CURR_DIR/build/testBaseline"
-     mkdir "$TEST_DIRECTORY"
-     $RANDOOP_COMMAND --junit-output-dir="$TEST_DIRECTORY"
+    echo "Using Baseline Randoop"
+    echo
+    TEST_DIRECTORY="$CURR_DIR/build/testBaseline"
+    mkdir "$TEST_DIRECTORY"
+    $RANDOOP_COMMAND --junit-output-dir="$TEST_DIRECTORY"
 
     echo    
     echo "Compiling and mutating project"

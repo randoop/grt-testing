@@ -7,7 +7,7 @@
      ############################################## -->
     <property name="major.jar" value="build/major/lib/major.jar"/>
     <property name="mutator" value=""/>
-    <property name="plugin" value="-Xplugin:MajorPlugin ${mutator} enable.decl.refactor enable.method.refactor"/>
+    <property name="plugin" value="-Xplugin:MajorPlugin ${mutator}"/>
 
 
 <!-- Target to clean up -->
@@ -29,9 +29,7 @@
         <javac includeantruntime="true" 
                srcdir="${src}"
                destdir="build/bin"
-               debug="yes"
-               source="1.5"
-               target="1.5">
+               debug="yes">
             <classpath location="${major.jar}"/>
             <compilerarg value="${plugin}"/>
         </javac>
