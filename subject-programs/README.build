@@ -1,34 +1,32 @@
-If you wish to build any of the test jars from source, you must clone them
-from the appropriate repository at github.com/randoop. This is because the
-sources for these projects are several years old and in some cases we have
-made modifications to get them to compile correctly.
-(The location where we found the original source we started from is in the
-table at the end of this document.)
-
-You may use the script 'get-all-subject-src.sh' in this directory to make
-a copy of all the subject program source files.  They will be created in a
-subdirectory of the current directory named 'src'.
+You may use the script 'get-all-subject-src.sh' in this directory to obtain
+the subject program source files.  They will be created in a subdirectory
+of the current directory named 'src'.  They are slightly different than the
+originals (whose location appears below) because these projects are several
+years old and in some cases we have made modifications to get them to
+compile correctly.
 
 If you wish to only get the source for a single subject program, the name of its
 source repository is test directory name as noted below, prepended with 'grt-'.
 For example, to get the source for bcel-5.2:
+```
   mkdir -p src
   cd src
   git clone git@github.com:randoop/grt-bcel-5.2 bcel-5.2
   cd bcel-5.2
+```
 
-After cloning the source, follow the build instructions for each particicular test
-case as listed below. It should be noted that in almost all cases Java 8 is required
-to build. Also, the environment variable JAVA_HOME should be set; for example:
+After cloning the source, follow the build instructions given below.  In
+almost all cases, Java 8 is required to build. Also, the environment
+variable JAVA_HOME should be set; for example:
   export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 
 Maven (mvn) builds
 ------------------
 If the project uses Maven to build, usually indicated by a pom.xml file in
 the root, a useful build command is:
-  mvn -B clean package -Dmaven.test.failure.ignore -Dmaven.javadoc.skip |& tee <your log file name>
-for pmd-core use:
-  mvn -B clean package -Dmaven.test.skip -Dmaven.javadoc.skip -DjavaccBuildNotRequired |& tee <your log file name>
+```
+  mvn -B clean package -Dmaven.test.failure.ignore -Dmaven.javadoc.skip |& tee mvn-output.txt
+```
 
 The failure.ignore option allows the .jar file to be built even if there are
 some test errors.  However, if there are lots of errors, there is probably
@@ -63,7 +61,7 @@ joda-time-2.3:            (uses mvn)
 JSAP-2.1:                 ant jar         (result is in dist subdir)
 jvc-1.1:                  ant tools       (result is in dist subdir)
 nekomud-r16:              ant             (result is in dist subdir)
-pmd-core-5.2.2:           (uses mvn - but 'cd pmd-core' first)
+pmd-core-5.2.2:           cd pmd-core; mvn -B clean package -Dmaven.test.skip -Dmaven.javadoc.skip -DjavaccBuildNotRequired
 sat4j.core-2.3.5:         (uses mvn)      (result is in org.sat4j.core/target)
 shiro-root-1.2.3:         (uses mvn - but 'cd core' first)
 slf4j-api-1.7.12:         (uses mvn - but 'cd slf4j-api' first)
