@@ -1,4 +1,4 @@
-<project name="Script" default="compile" basedir=".">
+<project name="Script" default="compile" basedir="." xmlns:jacoco="antlib:org.jacoco.ant">
 
 <!-- ##############################################
       Path to major.jar and (optional) mml file
@@ -8,7 +8,12 @@
     <property name="major.jar" value="build/major/lib/major.jar"/>
     <property name="mutator" value=""/>
     <property name="plugin" value="-Xplugin:MajorPlugin ${mutator}"/>
+    <property name="jacoco.destfile" value="results/jacoco.exec"/>
 
+<!-- Import JaCoCo Ant tasks -->
+    <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
+        <classpath path="build/jacocoant.jar"/>
+    </taskdef>
 
 <!-- Target to clean up -->
     <target name="clean" description="Clean">
@@ -16,7 +21,7 @@
         <delete>
             <fileset dir="." includes="*.csv" excludes="project-config-status.csv"/>
             <fileset dir="." includes="*.log"/>
-	    </delete>
+        </delete>
     </target>
 
 <!-- Target to initialize build -->
@@ -47,17 +52,16 @@
 <!-- The adapted mutation test target -->
     <target name="mutation.test" description="Run mutation analysis for all unit test cases">
         <echo message="Running mutation analysis ..."/>
-        <junit  printsummary="false" 
-        		showoutput="false" 
-        		mutationAnalysis="true"
-                serializedMapsFile="results/preprocessing.ser"
-                mutantsLogFile="mutants.log"
-                summaryFile="results/summary.csv" 
-                mutantDetailsFile="results/details.csv"
-                covMapFile="results/covMap.csv"
-                testMapFile="results/testMap.csv"
-                killMapFile="results/killMap.csv">
-                
+        <junit printsummary="false"
+               showoutput="false"
+               mutationAnalysis="true"
+               serializedMapsFile="results/preprocessing.ser"
+               mutantsLogFile="mutants.log"
+               summaryFile="results/summary.csv"
+               mutantDetailsFile="results/details.csv"
+               covMapFile="results/covMap.csv"
+               testMapFile="results/testMap.csv"
+               killMapFile="results/killMap.csv">
             <classpath path="build/bin"/>
             <batchtest fork="false">
                 <fileset dir="${test}">
@@ -70,17 +74,20 @@
 <!-- The original test target -->
     <target name="test" depends="compile.tests" description="Run all unit test cases">
         <echo message="Running unit tests ..."/>
-        <junit  printsummary="true" 
-        		showoutput="true" 
-                haltonfailure="false">
-            <formatter type="plain" usefile="false"/>
-            <classpath path="build/bin"/>
-			
-			<batchtest fork="no">
-                <fileset dir="${test}">
-                    <include name="**/*Test*.java"/>
-                </fileset>
-            </batchtest>
-        </junit>
+        <jacoco:coverage destfile="${jacoco.destfile}">
+            <junit  printsummary="true"
+                    showoutput="true"
+                    haltonfailure="false"
+                    fork="true" forkmode="once">
+                <formatter type="plain" usefile="false"/>
+                <classpath path="build/bin"/>
+
+                <batchtest fork="no">
+                    <fileset dir="${test}">
+                        <include name="**/*Test*.java"/>
+                    </fileset>
+                </batchtest>
+            </junit>
+        </jacoco:coverage>
     </target>
 </project>
