@@ -25,8 +25,6 @@ if [ "$JAVA_VERSION" -ne 8 ]; then
   exit 1
 fi
 
-make
-
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 # Link to the major directory
@@ -68,7 +66,7 @@ NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
 TIME_LIMIT=$((NUM_CLASSES * SECONDS_CLASS))
 
 # Variable that stores command line inputs common among all commands
-RANDOOP_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOCO_AGENT_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=5 --deterministic=false --randomseed=0"
+RANDOOP_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOCO_AGENT_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=1 --deterministic=false --randomseed=0"
 
 
 echo "Using Randoop to generate tests"
@@ -85,7 +83,7 @@ JAR_DIR="$3"
 CLASSPATH="$(echo "$JAR_DIR"/*.jar | tr ' ' ':')"
 
 # The different versions of Randoop to use. Adjust according to the versions you are testing.
-RANDOOP_VERSIONS=("BLOODHOUND" "BASELINE") #"ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
+RANDOOP_VERSIONS=( "BASELINE" "BLOODHOUND") #"ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
 # shellcheck disable=SC2034 # i counts iterations but is not otherwise used.
 for i in $(seq 1 $NUM_LOOP)
 do
