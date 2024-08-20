@@ -1,5 +1,5 @@
-mkdir -p src
-cd src
+mkdir -p ../subject-programs/src
+cd ../subject-programs/src
 git clone git@github.com:randoop/grt-a4j-1.0b a4j-1.0b
 git clone git@github.com:randoop/grt-asm-5.0.1 asm-5.0.1
 git clone git@github.com:randoop/grt-bcel-5.2 bcel-5.2
