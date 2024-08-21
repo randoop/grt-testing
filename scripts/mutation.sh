@@ -35,11 +35,7 @@ CURR_DIR=$(realpath "$(pwd)")
 
 # Link to current version randoop jar. Replace with different version if new GRT component is being tested.
 # Link to the randoop jar
-# TODO: Will remove unnecessary jars when the PR is merged
-RANDOOP_JAR=$(realpath "build/randoop-all-4.3.3-constructor.jar")
 RANDOOP_JAR=$(realpath "build/randoop-all-4.3.3.jar")
-#RANDOOP_JAR=$(realpath "../../randoop/build/libs/randoop-all-4.3.3.jar")
-#RANDOOP_JAR=$(realpath "../../grt-testing/scripts/build/randoop-all-4.3.3.jar")
 
 # Link to jacoco agent jar. This is necessary for Bloodhound
 JACOCO_AGENT_JAR=$(realpath "build/jacocoagent.jar")
@@ -66,7 +62,7 @@ NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
 TIME_LIMIT=$((NUM_CLASSES * SECONDS_CLASS))
 
 # Variable that stores command line inputs common among all commands
-RANDOOP_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOCO_AGENT_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=1 --deterministic=false --randomseed=0"
+RANDOOP_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOCO_AGENT_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=10 --deterministic=false --randomseed=0"
 
 
 echo "Using Randoop to generate tests"
