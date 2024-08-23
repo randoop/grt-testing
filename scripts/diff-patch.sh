@@ -1,21 +1,21 @@
 #!/bin/bash
 # This script restores the original build.xml or applies a build.patch if provided.
-# Usage: ./script.sh [path_to_directory]
-# If no path is supplied, it recovers build.xml to its default state.
+# Usage: ./script.sh [subject-program]
+# If a program name is not supplied, it restores build.xml to its default state.
 
-# Recover the original build.xml
-echo "Restoring scripts/build.xml to its original version..."
+# Restore the original build.xml before looking for a patch
 cp build-variants/build.xml build.xml
 
-# Check if a directory is provided
+# Check if a subject-program is provided
 if [ -n "$1" ]; then
-  # Check if build.patch exists in the provided directory
-  if [ -f "$1/build.patch" ]; then
-    echo "build.patch found in $1. Applying patch to build.xml..."
-    patch build.xml < "$1/build.patch"
+  # Check if build.patch exists in 'build-variants/subject-program'
+  if [ -f "build-variants/$1/build.patch" ]; then
+    echo "build.patch found in build-variants/$1. Applying patch to build.xml..."
+    patch build.xml < "build-variants/$1/build.patch"
   else
-    echo "No build.patch found in $1."
+    echo "No build.patch found in build-variants/$1."
+    echo "build.xml was restored to its original version..."
   fi
 else
-  echo "No directory provided. build.xml has been restored to its original version."
+  echo "No subject-program provided. build.xml has been restored to its original version."
 fi
