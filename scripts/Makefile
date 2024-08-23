@@ -1,4 +1,4 @@
-all: build/jacoco.jar build/randoop-all-4.3.3.jar build/major results/
+all: build/jacoco.jar build/randoop-all-4.3.3.jar build/major results
 
 build/jacoco.jar:
 	mkdir -p build
@@ -14,11 +14,14 @@ build/major:
 	cd build && wget -nv http://mutation-testing.org/major-latest.zip
 	cd build && unzip -o major-latest.zip
 
-results/:
+results:
 	mkdir -p results
 
 clean:
 	rm -rf build && rm -rf results
+
+src:
+	../subject-programs/get-all-subject-src.sh
 
 SH_SCRIPTS   = $(shell grep -r -l '^\#! \?\(/bin/\|/usr/bin/env \)sh'   * | grep -v /.git/ | grep -v '~$$' | grep -v '\.tar$$' | grep -v addrfilter | grep -v cronic-orig | grep -v gradlew | grep -v mail-stackoverflow.sh)
 BASH_SCRIPTS = $(shell grep -r -l '^\#! \?\(/bin/\|/usr/bin/env \)bash' * | grep -v /.git/ | grep -v '~$$' | grep -v '\.tar$$' | grep -v addrfilter | grep -v cronic-orig | grep -v gradlew | grep -v mail-stackoverflow.sh)
