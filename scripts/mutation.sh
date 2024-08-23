@@ -61,8 +61,11 @@ NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
 # Time limit for running Randoop
 TIME_LIMIT=$((NUM_CLASSES * SECONDS_CLASS))
 
+# Random seed for Randoop
+RANDOM_SEED=0
+
 # Variable that stores command line inputs common among all commands
-RANDOOP_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOCO_AGENT_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=10 --deterministic=false --randomseed=0"
+RANDOOP_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOCO_AGENT_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=10 --deterministic=false --randomseed=$RANDOM_SEED"
 
 
 echo "Using Randoop to generate tests"
@@ -122,6 +125,9 @@ do
             exit 1
         fi
 
+        RESULT_DIR="results/$(date +%Y%m%d-%H%M%S)-$RANDOOP_VERSION-$(basename "$SRC_JAR" .jar)-Seed-$RANDOM_SEED"
+        mkdir -p "$RESULT_DIR"
+
         echo
         echo "Compiling and mutating project"
         echo '(ant -Dmutator="=mml:'"$MAJOR_HOME"'/mml/all.mml.bin" clean compile)'
@@ -157,6 +163,8 @@ do
         echo "Instruction Coverage: $instruction_coverage%"
         echo "Branch Coverage: $branch_coverage%"
 
+        mv results/report.csv "$RESULT_DIR"
+
         echo
         echo "Run tests with mutation analysis"
         echo "(ant mutation.test)"
@@ -170,11 +178,14 @@ do
 
         echo "Mutation Score: $mutation_score%"
 
+        mv results/summary.csv "$RESULT_DIR"
+
         row="$RANDOOP_VERSION,$(basename "$SRC_JAR"),$instruction_coverage%,$branch_coverage%,$mutation_score%"
         # info.csv contains a record of each pass.
         echo -e "$row" >> results/info.csv
     done
 
     # Move all output files into results/ directory.
-    mv suppression.log major.log mutants.log results
+    mv suppression.log major.log mutants.log "$RESULT_DIR"
+    mv results/{covMap.csv,details.csv,testMap.csv,preprocessing.ser,jacoco.exec} "$RESULT_DIR"
 done
