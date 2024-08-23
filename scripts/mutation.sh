@@ -79,7 +79,7 @@ JAR_DIR="$3"
 CLASSPATH="$(echo "$JAR_DIR"/*.jar | tr ' ' ':')"
 
 # The different versions of Randoop to use. Adjust according to the versions you are testing.
-RANDOOP_VERSIONS=( "BASELINE" ) #"BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
+RANDOOP_VERSIONS=( "BASELINE" ) # "BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
 # shellcheck disable=SC2034 # i counts iterations but is not otherwise used.
 for i in $(seq 1 $NUM_LOOP)
 do
