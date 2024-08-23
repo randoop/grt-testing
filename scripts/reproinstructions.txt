@@ -1,39 +1,55 @@
 # Reproduction Instructions for Mutation Testing Script
 
-This document provides detailed instructions on how to run the mutation testing script. Please follow these steps:
+This document provides detailed instructions on how to run the mutation testing script (mutation.sh).
+Refer to scripts/project-config-status.csv for the status of each subject-program. That file indicates
+whether a project can be correctly built by scripts/build.xml when following the instructions below.
 
-1. **Makefile**: Execute ```make``` to set up the necessary dependencies for the script.
+Before you can run the mutation script, you must setup the testing environment.
+You must have JDK 8 as your default java/javac for most of the subject-programs.
 
-2. **Script Parameters**: The script takes two parameters:
-    - `[jarfile name]`: The name of the jar file of the project for which you want to generate tests and perform mutation testing. These should be one of the jarfiles in the `grt-testing/subject-programs` subdirectory
-    - `[Linux directory of project's Java source code]`: The Linux directory where that project's Java source code is located. This is used for mutation generation and analysis.
+1. Install the Randoop and mutation programs (this step only needs to be done once).
+   ```
+   make
+   ```
 
-3. **Patching the Script**: Navigate to the directory containing the script (`scripts/`) and run the following command:
-    ```
-    ./diff-patch.sh [patch dir]
-    ```
-    Where `[patch dir]` is the directory with a build.patch file. For each project, there exists a directory build-variants/project-name that contains the respective build.patch. Replace `[patch dir]` with build-variants/project-name.
+2. Load the source repository for the subject-program you wish to test.  You can load the source
+   for all the subject programs with:
+   ```
+   make src
+   ```
+   If you would prefer to load just the source for a single subject program, see the instructions
+   at the beginning of the file:
+   ```
+   ../subject-programs/README.build
+   ```
 
-    To reset the script to its default state, run:
-    ```
-    ./diff-patch.sh
-    ```
-    without any argument.
+3. Modify the build script for the subject-program you wish to test:
+   ```
+   ./diff-patch.sh <program name>
+   ```
 
-    Refer to scripts/project-config-status.csv for the status of each project. This file indicates whether each project can be correctly built by scripts/build.xml after applying diff-patch.sh without any additional modifications.
+You are now ready to run the mutation test script.
 
-4. **Running the Script**: Navigate to the directory containing the script and run the following command:
+The script takes three parameters:
+    - `[jarfile name]`: The name of the jar file of the project for which you want to generate tests
+    and perform mutation testing. These should be one of the jarfiles in the `grt-testing/subject-programs` subdirectory.
+    - `[directory of project's source code]`: The directory where that project's source code is located.
+    This is used for mutation generation and analysis.
+    - `[dependency dir]`: the full path name to a directory containing all the `.jar` files needed by the subject program.
+    This argument is optional, as most of the programs do not require it.  If needed, it will typically be a 
+    directory named `lib`.
     ```
     ./mutation.sh [jarfile] [source dir] [dependency dir]
     ```
-  * jarfile: the base name (no directory information) of the jar file containing compiled subject program
-  * source dir: the source code of the subject program
-  * dependency dir: the CLASSPATH of the subject program: a directory containing all the `.jar` files needed by the subject program
 
-5. **Output**: The script will generate Randoop's test suites in a "build/test" subdirectory. Compiled tests and code will be stored in a "build/bin" subdirectory. The script will generate various mutants of the source project using Major and run these tests on those mutants. Each experiment can run a given number of times and a given number of seconds per class. Various statistics of each iteration will be logged to a file "results/info.txt".
+The script will generate Randoop's test suites in a "build/test" subdirectory. Compiled tests and code
+will be stored in a "build/bin" subdirectory. The script will generate various mutants of the source
+project using Major and run these tests on those mutants. Each experiment can run a given number of
+times and a given number of seconds per class. Various statistics of each iteration will be logged to
+a file "results/info.txt".
 
-**NOTE**: The latest release of Randoop does not implement functionality for Orienteering. If you wish to work with Orienteering,
-you should download and build Randoop from Github and replace $RANDOOP_JAR with the absolute path.
-For Demand-driven (PR #1260), GRT Fuzzing (PR #1304), and Elephant Brain (PR #1347), checkout the respective pull requests from the Randoop repository.
+**NOTE**: The latest release of Randoop does not implement functionality for Orienteering. If you wish
+to work with Orienteering, you should download and build Randoop from Github and replace $RANDOOP_JAR
+with the absolute path.  For Demand-driven (PR #1260), GRT Fuzzing (PR #1304), and Elephant Brain (PR #1347),
+checkout the respective pull requests from the Randoop repository.
 
-You must have JDK 8 as your default java/javac for commons-cli to build.
