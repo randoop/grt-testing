@@ -186,6 +186,6 @@ do
     done
 
     # Move all output files into the results directory
-    mv "$JAVA_SRC_DIR"/suppression.log "$RESULT_DIR"
-    mv results/{covMap.csv,details.csv,testMap.csv,preprocessing.ser,jacoco.exec} "$RESULT_DIR"
+    mv suppression.log major.log mutants.log "$RESULT_DIR"
+    (cd results; mv covMap.csv details.csv testMap.csv preprocessing.ser jacoco.exec ../"$RESULT_DIR")
 done
