@@ -65,7 +65,7 @@ TIME_LIMIT=$((NUM_CLASSES * SECONDS_CLASS))
 RANDOM_SEED=0
 
 # Variable that stores command line inputs common among all commands
-RANDOOP_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOCO_AGENT_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=10 --deterministic=false --randomseed=$RANDOM_SEED"
+RANDOOP_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOCO_AGENT_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=1 --deterministic=false --randomseed=$RANDOM_SEED"
 
 
 echo "Using Randoop to generate tests"
@@ -185,7 +185,7 @@ do
         echo -e "$row" >> results/info.csv
     done
 
-    # Move all output files into results/ directory.
-    mv suppression.log major.log mutants.log "$RESULT_DIR"
+    # Move all output files into the results directory
+    mv "$JAVA_SRC_DIR"/suppression.log "$RESULT_DIR"
     mv results/{covMap.csv,details.csv,testMap.csv,preprocessing.ser,jacoco.exec} "$RESULT_DIR"
 done
