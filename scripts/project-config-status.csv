@@ -22,7 +22,7 @@ jcommander-1.35,Working,
 jdom-1.0,TODO,`JDOMAbout` from jdom build target `about` not included in scripts/build.xml compilation process
 joda-time-2.3,Working,
 JSAP-2.1,Working,""
-jvc-1.1,,
+jvc-1.1,TODO,Randoop NoClassDefFoundError: javax/servlet/http/HttpServlet
 nekomud-r16,Working,
 pmd-core-5.2.2,,Missing dependencies when in test.compile
 sat4j.core-2.3.5,,
