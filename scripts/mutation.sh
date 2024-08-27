@@ -185,7 +185,9 @@ do
         echo -e "$row" >> results/info.csv
     done
 
+    set +e
     # Move all output files into the results directory
     mv suppression.log major.log mutants.log "$RESULT_DIR"
     (cd results; mv covMap.csv details.csv testMap.csv preprocessing.ser jacoco.exec ../"$RESULT_DIR")
+    set -e
 done
