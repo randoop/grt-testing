@@ -52,6 +52,9 @@ NUM_LOOP=1
 # Link to src jar
 SRC_JAR=$(realpath "$SCRIPTDIR/../subject-programs/$1")
 
+# Name of test case
+SRC_JAR_NAME=$(basename "$SRC_JAR" .jar)
+
 # Link to src files for mutation generation and analysis
 JAVA_SRC_DIR="$2"
 
@@ -68,8 +71,16 @@ RANDOM_SEED=0
 RANDOOP_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOCO_AGENT_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=1 --deterministic=false --randomseed=$RANDOM_SEED"
 
 
-echo "Using Randoop to generate tests"
+echo "Modifing build.xml for $SRC_JAR_NAME"
+./diff-patch.sh $SRC_JAR_NAME
 echo
+
+echo "Check out include-major branch, if present"
+# ignore error if branch doesn't exist, will stay on main branch
+(cd  $JAVA_SRC_DIR; git co include-major 2>/dev/null) || true
+echo
+
+echo "Using Randoop to generate tests"
 
 # Output file for runtime information
 mkdir -p results/
@@ -125,7 +136,7 @@ do
             exit 1
         fi
 
-        RESULT_DIR="results/$(date +%Y%m%d-%H%M%S)-$RANDOOP_VERSION-$(basename "$SRC_JAR" .jar)-Seed-$RANDOM_SEED"
+        RESULT_DIR="results/$(date +%Y%m%d-%H%M%S)-$RANDOOP_VERSION-$SRC_JAR_NAME-Seed-$RANDOM_SEED"
         mkdir -p "$RESULT_DIR"
 
         echo
@@ -166,7 +177,7 @@ do
         mv results/report.csv "$RESULT_DIR"
 
         echo
-        echo "Run tests with mutation analysis"
+        echo "Running tests with mutation analysis"
         echo "(ant mutation.test)"
         "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -lib "$CLASSPATH" mutation.test
 
@@ -185,9 +196,22 @@ do
         echo -e "$row" >> results/info.csv
     done
 
+    echo "Results will be saved in $RESULT_DIR"
     set +e
     # Move all output files into the results directory
-    mv suppression.log major.log mutants.log "$RESULT_DIR"
+    # suppression.log may be in one of two locations depending on if using include-major branch
+    mv "$JAVA_SRC_DIR"/suppression.log "$RESULT_DIR" 2>/dev/null
+    mv suppression.log "$RESULT_DIR" 2>/dev/null
+    mv major.log mutants.log "$RESULT_DIR"
     (cd results; mv covMap.csv details.csv testMap.csv preprocessing.ser jacoco.exec ../"$RESULT_DIR")
     set -e
 done
+
+echo
+echo "Restoring build.xml"
+# restore build.xml
+./diff-patch.sh > /dev/null
+
+echo "Restoring $JAVA_SRC_DIR to main branch"
+# switch to main branch (may already be there)
+(cd  $JAVA_SRC_DIR; git co main 1>/dev/null)

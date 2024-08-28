@@ -7,7 +7,9 @@ whether a project can be correctly built by scripts/build.xml when following the
 Before you can run the mutation script, you must setup the testing environment.
 You must have JDK 8 as your default java/javac for most of the subject-programs.
 
-1. Install the Randoop and mutation programs (this step only needs to be done once).
+(The following two steps need to be done only once.)
+
+1. Install the Randoop and mutation programs.
    ```
    make
    ```
@@ -21,11 +23,6 @@ You must have JDK 8 as your default java/javac for most of the subject-programs.
    at the beginning of the file:
    ```
    ../subject-programs/README.build
-   ```
-
-3. Modify the build script for the subject-program you wish to test:
-   ```
-   ./diff-patch.sh <program name>
    ```
 
 You are now ready to run the mutation test script.
