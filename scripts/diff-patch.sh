@@ -12,7 +12,7 @@ if [ -n "$1" ]; then
   if [ -f "build-variants/$1/build.patch" ]; then
     echo "build.patch found in build-variants/$1. Applying patch to build.xml..."
     patch build.xml < "build-variants/$1/build.patch" 1>/dev/null
-    rm build.xml.orig
+    rm -f build.xml.orig
   else
     echo "No build.patch found in build-variants/$1."
     echo "build.xml was restored to its original version..."

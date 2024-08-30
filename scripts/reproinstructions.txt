@@ -27,17 +27,14 @@ You must have JDK 8 as your default java/javac for most of the subject-programs.
 
 You are now ready to run the mutation test script.
 
-The script takes three parameters:
-    - `[jarfile name]`: The name of the jar file of the project for which you want to generate tests
-    and perform mutation testing. These should be one of the jarfiles in the `grt-testing/subject-programs` subdirectory.
-    - `[directory of project's source code]`: The directory where that project's source code is located.
-    This is used for mutation generation and analysis.
-    - `[dependency dir]`: the full path name to a directory containing all the `.jar` files needed by the subject program.
-    This argument is optional, as most of the programs do not require it.  If needed, it will typically be a 
-    directory named `lib`.
+The script takes one parameter:
+    - `[project name]`: The name of the project (jar file name without ".jar") for which you want to generate tests
+    and perform mutation testing. These should be one of the jar files in the `grt-testing/subject-programs` subdirectory.
+    For example, to run the script on the `commons-lang3-3.0` project, you would run:
     ```
-    ./mutation.sh [jarfile] [source dir] [dependency dir]
+    ./mutation.sh commons-lang3-3.0
     ```
+
 
 The script will generate Randoop's test suites in a "build/test" subdirectory. Compiled tests and code
 will be stored in a "build/bin" subdirectory. The script will generate various mutants of the source

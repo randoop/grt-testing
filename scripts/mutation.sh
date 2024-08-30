@@ -49,14 +49,47 @@ SECONDS_CLASS="2"
 # Number of times to run experiments (10 in GRT paper)
 NUM_LOOP=1
 
-# Link to src jar
-SRC_JAR=$(realpath "$SCRIPTDIR/../subject-programs/$1")
-
 # Name of test case
-SRC_JAR_NAME=$(basename "$SRC_JAR" .jar)
+SRC_JAR_NAME="$1"
+
+# Link to the base directory of the source code
+SRC_BASE_DIR="$(realpath "$SCRIPTDIR/../subject-programs/src/$SRC_JAR_NAME")"
+
+# Link to src jar
+SRC_JAR=$(realpath "$SCRIPTDIR/../subject-programs/$SRC_JAR_NAME.jar")
+
+# Map test case to their respective source
+declare -A project_src=(
+    ["a4j-1.0b"]="/src/"
+    ["asm-5.0.1"]="/src/"
+    ["bcel-5.2"]="/src/"
+    ["commons-codec-1.9"]="/src/main/java/"
+    ["commons-collections4-4.0"]="/src/main/java/"
+    ["commons-lang3-3.0"]="/src/main/java/"
+    ["commons-math3-3.2"]="/src/main/java/"
+    ["commons-primitives-1.0"]="/src/java/"
+    ["dcParseArgs-10.2008"]="/src/"
+    ["javassist-3.19"]="/src/main/"
+    ["JSAP-2.1"]="/src/"
+    ["nekomud-r16"]="/src/"
+    ["shiro-core-1.2.3"]="/core/"
+    ["slf4j-api-1.7.12"]="/slf4j-api"
+)
+
+# Map project names to their respective dependencies
+declare -A project_deps=(
+    ["a4j-1.0b"]="$JAVA_SRC_DIR/jars/"
+    ["nekomud-r16"]="$JAVA_SRC_DIR/lib/"
+)
 
 # Link to src files for mutation generation and analysis
-JAVA_SRC_DIR="$2"
+JAVA_SRC_DIR=$SRC_BASE_DIR${project_src[$SRC_JAR_NAME]}
+
+# Link to dependencies
+CLASSPATH=$SRC_BASE_DIR${project_deps[$SRC_JAR_NAME]}
+
+echo "Source dir: $JAVA_SRC_DIR"
+echo "Dependency dir: $CLASSPATH"
 
 # Number of classes in given jar file
 NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
@@ -70,14 +103,13 @@ RANDOM_SEED=0
 # Variable that stores command line inputs common among all commands
 RANDOOP_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOCO_AGENT_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=1 --deterministic=false --randomseed=$RANDOM_SEED"
 
-
-echo "Modifing build.xml for $SRC_JAR_NAME"
+echo "Modifying build.xml for $SRC_JAR_NAME..."
 ./diff-patch.sh $SRC_JAR_NAME
 echo
 
-echo "Check out include-major branch, if present"
+echo "Check out include-major branch, if present..."
 # ignore error if branch doesn't exist, will stay on main branch
-(cd  $JAVA_SRC_DIR; git co include-major 2>/dev/null) || true
+(cd  $JAVA_SRC_DIR; git checkout include-major 2>/dev/null) || true
 echo
 
 echo "Using Randoop to generate tests"
@@ -88,9 +120,6 @@ if [ ! -f "results/info.csv" ]; then
     touch results/info.csv
     echo -e "RandoopVersion,FileName,InstructionCoverage,BranchCoverage,MutationScore" > results/info.csv
 fi
-
-JAR_DIR="$3"
-CLASSPATH="$(echo "$JAR_DIR"/*.jar | tr ' ' ':')"
 
 # The different versions of Randoop to use. Adjust according to the versions you are testing.
 RANDOOP_VERSIONS=( "BASELINE" ) # "BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
@@ -214,4 +243,4 @@ echo "Restoring build.xml"
 
 echo "Restoring $JAVA_SRC_DIR to main branch"
 # switch to main branch (may already be there)
-(cd  $JAVA_SRC_DIR; git co main 1>/dev/null)
+(cd  $JAVA_SRC_DIR; git checkout main 1>/dev/null)
