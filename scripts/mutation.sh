@@ -101,7 +101,14 @@ TIME_LIMIT=$((NUM_CLASSES * SECONDS_CLASS))
 RANDOM_SEED=0
 
 # Variable that stores command line inputs common among all commands
-RANDOOP_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOCO_AGENT_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=1 --deterministic=false --randomseed=$RANDOM_SEED"
+RANDOOP_BASE_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOCO_AGENT_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=10 --deterministic=false --randomseed=$RANDOM_SEED"
+
+declare -A command_suffix=(
+    ["commons-lang3-3.0"]="--omit-classes=^org\.apache\.commons\.lang3\.RandomStringUtils$"
+)
+
+RANDOOP_COMMAND="$RANDOOP_BASE_COMMAND ${command_suffix[$SRC_JAR_NAME]}"
+
 
 echo "Modifying build.xml for $SRC_JAR_NAME..."
 ./diff-patch.sh $SRC_JAR_NAME

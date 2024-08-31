@@ -7,7 +7,7 @@ commons-cli-1.2,Working,
 commons-codec-1.9,Working,
 commons-collections4-4.0,Working,
 commons-compress-1.8,Working,""
-commons-lang3-3.0,"",It occasionally gets stuck during Randoop test generation process
+commons-lang3-3.0,Working,""
 commons-math3-3.2,Working,
 commons-primitives-1.0,Working,
 dcParseArgs-10.2008,Working,
