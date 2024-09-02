@@ -2,7 +2,7 @@ Project names,Status,Notes
 a4j-1.0b,Working,
 asm-5.0.1,Working,Bloodhound fails
 bcel-5.2,Working,
-ClassViewer-5.0.5b,Working,Often does not terminate
+ClassViewer-5.0.5b,"",Often does not terminate
 commons-cli-1.2,Working,
 commons-codec-1.9,Working,
 commons-collections4-4.0,Working,
