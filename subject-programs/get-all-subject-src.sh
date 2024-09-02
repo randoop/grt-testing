@@ -1,3 +1,5 @@
+#!/bin/bash
+
 mkdir -p ../subject-programs/src
 cd ../subject-programs/src
 git clone git@github.com:randoop/grt-a4j-1.0b a4j-1.0b |& sed /remote/d
