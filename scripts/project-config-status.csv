@@ -18,12 +18,12 @@ hamcrest-core-1.3,"",Ignore this project for now
 javassist-3.19,Working,
 javax.mail-1.5.1,Working,
 jaxen-1.1.6,Working,Occasionally get stuck
-jcommander-1.35,Working,
+jcommander-1.35,Working,Press `Enter` while Randoop is running
 jdom-1.0,"",`JDOMAbout` from jdom build target `about` not included in scripts/build.xml compilation process
 joda-time-2.3,Working,
 JSAP-2.1,Working,""
 jvc-1.1,"",Randoop NoClassDefFoundError: javax/servlet/http/HttpServlet
-nekomud-r16,Working,
+nekomud-r16,"",Stuck
 pmd-core-5.2.2,,Missing dependencies when in test.compile
 sat4j.core-2.3.5,Working,
 shiro-root-1.2.3,Working,
