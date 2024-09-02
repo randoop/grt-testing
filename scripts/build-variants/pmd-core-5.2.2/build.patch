@@ -11,7 +11,7 @@
 -            <classpath location="${major.jar}"/>
 -            <compilerarg value="${plugin}"/>
 -        </javac>
-+        <exec executable="mvn" dir="${src}">
++        <exec executable="mvn" dir="${src}/pmd-core">
 +            <arg value="-B"/>
 +            <arg value="clean"/>
 +            <arg value="package"/>
@@ -25,15 +25,15 @@
 +        </exec>
 +
 +        <copy todir="build/bin">
-+            <fileset dir="${src}/target/classes"/>
++            <fileset dir="${src}/pmd-core/target/classes"/>
 +        </copy>
 +
 +        <exec executable="mv">
-+            <arg value="${src}major.log"/>
++            <arg value="${src}/pmd-core/major.log"/>
 +            <arg value="./"/>
 +        </exec>
 +        <exec executable="mv">
-+            <arg value="${src}mutants.log"/>
++            <arg value="${src}/pmd-core/mutants.log"/>
 +            <arg value="./"/>
 +        </exec>
      </target>
