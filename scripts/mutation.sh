@@ -105,6 +105,7 @@ RANDOOP_BASE_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOC
 
 declare -A command_suffix=(
     ["commons-lang3-3.0"]="--omit-classes=^org\.apache\.commons\.lang3\.RandomStringUtils$"
+    ["guava-16.0.1"]="--omit-methods=^com\.google\.common\.util\.concurrent\.Uninterruptibles\.takeUninterruptibly\(java\.util\.concurrent\.BlockingQueue\)$"
 )
 
 RANDOOP_COMMAND="$RANDOOP_BASE_COMMAND ${command_suffix[$SRC_JAR_NAME]}"
