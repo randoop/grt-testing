@@ -1,6 +1,6 @@
 --- build-variants/build.xml	2024-08-23 13:48:44.031112791 -0700
-+++ build.xml	2024-08-26 21:15:38.370567168 -0700
-@@ -31,13 +31,27 @@
++++ build.xml	2024-09-01 21:24:00.633105935 -0700
+@@ -31,13 +31,14 @@
  
  <!-- Target to compile the project -->
      <target name="compile" depends="init" description="Compile">
@@ -11,10 +11,6 @@
 -            <classpath location="${major.jar}"/>
 -            <compilerarg value="${plugin}"/>
 -        </javac>
-+
-+        <echo message="major.jar: ${major.jar}"/>
-+        <echo message="plugin: ${plugin}"/>
-+
 +        <ant dir="${src}" target="jar">
 +            <property name="major.jar" value="${basedir}/${major.jar}"/>
 +            <property name="plugin" value="${plugin}"/>
@@ -23,15 +19,6 @@
 +        <copy todir="build/bin">
 +            <fileset dir="${src}/build/"/>
 +        </copy>
-+
-+        <exec executable="mv">
-+            <arg value="${src}major.log"/>
-+            <arg value="./"/>
-+            </exec>
-+        <exec executable="mv">
-+            <arg value="${src}mutants.log"/>
-+            <arg value="./"/>
-+        </exec>
      </target>
  
  <!-- Target to compile the test suite -->
