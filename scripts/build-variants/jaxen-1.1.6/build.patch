@@ -37,11 +37,11 @@
 +        </copy>
 +
 +        <exec executable="mv">
-+            <arg value="${src}major.log"/>
++            <arg value="${src}/major.log"/>
 +            <arg value="./"/>
 +        </exec>
 +        <exec executable="mv">
-+            <arg value="${src}mutants.log"/>
++            <arg value="${src}/mutants.log"/>
 +            <arg value="./"/>
 +        </exec>
      </target>
