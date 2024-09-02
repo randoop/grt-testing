@@ -18,11 +18,16 @@
 set -e
 set -o pipefail
 
+if [ $# -eq 0 ]; then
+    echo $0: "usage: mutation.sh <test case name> [-v]"
+    exit 1
+fi
+
 # Check for Java 8
 JAVA_VERSION=$(java -version 2>&1 | awk -F'[._"]' 'NR==1{print ($2 == "version" && $3 < 9) ? $4 : $3}')
 if [ "$JAVA_VERSION" -ne 8 ]; then
-  echo "Requires Java 8. Please use Java 8 to proceed."
-  exit 1
+    echo "Requires Java 8. Please use Java 8 to proceed."
+    exit 1
 fi
 
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
@@ -52,6 +57,13 @@ NUM_LOOP=1
 # Name of test case
 SRC_JAR_NAME="$1"
 
+echo "Running mutation test on $1"
+echo
+
+# Verbose option
+# We 'cheat' and accept any non-empty string rather than require '-v'
+VERBOSE="$2"
+
 # Link to the base directory of the source code
 SRC_BASE_DIR="$(realpath "$SCRIPTDIR/../subject-programs/src/$SRC_JAR_NAME")"
 
@@ -78,18 +90,31 @@ declare -A project_src=(
 
 # Map project names to their respective dependencies
 declare -A project_deps=(
-    ["a4j-1.0b"]="$JAVA_SRC_DIR/jars/"
-    ["nekomud-r16"]="$JAVA_SRC_DIR/lib/"
+    ["a4j-1.0b"]="$SRC_BASE_DIR/jars/"
+    ["fixsuite-r48"]="$SRC_BASE_DIR/lib/"
+    ["jdom-1.0"]="$SRC_BASE_DIR/lib/"
+    ["JSAP-2.1"]="$MAJOR_HOME/lib/ant:$SRC_BASE_DIR/lib/"  # need to override ant.jar in $SRC_BASE_DIR/lib
+    ["jvc-1.1"]="$SRC_BASE_DIR/lib/"
+    ["nekomud-r16"]="$SRC_BASE_DIR/lib/"
+    ["sat4j-core-2.3.5"]="$SRC_BASE_DIR/lib/"
 )
+#   ["hamcrest-core-1.3"]="$SRC_BASE_DIR/lib/"  this one needs changes?
 
 # Link to src files for mutation generation and analysis
 JAVA_SRC_DIR=$SRC_BASE_DIR${project_src[$SRC_JAR_NAME]}
 
 # Link to dependencies
-CLASSPATH=$SRC_BASE_DIR${project_deps[$SRC_JAR_NAME]}
+CLASSPATH=${project_deps[$SRC_JAR_NAME]}
+LIB_ARG=""
+if [[ $CLASSPATH ]]; then
+    LIB_ARG="-lib $CLASSPATH"
+fi
 
-echo "Source dir: $JAVA_SRC_DIR"
-echo "Dependency dir: $CLASSPATH"
+if [[ "$VERBOSE" ]]; then
+    echo "Source dir: $JAVA_SRC_DIR"
+    echo "Dependency dir: $CLASSPATH"
+    echo
+fi
 
 # Number of classes in given jar file
 NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
@@ -101,7 +126,9 @@ TIME_LIMIT=$((NUM_CLASSES * SECONDS_CLASS))
 RANDOM_SEED=0
 
 # Variable that stores command line inputs common among all commands
-RANDOOP_BASE_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOCO_AGENT_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=10 --deterministic=false --randomseed=$RANDOM_SEED"
+# Note that if there is no project_deps entry, this command adds a classpath
+# element of '*', but it doesn't seem to matter.
+RANDOOP_BASE_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOCO_AGENT_JAR -classpath $CLASSPATH*:$SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=10 --deterministic=false --no-error-revealing-tests=true --randomseed=$RANDOM_SEED"
 
 declare -A command_suffix=(
     ["commons-lang3-3.0"]="--omit-classes=^org\.apache\.commons\.lang3\.RandomStringUtils$"
@@ -110,17 +137,13 @@ declare -A command_suffix=(
 
 RANDOOP_COMMAND="$RANDOOP_BASE_COMMAND ${command_suffix[$SRC_JAR_NAME]}"
 
-
 echo "Modifying build.xml for $SRC_JAR_NAME..."
 ./diff-patch.sh $SRC_JAR_NAME
-echo
 
 echo "Check out include-major branch, if present..."
 # ignore error if branch doesn't exist, will stay on main branch
 (cd  $JAVA_SRC_DIR; git checkout include-major 2>/dev/null) || true
 echo
-
-echo "Using Randoop to generate tests"
 
 # Output file for runtime information
 mkdir -p results/
@@ -137,17 +160,26 @@ do
     for RANDOOP_VERSION in "${RANDOOP_VERSIONS[@]}"
     do
         rm -rf "$CURR_DIR"/build/test*
-        echo "Using $RANDOOP_VERSION"
-        echo
+        echo "Using $RANDOOP_VERSION Randoop to generate tests..."
         TEST_DIRECTORY="$CURR_DIR/build/test/$RANDOOP_VERSION"
         mkdir -p "$TEST_DIRECTORY"
 
         RANDOOP_COMMAND_2="$RANDOOP_COMMAND --junit-output-dir=$TEST_DIRECTORY"
 
         if [ "$RANDOOP_VERSION" == "BLOODHOUND" ]; then
+            if [[ "$VERBOSE" ]]; then
+                echo command:
+                echo $RANDOOP_COMMAND_2 --method-selection=BLOODHOUND
+            fi
+            echo
             $RANDOOP_COMMAND_2 --method-selection=BLOODHOUND
 
         elif [ "$RANDOOP_VERSION" == "BASELINE" ]; then
+            if [[ "$VERBOSE" ]]; then
+                echo command:
+                echo $RANDOOP_COMMAND_2
+            fi
+            echo
             $RANDOOP_COMMAND_2
 
         elif [ "$RANDOOP_VERSION" == "ORIENTEERING" ]; then
@@ -177,22 +209,31 @@ do
         mkdir -p "$RESULT_DIR"
 
         echo
-        echo "Compiling and mutating project"
-        echo '(ant -Dmutator="=mml:'"$MAJOR_HOME"'/mml/all.mml.bin" clean compile)'
+        echo "Compiling and mutating project..."
+        if [[ "$VERBOSE" ]]; then
+            echo command:
+            echo "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" clean compile
+        fi
         echo
-        "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" clean compile
+        "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" clean compile
 
         echo
-        echo "Compiling tests"
-        echo "(ant compile.tests)"
+        echo "Compiling tests..."
+        if [[ "$VERBOSE" ]]; then
+            echo command:
+            echo "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" compile.tests
+        fi
         echo
-        "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" compile.tests
+        "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" compile.tests
 
         echo
-        echo "Running tests with coverage"
-        echo '(ant -Dmutator="=mml:'"$MAJOR_HOME"'/mml/all.mml.bin" clean compile)'
+        echo "Running tests with coverage..."
+        if [[ "$VERBOSE" ]]; then
+            echo command:
+            echo "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" test
+        fi
         echo
-        "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" test
+        "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" test
         mv jacoco.exec results
         java -jar "$JACOCO_CLI_JAR" report "results/jacoco.exec" --classfiles "$SRC_JAR" --sourcefiles "$JAVA_SRC_DIR" --csv results/report.csv
 
@@ -214,9 +255,13 @@ do
         mv results/report.csv "$RESULT_DIR"
 
         echo
-        echo "Running tests with mutation analysis"
-        echo "(ant mutation.test)"
-        "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -lib "$CLASSPATH" mutation.test
+        echo "Running tests with mutation analysis..."
+        if [[ "$VERBOSE" ]]; then
+            echo command:
+            echo "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
+        fi
+        echo
+        "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
 
         # Calculate Mutation Score
         mutants_covered=$(awk -F, 'NR==2 {print $3}' results/summary.csv)
