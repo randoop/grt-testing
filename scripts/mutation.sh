@@ -40,7 +40,7 @@ CURR_DIR=$(realpath "$(pwd)")
 
 # Link to current version randoop jar. Replace with different version if new GRT component is being tested.
 # Link to the randoop jar
-RANDOOP_JAR=$(realpath "build/randoop-all-4.3.3.jar")
+RANDOOP_JAR=$(realpath "build/randoop-all-4.3.3-test.jar")
 
 # Link to jacoco agent jar. This is necessary for Bloodhound
 JACOCO_AGENT_JAR=$(realpath "build/jacocoagent.jar")
@@ -134,6 +134,7 @@ declare -A command_suffix=(
     ["ClassViewer-5.0.5b"]="--omit-methods=^com\.jstevh\.tools\.StringTools\.removeStrings\(java\.lang\.String,java\.lang\.String\[\]\)$"
     ["commons-lang3-3.0"]="--omit-classes=^org\.apache\.commons\.lang3\.RandomStringUtils$"
     ["guava-16.0.1"]="--omit-methods=^com\.google\.common\.util\.concurrent\.Uninterruptibles\.takeUninterruptibly\(java\.util\.concurrent\.BlockingQueue\)$"
+    ["nekomud-r16"]="--omit-classes=^net\.sourceforge\.nekomud\.nio\.NetworkServiceNioImpl$"
 )
 
 RANDOOP_COMMAND="$RANDOOP_BASE_COMMAND ${command_suffix[$SRC_JAR_NAME]}"
