@@ -131,6 +131,7 @@ RANDOM_SEED=0
 RANDOOP_BASE_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOCO_AGENT_JAR -classpath $CLASSPATH*:$SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=10 --deterministic=false --no-error-revealing-tests=true --randomseed=$RANDOM_SEED"
 
 declare -A command_suffix=(
+    ["ClassViewer-5.0.5b"]="--omit-methods=^com\.jstevh\.tools\.StringTools\.removeStrings\(java\.lang\.String,java\.lang\.String\[\]\)$"
     ["commons-lang3-3.0"]="--omit-classes=^org\.apache\.commons\.lang3\.RandomStringUtils$"
     ["guava-16.0.1"]="--omit-methods=^com\.google\.common\.util\.concurrent\.Uninterruptibles\.takeUninterruptibly\(java\.util\.concurrent\.BlockingQueue\)$"
 )

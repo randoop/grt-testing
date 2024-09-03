@@ -2,7 +2,7 @@ Project names,Status,Notes
 a4j-1.0b,Working,
 asm-5.0.1,Working,Bloodhound fails
 bcel-5.2,Working,
-ClassViewer-5.0.5b,"",Often does not terminate
+ClassViewer-5.0.5b,Working,""
 commons-cli-1.2,Working,
 commons-codec-1.9,Working,
 commons-collections4-4.0,Working,
@@ -24,7 +24,7 @@ joda-time-2.3,Working,
 JSAP-2.1,Working,""
 jvc-1.1,Working,""
 nekomud-r16,"",Stuck
-pmd-core-5.2.2,,Missing dependencies when in test.compile
+pmd-core-5.2.2,Working,""
 sat4j.core-2.3.5,Working,
 shiro-root-1.2.3,Working,
 slf4j-api-1.7.12,Working,
