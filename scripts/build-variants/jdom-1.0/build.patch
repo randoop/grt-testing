@@ -1,5 +1,5 @@
 --- ./build-variants/build.xml	2024-08-23 13:48:44.031112791 -0700
-+++ build.xml	2024-09-03 20:49:33.792979230 -0700
++++ build.xml	2024-09-03 21:36:05.232376665 -0700
 @@ -7,7 +7,7 @@
       ############################################## -->
      <property name="major.jar" value="build/major/lib/major.jar"/>
@@ -9,19 +9,8 @@
      <property name="jacoco.destfile" value="results/jacoco.exec"/>
  
  <!-- Import JaCoCo Ant tasks -->
-@@ -29,14 +29,25 @@
-         <mkdir dir="build/bin"/>
-     </target>
+@@ -31,12 +31,13 @@
  
-+    <path id="compile.classpath">
-+        <pathelement location="../subject-programs/src/jdom-1.0/lib/jaxen-core.jar"/>
-+        <pathelement location="../subject-programs/src/jdom-1.0/lib/jaxen-jdom.jar"/>
-+        <pathelement location="../subject-programs/src/jdom-1.0/lib/saxpath.jar"/>
-+        <pathelement location="../subject-programs/src/jdom-1.0/lib/xalan.jar"/>
-+        <pathelement location="../subject-programs/src/jdom-1.0/lib/xerces.jar"/>
-+        <pathelement location="../subject-programs/src/jdom-1.0/lib/xml-apis.jar"/>
-+    </path>
-+
  <!-- Target to compile the project -->
      <target name="compile" depends="init" description="Compile">
 -        <javac includeantruntime="true" 
@@ -31,7 +20,6 @@
                 debug="yes">
              <classpath location="${major.jar}"/>
              <compilerarg value="${plugin}"/>
-+            <classpath refid="compile.classpath"/>
 +            <exclude name="**/Jaxen*"/>
          </javac>
      </target>
