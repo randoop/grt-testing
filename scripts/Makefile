@@ -2,8 +2,8 @@ all: build/jacoco.jar build/randoop-all-4.3.3.jar build/major results
 
 build/jacoco.jar:
 	mkdir -p build
-	cd build && wget -nv -O jacoco-0.8.10.zip https://search.maven.org/remotecontent?filepath=org/jacoco/jacoco/0.8.10/jacoco-0.8.10.zip
-	cd build && unzip -o jacoco-0.8.10.zip lib/jacocoagent.jar lib/jacocoant.jar lib/jacococli.jar && mv lib/jacocoagent.jar lib/jacocoant.jar lib/jacococli.jar . && rmdir lib
+	cd build && wget -nv -O jacoco-0.8.12.zip https://search.maven.org/remotecontent?filepath=org/jacoco/jacoco/0.8.12/jacoco-0.8.12.zip
+	cd build && unzip -o jacoco-0.8.12.zip lib/jacocoagent.jar lib/jacocoant.jar lib/jacococli.jar && mv lib/jacocoagent.jar lib/jacocoant.jar lib/jacococli.jar . && rmdir lib
 
 build/randoop-all-4.3.3.jar:
 	mkdir -p build
