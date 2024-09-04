@@ -19,7 +19,7 @@ javassist-3.19,Working,
 javax.mail-1.5.1,Working,
 jaxen-1.1.6,Working,Occasionally get stuck
 jcommander-1.35,Working,Press `Enter` while Randoop is running
-jdom-1.0,"",`JDOMAbout` from jdom build target `about` not included in scripts/build.xml compilation process
+jdom-1.0,Working,""
 joda-time-2.3,Working,
 JSAP-2.1,Working,""
 jvc-1.1,Working,""

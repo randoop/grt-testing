@@ -82,6 +82,7 @@ declare -A project_src=(
     ["commons-primitives-1.0"]="/src/java/"
     ["dcParseArgs-10.2008"]="/src/"
     ["javassist-3.19"]="/src/main/"
+    ["jdom-1.0"]="/src/"
     ["JSAP-2.1"]="/src/"
     ["nekomud-r16"]="/src/"
     ["shiro-core-1.2.3"]="/core/"
@@ -92,7 +93,7 @@ declare -A project_src=(
 declare -A project_deps=(
     ["a4j-1.0b"]="$SRC_BASE_DIR/jars/"
     ["fixsuite-r48"]="$SRC_BASE_DIR/lib/"
-    ["jdom-1.0"]="$SRC_BASE_DIR/lib/"
+    ["jdom-1.0"]="$MAJOR_HOME/lib/ant:$SRC_BASE_DIR/lib/"
     ["JSAP-2.1"]="$MAJOR_HOME/lib/ant:$SRC_BASE_DIR/lib/"  # need to override ant.jar in $SRC_BASE_DIR/lib
     ["jvc-1.1"]="$SRC_BASE_DIR/lib/"
     ["nekomud-r16"]="$SRC_BASE_DIR/lib/"
@@ -134,6 +135,7 @@ declare -A command_suffix=(
     ["ClassViewer-5.0.5b"]="--omit-methods=^com\.jstevh\.tools\.StringTools\.removeStrings\(java\.lang\.String,java\.lang\.String\[\]\)$"
     ["commons-lang3-3.0"]="--omit-classes=^org\.apache\.commons\.lang3\.RandomStringUtils$"
     ["guava-16.0.1"]="--omit-methods=^com\.google\.common\.util\.concurrent\.Uninterruptibles\.takeUninterruptibly\(java\.util\.concurrent\.BlockingQueue\)$"
+    ["jdom-1.0"]="--omit-classes=^JDOMAbout$"
     ["nekomud-r16"]="--omit-classes=^net\.sourceforge\.nekomud\.nio\.NetworkServiceNioImpl$"
 )
 
