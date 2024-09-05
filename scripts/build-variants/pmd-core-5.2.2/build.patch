@@ -1,5 +1,5 @@
---- build-variants/build.xml	2024-08-23 13:48:44.031112791 -0700
-+++ build.xml	2024-08-25 23:31:43.249684951 -0700
+--- ./build-variants/build.xml	2024-08-23 13:48:44.031112791 -0700
++++ build.xml	2024-09-02 15:04:07.607245550 -0700
 @@ -31,13 +31,31 @@
  
  <!-- Target to compile the project -->
@@ -39,3 +39,13 @@
      </target>
  
  <!-- Target to compile the test suite -->
+@@ -46,6 +64,9 @@
+                srcdir="${test}"
+                destdir="build/bin"
+                debug="yes">
++            <classpath>
++                <pathelement location="../subject-programs/src/pmd-core-5.2.2/pmd-core/lib/asm-9.7.jar"/>
++            </classpath>
+         </javac>
+     </target>
+ 

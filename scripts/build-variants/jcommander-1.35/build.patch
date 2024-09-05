@@ -1,5 +1,5 @@
---- build-variants/build.xml	2024-08-23 13:48:44.031112791 -0700
-+++ build.xml	2024-08-25 21:02:04.024103983 -0700
+--- ./build-variants/build.xml	2024-08-23 13:48:44.031112791 -0700
++++ build.xml	2024-09-03 18:14:10.965002366 -0700
 @@ -7,7 +7,7 @@
       ############################################## -->
      <property name="major.jar" value="build/major/lib/major.jar"/>
@@ -37,11 +37,11 @@
 +        </copy>
 +
 +        <exec executable="mv">
-+            <arg value="${src}major.log"/>
++            <arg value="${src}/major.log"/>
 +            <arg value="./"/>
 +        </exec>
 +        <exec executable="mv">
-+            <arg value="${src}mutants.log"/>
++            <arg value="${src}/mutants.log"/>
 +            <arg value="./"/>
 +        </exec>
      </target>

@@ -1,15 +1,22 @@
---- build-variants/build.xml	2024-08-08 21:35:31.332113100 -0700
-+++ build-variants/jdom-1.0/build.xml	2024-08-15 19:26:08.003017423 -0700
+--- ./build-variants/build.xml	2024-08-23 13:48:44.031112791 -0700
++++ build.xml	2024-09-03 21:36:05.232376665 -0700
 @@ -7,7 +7,7 @@
       ############################################## -->
      <property name="major.jar" value="build/major/lib/major.jar"/>
      <property name="mutator" value=""/>
 -    <property name="plugin" value="-Xplugin:MajorPlugin ${mutator}"/>
-+    <property name="plugin" value="-Xplugin:MajorPlugin ${mutator} enable.method.refactor"/>
++    <property name="plugin" value="-Xplugin:MajorPlugin ${mutator} enable.decl.refactor enable.method.refactor"/>
+     <property name="jacoco.destfile" value="results/jacoco.exec"/>
  
+ <!-- Import JaCoCo Ant tasks -->
+@@ -31,12 +31,13 @@
  
- <!-- Target to clean up -->
-@@ -32,6 +32,7 @@
+ <!-- Target to compile the project -->
+     <target name="compile" depends="init" description="Compile">
+-        <javac includeantruntime="true" 
++        <javac includeantruntime="false"
+                srcdir="${src}"
+                destdir="build/bin"
                 debug="yes">
              <classpath location="${major.jar}"/>
              <compilerarg value="${plugin}"/>
