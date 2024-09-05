@@ -7,9 +7,9 @@ whether a project can be correctly built by scripts/build.xml when following the
 Before you can run the mutation script, you must setup the testing environment.
 You must have JDK 8 as your default java/javac for most of the subject-programs.
 
-(The following two steps need to be done only once.)
+(The following steps need to be done only once. Make sure you are in the `scripts` directory.)
 
-1. Install the Randoop and mutation programs.
+1. Install the mutation programs and some dependencies.  You can do this by running:
    ```
    make
    ```
@@ -24,6 +24,31 @@ You must have JDK 8 as your default java/javac for most of the subject-programs.
    ```
    ../subject-programs/README.build
    ```
+
+3. Clone the Randoop repository from Github. After cloning, go to the Randoop directory and build the
+   project. You can do this by running:
+   ```
+   cd build
+
+   # Clone the Randoop repository
+   git clone git@github.com:randoop/randoop.git
+
+   # Go to the Randoop directory
+   cd randoop
+
+   # Build the project
+   # Make sure you have JDK 11 for building Randoop
+   ./gradlew jar
+
+   # You may switch back to JDK 8 after building Randoop, necessary for running the mutation script
+
+   # Move the jar file to the build directory
+   mv build/libs/randoop-all-4.3.3.jar ../
+
+   # You can now go back to the scripts directory
+   # You may delete the Randoop repository after building the jar file
+   ```
+
 
 You are now ready to run the mutation test script.
 
