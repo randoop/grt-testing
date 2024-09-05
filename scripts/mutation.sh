@@ -301,3 +301,19 @@ echo "Restoring build.xml"
 echo "Restoring $JAVA_SRC_DIR to main branch"
 # switch to main branch (may already be there)
 (cd  $JAVA_SRC_DIR; git checkout main 1>/dev/null)
+
+echo "Move test projects generated files in scripts directory to a temp directory"
+# Move all projects that aren't:
+# build.xml, diff-patch.sh, Makefile, mutation.sh, project-config-status.csv, reproinstructions.txt
+mkdir -p temp
+
+# Find and move all files except those specified
+find . -maxdepth 1 -type f ! -name "build.xml" \
+    ! -name "diff-patch.sh" \
+    ! -name "Makefile" \
+    ! -name "mutation.sh" \
+    ! -name "project-config-status.csv" \
+    ! -name "reproinstructions.txt" \
+    -exec mv {} temp/ \;
+
+echo "Files moved to temp directory."
