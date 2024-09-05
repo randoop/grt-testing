@@ -8,7 +8,7 @@ build/jacoco.jar:
 build/randoop-all-4.3.3.jar:
 	mkdir -p build
     # cd build && wget -nv https://github.com/randoop/randoop/releases/download/v4.3.3/randoop-all-4.3.3.jar
-    echo See scripts/reprointstruction.txt to obtain randoop-all-4.3.3.jar
+    echo "See scripts/reprointstruction.txt to obtain randoop-all-4.3.3.jar"
 
 build/major:
 	mkdir -p build
