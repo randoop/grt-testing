@@ -5,7 +5,7 @@ This repository contains test cases and scripts designed for testing [Randoop](h
 
 ## Usage Instructions
 ### Running Scripts
-For instructions on using the scripts, refer to `reproinstructions.txt`.
+For instructions on using the scripts, refer to `scripts/reproinstructions.txt`.
 
 ### Building the Subject Programs
 The subject programs used by the GRT paper appear in the `subject-programs/` directory.
