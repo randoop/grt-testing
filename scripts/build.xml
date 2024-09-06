@@ -79,7 +79,7 @@
                     showoutput="true"
                     haltonfailure="false"
                     fork="true" forkmode="once">
-                <formatter type="plain" usefile="false"/>
+                <formatter type="brief" usefile="false"/>
                 <classpath path="build/bin"/>
 
                 <batchtest fork="no">
