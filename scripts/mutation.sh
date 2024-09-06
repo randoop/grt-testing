@@ -36,7 +36,7 @@ MAJOR_HOME=$(realpath "build/major/")
 CURR_DIR=$(realpath "$(pwd)")
 
 # Link to current version randoop jar. Replace with different version if new GRT component is being tested.
-RANDOOP_JAR=$(realpath "build/randoop-all-4.3.3.jar")
+RANDOOP_JAR=/Users/yashmathur/Documents/researchNew/randoop/build/libs/randoop-all-4.3.3.jar #$(realpath "build/randoop-all-4.3.3.jar")
 
 # Link to jacoco agent jar. This is necessary for Bloodhound
 JACOCO_AGENT_JAR=$(realpath "build/jacocoagent.jar")
@@ -78,9 +78,12 @@ fi
 JAR_DIR="$3"
 CLASSPATH="$(echo "$JAR_DIR"/*.jar | tr ' ' ':')"
 
-# The different versions of Randoop to use. Adjust according to the versions you are testing.
+ABLATION=true
+
+# The different versions of Randoop to use. Adjust according to the versions you are testing. A non-existant version will default to the baseline.
 RANDOOP_VERSIONS=("BLOODHOUND" "BASELINE") #"ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
 # shellcheck disable=SC2034 # i counts iterations but is not otherwise used.
+
 for i in $(seq 1 $NUM_LOOP)
 do
     for RANDOOP_VERSION in "${RANDOOP_VERSIONS[@]}"
@@ -93,34 +96,39 @@ do
 
         RANDOOP_COMMAND_2="$RANDOOP_COMMAND --junit-output-dir=$TEST_DIRECTORY"
 
-        if [ "$RANDOOP_VERSION" == "BLOODHOUND" ]; then
-            $RANDOOP_COMMAND_2 --method-selection=BLOODHOUND
-
-        elif [ "$RANDOOP_VERSION" == "BASELINE" ]; then
-            $RANDOOP_COMMAND_2
-
-        elif [ "$RANDOOP_VERSION" == "ORIENTEERING" ]; then
-            $RANDOOP_COMMAND_2 --input-selection=ORIENTEERING
-
-        elif [ "$RANDOOP_VERSION" == "BLOODHOUND_AND_ORIENTEERING" ]; then
-            $RANDOOP_COMMAND_2 --input-selection=ORIENTEERING --method-selection=BLOODHOUND
-
-        elif [ "$RANDOOP_VERSION" == "DETECTIVE" ]; then
-            $RANDOOP_COMMAND_2 --demand-driven=true
-
-        elif [ "$RANDOOP_VERSION" == "GRT_FUZZING" ]; then
-            $RANDOOP_COMMAND_2 --grt-fuzzing=true
-
-        elif [ "$RANDOOP_VERSION" == "ELEPHANT_BRAIN" ]; then
-            $RANDOOP_COMMAND_2 --elephant-brain=true
-
-        elif [ "$RANDOOP_VERSION" == "CONSTANT_MINING" ]; then
-            $RANDOOP_COMMAND_2 --constant-mining=true
-
-        else
-            echo "Unknown RANDOOP_VERSION = $RANDOOP_VERSION"
-            exit 1
+        if [[ ( "$RANDOOP_VERSION" == "BLOODHOUND" && "$ABLATION" != "true" ) || ( "$RANDOOP_VERSION" != "BLOODHOUND" && "$ABLATION" == "true" ) ]]; then
+            RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2 --method-selection=BLOODHOUND"
         fi
+
+        if [[ ( "$RANDOOP_VERSION" == "BASELINE" && "$ABLATION" != "true" ) || ( "$RANDOOP_VERSION" != "BASELINE" && "$ABLATION" == "true" ) ]]; then
+            RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2"
+        fi
+
+        if [[ ( "$RANDOOP_VERSION" == "ORIENTEERING" && "$ABLATION" != "true" ) || ( "$RANDOOP_VERSION" != "ORIENTEERING" && "$ABLATION" == "true" ) ]]; then
+            RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2 --input-selection=ORIENTEERING"
+        fi
+
+        if [[ ( "$RANDOOP_VERSION" == "BLOODHOUND_AND_ORIENTEERING" && "$ABLATION" != "true" ) || ( "$RANDOOP_VERSION" != "BLOODHOUND_AND_ORIENTEERING" && "$ABLATION" == "true" ) ]]; then
+            RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2 --input-selection=ORIENTEERING --method-selection=BLOODHOUND"
+        fi
+
+        if [[ ( "$RANDOOP_VERSION" == "DETECTIVE" && "$ABLATION" != "true" ) || ( "$RANDOOP_VERSION" != "DETECTIVE" && "$ABLATION" == "true" ) ]]; then
+            RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2 --demand-driven=true"
+        fi
+
+        if [[ ( "$RANDOOP_VERSION" == "GRT_FUZZING" && "$ABLATION" != "true" ) || ( "$RANDOOP_VERSION" != "GRT_FUZZING" && "$ABLATION" == "true" ) ]]; then
+            RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2 --grt-fuzzing=true"
+        fi
+
+        if [[ ( "$RANDOOP_VERSION" == "ELEPHANT_BRAIN" && "$ABLATION" != "true" ) || ( "$RANDOOP_VERSION" != "ELEPHANT_BRAIN" && "$ABLATION" == "true" ) ]]; then
+            RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2 --elephant-brain=true"
+        fi
+
+        if [[ ( "$RANDOOP_VERSION" == "CONSTANT_MINING" && "$ABLATION" != "true" ) || ( "$RANDOOP_VERSION" != "CONSTANT_MINING" && "$ABLATION" == "true" ) ]]; then
+            RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2 --constant-mining=true"
+        fi
+
+        $RANDOOP_COMMAND_2
 
         echo
         echo "Compiling and mutating project"
