@@ -36,7 +36,7 @@ MAJOR_HOME=$(realpath "build/major/")
 CURR_DIR=$(realpath "$(pwd)")
 
 # Link to current version randoop jar. Replace with different version if new GRT component is being tested.
-RANDOOP_JAR=/Users/yashmathur/Documents/researchNew/randoop/build/libs/randoop-all-4.3.3.jar #$(realpath "build/randoop-all-4.3.3.jar")
+RANDOOP_JAR=$(realpath "build/randoop-all-4.3.3.jar")
 
 # Link to jacoco agent jar. This is necessary for Bloodhound
 JACOCO_AGENT_JAR=$(realpath "build/jacocoagent.jar")
