@@ -129,7 +129,7 @@ RANDOM_SEED=0
 # Variable that stores command line inputs common among all commands
 # Note that if there is no project_deps entry, this command adds a classpath
 # element of '*', but it doesn't seem to matter.
-RANDOOP_BASE_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOCO_AGENT_JAR -classpath $CLASSPATH*:$SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=10 --deterministic=false --no-error-revealing-tests=true --randomseed=$RANDOM_SEED"
+RANDOOP_BASE_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOCO_AGENT_JAR -classpath $CLASSPATH*:$SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=$TIME_LIMIT --deterministic=false --no-error-revealing-tests=true --randomseed=$RANDOM_SEED"
 
 declare -A command_suffix=(
     ["ClassViewer-5.0.5b"]="--omit-methods=^com\.jstevh\.tools\.StringTools\.removeStrings\(java\.lang\.String,java\.lang\.String\[\]\)$"
@@ -153,7 +153,7 @@ echo
 mkdir -p results/
 if [ ! -f "results/info.csv" ]; then
     touch results/info.csv
-    echo -e "RandoopVersion,FileName,InstructionCoverage,BranchCoverage,MutationScore" > results/info.csv
+    echo -e "RandoopVersion,FileName,TimeLimit,Seed,InstructionCoverage,BranchCoverage,MutationScore" > results/info.csv
 fi
 
 # The different versions of Randoop to use. Adjust according to the versions you are testing.
@@ -277,7 +277,7 @@ do
 
         mv results/summary.csv "$RESULT_DIR"
 
-        row="$RANDOOP_VERSION,$(basename "$SRC_JAR"),$instruction_coverage%,$branch_coverage%,$mutation_score%"
+        row="$RANDOOP_VERSION,$(basename "$SRC_JAR"),$TIME_LIMIT,$RANDOM_SEED,$instruction_coverage%,$branch_coverage%,$mutation_score%"
         # info.csv contains a record of each pass.
         echo -e "$row" >> results/info.csv
     done
