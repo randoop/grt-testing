@@ -39,38 +39,29 @@ CURR_DIR=$(realpath "$(pwd)")
 RANDOOP_JAR=$(realpath "build/randoop-all-4.3.3.jar")
 
 # Link to jacoco agent jar. This is necessary for Bloodhound.
-# Link to jacoco agent jar. This is necessary for Bloodhound.
 JACOCO_AGENT_JAR=$(realpath "build/jacocoagent.jar")
 
-# Link to jacoco cli jar. This is necessary for coverage report generation.
 # Link to jacoco cli jar. This is necessary for coverage report generation.
 JACOCO_CLI_JAR=$(realpath "build/jacococli.jar")
 
 # The paper runs Randoop with 4 different time limits. These are: 2 s/class, 10 s/class, 30 s/class, and 60 s/class.
-# The paper runs Randoop with 4 different time limits. These are: 2 s/class, 10 s/class, 30 s/class, and 60 s/class.
 SECONDS_CLASS="2"
 
-# Number of times to run experiments (10 in GRT paper).
 # Number of times to run experiments (10 in GRT paper).
 NUM_LOOP=2
 
 # Link to src jar.
-# Link to src jar.
 SRC_JAR=$(realpath "$SCRIPTDIR/../subject-programs/$1")
 
-# Link to src files for mutation generation and analysis.
 # Link to src files for mutation generation and analysis.
 JAVA_SRC_DIR="$2"
 
 # Number of classes in given jar file.
-# Number of classes in given jar file.
 NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
 
 # Time limit for running Randoop.
-# Time limit for running Randoop.
 TIME_LIMIT=$((NUM_CLASSES * SECONDS_CLASS))
 
-# Command line inputs common among all commands.
 # Command line inputs common among all commands.
 RANDOOP_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOCO_AGENT_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=$TIME_LIMIT"
 
@@ -87,25 +78,7 @@ fi
 JAR_DIR="$3"
 CLASSPATH="$(echo "$JAR_DIR"/*.jar | tr ' ' ':')"
 
-# The feature names must not contain whitspace.
-ALL_RANDOOP_FEATURES=("BASELINE" "BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
-# The different features of Randoop to use. Adjust according to the features you are testing.
-RANDOOP_FEATURES=("BASELINE" "BLOODHOUND") #"ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
-
-# When ABLATION is set to false, the script tests the Randoop features specified in the RANDOOP_FEATURES array.
-# When ABLATION is set to true, each run tests all Randoop features except the one specified in the RANDOOP_FEATURES array.
-ABLATION=true
-
-# Ensure the given features are legal.
-for RANDOOP_FEATURE in "${RANDOOP_FEATURES[@]}" ; do
-    if [[ ! " ${ALL_RANDOOP_FEATURES[*]} " =~ [[:space:]]${RANDOOP_FEATURE}[[:space:]] ]]; then
-        echo "$RANDOOP_FEATURE" is not in "${RANDOOP_FEATURES[@]}"
-        exit 2
-    fi
-done
-
-
-# The feature names must not contain whitspace.
+# The feature names must not contain whitespace.
 ALL_RANDOOP_FEATURES=("BASELINE" "BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
 # The different features of Randoop to use. Adjust according to the features you are testing.
 RANDOOP_FEATURES=("BASELINE" "BLOODHOUND") #"ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
