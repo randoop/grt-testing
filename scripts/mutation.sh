@@ -62,7 +62,7 @@ NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
 # Time limit for running Randoop.
 TIME_LIMIT=$((NUM_CLASSES * SECONDS_CLASS))
 
-# Command line inputs common among all commands
+# Command line inputs common among all commands.
 RANDOOP_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOCO_AGENT_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=$TIME_LIMIT"
 
 echo "Using Randoop to generate tests"
@@ -72,6 +72,7 @@ echo
 mkdir -p results/
 if [ ! -f "results/info.csv" ]; then
     touch results/info.csv
+    echo -e "RandoopFeature,FileName,InstructionCoverage,BranchCoverage,MutationScore" > results/info.csv
     echo -e "RandoopFeature,FileName,InstructionCoverage,BranchCoverage,MutationScore" > results/info.csv
 fi
 
@@ -100,10 +101,13 @@ done
 for i in $(seq 1 $NUM_LOOP)
 do
     for RANDOOP_FEATURE in "${RANDOOP_FEATURES[@]}"
+    for RANDOOP_FEATURE in "${RANDOOP_FEATURES[@]}"
     do
         rm -rf "$CURR_DIR"/build/test*
         echo "Using $RANDOOP_FEATURE"
+        echo "Using $RANDOOP_FEATURE"
         echo
+        TEST_DIRECTORY="$CURR_DIR/build/test/$RANDOOP_FEATURE"
         TEST_DIRECTORY="$CURR_DIR/build/test/$RANDOOP_FEATURE"
         mkdir -p "$TEST_DIRECTORY"
 
