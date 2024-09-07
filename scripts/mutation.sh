@@ -78,6 +78,8 @@ fi
 JAR_DIR="$3"
 CLASSPATH="$(echo "$JAR_DIR"/*.jar | tr ' ' ':')"
 
+# When ABLATION is set to true, the script will test all Randoop versions except the one specified in the RANDOOP_VERSIONS array.
+# When ABLATION is set to false, the script will test only the Randoop version specified in the RANDOOP_VERSIONS array.
 ABLATION=true
 
 # The different versions of Randoop to use. Adjust according to the versions you are testing. A non-existant version will default to the baseline.
