@@ -35,34 +35,34 @@ MAJOR_HOME=$(realpath "build/major/")
 # Link to current directory
 CURR_DIR=$(realpath "$(pwd)")
 
-# Link to current version randoop jar. Replace with different version if new GRT component is being tested.
+# Link to Randoop jar file. Replace with different file if new GRT component is being tested.
 RANDOOP_JAR=$(realpath "build/randoop-all-4.3.3.jar")
 
-# Link to jacoco agent jar. This is necessary for Bloodhound
+# Link to jacoco agent jar. This is necessary for Bloodhound.
 JACOCO_AGENT_JAR=$(realpath "build/jacocoagent.jar")
 
-# Link to jacoco cli jar. This is necessary for coverage report generation
+# Link to jacoco cli jar. This is necessary for coverage report generation.
 JACOCO_CLI_JAR=$(realpath "build/jacococli.jar")
 
-# The paper runs Randoop on 4 different time limits. These are: 2 s/class, 10 s/class, 30 s/class, and 60 s/class
+# The paper runs Randoop with 4 different time limits. These are: 2 s/class, 10 s/class, 30 s/class, and 60 s/class.
 SECONDS_CLASS="2"
 
-# Number of times to run experiments (10 in GRT paper)
+# Number of times to run experiments (10 in GRT paper).
 NUM_LOOP=2
 
-# Link to src jar
+# Link to src jar.
 SRC_JAR=$(realpath "$SCRIPTDIR/../subject-programs/$1")
 
-# Link to src files for mutation generation and analysis
+# Link to src files for mutation generation and analysis.
 JAVA_SRC_DIR="$2"
 
-# Number of classes in given jar file
+# Number of classes in given jar file.
 NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
 
-# Time limit for running Randoop
+# Time limit for running Randoop.
 TIME_LIMIT=$((NUM_CLASSES * SECONDS_CLASS))
 
-# Variable that stores command line inputs common among all commands
+# Command line inputs common among all commands.
 RANDOOP_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOCO_AGENT_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=$TIME_LIMIT"
 
 echo "Using Randoop to generate tests"
@@ -72,53 +72,53 @@ echo
 mkdir -p results/
 if [ ! -f "results/info.csv" ]; then
     touch results/info.csv
-    echo -e "RandoopVersion,FileName,InstructionCoverage,BranchCoverage,MutationScore" > results/info.csv
+    echo -e "RandoopFeature,FileName,InstructionCoverage,BranchCoverage,MutationScore" > results/info.csv
 fi
 
 JAR_DIR="$3"
 CLASSPATH="$(echo "$JAR_DIR"/*.jar | tr ' ' ':')"
 
-# The different versions of Randoop to use. Adjust according to the versions you are testing.
-RANDOOP_VERSIONS=("BLOODHOUND" "BASELINE") #"ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
+# The different features of Randoop to use. Adjust according to the features you are testing.
+RANDOOP_FEATURES=("BLOODHOUND" "BASELINE") #"ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
 # shellcheck disable=SC2034 # i counts iterations but is not otherwise used.
 for i in $(seq 1 $NUM_LOOP)
 do
-    for RANDOOP_VERSION in "${RANDOOP_VERSIONS[@]}"
+    for RANDOOP_FEATURE in "${RANDOOP_FEATURES[@]}"
     do
         rm -rf "$CURR_DIR"/build/test*
-        echo "Using $RANDOOP_VERSION"
+        echo "Using $RANDOOP_FEATURE"
         echo
-        TEST_DIRECTORY="$CURR_DIR/build/test/$RANDOOP_VERSION"
+        TEST_DIRECTORY="$CURR_DIR/build/test/$RANDOOP_FEATURE"
         mkdir -p "$TEST_DIRECTORY"
 
         RANDOOP_COMMAND_2="$RANDOOP_COMMAND --junit-output-dir=$TEST_DIRECTORY"
 
-        if [ "$RANDOOP_VERSION" == "BLOODHOUND" ]; then
+        if [ "$RANDOOP_FEATURE" == "BLOODHOUND" ]; then
             $RANDOOP_COMMAND_2 --method-selection=BLOODHOUND
 
-        elif [ "$RANDOOP_VERSION" == "BASELINE" ]; then
+        elif [ "$RANDOOP_FEATURE" == "BASELINE" ]; then
             $RANDOOP_COMMAND_2
 
-        elif [ "$RANDOOP_VERSION" == "ORIENTEERING" ]; then
+        elif [ "$RANDOOP_FEATURE" == "ORIENTEERING" ]; then
             $RANDOOP_COMMAND_2 --input-selection=ORIENTEERING
 
-        elif [ "$RANDOOP_VERSION" == "BLOODHOUND_AND_ORIENTEERING" ]; then
+        elif [ "$RANDOOP_FEATURE" == "BLOODHOUND_AND_ORIENTEERING" ]; then
             $RANDOOP_COMMAND_2 --input-selection=ORIENTEERING --method-selection=BLOODHOUND
 
-        elif [ "$RANDOOP_VERSION" == "DETECTIVE" ]; then
+        elif [ "$RANDOOP_FEATURE" == "DETECTIVE" ]; then
             $RANDOOP_COMMAND_2 --demand-driven=true
 
-        elif [ "$RANDOOP_VERSION" == "GRT_FUZZING" ]; then
+        elif [ "$RANDOOP_FEATURE" == "GRT_FUZZING" ]; then
             $RANDOOP_COMMAND_2 --grt-fuzzing=true
 
-        elif [ "$RANDOOP_VERSION" == "ELEPHANT_BRAIN" ]; then
+        elif [ "$RANDOOP_FEATURE" == "ELEPHANT_BRAIN" ]; then
             $RANDOOP_COMMAND_2 --elephant-brain=true
 
-        elif [ "$RANDOOP_VERSION" == "CONSTANT_MINING" ]; then
+        elif [ "$RANDOOP_FEATURE" == "CONSTANT_MINING" ]; then
             $RANDOOP_COMMAND_2 --constant-mining=true
 
         else
-            echo "Unknown RANDOOP_VERSION = $RANDOOP_VERSION"
+            echo "Unknown RANDOOP_FEATURE = $RANDOOP_FEATURE"
             exit 1
         fi
 
@@ -170,7 +170,7 @@ do
 
         echo "Mutation Score: $mutation_score%"
 
-        row="$RANDOOP_VERSION,$(basename "$SRC_JAR"),$instruction_coverage%,$branch_coverage%,$mutation_score%"
+        row="$RANDOOP_FEATURE,$(basename "$SRC_JAR"),$instruction_coverage%,$branch_coverage%,$mutation_score%"
         # info.csv contains a record of each pass.
         echo -e "$row" >> results/info.csv
     done
