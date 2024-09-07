@@ -78,8 +78,24 @@ fi
 JAR_DIR="$3"
 CLASSPATH="$(echo "$JAR_DIR"/*.jar | tr ' ' ':')"
 
+# The feature names must not contain whitspace.
+ALL_RANDOOP_FEATURES=("BASELINE" "BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
 # The different features of Randoop to use. Adjust according to the features you are testing.
-RANDOOP_FEATURES=("BLOODHOUND" "BASELINE") #"ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
+RANDOOP_FEATURES=("BASELINE" "BLOODHOUND") #"ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
+
+# When ABLATION is set to false, the script tests the Randoop features specified in the RANDOOP_FEATURES array.
+# When ABLATION is set to true, each run tests all Randoop features except the one specified in the RANDOOP_FEATURES array.
+ABLATION=true
+
+# Ensure the given features are legal.
+for RANDOOP_FEATURE in "${RANDOOP_FEATURES[@]}" ; do
+    if [[ ! " ${ALL_RANDOOP_FEATURES[*]} " =~ [[:space:]]${RANDOOP_FEATURE}[[:space:]] ]]; then
+        echo "$RANDOOP_FEATURE" is not in "${RANDOOP_FEATURES[@]}"
+        exit 2
+    fi
+done
+
+
 # shellcheck disable=SC2034 # i counts iterations but is not otherwise used.
 for i in $(seq 1 $NUM_LOOP)
 do
