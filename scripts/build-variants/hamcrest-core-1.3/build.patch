@@ -1,6 +1,6 @@
---- ./build-variants/build.xml	2024-08-23 13:48:44.031112791 -0700
-+++ build.xml	2024-09-03 22:29:38.471672532 -0700
-@@ -31,13 +31,21 @@
+--- build-variants/build.xml	2024-09-05 17:37:20.812454960 -0700
++++ build.xml	2024-09-07 23:31:32.963387456 -0700
+@@ -31,13 +31,19 @@
  
  <!-- Target to compile the project -->
      <target name="compile" depends="init" description="Compile">
@@ -11,13 +11,11 @@
 -            <classpath location="${major.jar}"/>
 -            <compilerarg value="${plugin}"/>
 -        </javac>
-+<!--        <javac includeantruntime="true" -->
-+<!--               srcdir="${src}"-->
-+<!--               destdir="build/bin"-->
-+<!--               debug="yes">-->
-+<!--            <classpath location="${major.jar}"/>-->
-+<!--            <compilerarg value="${plugin}"/>-->
-+<!--        </javac>-->
++        <!-- Running ant once helps correctly compile the project with Major -->
++        <!-- run `ant -f build-original.xml` -->
++        <ant dir="${src}" antfile="build-original.xml"/>
++
++        <!-- Compile the project -->
 +        <ant dir="${src}" target="core">
 +            <property name="major.jar" value="${basedir}/${major.jar}"/>
 +            <property name="plugin" value="${plugin}"/>
