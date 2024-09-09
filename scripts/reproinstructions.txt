@@ -67,8 +67,17 @@ project using Major and run these tests on those mutants. Each experiment can ru
 times and a given number of seconds per class. Various statistics of each iteration will be logged to
 a file "results/info.txt".
 
+
+You can also run:
+    ```
+    ./run-all.sh
+    ```
+to run the mutation testing script on all the subject-programs. This essentially runs ```./mutation.sh```
+for each subject-program listed in the `project-config-status.csv` file.
+
+
 **NOTE**: The latest release of Randoop does not implement functionality for Orienteering. If you wish
-to work with Orienteering, you should download and build Randoop from Github and replace $RANDOOP_JAR
+to work with Orienteering, you should download and build Randoop from GitHub and replace $RANDOOP_JAR
 with the absolute path.  For Demand-driven (PR #1260), GRT Fuzzing (PR #1304), and Elephant Brain (PR #1347),
 checkout the respective pull requests from the Randoop repository.
 
