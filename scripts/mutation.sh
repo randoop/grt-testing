@@ -344,6 +344,7 @@ find . -maxdepth 1 -type f ! -name "build.xml" \
     ! -name "mutation.sh" \
     ! -name "project-config-status.csv" \
     ! -name "reproinstructions.txt" \
+    ! -name "run-all.sh" \
     -exec mv {} temp/ \;
 
 echo "Files moved to temp directory."
