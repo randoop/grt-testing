@@ -52,7 +52,7 @@ JACOCO_CLI_JAR=$(realpath "build/jacococli.jar")
 REPLACECALL_JAR=$(realpath "build/replacecall-4.3.3.jar")
 
 # Link to replacecall replacements file, which defines the methods to replace.
-REPLACECALL_REPLACEMENTS=$(realpath "build/replacecall-replacements.txt")
+REPLACECALL_REPLACEMENTS=$(realpath "replacecall-replacements.txt")
 
 # The paper runs Randoop with 4 different time limits. These are: 2 s/class, 10 s/class, 30 s/class, and 60 s/class.
 SECONDS_CLASS="2"
