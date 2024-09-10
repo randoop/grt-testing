@@ -310,6 +310,10 @@ do
         row="$RANDOOP_VERSION,$(basename "$SRC_JAR"),$TIME_LIMIT,$RANDOM_SEED,$instruction_coverage%,$branch_coverage%,$mutation_score%"
         # info.csv contains a record of each pass.
         echo -e "$row" >> results/info.csv
+
+        # Copy the test suites to results directory
+        echo "Copying test suites to results directory..."
+        cp -r "$TEST_DIRECTORY" "$RESULT_DIR"
     done
 
     echo "Results will be saved in $RESULT_DIR"
