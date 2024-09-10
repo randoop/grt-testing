@@ -52,12 +52,18 @@ You must have JDK 8 as your default java/javac for most of the subject-programs.
 
 You are now ready to run the mutation test script.
 
-The script takes one parameter:
+Parameters:
+    - `-v`: Enables verbose mode
+    - `-r`: Redirect Randoop and Major output to `results/result/mutation_output.txt`
     - `[project name]`: The name of the project (jar file name without ".jar") for which you want to generate tests
     and perform mutation testing. These should be one of the jar files in the `grt-testing/subject-programs` subdirectory.
     For example, to run the script on the `commons-lang3-3.0` project, you would run:
     ```
     ./mutation.sh commons-lang3-3.0
+    ```
+    If you want verbose output and direct the output to a file, you would run:
+    ```
+    ./mutation.sh -vr commons-lang3-3.0
     ```
 
 
