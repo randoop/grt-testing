@@ -49,7 +49,7 @@ JACOCO_AGENT_JAR=$(realpath "build/jacocoagent.jar")
 JACOCO_CLI_JAR=$(realpath "build/jacococli.jar")
 
 # The paper runs Randoop on 4 different time limits. These are: 2 s/class, 10 s/class, 30 s/class, and 60 s/class
-SECONDS_CLASS="1"
+SECONDS_CLASS="2"
 
 # Number of times to run experiments (10 in GRT paper)
 NUM_LOOP=1
