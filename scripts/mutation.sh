@@ -47,6 +47,13 @@ JACOCO_AGENT_JAR=$(realpath "build/jacocoagent.jar")
 # Link to jacoco cli jar. This is necessary for coverage report generation.
 JACOCO_CLI_JAR=$(realpath "build/jacococli.jar")
 
+# Link to replacecall jar. This is necessary for not calling certain undesired methods,
+# such as JOptionPane.showMessageDialog.
+REPLACECALL_JAR=$(realpath "build/replacecall-4.3.3.jar")
+
+# Link to replacecall replacements file, which defines the methods to replace.
+REPLACECALL_REPLACEMENTS=$(realpath "build/replacecall-replacements.txt")
+
 # The paper runs Randoop with 4 different time limits. These are: 2 s/class, 10 s/class, 30 s/class, and 60 s/class.
 SECONDS_CLASS="2"
 
@@ -363,13 +370,10 @@ do
         echo "Copying test suites to results directory..."
         cp -r "$TEST_DIRECTORY" "$RESULT_DIR"
 
-        echo "Move mutation_output to results directory..."
-        mv mutation_output.txt "$RESULT_DIR"
-
         if [[ "$REDIRECT" -eq 1 ]]; then
-            # Restore original stdout and stderr
+            echo "Move mutation_output to results directory..."
+            mv mutation_output.txt "$RESULT_DIR"
             exec 1>&3 2>&4
-            # Close file descriptors 3 and 4
             exec 3>&- 4>&-
         fi
     done
