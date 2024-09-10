@@ -34,7 +34,8 @@
         <javac includeantruntime="true" 
                srcdir="${src}"
                destdir="build/bin"
-               debug="yes">
+               debug="yes"
+               encoding="iso-8859-1">
             <classpath location="${major.jar}"/>
             <compilerarg value="${plugin}"/>
         </javac>
