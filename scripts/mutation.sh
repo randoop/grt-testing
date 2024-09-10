@@ -326,7 +326,7 @@ do
 
         mv results/summary.csv "$RESULT_DIR"
 
-        row="$RANDOOP_VERSION,$(basename "$SRC_JAR"),$TIME_LIMIT,$RANDOM_SEED,$instruction_coverage%,$branch_coverage%,$mutation_score%"
+        row="$FEATURE_NAME,$(basename "$SRC_JAR"),$TIME_LIMIT,$RANDOM_SEED,$instruction_coverage%,$branch_coverage%,$mutation_score%"
         # info.csv contains a record of each pass.
         echo -e "$row" >> results/info.csv
 
