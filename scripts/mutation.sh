@@ -38,17 +38,16 @@ MAJOR_HOME=$(realpath "build/major/")
 # Link to current directory
 CURR_DIR=$(realpath "$(pwd)")
 
-# Link to current version randoop jar. Replace with different version if new GRT component is being tested.
-# Link to the randoop jar
+# Link to Randoop jar file. Replace with different file if new GRT component is being tested.
 RANDOOP_JAR=$(realpath "build/randoop-all-4.3.3.jar")
 
-# Link to jacoco agent jar. This is necessary for Bloodhound
+# Link to jacoco agent jar. This is necessary for Bloodhound.
 JACOCO_AGENT_JAR=$(realpath "build/jacocoagent.jar")
 
-# Link to jacoco cli jar. This is necessary for coverage report generation
+# Link to jacoco cli jar. This is necessary for coverage report generation.
 JACOCO_CLI_JAR=$(realpath "build/jacococli.jar")
 
-# The paper runs Randoop on 4 different time limits. These are: 2 s/class, 10 s/class, 30 s/class, and 60 s/class
+# The paper runs Randoop with 4 different time limits. These are: 2 s/class, 10 s/class, 30 s/class, and 60 s/class.
 SECONDS_CLASS="2"
 
 # Number of times to run experiments (10 in GRT paper)
@@ -126,10 +125,10 @@ if [[ "$VERBOSE" ]]; then
     echo
 fi
 
-# Number of classes in given jar file
+# Number of classes in given jar file.
 NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
 
-# Time limit for running Randoop
+# Time limit for running Randoop.
 TIME_LIMIT=$((NUM_CLASSES * SECONDS_CLASS))
 
 echo "TIME_LIMIT: $TIME_LIMIT"
@@ -186,60 +185,80 @@ if [ ! -f "results/info.csv" ]; then
     echo -e "RandoopVersion,FileName,TimeLimit,Seed,InstructionCoverage,BranchCoverage,MutationScore" > results/info.csv
 fi
 
-# The different versions of Randoop to use. Adjust according to the versions you are testing.
-RANDOOP_VERSIONS=( "BASELINE" ) # "BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
+# The feature names must not contain whitespace.
+ALL_RANDOOP_FEATURES=("BASELINE" "BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
+# The different features of Randoop to use. Adjust according to the features you are testing.
+RANDOOP_FEATURES=("BASELINE") #"BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
+
+# When ABLATION is set to false, the script tests the Randoop features specified in the RANDOOP_FEATURES array.
+# When ABLATION is set to true, each run tests all Randoop features except the one specified in the RANDOOP_FEATURES array.
+ABLATION=false
+
+# Ensure the given features are legal.
+for RANDOOP_FEATURE in "${RANDOOP_FEATURES[@]}" ; do
+    if [[ ! " ${ALL_RANDOOP_FEATURES[*]} " =~ [[:space:]]${RANDOOP_FEATURE}[[:space:]] ]]; then
+        echo "$RANDOOP_FEATURE" is not in "${RANDOOP_FEATURES[@]}"
+        exit 2
+    fi
+done
+
 # shellcheck disable=SC2034 # i counts iterations but is not otherwise used.
 for i in $(seq 1 $NUM_LOOP)
 do
-    for RANDOOP_VERSION in "${RANDOOP_VERSIONS[@]}"
+    for RANDOOP_FEATURE in "${RANDOOP_FEATURES[@]}"
     do
+        FEATURE_NAME=""
+        if [[ "$ABLATION" == "true" ]]; then
+            FEATURE_NAME="ALL-EXCEPT-$RANDOOP_FEATURE"
+        else
+            FEATURE_NAME="$RANDOOP_FEATURE"
+        fi
+
         rm -rf "$CURR_DIR"/build/test*
-        echo "Using $RANDOOP_VERSION Randoop to generate tests..."
-        TEST_DIRECTORY="$CURR_DIR/build/test/$RANDOOP_VERSION"
+        echo "Using $FEATURE_NAME"
+        echo
+        TEST_DIRECTORY="$CURR_DIR/build/test/$FEATURE_NAME"
         mkdir -p "$TEST_DIRECTORY"
 
         RANDOOP_COMMAND_2="$RANDOOP_COMMAND --junit-output-dir=$TEST_DIRECTORY"
 
-        if [ "$RANDOOP_VERSION" == "BLOODHOUND" ]; then
-            if [[ "$VERBOSE" ]]; then
-                echo command:
-                echo $RANDOOP_COMMAND_2 --method-selection=BLOODHOUND
-            fi
-            echo
-            $RANDOOP_COMMAND_2 --method-selection=BLOODHOUND
-
-        elif [ "$RANDOOP_VERSION" == "BASELINE" ]; then
-            if [[ "$VERBOSE" ]]; then
-                echo command:
-                echo $RANDOOP_COMMAND_2
-            fi
-            echo
-            $RANDOOP_COMMAND_2
-
-        elif [ "$RANDOOP_VERSION" == "ORIENTEERING" ]; then
-            $RANDOOP_COMMAND_2 --input-selection=ORIENTEERING
-
-        elif [ "$RANDOOP_VERSION" == "BLOODHOUND_AND_ORIENTEERING" ]; then
-            $RANDOOP_COMMAND_2 --input-selection=ORIENTEERING --method-selection=BLOODHOUND
-
-        elif [ "$RANDOOP_VERSION" == "DETECTIVE" ]; then
-            $RANDOOP_COMMAND_2 --demand-driven=true
-
-        elif [ "$RANDOOP_VERSION" == "GRT_FUZZING" ]; then
-            $RANDOOP_COMMAND_2 --grt-fuzzing=true
-
-        elif [ "$RANDOOP_VERSION" == "ELEPHANT_BRAIN" ]; then
-            $RANDOOP_COMMAND_2 --elephant-brain=true
-
-        elif [ "$RANDOOP_VERSION" == "CONSTANT_MINING" ]; then
-            $RANDOOP_COMMAND_2 --constant-mining=true
-
-        else
-            echo "Unknown RANDOOP_VERSION = $RANDOOP_VERSION"
-            exit 1
+        if [[ ( "$RANDOOP_FEATURE" == "BLOODHOUND" && "$ABLATION" != "true" ) || ( "$RANDOOP_FEATURE" != "BLOODHOUND" && "$ABLATION" == "true" ) ]]; then
+            RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2 --method-selection=BLOODHOUND"
         fi
 
-        RESULT_DIR="results/$(date +%Y%m%d-%H%M%S)-$RANDOOP_VERSION-$SRC_JAR_NAME-Seed-$RANDOM_SEED"
+        if [[ ( "$RANDOOP_FEATURE" == "BASELINE" && "$ABLATION" != "true" ) || ( "$RANDOOP_FEATURE" != "BASELINE" && "$ABLATION" == "true" ) ]]; then
+            ## There is nothing to do in this case.
+            # RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2"
+            true
+        fi
+
+        if [[ ( "$RANDOOP_FEATURE" == "ORIENTEERING" && "$ABLATION" != "true" ) || ( "$RANDOOP_FEATURE" != "ORIENTEERING" && "$ABLATION" == "true" ) ]]; then
+            RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2 --input-selection=ORIENTEERING"
+        fi
+
+        if [[ ( "$RANDOOP_FEATURE" == "BLOODHOUND_AND_ORIENTEERING" && "$ABLATION" != "true" ) || ( "$RANDOOP_FEATURE" != "BLOODHOUND_AND_ORIENTEERING" && "$ABLATION" == "true" ) ]]; then
+            RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2 --input-selection=ORIENTEERING --method-selection=BLOODHOUND"
+        fi
+
+        if [[ ( "$RANDOOP_FEATURE" == "DETECTIVE" && "$ABLATION" != "true" ) || ( "$RANDOOP_FEATURE" != "DETECTIVE" && "$ABLATION" == "true" ) ]]; then
+            RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2 --demand-driven=true"
+        fi
+
+        if [[ ( "$RANDOOP_FEATURE" == "GRT_FUZZING" && "$ABLATION" != "true" ) || ( "$RANDOOP_FEATURE" != "GRT_FUZZING" && "$ABLATION" == "true" ) ]]; then
+            RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2 --grt-fuzzing=true"
+        fi
+
+        if [[ ( "$RANDOOP_FEATURE" == "ELEPHANT_BRAIN" && "$ABLATION" != "true" ) || ( "$RANDOOP_FEATURE" != "ELEPHANT_BRAIN" && "$ABLATION" == "true" ) ]]; then
+            RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2 --elephant-brain=true"
+        fi
+
+        if [[ ( "$RANDOOP_FEATURE" == "CONSTANT_MINING" && "$ABLATION" != "true" ) || ( "$RANDOOP_FEATURE" != "CONSTANT_MINING" && "$ABLATION" == "true" ) ]]; then
+            RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2 --constant-mining=true"
+        fi
+
+        $RANDOOP_COMMAND_2
+
+        RESULT_DIR="results/$(date +%Y%m%d-%H%M%S)-$FEATURE_NAME-$SRC_JAR_NAME-Seed-$RANDOM_SEED"
         mkdir -p "$RESULT_DIR"
 
         echo
