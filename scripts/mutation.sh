@@ -130,7 +130,7 @@ NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
 
 # Time limit for running Randoop.
 TIME_LIMIT=$((NUM_CLASSES * SECONDS_CLASS))
-TIME_LIMIT=1
+
 echo "TIME_LIMIT: $TIME_LIMIT"
 
 # Random seed for Randoop
@@ -326,7 +326,7 @@ do
 
         mv results/summary.csv "$RESULT_DIR"
 
-        row="$FEATURE_NAME,$(basename "$SRC_JAR"),$TIME_LIMIT,$RANDOM_SEED,$instruction_coverage%,$branch_coverage%,$mutation_score%"
+        row="$RANDOOP_VERSION,$(basename "$SRC_JAR"),$TIME_LIMIT,$RANDOM_SEED,$instruction_coverage%,$branch_coverage%,$mutation_score%"
         # info.csv contains a record of each pass.
         echo -e "$row" >> results/info.csv
 
