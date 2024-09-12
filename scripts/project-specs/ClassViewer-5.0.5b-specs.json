@@ -1,0 +1,31 @@
+[
+  {
+    "operation": {
+      "classname": "com.jstevh.tools.StringTools",
+      "name": "removeStrings",
+      "parameterTypes": [
+        "java.lang.String",
+        "[Ljava.lang.String;"
+      ]
+    },
+    "identifiers": {
+      "parameters": [
+        "in",
+        "strings"
+      ],
+      "receiverName": "receiver",
+      "returnName": "result"
+    },
+    "pre": [
+      {
+        "description": "in must be non-empty",
+        "guard": {
+          "conditionText": "in.length() > 0",
+          "description": "in must be non-empty"
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  }
+]
