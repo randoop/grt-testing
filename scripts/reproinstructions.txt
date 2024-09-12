@@ -40,10 +40,14 @@ You must have JDK 8 as your default java/javac for most of the subject-programs.
    # Make sure you have JDK 11 for building Randoop
    ./gradlew jar
 
+   # Also build the Replacecall jar file
+   ./gradlew replacecall:shadowJar
+
    # You may switch back to JDK 8 after building Randoop, necessary for running the mutation script
 
-   # Move the jar file to the build directory
-   mv build/libs/randoop-all-4.3.3.jar ../
+   # Move the jar files to the build directory
+   mv build/libs/randoop-all-4.3.3.jar ../build/
+   mv build/libs/replacecall-4.3.3.jar ../build/
 
    # You can now go back to the scripts directory
    # You may delete the Randoop repository after building the jar file
