@@ -118,16 +118,7 @@ declare -A project_src=(
 # Map project names to their respective dependencies
 declare -A project_deps=(
     ["a4j-1.0b"]="$SRC_BASE_DIR/jars/"
-    ["asm-5.0.1"]="$SRC_BASE_DIR/lib/"
-    ["bcel-5.2"]="$SRC_BASE_DIR/lib/"
-    ["commons-codec-1.9"]="$SRC_BASE_DIR/lib/"
-    ["commons-collections4-4.0"]="$SRC_BASE_DIR/lib/"
-    ["commons-lang3-3.0"]="$SRC_BASE_DIR/lib/"
-    ["commons-math3-3.2"]="$SRC_BASE_DIR/lib/"
-    ["commons-primitives-1.0"]="$SRC_BASE_DIR/lib/"
-    ["dcParseArgs-10.2008"]="$SRC_BASE_DIR/lib/"
     ["fixsuite-r48"]="$SRC_BASE_DIR/lib/jdom.jar:$SRC_BASE_DIR/lib/log4j-1.2.15.jar:$SRC_BASE_DIR/lib/slf4j-api-1.5.0.jar:$SRC_BASE_DIR/lib/slf4j-log4j12-1.5.0.jar"
-    ["javassist-3.19"]="$SRC_BASE_DIR/lib/"
     ["jdom-1.0"]="$MAJOR_HOME/lib/ant:$SRC_BASE_DIR/lib/"
     ["JSAP-2.1"]="$MAJOR_HOME/lib/ant:$SRC_BASE_DIR/lib/"  # need to override ant.jar in $SRC_BASE_DIR/lib
     ["jvc-1.1"]="$SRC_BASE_DIR/lib/"
@@ -157,7 +148,6 @@ NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
 
 # Time limit for running Randoop.
 TIME_LIMIT=$((NUM_CLASSES * SECONDS_CLASS))
-
 echo "TIME_LIMIT: $TIME_LIMIT"
 
 # Random seed for Randoop
