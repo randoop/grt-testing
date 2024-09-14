@@ -170,18 +170,21 @@ declare -A command_suffix=(
     ["commons-lang3-3.0"]="--specifications=project-specs/commons-lang3-3.0-specs.json"
     # An empty BlockingQueue was generated and used but never filled for take(), led to non-termination
     # ["guava-16.0.1"]="--omit-methods=^com\.google\.common\.util\.concurrent\.Uninterruptibles\.takeUninterruptibly\(java\.util\.concurrent\.BlockingQueue\)$"
-    ["guava-16.0.1"]="--usethreads=true"
+    # ["guava-16.0.1"]="--usethreads=true"
+    ["guava-16.0.1"]="--specifications=project-specs/guava-16.0.1-specs.json"
     # Randoop generated bad test sequences for handling webserver lifecycle
     # ["javassist-3.19"]="--omit-classes=^javassist\.tools\.web\.Webserver$"
-    ["javassist-3.19"]="--usethreads=true"
+    # ["javassist-3.19"]="--usethreads=true"
+    ["javassist-3.19"]="--specifications=project-specs/javassist-3.19-specs.json"
     # JDOMAbout cannot be found during test.compile, and the class itself isn't interesting
     ["jdom-1.0"]="--omit-classes=^JDOMAbout$"
     # Bad inputs generated and caused infinite loops
     # ["jaxen-1.1.6"]="--omit-classes=^org\.jaxen\.util\.FollowingAxisIterator$|^org\.jaxen\.util\.PrecedingAxisIterator$"
-    ["jaxen-1.1.6"]="--usethreads=true"
+    # ["jaxen-1.1.6"]="--usethreads=true"
+    ["jaxen-1.1.6"]="--specifications=project-specs/jaxen-1.1.6-specs.json"
     # Randoop generated bad test sequences for handling webserver lifecycle
     # ["nekomud-r16"]="--omit-classes=^net\.sourceforge\.nekomud\.nio\.NetworkServiceNioImpl$"
-    ["nekomud-r16"]="--usethreads=true"
+    # ["nekomud-r16"]="--usethreads=true"
     # Various issues
     # ["sat4j-core-2.3.5"]="--omit-methods=^org\.sat4j\.specs\.SearchListener\.end\(org\.sat4j\.specs\.Lbool\)$|^org\.sat4j\.tools\.encoding\.Binary\.addAtMost\(org\.sat4j\.specs\.ISolver,org\.sat4j\.specs\.IVecInt,int\)$|^org\.sat4j\.tools\.GateTranslator\.iff\(int,org\.sat4j\.specs\.IVecInt\)$"
     ["sat4j-core-2.3.5"]="--usethreads=true"

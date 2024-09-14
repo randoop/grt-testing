@@ -1,0 +1,31 @@
+[
+  {
+    "operation": {
+      "classname": "org.jaxen.util.FollowingAxisIterator",
+      "name": "FollowingAxisIterator",
+      "parameterTypes": [
+        "java.lang.Object",
+        "org.jaxen.Navigator"
+      ]
+    },
+    "identifiers": {
+      "parameters": [
+        "contextNode",
+        "navigator"
+      ],
+      "receiverName": "receiver",
+      "returnName": "result"
+    },
+    "pre": [
+      {
+        "description": "Context node must not be a SAXPathException",
+        "guard": {
+          "conditionText": "contextNode.getClass().getName() != \"org.jaxen.saxpath.SAXPathException\"",
+          "description": "The context node must not be a SAXPathException"
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  }
+]

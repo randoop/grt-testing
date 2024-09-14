@@ -1,0 +1,29 @@
+[
+  {
+    "operation": {
+      "classname": "com.google.common.util.concurrent.Uninterruptibles",
+      "name": "takeUninterruptibly",
+      "parameterTypes": [
+        "java.util.concurrent.BlockingQueue"
+      ]
+    },
+    "identifiers": {
+      "parameters": [
+        "objCollectionQueue"
+      ],
+      "receiverName": "receiver",
+      "returnName": "result"
+    },
+    "pre": [
+      {
+        "description": "objCollectionQueue must be non-empty",
+        "guard": {
+          "conditionText": "!objCollectionQueue.isEmpty()",
+          "description": "objCollectionQueue must be non-empty"
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  }
+]
