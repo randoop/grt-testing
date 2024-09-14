@@ -166,7 +166,8 @@ declare -A command_suffix=(
     ["ClassViewer-5.0.5b"]="--specifications=project-specs/ClassViewer-5.0.5b-specs.json"
     # Bad inputs generated and caused infinite loops
     # ["commons-lang3-3.0"]="--omit-classes=^org\.apache\.commons\.lang3\.RandomStringUtils$"
-    ["commons-lang3-3.0"]="--usethreads=true"
+    # ["commons-lang3-3.0"]="--usethreads=true"
+    ["commons-lang3-3.0"]="--specifications=project-specs/commons-lang3-3.0-specs.json"
     # An empty BlockingQueue was generated and used but never filled for take(), led to non-termination
     # ["guava-16.0.1"]="--omit-methods=^com\.google\.common\.util\.concurrent\.Uninterruptibles\.takeUninterruptibly\(java\.util\.concurrent\.BlockingQueue\)$"
     ["guava-16.0.1"]="--usethreads=true"
