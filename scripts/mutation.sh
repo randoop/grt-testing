@@ -39,7 +39,7 @@ MAJOR_HOME=$(realpath "build/major/")
 CURR_DIR=$(realpath "$(pwd)")
 
 # Link to Randoop jar file. Replace with different file if new GRT component is being tested.
-RANDOOP_JAR=$(realpath "build/randoop-all-4.3.3.jar")
+RANDOOP_JAR=/Users/yashmathur/Documents/randoop/build/libs/randoop-all-4.3.3.jar
 
 # Link to jacoco agent jar. This is necessary for Bloodhound.
 JACOCO_AGENT_JAR=$(realpath "build/jacocoagent.jar")
@@ -52,7 +52,7 @@ JACOCO_CLI_JAR=$(realpath "build/jacococli.jar")
 REPLACECALL_JAR=$(realpath "build/replacecall-4.3.3.jar")
 
 # Link to replacecall replacements file, which defines the methods to replace.
-REPLACECALL_REPLACEMENTS=$(realpath "replacecall-replacements.txt")
+REPLACECALL_REPLACEMENTS=$(realpath "temp/replacecall-replacements.txt")
 
 # The paper runs Randoop with 4 different time limits. These are: 2 s/class, 10 s/class, 30 s/class, and 60 s/class.
 SECONDS_CLASS="2"
@@ -147,7 +147,7 @@ fi
 NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
 
 # Time limit for running Randoop.
-TIME_LIMIT=$((NUM_CLASSES * SECONDS_CLASS))
+TIME_LIMIT=10 #$((NUM_CLASSES * SECONDS_CLASS))
 echo "TIME_LIMIT: $TIME_LIMIT"
 
 # Random seed for Randoop
@@ -206,7 +206,7 @@ fi
 # The feature names must not contain whitespace.
 ALL_RANDOOP_FEATURES=("BASELINE" "BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
 # The different features of Randoop to use. Adjust according to the features you are testing.
-RANDOOP_FEATURES=("BASELINE") #"BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
+RANDOOP_FEATURES=("DETECTIVE") #"BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
 
 # When ABLATION is set to false, the script tests the Randoop features specified in the RANDOOP_FEATURES array.
 # When ABLATION is set to true, each run tests all Randoop features except the one specified in the RANDOOP_FEATURES array.
@@ -268,7 +268,7 @@ do
         fi
 
         if [[ ( "$RANDOOP_FEATURE" == "DETECTIVE" && "$ABLATION" != "true" ) || ( "$RANDOOP_FEATURE" != "DETECTIVE" && "$ABLATION" == "true" ) ]]; then
-            RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2 --demand-driven=true"
+            RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2 --demand-driven=true --demand-driven-logging=demand-driven.log"
         fi
 
         if [[ ( "$RANDOOP_FEATURE" == "GRT_FUZZING" && "$ABLATION" != "true" ) || ( "$RANDOOP_FEATURE" != "GRT_FUZZING" && "$ABLATION" == "true" ) ]]; then
@@ -376,7 +376,7 @@ do
     # Move all output files into the results directory
     # suppression.log may be in one of two locations depending on if using include-major branch
     mv "$JAVA_SRC_DIR"/suppression.log "$RESULT_DIR" 2>/dev/null
-    mv suppression.log "$RESULT_DIR" 2>/dev/null
+    mv suppression.log demand-driven.log "$RESULT_DIR" 2>/dev/null
     mv major.log mutants.log "$RESULT_DIR"
     (cd results; mv covMap.csv details.csv testMap.csv preprocessing.ser jacoco.exec ../"$RESULT_DIR")
     set -e
