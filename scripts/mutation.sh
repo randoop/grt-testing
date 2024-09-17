@@ -55,7 +55,10 @@ REPLACECALL_JAR=$(realpath "build/replacecall-4.3.3.jar")
 REPLACECALL_REPLACEMENTS=$(realpath "replacecall-replacements.txt")
 
 # The paper runs Randoop with 4 different time limits. These are: 2 s/class, 10 s/class, 30 s/class, and 60 s/class.
-SECONDS_CLASS="2"
+SECONDS_CLASS=""
+
+# Total time to run the experiment. Mutually exclusive with SECONDS_CLASS.
+TOTAL_TIME=""
 
 # Number of times to run experiments (10 in GRT paper)
 NUM_LOOP=1
@@ -67,22 +70,45 @@ VERBOSE=0
 REDIRECT=0
 
 # Parse command-line arguments
-while getopts ":vr" opt; do
+while getopts ":hvrt:c:" opt; do
   case ${opt} in
+    h )
+      echo "Usage: mutation.sh [-h] [-v] [-r] [-t total_time] [-c time_per_class] <test case name>"
+      exit 0
+      ;;
     v )
       VERBOSE=1
       ;;
     r )
       REDIRECT=1
       ;;
+    t )
+      TOTAL_TIME="$OPTARG"
+      ;;
+    c )
+      SECONDS_CLASS="$OPTARG"
+      ;;
     \? )
       echo "Invalid option: -$OPTARG" >&2
+      echo "Usage: mutation.sh [-v] [-r] [-t total_time] [-c time_per_class] <test case name>"
+      exit 1
+      ;;
+    : )
+      echo "Option -$OPTARG requires an argument." >&2
+      echo "Usage: mutation.sh [-v] [-r] [-t total_time] [-c time_per_class] <test case name>"
       exit 1
       ;;
   esac
 done
 
 shift $((OPTIND -1))
+
+# Ensure that both -t and -c are not used simultaneously
+if [[ -n "$TOTAL_TIME" && -n "$SECONDS_CLASS" ]]; then
+    echo "Options -t and -c cannot be used together."
+    echo "Please specify either -t for total_time or -c for time_per_class."
+    exit 1
+fi
 
 # Name of test case
 SRC_JAR_NAME="$1"
@@ -147,8 +173,16 @@ fi
 NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
 
 # Time limit for running Randoop.
-TIME_LIMIT=$((NUM_CLASSES * SECONDS_CLASS))
-echo "TIME_LIMIT: $TIME_LIMIT"
+if [[ -n "$TOTAL_TIME" ]]; then
+    TIME_LIMIT="$TOTAL_TIME"
+elif [[ -n "$SECONDS_CLASS" ]]; then
+    TIME_LIMIT=$((NUM_CLASSES * SECONDS_CLASS))
+else
+    TIME_LIMIT=$((NUM_CLASSES * 2))
+fi
+# TIME_LIMIT=60
+echo "TIME_LIMIT: $TIME_LIMIT seconds"
+echo
 
 # Random seed for Randoop
 RANDOM_SEED=0
