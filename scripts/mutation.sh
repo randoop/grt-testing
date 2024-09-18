@@ -69,6 +69,14 @@ VERBOSE=0
 # Redirect output to mutation_output.txt
 REDIRECT=0
 
+# Enforce that mutually exclusive options are not bundled together
+for arg in "$@"; do
+  if [[ "$arg" =~ ^-.*[tc].*[tc] ]]; then
+    echo "Options -t and -c cannot be used together in any form (e.g., -tc or -ct)."
+    exit 1
+  fi
+done
+
 # Parse command-line arguments
 while getopts ":hvrt:c:" opt; do
   case ${opt} in
@@ -102,13 +110,6 @@ while getopts ":hvrt:c:" opt; do
 done
 
 shift $((OPTIND -1))
-
-# Ensure that both -t and -c are not used simultaneously
-if [[ -n "$TOTAL_TIME" && -n "$SECONDS_CLASS" ]]; then
-    echo "Options -t and -c cannot be used together."
-    echo "Please specify either -t for total_time or -c for time_per_class."
-    exit 1
-fi
 
 # Name of test case
 SRC_JAR_NAME="$1"

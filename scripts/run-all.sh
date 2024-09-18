@@ -3,18 +3,44 @@
 # Initialize default values
 VERBOSE=0
 REDIRECT=0
+TOTAL_TIME=""
+SECONDS_CLASS=""
+
+# Enforce that mutually exclusive options are not bundled together
+for arg in "$@"; do
+  if [[ "$arg" =~ ^-.*[tc].*[tc] ]]; then
+    echo "Options -t and -c cannot be used together in any form (e.g., -tc or -ct)."
+    exit 1
+  fi
+done
 
 # Parse command-line arguments
-while getopts ":vr" opt; do
+while getopts ":hvrt:c:" opt; do
   case ${opt} in
+    h )
+      echo "Usage: mutation.sh [-h] [-v] [-r] [-t total_time] [-c time_per_class] <test case name>"
+      exit 0
+      ;;
     v )
       VERBOSE=1
       ;;
     r )
       REDIRECT=1
       ;;
+    t )
+      TOTAL_TIME="$OPTARG"
+      ;;
+    c )
+      SECONDS_CLASS="$OPTARG"
+      ;;
     \? )
       echo "Invalid option: -$OPTARG" >&2
+      echo "Usage: mutation.sh [-v] [-r] [-t total_time] [-c time_per_class] <test case name>"
+      exit 1
+      ;;
+    : )
+      echo "Option -$OPTARG requires an argument." >&2
+      echo "Usage: mutation.sh [-v] [-r] [-t total_time] [-c time_per_class] <test case name>"
       exit 1
       ;;
   esac
@@ -29,6 +55,12 @@ if [[ "$VERBOSE" -eq 1 ]]; then
 fi
 if [[ "$REDIRECT" -eq 1 ]]; then
   MUTATION_ARGS="$MUTATION_ARGS -r"
+fi
+if [[ -n "$TOTAL_TIME" ]]; then
+  MUTATION_ARGS="$MUTATION_ARGS -t $TOTAL_TIME"
+fi
+if [[ -n "$SECONDS_CLASS" ]]; then
+  MUTATION_ARGS="$MUTATION_ARGS -c $SECONDS_CLASS"
 fi
 
 # Run mutation tests with the supplied arguments before the project name
