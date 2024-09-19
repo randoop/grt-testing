@@ -12,7 +12,11 @@ find . -maxdepth 1 -type f ! -name "build.xml" \
     ! -name "project-config-status.csv" \
     ! -name "reproinstructions.txt" \
     ! -name "run-all.sh" \
+    ! -name "run-some.sh" \
     ! -name "clean-dir.sh" \
     -exec mv {} temp/ \;
+
+# run-some is not included by default, but this name has been used for the
+# script that runs the mutation testing on a subset of the projects
 
 echo "Non-essential files moved to temp/ directory."

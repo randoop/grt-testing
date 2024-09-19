@@ -55,7 +55,10 @@ REPLACECALL_JAR=$(realpath "build/replacecall-4.3.3.jar")
 REPLACECALL_REPLACEMENTS=$(realpath "temp/replacecall-replacements.txt")
 
 # The paper runs Randoop with 4 different time limits. These are: 2 s/class, 10 s/class, 30 s/class, and 60 s/class.
-SECONDS_CLASS="2"
+SECONDS_CLASS=""
+
+# Total time to run the experiment. Mutually exclusive with SECONDS_CLASS.
+TOTAL_TIME=""
 
 # Number of times to run experiments (10 in GRT paper)
 NUM_LOOP=1
@@ -66,17 +69,41 @@ VERBOSE=0
 # Redirect output to mutation_output.txt
 REDIRECT=0
 
+# Enforce that mutually exclusive options are not bundled together
+for arg in "$@"; do
+  if [[ "$arg" =~ ^-.*[tc].*[tc] ]]; then
+    echo "Options -t and -c cannot be used together in any form (e.g., -tc or -ct)."
+    exit 1
+  fi
+done
+
 # Parse command-line arguments
-while getopts ":vr" opt; do
+while getopts ":hvrt:c:" opt; do
   case ${opt} in
+    h )
+      echo "Usage: mutation.sh [-h] [-v] [-r] [-t total_time] [-c time_per_class] <test case name>"
+      exit 0
+      ;;
     v )
       VERBOSE=1
       ;;
     r )
       REDIRECT=1
       ;;
+    t )
+      TOTAL_TIME="$OPTARG"
+      ;;
+    c )
+      SECONDS_CLASS="$OPTARG"
+      ;;
     \? )
       echo "Invalid option: -$OPTARG" >&2
+      echo "Usage: mutation.sh [-v] [-r] [-t total_time] [-c time_per_class] <test case name>"
+      exit 1
+      ;;
+    : )
+      echo "Option -$OPTARG requires an argument." >&2
+      echo "Usage: mutation.sh [-v] [-r] [-t total_time] [-c time_per_class] <test case name>"
       exit 1
       ;;
   esac
@@ -147,8 +174,16 @@ fi
 NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
 
 # Time limit for running Randoop.
-TIME_LIMIT=10 #$((NUM_CLASSES * SECONDS_CLASS))
-echo "TIME_LIMIT: $TIME_LIMIT"
+if [[ -n "$TOTAL_TIME" ]]; then
+    TIME_LIMIT="$TOTAL_TIME"
+elif [[ -n "$SECONDS_CLASS" ]]; then
+    TIME_LIMIT=$((NUM_CLASSES * SECONDS_CLASS))
+else
+    TIME_LIMIT=$((NUM_CLASSES * 2))
+fi
+# TIME_LIMIT=60
+echo "TIME_LIMIT: $TIME_LIMIT seconds"
+echo
 
 # Random seed for Randoop
 RANDOM_SEED=0
@@ -170,18 +205,21 @@ declare -A command_suffix=(
     ["commons-lang3-3.0"]="--specifications=project-specs/commons-lang3-3.0-specs.json"
     # An empty BlockingQueue was generated and used but never filled for take(), led to non-termination
     # ["guava-16.0.1"]="--omit-methods=^com\.google\.common\.util\.concurrent\.Uninterruptibles\.takeUninterruptibly\(java\.util\.concurrent\.BlockingQueue\)$"
-    ["guava-16.0.1"]="--usethreads=true"
+    # ["guava-16.0.1"]="--usethreads=true"
+    ["guava-16.0.1"]="--specifications=project-specs/guava-16.0.1-specs.json"
     # Randoop generated bad test sequences for handling webserver lifecycle
     # ["javassist-3.19"]="--omit-classes=^javassist\.tools\.web\.Webserver$"
-    ["javassist-3.19"]="--usethreads=true"
+    # ["javassist-3.19"]="--usethreads=true"
+    ["javassist-3.19"]="--specifications=project-specs/javassist-3.19-specs.json"
     # JDOMAbout cannot be found during test.compile, and the class itself isn't interesting
     ["jdom-1.0"]="--omit-classes=^JDOMAbout$"
     # Bad inputs generated and caused infinite loops
     # ["jaxen-1.1.6"]="--omit-classes=^org\.jaxen\.util\.FollowingAxisIterator$|^org\.jaxen\.util\.PrecedingAxisIterator$"
-    ["jaxen-1.1.6"]="--usethreads=true"
+    # ["jaxen-1.1.6"]="--usethreads=true"
+    ["jaxen-1.1.6"]="--specifications=project-specs/jaxen-1.1.6-specs.json"
     # Randoop generated bad test sequences for handling webserver lifecycle
     # ["nekomud-r16"]="--omit-classes=^net\.sourceforge\.nekomud\.nio\.NetworkServiceNioImpl$"
-    ["nekomud-r16"]="--usethreads=true"
+    # ["nekomud-r16"]="--usethreads=true"
     # Various issues
     # ["sat4j-core-2.3.5"]="--omit-methods=^org\.sat4j\.specs\.SearchListener\.end\(org\.sat4j\.specs\.Lbool\)$|^org\.sat4j\.tools\.encoding\.Binary\.addAtMost\(org\.sat4j\.specs\.ISolver,org\.sat4j\.specs\.IVecInt,int\)$|^org\.sat4j\.tools\.GateTranslator\.iff\(int,org\.sat4j\.specs\.IVecInt\)$"
     ["sat4j-core-2.3.5"]="--usethreads=true"
