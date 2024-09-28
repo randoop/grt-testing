@@ -14,7 +14,7 @@
       {
         "description": "Socket is not closed",
         "guard": {
-          "conditionText": "!receiver.socket.isClosed()",
+          "condition": "!receiver.socket.isClosed()",
           "description": "Socket is not closed"
         }
       }

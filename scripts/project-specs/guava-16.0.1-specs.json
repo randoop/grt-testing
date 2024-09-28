@@ -18,7 +18,7 @@
       {
         "description": "objCollectionQueue must be non-empty",
         "guard": {
-          "conditionText": "!objCollectionQueue.isEmpty()",
+          "condition": "!objCollectionQueue.isEmpty()",
           "description": "objCollectionQueue must be non-empty"
         }
       }

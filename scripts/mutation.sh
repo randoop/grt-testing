@@ -217,12 +217,10 @@ declare -A command_suffix=(
     # ["jaxen-1.1.6"]="--omit-classes=^org\.jaxen\.util\.FollowingAxisIterator$|^org\.jaxen\.util\.PrecedingAxisIterator$"
     # ["jaxen-1.1.6"]="--usethreads=true"
     ["jaxen-1.1.6"]="--specifications=project-specs/jaxen-1.1.6-specs.json"
-    # Randoop generated bad test sequences for handling webserver lifecycle
-    # ["nekomud-r16"]="--omit-classes=^net\.sourceforge\.nekomud\.nio\.NetworkServiceNioImpl$"
-    # ["nekomud-r16"]="--usethreads=true"
     # Various issues
     # ["sat4j-core-2.3.5"]="--omit-methods=^org\.sat4j\.specs\.SearchListener\.end\(org\.sat4j\.specs\.Lbool\)$|^org\.sat4j\.tools\.encoding\.Binary\.addAtMost\(org\.sat4j\.specs\.ISolver,org\.sat4j\.specs\.IVecInt,int\)$|^org\.sat4j\.tools\.GateTranslator\.iff\(int,org\.sat4j\.specs\.IVecInt\)$"
-    ["sat4j-core-2.3.5"]="--usethreads=true"
+    # ["sat4j-core-2.3.5"]="--usethreads=true"
+    # ["sat4j-core-2.3.5"]="--specifications=project-specs/sat4j-core-2.3.5-specs.json"
 )
 
 RANDOOP_COMMAND="$RANDOOP_BASE_COMMAND ${command_suffix[$SRC_JAR_NAME]}"
