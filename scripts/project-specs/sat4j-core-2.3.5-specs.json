@@ -1,0 +1,25 @@
+[
+  {
+    "operation": {
+      "classname": "org.sat4j.tools.SolverDecorator",
+      "name": "modelWithInternalVariables",
+      "parameterTypes": []
+    },
+    "identifiers": {
+      "parameters": [],
+      "receiverName": "receiver",
+      "returnName": "result"
+    },
+    "pre": [
+      {
+        "description": "Solve method has been called",
+        "guard": {
+          "description": "Solve method has been called",
+          "condition": "receiver.solver.getModel() != null"
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  }
+]

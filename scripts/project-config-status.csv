@@ -25,7 +25,7 @@ JSAP-2.1,Working,""
 jvc-1.1,Working,""
 nekomud-r16,Working,""
 pmd-core-5.2.2,Working,""
-sat4j-core-2.3.5,"",org/sat4j/minisat/core/Solver#modelWithInternalVariables exception in Threads
+sat4j-core-2.3.5,"",Waiting for SAT4J Changes to Merge
 shiro-core-1.2.3,Working,
 slf4j-api-1.7.12,Working,
 tinySQL-2.26,Working,
