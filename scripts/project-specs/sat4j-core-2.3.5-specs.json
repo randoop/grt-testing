@@ -1,8 +1,8 @@
 [
   {
     "operation": {
-      "classname": "javassist.tools.web.Webserver",
-      "name": "run",
+      "classname": "org.sat4j.tools.SolverDecorator",
+      "name": "modelWithInternalVariables",
       "parameterTypes": []
     },
     "identifiers": {
@@ -12,10 +12,10 @@
     },
     "pre": [
       {
-        "description": "Socket is not closed",
+        "description": "Solve method has been called",
         "guard": {
-          "condition": "!receiver.socket.isClosed()",
-          "description": "Socket is not closed"
+          "description": "Solve method has been called",
+          "condition": "receiver.solver.getModel() != null"
         }
       }
     ],

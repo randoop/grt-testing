@@ -26,21 +26,21 @@
       {
         "description": "If letters is true, start and end range must include letters",
         "guard": {
-          "conditionText": "letters ? (start <= 90 && end >= 65) || (start <= 122 && end >= 97) : true",
+          "condition": "letters ? (start <= 90 && end >= 65) || (start <= 122 && end >= 97) : true",
           "description": "If letters is true, start and end range must include letters"
         }
       },
       {
         "description": "If numbers is true, start and end range must include numbers",
         "guard": {
-          "conditionText": "numbers ? (start <= 57 && end >= 48) : true",
+          "condition": "numbers ? (start <= 57 && end >= 48) : true",
           "description": "If numbers is true, start and end range must include numbers"
         }
       },
       {
         "description": "If both letters and numbers are true, start and end range must include letters or numbers",
         "guard": {
-          "conditionText": "letters && numbers ? (start <= 90 && end >= 65) || (start <= 122 && end >= 97) || (start <= 57 && end >= 48) : true",
+          "condition": "letters && numbers ? (start <= 90 && end >= 65) || (start <= 122 && end >= 97) || (start <= 57 && end >= 48) : true",
           "description": "If both letters and numbers are true, start and end range must include letters or numbers"
         }
       }
@@ -77,21 +77,21 @@
       {
         "description": "If letters is true and chars is null, start and end range must include letters",
         "guard": {
-          "conditionText": "letters && chars == null ? (start <= 90 && end >= 65) || (start <= 122 && end >= 97) : true",
+          "condition": "letters && chars == null ? (start <= 90 && end >= 65) || (start <= 122 && end >= 97) : true",
           "description": "If letters is true and chars is null, start and end range must include letters"
         }
       },
       {
         "description": "If numbers is true and chars is null, start and end range must include numbers",
         "guard": {
-          "conditionText": "numbers && chars == null ? (start <= 57 && end >= 48) : true",
+          "condition": "numbers && chars == null ? (start <= 57 && end >= 48) : true",
           "description": "If numbers is true and chars is null, start and end range must include numbers"
         }
       },
       {
         "description": "If both letters and numbers are true and chars is null, start and end range must include letters or numbers",
         "guard": {
-          "conditionText": "letters && numbers && chars == null ? (start <= 90 && end >= 65) || (start <= 122 && end >= 97) || (start <= 57 && end >= 48) : true",
+          "condition": "letters && numbers && chars == null ? (start <= 90 && end >= 65) || (start <= 122 && end >= 97) || (start <= 57 && end >= 48) : true",
           "description": "If both letters and numbers are true and chars is null, start and end range must include letters or numbers"
         }
       }
@@ -130,7 +130,7 @@
       {
         "description": "Width must be between 0 and 1000 to prevent long strings",
         "guard": {
-          "conditionText": "width >= 0 && width <= 1000",
+          "condition": "width >= 0 && width <= 1000",
           "description": "Width must be between 0 and 1000 to prevent long strings"
         }
       }

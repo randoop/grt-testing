@@ -53,7 +53,7 @@ JACOCO_CLI_JAR=$(realpath "build/jacococli.jar")
 REPLACECALL_JAR=$(realpath "build/replacecall-4.3.3.jar")
 
 # Link to replacecall replacements file, which defines the methods to replace.
-REPLACECALL_REPLACEMENTS=$(realpath "temp/replacecall-replacements.txt")
+# REPLACECALL_REPLACEMENTS=$(realpath "replacecall-replacements.txt")
 
 # The paper runs Randoop with 4 different time limits. These are: 2 s/class, 10 s/class, 30 s/class, and 60 s/class.
 SECONDS_CLASS="10"
@@ -192,38 +192,25 @@ RANDOM_SEED=0
 # Variable that stores command line inputs common among all commands
 # Note that if there is no project_deps entry, this command adds a classpath
 # element of '*', but it doesn't seem to matter.
-RANDOOP_BASE_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR:$REPLACECALL_JAR -javaagent:$JACOCO_AGENT_JAR -javaagent:$REPLACECALL_JAR -classpath $CLASSPATH*:$SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=$TIME_LIMIT --deterministic=false --no-error-revealing-tests=true --randomseed=$RANDOM_SEED"
+RANDOOP_BASE_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR:$REPLACECALL_JAR -javaagent:$JACOCO_AGENT_JAR -javaagent:$REPLACECALL_JAR -classpath $CLASSPATH*:$SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=$TIME_LIMIT --deterministic=false --no-error-revealing-tests=true --randomseed=$RANDOM_SEED --log=randoop-log.txt"
 
 # NOTE: The following omits are based on BASELINE Randoop, seed 0.
 declare -A command_suffix=(
     # Bad inputs generated and caused infinite loops
-    # ["ClassViewer-5.0.5b"]="--omit-methods=^com\.jstevh\.tools\.StringTools\.removeStrings\(java\.lang\.String,java\.lang\.String\[\]\)$"
-    # ["ClassViewer-5.0.5b"]="--usethreads=true"
     ["ClassViewer-5.0.5b"]="--specifications=project-specs/ClassViewer-5.0.5b-specs.json"
     # Bad inputs generated and caused infinite loops
-    # ["commons-lang3-3.0"]="--omit-classes=^org\.apache\.commons\.lang3\.RandomStringUtils$"
-    # ["commons-lang3-3.0"]="--usethreads=true"
     ["commons-lang3-3.0"]="--specifications=project-specs/commons-lang3-3.0-specs.json"
     # An empty BlockingQueue was generated and used but never filled for take(), led to non-termination
-    # ["guava-16.0.1"]="--omit-methods=^com\.google\.common\.util\.concurrent\.Uninterruptibles\.takeUninterruptibly\(java\.util\.concurrent\.BlockingQueue\)$"
-    # ["guava-16.0.1"]="--usethreads=true"
     ["guava-16.0.1"]="--specifications=project-specs/guava-16.0.1-specs.json"
-    # Randoop generated bad test sequences for handling webserver lifecycle
-    # ["javassist-3.19"]="--omit-classes=^javassist\.tools\.web\.Webserver$"
-    # ["javassist-3.19"]="--usethreads=true"
-    ["javassist-3.19"]="--specifications=project-specs/javassist-3.19-specs.json"
+    # Randoop generated bad test sequences for handling webserver lifecycle, don't test them
+    # ["javassist-3.19"]="--specifications=project-specs/javassist-3.19-specs.json"
+    ["javassist-3.19"]="--omit-methods=^javassist\.tools\.web\.Webserver\.run\(\)$ --omit-methods=^javassist\.tools\.rmi\.AppletServer\.run\(\)$"
     # JDOMAbout cannot be found during test.compile, and the class itself isn't interesting
     ["jdom-1.0"]="--omit-classes=^JDOMAbout$"
     # Bad inputs generated and caused infinite loops
-    # ["jaxen-1.1.6"]="--omit-classes=^org\.jaxen\.util\.FollowingAxisIterator$|^org\.jaxen\.util\.PrecedingAxisIterator$"
-    # ["jaxen-1.1.6"]="--usethreads=true"
     ["jaxen-1.1.6"]="--specifications=project-specs/jaxen-1.1.6-specs.json"
-    # Randoop generated bad test sequences for handling webserver lifecycle
-    # ["nekomud-r16"]="--omit-classes=^net\.sourceforge\.nekomud\.nio\.NetworkServiceNioImpl$"
-    # ["nekomud-r16"]="--usethreads=true"
-    # Various issues
-    # ["sat4j-core-2.3.5"]="--omit-methods=^org\.sat4j\.specs\.SearchListener\.end\(org\.sat4j\.specs\.Lbool\)$|^org\.sat4j\.tools\.encoding\.Binary\.addAtMost\(org\.sat4j\.specs\.ISolver,org\.sat4j\.specs\.IVecInt,int\)$|^org\.sat4j\.tools\.GateTranslator\.iff\(int,org\.sat4j\.specs\.IVecInt\)$"
-    ["sat4j-core-2.3.5"]="--usethreads=true"
+    # Bad inputs cause exceptions in different threads, directly terminating Randoop
+    ["sat4j-core-2.3.5"]="--specifications=project-specs/sat4j-core-2.3.5-specs.json"
 )
 
 RANDOOP_COMMAND="$RANDOOP_BASE_COMMAND ${command_suffix[$SRC_JAR_NAME]}"

@@ -20,7 +20,7 @@
       {
         "description": "in must be non-empty",
         "guard": {
-          "conditionText": "in.length() > 0",
+          "condition": "in.length() > 0",
           "description": "in must be non-empty"
         }
       }
