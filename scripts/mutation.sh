@@ -114,6 +114,14 @@ shift $((OPTIND -1))
 # Name of test case
 SRC_JAR_NAME="$1"
 
+# Name of ant file to use
+ANT="ant"
+
+# If SRC_JAR_NAME is ClassViewer-5.0.5b, use alternative ant file
+# if [ "$SRC_JAR_NAME" == "ClassViewer-5.0.5b" ]; then
+#    ANT="ant.m"
+# fi
+
 echo "Running mutation test on $1"
 echo
 
@@ -364,10 +372,10 @@ do
         echo "Running tests with mutation analysis..."
         if [[ "$VERBOSE" -eq 1 ]]; then
             echo command:
-            echo "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
+            echo "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
         fi
         echo
-        "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
+        "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
 
         # Calculate Mutation Score
         mutants_covered=$(awk -F, 'NR==2 {print $3}' results/summary.csv)
