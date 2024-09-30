@@ -17,6 +17,7 @@
 # Fail this script on errors.
 set -e
 set -o pipefail
+#set -x
 
 if [ $# -eq 0 ]; then
     echo $0: "usage: mutation.sh [-vr] <test case name>"
@@ -39,7 +40,7 @@ MAJOR_HOME=$(realpath "build/major/")
 CURR_DIR=$(realpath "$(pwd)")
 
 # Link to Randoop jar file. Replace with different file if new GRT component is being tested.
-RANDOOP_JAR=/Users/yashmathur/Documents/randoop/build/libs/randoop-all-4.3.3.jar
+RANDOOP_JAR=/Users/yashmathur/Documents/Old/Research/randoopFinal/build/libs/randoop-all-4.3.3.jar
 
 # Link to jacoco agent jar. This is necessary for Bloodhound.
 JACOCO_AGENT_JAR=$(realpath "build/jacocoagent.jar")
@@ -55,7 +56,7 @@ REPLACECALL_JAR=$(realpath "build/replacecall-4.3.3.jar")
 REPLACECALL_REPLACEMENTS=$(realpath "temp/replacecall-replacements.txt")
 
 # The paper runs Randoop with 4 different time limits. These are: 2 s/class, 10 s/class, 30 s/class, and 60 s/class.
-SECONDS_CLASS=""
+SECONDS_CLASS="10"
 
 # Total time to run the experiment. Mutually exclusive with SECONDS_CLASS.
 TOTAL_TIME=""
@@ -245,7 +246,7 @@ fi
 # The feature names must not contain whitespace.
 ALL_RANDOOP_FEATURES=("BASELINE" "BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
 # The different features of Randoop to use. Adjust according to the features you are testing.
-RANDOOP_FEATURES=("DETECTIVE") #"BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
+RANDOOP_FEATURES=("BASELINE") #"BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
 
 # When ABLATION is set to false, the script tests the Randoop features specified in the RANDOOP_FEATURES array.
 # When ABLATION is set to true, each run tests all Randoop features except the one specified in the RANDOOP_FEATURES array.
@@ -414,8 +415,9 @@ do
     set +e
     # Move all output files into the results directory
     # suppression.log may be in one of two locations depending on if using include-major branch
+    mv demand-driven.log results
     mv "$JAVA_SRC_DIR"/suppression.log "$RESULT_DIR" 2>/dev/null
-    mv suppression.log demand-driven.log "$RESULT_DIR" 2>/dev/null
+    mv suppression.log "$RESULT_DIR" 2>/dev/null
     mv major.log mutants.log "$RESULT_DIR"
     (cd results; mv covMap.csv details.csv testMap.csv preprocessing.ser jacoco.exec ../"$RESULT_DIR")
     set -e
