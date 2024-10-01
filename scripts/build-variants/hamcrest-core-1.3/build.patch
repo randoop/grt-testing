@@ -1,0 +1,29 @@
+--- build-variants/build.xml	2024-09-05 17:37:20.812454960 -0700
++++ build.xml	2024-09-07 23:31:32.963387456 -0700
+@@ -31,13 +31,19 @@
+ 
+ <!-- Target to compile the project -->
+     <target name="compile" depends="init" description="Compile">
+-        <javac includeantruntime="true" 
+-               srcdir="${src}"
+-               destdir="build/bin"
+-               debug="yes">
+-            <classpath location="${major.jar}"/>
+-            <compilerarg value="${plugin}"/>
+-        </javac>
++        <!-- Running ant once helps correctly compile the project with Major -->
++        <!-- run `ant -f build-original.xml` -->
++        <ant dir="${src}" antfile="build-original.xml"/>
++
++        <!-- Compile the project -->
++        <ant dir="${src}" target="core">
++            <property name="major.jar" value="${basedir}/${major.jar}"/>
++            <property name="plugin" value="${plugin}"/>
++        </ant>
++
++        <copy todir="build/bin">
++            <fileset dir="${src}/build/temp/hamcrest-core-1.3.jar.contents/"/>
++        </copy>
+     </target>
+ 
+ <!-- Target to compile the test suite -->

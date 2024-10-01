@@ -1,0 +1,24 @@
+--- build-variants/build.xml	2024-08-23 13:48:44.031112791 -0700
++++ build.xml	2024-08-26 21:31:01.180498808 -0700
+@@ -31,13 +31,23 @@
+ 
+ <!-- Target to compile the project -->
+     <target name="compile" depends="init" description="Compile">
+-        <javac includeantruntime="true" 
+-               srcdir="${src}"
+-               destdir="build/bin"
+-               debug="yes">
+-            <classpath location="${major.jar}"/>
+-            <compilerarg value="${plugin}"/>
+-        </javac>
++        <ant dir="../subject-programs/src/jvc-1.1/" target="tools">
++            <property name="major.jar" value="${basedir}/${major.jar}"/>
++            <property name="plugin" value="${plugin}"/>
++        </ant>
++
++        <copy todir="build/bin">
++            <fileset dir="${src}/lib/classes/"/>
++        </copy>
+     </target>
+ 
+ <!-- Target to compile the test suite -->

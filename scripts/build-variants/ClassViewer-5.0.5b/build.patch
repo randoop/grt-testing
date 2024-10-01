@@ -1,0 +1,39 @@
+--- ./build-variants/build.xml	2024-09-29 23:18:21.911763327 -0700
++++ build.xml	2024-09-29 23:22:48.381710153 -0700
+@@ -74,20 +74,22 @@
+ <!-- The original test target -->
+     <target name="test" depends="compile.tests" description="Run all unit test cases">
+         <echo message="Running unit tests ..."/>
+-        <jacoco:coverage destfile="${jacoco.destfile}">
+-            <junit  printsummary="true"
+-                    showoutput="true"
+-                    haltonfailure="false"
+-                    fork="true" forkmode="once">
+-                <formatter type="brief" usefile="false"/>
+-                <classpath path="build/bin"/>
++        <junit  printsummary="true"
++                showoutput="true"
++                haltonfailure="false"
++                fork="true" forkmode="once">
++            <formatter type="brief" usefile="false"/>
++            <classpath path="build/bin:build/major/lib/major-rt.jar"/>
++            <jvmarg value="-javaagent:${basedir}/build/jacocoagent.jar=destfile=${basedir}/${jacoco.destfile}"/>
++            <jvmarg value="-Xbootclasspath/a:${basedir}/build/replacecall-4.3.3.jar"/>
++            <jvmarg value="-javaagent:${basedir}/build/replacecall-4.3.3.jar"/>
+ 
+-                <batchtest fork="no">
+-                    <fileset dir="${test}">
+-                        <include name="**/*Test*.java"/>
+-                    </fileset>
+-                </batchtest>
+-            </junit>
+-        </jacoco:coverage>
++
++            <batchtest>
++                <fileset dir="${test}">
++                    <include name="**/*Test*.java"/>
++                </fileset>
++            </batchtest>
++        </junit>
+     </target>
+ </project>
