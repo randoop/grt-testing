@@ -52,7 +52,10 @@ JACOCO_CLI_JAR=$(realpath "build/jacococli.jar")
 REPLACECALL_JAR=$(realpath "build/replacecall-4.3.3.jar")
 
 # Link to replacecall replacements file, which defines the methods to replace.
-# REPLACECALL_REPLACEMENTS=$(realpath "replacecall-replacements.txt")
+REPLACECALL_FILE=$(realpath "replacecall-replacements.txt")
+
+# Command to run replacecall
+REPLACECALL_COMMAND="$REPLACECALL_JAR"
 
 # The paper runs Randoop with 4 different time limits. These are: 2 s/class, 10 s/class, 30 s/class, and 60 s/class.
 SECONDS_CLASS=""
@@ -199,7 +202,7 @@ RANDOM_SEED=0
 # Variable that stores command line inputs common among all commands
 # Note that if there is no project_deps entry, this command adds a classpath
 # element of '*', but it doesn't seem to matter.
-RANDOOP_BASE_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR:$REPLACECALL_JAR -javaagent:$JACOCO_AGENT_JAR -javaagent:$REPLACECALL_JAR -classpath $CLASSPATH*:$SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=$TIME_LIMIT --deterministic=false --no-error-revealing-tests=true --randomseed=$RANDOM_SEED"
+RANDOOP_BASE_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR:$REPLACECALL_JAR -javaagent:$JACOCO_AGENT_JAR -javaagent:$REPLACECALL_COMMAND -classpath $CLASSPATH*:$SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=$TIME_LIMIT --deterministic=false --no-error-revealing-tests=true --randomseed=$RANDOM_SEED"
 
 # NOTE: The following omits are based on BASELINE Randoop, seed 0.
 declare -A command_suffix=(
