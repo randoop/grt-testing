@@ -52,9 +52,6 @@ JACOCO_CLI_JAR=$(realpath "build/jacococli.jar")
 # such as JOptionPane.showMessageDialog.
 REPLACECALL_JAR=$(realpath "build/replacecall-4.3.3.jar")
 
-# Link to replacecall replacements file, which defines the methods to replace.
-# REPLACECALL_REPLACEMENTS=$(realpath "replacecall-replacements.txt")
-
 # The paper runs Randoop with 4 different time limits. These are: 2 s/class, 10 s/class, 30 s/class, and 60 s/class.
 SECONDS_CLASS="10"
 
@@ -114,6 +111,14 @@ shift $((OPTIND -1))
 
 # Name of test case
 SRC_JAR_NAME="$1"
+
+# Name of ant file to use
+ANT="ant"
+
+# Use alternative ant file if replacecall is being used for specific projects
+if [[ "$SRC_JAR_NAME" == "ClassViewer-5.0.5b" || "$SRC_JAR_NAME" == "jcommander-1.35" ]]; then
+    ANT="ant.m"
+fi
 
 echo "Running mutation test on $1"
 echo
@@ -189,10 +194,21 @@ echo
 # Random seed for Randoop
 RANDOM_SEED=0
 
+# Path to the replacement file for replacecall
+REPLACEMENT_FILE_PATH="$(realpath "build-variants/$SRC_JAR_NAME/replacecall-replacements.txt")"
+
+# Map project names to their respective replacement files
+declare -A replacement_files=(
+     ["jcommander-1.35"]="=--replacement_file=$REPLACEMENT_FILE_PATH"
+)
+
+# Command to run replacecall
+REPLACECALL_COMMAND="$REPLACECALL_JAR${replacement_files[$SRC_JAR_NAME]}"
+
 # Variable that stores command line inputs common among all commands
 # Note that if there is no project_deps entry, this command adds a classpath
 # element of '*', but it doesn't seem to matter.
-RANDOOP_BASE_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR:$REPLACECALL_JAR -javaagent:$JACOCO_AGENT_JAR -javaagent:$REPLACECALL_JAR -classpath $CLASSPATH*:$SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=$TIME_LIMIT --deterministic=false --no-error-revealing-tests=true --randomseed=$RANDOM_SEED --log=randoop-log.txt"
+RANDOOP_BASE_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR:$REPLACECALL_JAR -javaagent:$JACOCO_AGENT_JAR -javaagent:$REPLACECALL_COMMAND -classpath $CLASSPATH*:$SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=$TIME_LIMIT --deterministic=false --no-error-revealing-tests=true --randomseed=$RANDOM_SEED"
 
 # NOTE: The following omits are based on BASELINE Randoop, seed 0.
 declare -A command_suffix=(
@@ -365,10 +381,10 @@ do
         echo "Running tests with mutation analysis..."
         if [[ "$VERBOSE" -eq 1 ]]; then
             echo command:
-            echo "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
+            echo "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
         fi
         echo
-        "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
+        "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
 
         # Calculate Mutation Score
         mutants_covered=$(awk -F, 'NR==2 {print $3}' results/summary.csv)
