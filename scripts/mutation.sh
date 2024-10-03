@@ -17,7 +17,7 @@
 # Fail this script on errors.
 set -e
 set -o pipefail
-#set -x
+set -x
 
 if [ $# -eq 0 ]; then
     echo $0: "usage: mutation.sh [-vr] <test case name>"
