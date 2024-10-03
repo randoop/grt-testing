@@ -1,5 +1,5 @@
 --- build-variants/build.xml	2024-10-02 01:32:23.888417106 -0700
-+++ build.xml	2024-10-02 01:31:45.508419037 -0700
++++ build.xml	2024-10-02 02:15:12.978298586 -0700
 @@ -6,6 +6,7 @@
        particular (compiled) mml-file.
       ############################################## -->
@@ -34,8 +34,8 @@
 +            <formatter type="brief" usefile="false"/>
 +            <classpath path="build/bin:${major-rt.jar}"/>
 +            <jvmarg value="-javaagent:${basedir}/build/jacocoagent.jar=destfile=${basedir}/${jacoco.destfile}"/>
-+            <jvmarg value="-Xbootclasspath/a:${basedir}/scripts/build/replacecall-4.3.3.jar"/>
-+            <jvmarg value="-javaagent:${basedir}/scripts/build/replacecall-4.3.3.jar"/>
++            <jvmarg value="-Xbootclasspath/a:${basedir}/build/replacecall-4.3.3.jar"/>
++            <jvmarg value="-javaagent:${basedir}/build/replacecall-4.3.3.jar"/>
 +
 +            <batchtest>
 +                <fileset dir="${test}">

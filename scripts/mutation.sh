@@ -51,12 +51,6 @@ JACOCO_CLI_JAR=$(realpath "build/jacococli.jar")
 # such as JOptionPane.showMessageDialog.
 REPLACECALL_JAR=$(realpath "build/replacecall-4.3.3.jar")
 
-# Link to replacecall replacements file, which defines the methods to replace.
-REPLACECALL_FILE=$(realpath "replacecall-replacements.txt")
-
-# Command to run replacecall
-REPLACECALL_COMMAND="$REPLACECALL_JAR"
-
 # The paper runs Randoop with 4 different time limits. These are: 2 s/class, 10 s/class, 30 s/class, and 60 s/class.
 SECONDS_CLASS=""
 
@@ -120,10 +114,10 @@ SRC_JAR_NAME="$1"
 # Name of ant file to use
 ANT="ant"
 
-# If SRC_JAR_NAME is ClassViewer-5.0.5b, use alternative ant file
-# if [ "$SRC_JAR_NAME" == "ClassViewer-5.0.5b" ]; then
-#    ANT="ant.m"
-# fi
+# Use alternative ant file if replacecall is being used for specific projects
+if [[ "$SRC_JAR_NAME" == "ClassViewer-5.0.5b" || "$SRC_JAR_NAME" == "jcommander-1.35" ]]; then
+    ANT="ant.m"
+fi
 
 echo "Running mutation test on $1"
 echo
@@ -198,6 +192,17 @@ echo
 
 # Random seed for Randoop
 RANDOM_SEED=0
+
+# Path to the replacement file for replacecall
+REPLACEMENT_FILE_PATH="$(realpath "build-variants/$SRC_JAR_NAME/replacecall-replacements.txt")"
+
+# Map project names to their respective replacement files
+declare -A replacement_files=(
+     ["jcommander-1.35"]="=--replacement_file=$REPLACEMENT_FILE_PATH"
+)
+
+# Command to run replacecall
+REPLACECALL_COMMAND="$REPLACECALL_JAR${replacement_files[$SRC_JAR_NAME]}"
 
 # Variable that stores command line inputs common among all commands
 # Note that if there is no project_deps entry, this command adds a classpath
