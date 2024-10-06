@@ -14,7 +14,7 @@ build/major:
 	cd build && wget -nv http://mutation-testing.org/downloads/files/major-2.2.0_jre8.zip
 	cd build && unzip -o major-2.2.0_jre8.zip
 
-build/major:
+build/replacecall-4.3.3.jar:
 	wget https://github.com/776styjsu/grt-replacecall/releases/download/v0.1.0/replacecall-4.3.3.jar
 	mv replacecall-4.3.3.jar build/
 
