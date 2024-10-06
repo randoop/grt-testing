@@ -40,13 +40,6 @@ You must have JDK 8 as your default java/javac for most of the subject-programs.
    # Make sure you have JDK 11 for building Randoop
    ./gradlew jar
 
-   # Also build the Replacecall jar file
-   ./gradlew replacecall:shadowJar
-
-   # NOTE: Only default replacecall.jar can be built at this point, where it only accounts for
-   # the replacement of calls in subject program ClassViewer-5.0.5b. Instructions to obtain
-   # replacecall.jar for all subject programs will be provided in the future.
-
    # You may switch back to JDK 8 after building Randoop, necessary for running the mutation script
 
    # Move the jar files to the build directory
