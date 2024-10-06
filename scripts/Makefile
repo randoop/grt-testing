@@ -1,4 +1,4 @@
-all: build/jacoco.jar build/randoop-all-4.3.3.jar build/major build/replacecall-4.3.3.jar results
+all: build/jacoco.jar build/randoop-all-4.3.3.jar build/major build/replacecall-4.3.3.jar build/major/bin/ant.m results
 
 build/jacoco.jar:
 	mkdir -p build
