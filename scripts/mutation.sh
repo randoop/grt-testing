@@ -17,7 +17,7 @@
 # Fail this script on errors.
 set -e
 set -o pipefail
-set -x
+#set -x
 
 if [ $# -eq 0 ]; then
     echo $0: "usage: mutation.sh [-vr] <test case name>"
@@ -249,7 +249,7 @@ fi
 # The feature names must not contain whitespace.
 ALL_RANDOOP_FEATURES=("BASELINE" "BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
 # The different features of Randoop to use. Adjust according to the features you are testing.
-RANDOOP_FEATURES=("BASELINE") #"BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
+RANDOOP_FEATURES=("BLOODHOUND") #"BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
 
 # When ABLATION is set to false, the script tests the Randoop features specified in the RANDOOP_FEATURES array.
 # When ABLATION is set to true, each run tests all Randoop features except the one specified in the RANDOOP_FEATURES array.
