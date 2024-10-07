@@ -1,4 +1,4 @@
-all: build/jacoco.jar build/randoop-all-4.3.3.jar build/major results
+all: build/jacoco.jar build/randoop-all-4.3.3.jar build/major build/replacecall-4.3.3.jar build/major/bin/ant.m results
 
 build/jacoco.jar:
 	mkdir -p build
@@ -12,7 +12,15 @@ build/randoop-all-4.3.3.jar:
 build/major:
 	mkdir -p build
 	cd build && wget -nv http://mutation-testing.org/downloads/files/major-2.2.0_jre8.zip
-    cd build && unzip -o major-2.2.0_jre8.zip
+	cd build && unzip -o major-2.2.0_jre8.zip
+
+build/replacecall-4.3.3.jar:
+	wget https://github.com/776styjsu/grt-replacecall/releases/download/v0.1.1/replacecall-4.3.3.jar
+	mv replacecall-4.3.3.jar build/
+
+build/major/bin/ant.m:
+	wget https://github.com/776styjsu/grt-replacecall/releases/download/v0.1.1/ant.m
+	mv ant.m build/major/bin/
 
 results:
 	mkdir -p results

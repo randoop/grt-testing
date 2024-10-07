@@ -25,5 +25,28 @@
     ],
     "post": [],
     "throws": []
+  },
+  {
+    "operation": {
+      "classname": "com.google.common.util.concurrent.AbstractFuture",
+      "name": "get",
+      "parameterTypes": []
+    },
+    "identifiers": {
+      "parameters": [],
+      "receiverName": "receiver",
+      "returnName": "result"
+    },
+    "pre": [
+      {
+        "description": "receiver must be done or interrupted",
+        "guard": {
+          "condition": "receiver.isDone() || receiver.isCancelled()",
+          "description": "receiver must be done or interrupted"
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
   }
 ]
