@@ -195,7 +195,7 @@ echo
 RANDOM_SEED=0
 
 # Path to the replacement file for replacecall
-REPLACEMENT_FILE_PATH="$(realpath "build-variants/$SRC_JAR_NAME/replacecall-replacements.txt")"
+REPLACEMENT_FILE_PATH="build-variants/$SRC_JAR_NAME/replacecall-replacements.txt"
 
 # Map project names to their respective replacement files
 declare -A replacement_files=(
