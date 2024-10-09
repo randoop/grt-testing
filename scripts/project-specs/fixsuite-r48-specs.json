@@ -1,33 +1,6 @@
 [
   {
     "operation": {
-      "classname": "java.awt.Window",
-      "name": "setIconImage",
-      "parameterTypes": [
-        "java.awt.Image"
-      ]
-    },
-    "identifiers": {
-      "parameters": [
-        "image"
-      ],
-      "receiverName": "receiver",
-      "returnName": "result"
-    },
-    "pre": [
-      {
-        "description": "image must be non-null",
-        "guard": {
-          "condition": "image != null",
-          "description": "image must be non-null"
-        }
-      }
-    ],
-    "post": [],
-    "throws": []
-  },
-  {
-    "operation": {
       "classname": "java.awt.Component",
       "name": "createImage",
       "parameterTypes": [
