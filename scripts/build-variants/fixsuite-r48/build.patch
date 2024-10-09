@@ -1,6 +1,14 @@
---- build-variants/build.xml	2024-08-23 13:48:44.031112791 -0700
-+++ build.xml	2024-09-01 21:24:00.633105935 -0700
-@@ -31,13 +31,14 @@
+--- build-variants/build.xml	2024-10-02 01:32:23.888417106 -0700
++++ build.xml	2024-10-08 01:55:27.294727925 -0700
+@@ -6,6 +6,7 @@
+       particular (compiled) mml-file.
+      ############################################## -->
+     <property name="major.jar" value="build/major/lib/major.jar"/>
++    <property name="major-rt.jar" value="build/major/lib/major-rt.jar"/>
+     <property name="mutator" value=""/>
+     <property name="plugin" value="-Xplugin:MajorPlugin ${mutator}"/>
+     <property name="jacoco.destfile" value="results/jacoco.exec"/>
+@@ -31,13 +32,14 @@
  
  <!-- Target to compile the project -->
      <target name="compile" depends="init" description="Compile">
@@ -22,3 +30,40 @@
      </target>
  
  <!-- Target to compile the test suite -->
+@@ -74,20 +76,21 @@
+ <!-- The original test target -->
+     <target name="test" depends="compile.tests" description="Run all unit test cases">
+         <echo message="Running unit tests ..."/>
+-        <jacoco:coverage destfile="${jacoco.destfile}">
+-            <junit  printsummary="true"
+-                    showoutput="true"
+-                    haltonfailure="false"
+-                    fork="true" forkmode="once">
+-                <formatter type="brief" usefile="false"/>
+-                <classpath path="build/bin"/>
+-
+-                <batchtest fork="no">
+-                    <fileset dir="${test}">
+-                        <include name="**/*Test*.java"/>
+-                    </fileset>
+-                </batchtest>
+-            </junit>
+-        </jacoco:coverage>
++        <junit  printsummary="true"
++                showoutput="true"
++                haltonfailure="false"
++                fork="true" forkmode="once">
++            <formatter type="brief" usefile="false"/>
++            <classpath path="build/bin:${major-rt.jar}"/>
++            <jvmarg value="-javaagent:${basedir}/build/jacocoagent.jar=destfile=${basedir}/${jacoco.destfile}"/>
++            <jvmarg value="-Xbootclasspath/a:${basedir}/build/replacecall-4.3.3.jar"/>
++            <jvmarg value="-javaagent:${basedir}/build/replacecall-4.3.3.jar"/>
++
++            <batchtest>
++                <fileset dir="${test}">
++                    <include name="**/*Test*.java"/>
++                </fileset>
++            </batchtest>
++        </junit>
+     </target>
+ </project>
