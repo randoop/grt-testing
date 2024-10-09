@@ -1,5 +1,5 @@
---- build-variants/build.xml	2024-09-05 17:37:20.812454960 -0700
-+++ build.xml	2024-09-07 23:31:32.963387456 -0700
+--- build-variants/build.xml	2024-10-02 01:32:23.888417106 -0700
++++ build.xml	2024-10-08 22:13:08.446651998 -0700
 @@ -31,13 +31,19 @@
  
  <!-- Target to compile the project -->
@@ -13,7 +13,7 @@
 -        </javac>
 +        <!-- Running ant once helps correctly compile the project with Major -->
 +        <!-- run `ant -f build-original.xml` -->
-+        <ant dir="${src}" antfile="build-original.xml"/>
++        <ant dir="${src}" antfile="build.xml"/>
 +
 +        <!-- Compile the project -->
 +        <ant dir="${src}" target="core">
