@@ -200,7 +200,10 @@ REPLACEMENT_FILE_PATH="build-variants/$SRC_JAR_NAME/replacecall-replacements.txt
 
 # Map project names to their respective replacement files
 declare -A replacement_files=(
+     # Do not wait for user input
      ["jcommander-1.35"]="=--replacement_file=$REPLACEMENT_FILE_PATH"
+     # Mock javax.mail.Service.connect to avoid network calls
+     ["javax.mail-1.5.1"]="=--replacement_file=$REPLACEMENT_FILE_PATH"
 )
 
 # Command to run replacecall
