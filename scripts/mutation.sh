@@ -53,7 +53,7 @@ JACOCO_CLI_JAR=$(realpath "build/jacococli.jar")
 REPLACECALL_JAR=$(realpath "build/replacecall-4.3.3.jar")
 
 # The paper runs Randoop with 4 different time limits. These are: 2 s/class, 10 s/class, 30 s/class, and 60 s/class.
-SECONDS_CLASS="10"
+SECONDS_CLASS="2"
 
 # Total time to run the experiment. Mutually exclusive with SECONDS_CLASS.
 TOTAL_TIME=""
@@ -377,28 +377,28 @@ do
 
         mv results/report.csv "$RESULT_DIR"
 
-        echo
-        echo "Running tests with mutation analysis..."
-        if [[ "$VERBOSE" -eq 1 ]]; then
-            echo command:
-            echo "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
-        fi
-        echo
-        "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
+#        echo
+#        echo "Running tests with mutation analysis..."
+#        if [[ "$VERBOSE" -eq 1 ]]; then
+#            echo command:
+#            echo "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
+#        fi
+#        echo
+#        "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
 
         # Calculate Mutation Score
-        mutants_covered=$(awk -F, 'NR==2 {print $3}' results/summary.csv)
-        mutants_killed=$(awk -F, 'NR==2 {print $4}' results/summary.csv)
-        mutation_score=$(echo "scale=4; $mutants_killed / $mutants_covered * 100" | bc)
-        mutation_score=$(printf "%.2f" "$mutation_score")
+#        mutants_covered=$(awk -F, 'NR==2 {print $3}' results/summary.csv)
+#        mutants_killed=$(awk -F, 'NR==2 {print $4}' results/summary.csv)
+#        mutation_score=$(echo "scale=4; $mutants_killed / $mutants_covered * 100" | bc)
+#        mutation_score=$(printf "%.2f" "$mutation_score")
 
         echo "Instruction Coverage: $instruction_coverage%"
         echo "Branch Coverage: $branch_coverage%"
-        echo "Mutation Score: $mutation_score%"
+#        echo "Mutation Score: $mutation_score%"
 
         mv results/summary.csv "$RESULT_DIR"
 
-        row="$FEATURE_NAME,$(basename "$SRC_JAR"),$TIME_LIMIT,$RANDOM_SEED,$instruction_coverage%,$branch_coverage%,$mutation_score%"
+        row="$FEATURE_NAME,$(basename "$SRC_JAR"),$TIME_LIMIT,$RANDOM_SEED,$instruction_coverage%,$branch_coverage%"
         # info.csv contains a record of each pass.
         echo -e "$row" >> results/info.csv
 
@@ -406,12 +406,12 @@ do
         echo "Copying test suites to results directory..."
         cp -r "$TEST_DIRECTORY" "$RESULT_DIR"
 
-        if [[ "$REDIRECT" -eq 1 ]]; then
-            echo "Move mutation_output to results directory..."
-            mv mutation_output.txt "$RESULT_DIR"
-            exec 1>&3 2>&4
-            exec 3>&- 4>&-
-        fi
+#        if [[ "$REDIRECT" -eq 1 ]]; then
+#            echo "Move mutation_output to results directory..."
+#            mv mutation_output.txt "$RESULT_DIR"
+#            exec 1>&3 2>&4
+#            exec 3>&- 4>&-
+#        fi
     done
 
     echo "Results will be saved in $RESULT_DIR"
