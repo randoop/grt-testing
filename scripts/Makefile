@@ -1,3 +1,5 @@
+.PHONY: build/replacecall-4.3.3.jar build/major/bin/ant.m
+
 all: build/jacoco.jar build/randoop-all-4.3.3.jar build/major build/replacecall-4.3.3.jar build/major/bin/ant.m results
 
 build/jacoco.jar:
@@ -15,11 +17,11 @@ build/major:
 	cd build && unzip -o major-2.2.0_jre8.zip
 
 build/replacecall-4.3.3.jar:
-	wget https://github.com/776styjsu/grt-replacecall/releases/download/v0.1.1/replacecall-4.3.3.jar
+	wget https://github.com/776styjsu/randoop/releases/download/replacecall-grt-v1.0.1/replacecall-4.3.3.jar
 	mv replacecall-4.3.3.jar build/
 
 build/major/bin/ant.m:
-	wget https://github.com/776styjsu/grt-replacecall/releases/download/v0.1.1/ant.m
+	wget https://github.com/776styjsu/randoop/releases/download/replacecall-grt-v1.0.1/ant.m
 	mv ant.m build/major/bin/
 
 results:

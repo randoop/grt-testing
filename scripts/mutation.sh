@@ -116,9 +116,11 @@ SRC_JAR_NAME="$1"
 ANT="ant"
 
 # Use alternative ant file if replacecall is being used for specific projects
-if [[ "$SRC_JAR_NAME" == "ClassViewer-5.0.5b" || "$SRC_JAR_NAME" == "jcommander-1.35" ]]; then
-    ANT="ant.m"
-fi
+case "$SRC_JAR_NAME" in
+    "ClassViewer-5.0.5b" | "jcommander-1.35" | "fixsuite-r48")
+        ANT="ant.m"
+        ;;
+esac
 
 echo "Running mutation test on $1"
 echo
@@ -199,7 +201,10 @@ REPLACEMENT_FILE_PATH="build-variants/$SRC_JAR_NAME/replacecall-replacements.txt
 
 # Map project names to their respective replacement files
 declare -A replacement_files=(
+     # Do not wait for user input
      ["jcommander-1.35"]="=--replacement_file=$REPLACEMENT_FILE_PATH"
+     # Mock javax.mail.Service.connect to avoid network calls
+     ["javax.mail-1.5.1"]="=--replacement_file=$REPLACEMENT_FILE_PATH"
 )
 
 # Command to run replacecall
@@ -216,6 +221,8 @@ declare -A command_suffix=(
     ["ClassViewer-5.0.5b"]="--specifications=project-specs/ClassViewer-5.0.5b-specs.json"
     # Bad inputs generated and caused infinite loops
     ["commons-lang3-3.0"]="--specifications=project-specs/commons-lang3-3.0-specs.json"
+    # Null Image causes setIconImage to hang
+    ["fixsuite-r48"]="--specifications=project-specs/fixsuite-r48-specs.json"
     # An empty BlockingQueue was generated and used but never filled for take(), led to non-termination
     ["guava-16.0.1"]="--specifications=project-specs/guava-16.0.1-specs.json"
     # Randoop generated bad test sequences for handling webserver lifecycle, don't test them

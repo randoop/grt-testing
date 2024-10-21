@@ -11,5 +11,10 @@ javax.swing randoop.mock.javax.swing
 // Make Random deterministic by using a random seed of 0 if no seed was supplied.
 java.util.Random.<init>() randoop.mock.java.util.RandomReplace.randomWithSeedZero()
 
-com.beust.jcommander.internal.DefaultConsole.readPassword(boolean) randoop.grt_mock.com.beust.jcommander.internal.DefaultConsole.readPassword(com.beust.jcommander.internal.Console, boolean)
-com.beust.jcommander.internal.Console.readPassword(boolean) randoop.grt_mock.com.beust.jcommander.internal.DefaultConsole.readPassword(com.beust.jcommander.internal.Console, boolean)
+// Replacements for javax.mail.Service.connect.
+// Make connect methods no-ops.
+javax.mail.Service.connect() randoop.grt_mock.javax.mail.Service.connect()
+javax.mail.Service.connect(java.lang.String, java.lang.String, java.lang.String) randoop.grt_mock.javax.mail.Service.connect(java.lang.String, java.lang.String, java.lang.String)
+javax.mail.Service.connect(java.lang.String, int, java.lang.String, java.lang.String) randoop.grt_mock.javax.mail.Service.connect(java.lang.String, int, java.lang.String, java.lang.String)
+
+
