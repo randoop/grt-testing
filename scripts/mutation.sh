@@ -203,8 +203,6 @@ REPLACEMENT_FILE_PATH="build-variants/$SRC_JAR_NAME/replacecall-replacements.txt
 declare -A replacement_files=(
      # Do not wait for user input
      ["jcommander-1.35"]="=--replacement_file=$REPLACEMENT_FILE_PATH"
-     # Mock javax.mail.Service.connect to avoid network calls
-     ["javax.mail-1.5.1"]="=--replacement_file=$REPLACEMENT_FILE_PATH"
 )
 
 # Command to run replacecall
@@ -228,6 +226,8 @@ declare -A command_suffix=(
     # Randoop generated bad test sequences for handling webserver lifecycle, don't test them
     # ["javassist-3.19"]="--specifications=project-specs/javassist-3.19-specs.json"
     ["javassist-3.19"]="--omit-methods=^javassist\.tools\.web\.Webserver\.run\(\)$ --omit-methods=^javassist\.tools\.rmi\.AppletServer\.run\(\)$"
+    # PrintStream.close() maybe called to close System.out, causing Randoop to fail
+    ["javax.mail-1.5.1"]="--omit-methods=^java\.io\.PrintStream\.close\(\)$|^java\.io\.FilterOutputStream\.close\(\)$|^java\.io\.OutputStream\.close\(\)$|^com\.sun\.mail\.util\.BASE64EncoderStream\.close\(\)$|^com\.sun\.mail\.util\.QEncoderStream\.close\(\)$|^com\.sun\.mail\.util\.QPEncoderStream\.close\(\)$|^com\.sun\.mail\.util\.UUEncoderStream\.close\(\)$"
     # JDOMAbout cannot be found during test.compile, and the class itself isn't interesting
     ["jdom-1.0"]="--omit-classes=^JDOMAbout$"
     # Bad inputs generated and caused infinite loops
