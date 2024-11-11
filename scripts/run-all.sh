@@ -18,7 +18,7 @@ done
 while getopts ":hvrt:c:" opt; do
   case ${opt} in
     h )
-      echo "Usage: mutation.sh [-h] [-v] [-r] [-t total_time] [-c time_per_class] <test case name>"
+      echo "Usage: run-all.sh [-h] [-v] [-r] [-t total_time] [-c time_per_class]"
       exit 0
       ;;
     v )

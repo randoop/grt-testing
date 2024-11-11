@@ -115,9 +115,11 @@ SRC_JAR_NAME="$1"
 ANT="ant"
 
 # Use alternative ant file if replacecall is being used for specific projects
-if [[ "$SRC_JAR_NAME" == "ClassViewer-5.0.5b" || "$SRC_JAR_NAME" == "jcommander-1.35" ]]; then
-    ANT="ant.m"
-fi
+case "$SRC_JAR_NAME" in
+    "ClassViewer-5.0.5b" | "jcommander-1.35" | "fixsuite-r48")
+        ANT="ant.m"
+        ;;
+esac
 
 echo "Running mutation test on $1"
 echo
@@ -194,10 +196,11 @@ echo
 RANDOM_SEED=0
 
 # Path to the replacement file for replacecall
-REPLACEMENT_FILE_PATH="$(realpath "build-variants/$SRC_JAR_NAME/replacecall-replacements.txt")"
+REPLACEMENT_FILE_PATH="build-variants/$SRC_JAR_NAME/replacecall-replacements.txt"
 
 # Map project names to their respective replacement files
 declare -A replacement_files=(
+     # Do not wait for user input
      ["jcommander-1.35"]="=--replacement_file=$REPLACEMENT_FILE_PATH"
 )
 
@@ -215,11 +218,15 @@ declare -A command_suffix=(
     ["ClassViewer-5.0.5b"]="--specifications=project-specs/ClassViewer-5.0.5b-specs.json"
     # Bad inputs generated and caused infinite loops
     ["commons-lang3-3.0"]="--specifications=project-specs/commons-lang3-3.0-specs.json"
+    # Null Image causes setIconImage to hang
+    ["fixsuite-r48"]="--specifications=project-specs/fixsuite-r48-specs.json"
     # An empty BlockingQueue was generated and used but never filled for take(), led to non-termination
     ["guava-16.0.1"]="--specifications=project-specs/guava-16.0.1-specs.json"
     # Randoop generated bad test sequences for handling webserver lifecycle, don't test them
     # ["javassist-3.19"]="--specifications=project-specs/javassist-3.19-specs.json"
     ["javassist-3.19"]="--omit-methods=^javassist\.tools\.web\.Webserver\.run\(\)$ --omit-methods=^javassist\.tools\.rmi\.AppletServer\.run\(\)$"
+    # PrintStream.close() maybe called to close System.out, causing Randoop to fail
+    ["javax.mail-1.5.1"]="--omit-methods=^java\.io\.PrintStream\.close\(\)$|^java\.io\.FilterOutputStream\.close\(\)$|^java\.io\.OutputStream\.close\(\)$|^com\.sun\.mail\.util\.BASE64EncoderStream\.close\(\)$|^com\.sun\.mail\.util\.QEncoderStream\.close\(\)$|^com\.sun\.mail\.util\.QPEncoderStream\.close\(\)$|^com\.sun\.mail\.util\.UUEncoderStream\.close\(\)$"
     # JDOMAbout cannot be found during test.compile, and the class itself isn't interesting
     ["jdom-1.0"]="--omit-classes=^JDOMAbout$"
     # Bad inputs generated and caused infinite loops
