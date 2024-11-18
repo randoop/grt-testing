@@ -11,14 +11,29 @@ build/randoop-all-4.3.3.jar:
 	mkdir -p build
 	echo "See scripts/reprointstruction.txt to obtain randoop-all-4.3.3.jar"
 
+build/replacecall-4.3.3.jar:
+	wget https://github.com/776styjsu/randoop/releases/download/replacecall-grt-v1.0.1/replacecall-4.3.3.jar
+	mv replacecall-4.3.3.jar build/
+
+build/evosuite-1.2.0.jar:
+	wget https://github.com/EvoSuite/evosuite/releases/download/v1.2.0/evosuite-1.2.0.jar
+	mv evosuite-1.2.0.jar build/
+
+build/evosuite-standalone-runtime-1.2.0.jar:
+	wget https://github.com/EvoSuite/evosuite/releases/download/v1.2.0/evosuite-standalone-runtime-1.2.0.jar
+	mv evosuite-standalone-runtime-1.2.0.jar build/
+
+build/junit-4.12.jar:
+	wget https://repo1.maven.org/maven2/junit/junit/4.12/junit-4.12.jar
+	mv junit-4.12.jar build/
+
+build/hamcrest-core-1.3.jar:
+	cp ../subject-programs/hamcrest-core-1.3.jar build/
+
 build/major:
 	mkdir -p build
 	cd build && wget -nv http://mutation-testing.org/downloads/files/major-2.2.0_jre8.zip
 	cd build && unzip -o major-2.2.0_jre8.zip
-
-build/replacecall-4.3.3.jar:
-	wget https://github.com/776styjsu/randoop/releases/download/replacecall-grt-v1.0.1/replacecall-4.3.3.jar
-	mv replacecall-4.3.3.jar build/
 
 build/major/bin/ant.m:
 	wget https://github.com/776styjsu/randoop/releases/download/replacecall-grt-v1.0.1/ant.m

@@ -36,7 +36,7 @@ MAJOR_HOME=$(realpath "build/major/")
 # Link to current directory
 CURR_DIR=$(realpath "$(pwd)")
 
-# Link to Randoop jar file. Replace with different file if new GRT component is being tested.
+# Link to Evosuite jar file.
 EVOSUITE_JAR=$(realpath "build/evosuite-1.2.0.jar")
 
 # Link to jacoco cli jar. This is necessary for coverage report generation.
@@ -214,8 +214,17 @@ echo
 
 rm -rf evosuite-tests && mkdir -p evosuite-tests && rm -rf evosuite-report && mkdir -p evosuite-report
 
-# Construct the command without a colon after JAR_PATHS
-EVOSUITE_COMMAND="java -jar $EVOSUITE_JAR -target $SRC_JAR -projectCP $JAR_PATHS:$SRC_JAR:$EVOSUITE_JAR -Dsearch_budget=$TIME_LIMIT -Duse_separate_classloader=false"
+EVOSUITE_COMMAND=(
+    "java"
+    "-jar" "$EVOSUITE_JAR"
+    "-target" "$SRC_JAR"
+    "-projectCP" "$JAR_PATHS:$SRC_JAR:$EVOSUITE_JAR"
+    "-Dsearch_budget=$TIME_LIMIT"
+    "-Duse_separate_classloader=false"
+)
+
+# echo "Modifying build-evosuite.xml for $SRC_JAR_NAME..."
+# ./diff-patch.sh $SRC_JAR_NAME
 
 echo "Check out include-major branch, if present..."
 # ignore error if branch doesn't exist, will stay on main branch
@@ -244,7 +253,7 @@ do
     echo
     TEST_DIRECTORY="$CURR_DIR/evosuite-tests/"
 
-    $EVOSUITE_COMMAND
+    "${EVOSUITE_COMMAND[@]}"
 
     RESULT_DIR="results/$(date +%Y%m%d-%H%M%S)-$SRC_JAR_NAME-evosuite"
     mkdir -p "$RESULT_DIR"
@@ -342,9 +351,12 @@ do
     mv major.log mutants.log "$RESULT_DIR"
     (cd results; mv covMap.csv details.csv testMap.csv preprocessing.ser jacoco.exec ../"$RESULT_DIR")
     set -e
-done
 
 echo
+
+# echo "Restoring build-evosuite.xml
+# restore build.xml
+# ./diff-patch.sh > /dev/null
 
 echo "Restoring $JAVA_SRC_DIR to main branch"
 # switch to main branch (may already be there)
