@@ -1,6 +1,16 @@
 .PHONY: build/replacecall-4.3.3.jar build/major/bin/ant.m
 
-all: build/jacoco.jar build/randoop-all-4.3.3.jar build/major build/replacecall-4.3.3.jar build/major/bin/ant.m results
+all: \
+    build/jacoco.jar \
+    build/randoop-all-4.3.3.jar \
+    build/major \
+    build/replacecall-4.3.3.jar \
+    build/evosuite-1.2.0.jar \
+    build/evosuite-standalone-runtime-1.2.0.jar \
+    build/junit-4.12.jar \
+    build/hamcrest-core-1.3.jar \
+    build/major/bin/ant.m \
+    results
 
 build/jacoco.jar:
 	mkdir -p build
