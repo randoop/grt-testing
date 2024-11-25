@@ -170,9 +170,11 @@ for jar in $CLASSPATH/*.jar; do
     fi
 done
 
-JAR_PATHS="$JAR_PATHS:$SRC_JAR:$EVOSUITE_JAR"
+JAR_PATHS="$JAR_PATHS:$SRC_JAR"
 
 rm -rf libs && mkdir -p libs
+# Loop through the JAR_PATHS, splitting by colon and handling each path correctly
+OLDIFS=$IFS
 IFS=":" 
 for path in $JAR_PATHS; do
     if [ -d "$path" ]; then
@@ -183,6 +185,7 @@ for path in $JAR_PATHS; do
         echo "Warning: $path is not a valid file or directory"
     fi
 done
+IFS=$OLDIFS
 
 ./generate-mvn-dependencies.sh
 
@@ -215,7 +218,7 @@ echo
 rm -rf evosuite-tests && mkdir -p evosuite-tests && rm -rf evosuite-report && mkdir -p evosuite-report
 
 # Construct the command without a colon after JAR_PATHS
-EVOSUITE_COMMAND="java -jar $EVOSUITE_JAR -target $SRC_JAR -projectCP $JAR_PATHS:$SRC_JAR:$EVOSUITE_JAR -Dsearch_budget=$TIME_LIMIT -Duse_separate_classloader=false"
+EVOSUITE_COMMAND="java -jar $EVOSUITE_JAR -target $SRC_JAR -projectCP $JAR_PATHS:$EVOSUITE_JAR -Dsearch_budget=$TIME_LIMIT"
 
 echo "Check out include-major branch, if present..."
 # ignore error if branch doesn't exist, will stay on main branch
@@ -226,7 +229,7 @@ echo
 mkdir -p results/
 if [ ! -f "results/info.csv" ]; then
     touch results/info.csv
-    echo -e "GenerationType,FileName,TimeLimit,Seed,InstructionCoverage,BranchCoverage,MutationScore" > results/info.csv
+    echo -e "GenerationType,FileName,TimeLimit,InstructionCoverage,BranchCoverage,MutationScore" > results/info.csv
 fi
 
 # shellcheck disable=SC2034 # i counts iterations but is not otherwise used.
@@ -268,6 +271,24 @@ do
     "$MAJOR_HOME"/bin/ant -buildfile build-evosuite.xml -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" compile.tests
 
     echo
+    echo "Running tests with mutation analysis..."
+    if [[ "$VERBOSE" -eq 1 ]]; then
+        echo command:
+        echo "$MAJOR_HOME"/bin/"$ANT" -buildfile build-evosuite.xml -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
+    fi
+    echo "$MAJOR_HOME"/bin/"$ANT" -buildfile build-evosuite.xml -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
+    "$MAJOR_HOME"/bin/"$ANT" -buildfile build-evosuite.xml -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
+
+    # Calculate Mutation Score
+    mutants_covered=$(awk -F, 'NR==2 {print $3}' results/summary.csv)
+    mutants_killed=$(awk -F, 'NR==2 {print $4}' results/summary.csv)
+    mutation_score=$(echo "scale=4; $mutants_killed / $mutants_covered * 100" | bc)
+    mutation_score=$(printf "%.2f" "$mutation_score")
+
+
+    python3 update_evo_runner.py -d $TEST_DIRECTORY -s false
+
+    echo
     echo "Running tests with coverage..."
     if [[ "$VERBOSE" -eq 1 ]]; then
         echo command:
@@ -288,28 +309,10 @@ do
     branch_coverage=$(echo "scale=4; $branch_covered / ($branch_missed + $branch_covered) * 100" | bc)
     branch_coverage=$(printf "%.2f" "$branch_coverage")
 
-    echo "Instruction Coverage: $instruction_coverage%"
-    echo "Branch Coverage: $branch_coverage%"
-
     mv target/jacoco.csv "$RESULT_DIR"
 
     # Restore pom.xml back to original
     cp pom.xml.bak pom.xml && rm pom.xml.bak
-
-    echo
-    echo "Running tests with mutation analysis..."
-    if [[ "$VERBOSE" -eq 1 ]]; then
-        echo command:
-        echo "$MAJOR_HOME"/bin/"$ANT" -buildfile build-evosuite.xml -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
-    fi
-    echo "$MAJOR_HOME"/bin/"$ANT" -buildfile build-evosuite.xml -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
-    "$MAJOR_HOME"/bin/"$ANT" -buildfile build-evosuite.xml -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
-
-    # Calculate Mutation Score
-    mutants_covered=$(awk -F, 'NR==2 {print $3}' results/summary.csv)
-    mutants_killed=$(awk -F, 'NR==2 {print $4}' results/summary.csv)
-    mutation_score=$(echo "scale=4; $mutants_killed / $mutants_covered * 100" | bc)
-    mutation_score=$(printf "%.2f" "$mutation_score")
 
     echo "Instruction Coverage: $instruction_coverage%"
     echo "Branch Coverage: $branch_coverage%"
@@ -317,7 +320,7 @@ do
 
     mv results/summary.csv "$RESULT_DIR"
 
-    row="EVOSUITE-BASELINE,$(basename "$SRC_JAR"),$TIME_LIMIT,$RANDOM_SEED,$instruction_coverage%,$branch_coverage%,$mutation_score%"
+    row="EVOSUITE-BASELINE,$(basename "$SRC_JAR"),$TIME_LIMIT,$instruction_coverage%,$branch_coverage%,$mutation_score%"
     # info.csv contains a record of each pass.
     echo -e "$row" >> results/info.csv
 
@@ -331,7 +334,6 @@ do
         exec 1>&3 2>&4
         exec 3>&- 4>&-
     fi
-    done
 
     echo "Results will be saved in $RESULT_DIR"
     set +e
@@ -340,7 +342,7 @@ do
     mv "$JAVA_SRC_DIR"/suppression.log "$RESULT_DIR" 2>/dev/null
     mv suppression.log "$RESULT_DIR" 2>/dev/null
     mv major.log mutants.log "$RESULT_DIR"
-    (cd results; mv covMap.csv details.csv testMap.csv preprocessing.ser jacoco.exec ../"$RESULT_DIR")
+    (cd results; mv covMap.csv details.csv testMap.csv preprocessing.ser ../"$RESULT_DIR")
     set -e
 done
 
