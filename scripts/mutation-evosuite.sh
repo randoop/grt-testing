@@ -227,8 +227,8 @@ EVOSUITE_COMMAND=(
     "-Dsearch_budget=$TIME_LIMIT"
 )
 
-# echo "Modifying build-evosuite.xml for $SRC_JAR_NAME..."
-# ./diff-patch.sh $SRC_JAR_NAME
+echo "Modifying build-evosuite.xml for $SRC_JAR_NAME..."
+./diff-patch.sh _ $SRC_JAR_NAME
 
 echo "Check out include-major branch, if present..."
 # ignore error if branch doesn't exist, will stay on main branch
@@ -358,9 +358,9 @@ done
 
 echo
 
-# echo "Restoring build-evosuite.xml
-# restore build.xml
-# ./diff-patch.sh > /dev/null
+echo "Restoring build-evosuite.xml"
+# restore build.xml and build-evosuite.xml
+./diff-patch.sh > /dev/null
 
 echo "Restoring $JAVA_SRC_DIR to main branch"
 # switch to main branch (may already be there)
