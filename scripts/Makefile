@@ -53,7 +53,7 @@ results:
 	mkdir -p results
 
 clean:
-	rm -rf build && rm -rf results
+	rm -rf build results
 
 src:
 	../subject-programs/get-all-subject-src.sh
