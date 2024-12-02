@@ -1,0 +1,12 @@
+--- build-variants/build-evosuite.xml	2024-12-02 00:45:22.572672481 -0800
++++ build-evosuite.xml	2024-12-02 02:28:21.872908878 -0800
+@@ -41,7 +41,8 @@
+         <javac includeantruntime="true" 
+                srcdir="${src}"
+                destdir="build/bin"
+-               debug="yes">
++               debug="yes"
++               encoding="iso-8859-1">
+             <classpath location="${major.jar}"/>
+             <compilerarg value="${plugin}"/>
+         </javac>
