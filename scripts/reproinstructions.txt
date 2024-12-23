@@ -86,7 +86,7 @@ to run the mutation testing script on all the subject-programs. This essentially
 for each subject-program listed in the `project-config-status.csv` file.
 
 
-**NOTE**: The latest release of Randoop does not implement functionality for Orienteering. If you wish
+**NOTE**: Randoop version 4.3.3 release does not implement functionality for Orienteering. If you wish
 to work with Orienteering, you should download and build Randoop from GitHub and replace $RANDOOP_JAR
 with the absolute path.  For Demand-driven (PR #1260), GRT Fuzzing (PR #1304), and Elephant Brain (PR #1347),
 checkout the respective pull requests from the Randoop repository.

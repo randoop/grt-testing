@@ -17,7 +17,8 @@ find . -maxdepth 1 -type f ! -name "build.xml" \
     ! -name "clean-dir.sh" \
     -exec mv {} temp/ \;
 
-# run-some is not included by default, but this name has been used for the
-# script that runs the mutation testing on a subset of the projects
+    # NOTE: run-some.sh is not by default in the scripts/ directory, but users may have it in their project
+    # to run a subset of the test cases. If you have files that should not be moved to the temp directory,
+    # add them to the list above.
 
 echo "Non-essential files moved to temp/ directory."

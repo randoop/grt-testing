@@ -19,7 +19,7 @@ set -e
 set -o pipefail
 
 if [ $# -eq 0 ]; then
-    echo $0: "usage: mutation.sh [-vr] <test case name>"
+    echo $0: "usage: mutation.sh [-h] [-v] [-r] [-t total_time] [-c time_per_class] <test case name>"
     exit 1
 fi
 
@@ -52,10 +52,10 @@ JACOCO_CLI_JAR=$(realpath "build/jacococli.jar")
 REPLACECALL_JAR=$(realpath "build/replacecall-4.3.3.jar")
 
 # The paper runs Randoop with 4 different time limits. These are: 2 s/class, 10 s/class, 30 s/class, and 60 s/class.
-SECONDS_CLASS=""
+SECONDS_CLASS="2" # Default time limit
 
 # Total time to run the experiment. Mutually exclusive with SECONDS_CLASS.
-TOTAL_TIME=""
+TOTAL_TIME="" # Lower priority than SECONDS_CLASS when no value is provided
 
 # Number of times to run experiments (10 in GRT paper)
 NUM_LOOP=1
@@ -183,12 +183,10 @@ NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
 # Time limit for running Randoop.
 if [[ -n "$TOTAL_TIME" ]]; then
     TIME_LIMIT="$TOTAL_TIME"
-elif [[ -n "$SECONDS_CLASS" ]]; then
-    TIME_LIMIT=$((NUM_CLASSES * SECONDS_CLASS))
 else
-    TIME_LIMIT=$((NUM_CLASSES * 2))
+    TIME_LIMIT=$((NUM_CLASSES * SECONDS_CLASS))
 fi
-# TIME_LIMIT=60
+
 echo "TIME_LIMIT: $TIME_LIMIT seconds"
 echo
 
