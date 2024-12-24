@@ -9,7 +9,7 @@ cp build-variants/build.xml build.xml
 # Check if a subject-program is provided
 if [ -n "$1" ]; then
   # Check if build.patch exists in 'build-variants/subject-program'
-  if [ -f "build-variants/$1/build.patch" ]; then
+  if [ -f "project-config/$1/build.patch" ]; then
     echo "build.patch found in build-variants/$1. Applying patch to build.xml..."
     patch build.xml < "build-variants/$1/build.patch" 1>/dev/null
     rm -f build.xml.orig
