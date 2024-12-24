@@ -18,8 +18,10 @@
 set -e
 set -o pipefail
 
+USAGE_STRING="usage: mutation.sh [-h] [-v] [-r] [-t total_time] [-c time_per_class] <test case name>"
+
 if [ $# -eq 0 ]; then
-    echo $0: "usage: mutation.sh [-h] [-v] [-r] [-t total_time] [-c time_per_class] <test case name>"
+    echo $0: $USAGE_STRING
     exit 1
 fi
 
@@ -78,7 +80,7 @@ done
 while getopts ":hvrt:c:" opt; do
   case ${opt} in
     h )
-      echo "Usage: mutation.sh [-h] [-v] [-r] [-t total_time] [-c time_per_class] <test case name>"
+      echo $USAGE_STRING
       exit 0
       ;;
     v )
@@ -95,12 +97,12 @@ while getopts ":hvrt:c:" opt; do
       ;;
     \? )
       echo "Invalid option: -$OPTARG" >&2
-      echo "Usage: mutation.sh [-v] [-r] [-t total_time] [-c time_per_class] <test case name>"
+      echo $USAGE_STRING
       exit 1
       ;;
     : )
       echo "Option -$OPTARG requires an argument." >&2
-      echo "Usage: mutation.sh [-v] [-r] [-t total_time] [-c time_per_class] <test case name>"
+      echo $USAGE_STRING
       exit 1
       ;;
   esac
@@ -111,23 +113,24 @@ shift $((OPTIND -1))
 # Name of test case
 SRC_JAR_NAME="$1"
 
-# Name of ant file to use
-ANT="ant"
+# Name of ant executable to use.
+# Use alternative ant executable if replacecall is being used for specific projects.
+if [ "$SRC_JAR_NAME" = "ClassViewer-5.0.5b" ] || [ "$SRC_JAR_NAME" = "jcommander-1.35" ] || [ "$SRC_JAR_NAME" = "fixsuite-r48" ]; then
+    ANT="ant.m"
+else
+    ANT="ant"
+fi
 
-# Use alternative ant file if replacecall is being used for specific projects
-case "$SRC_JAR_NAME" in
-    "ClassViewer-5.0.5b" | "jcommander-1.35" | "fixsuite-r48")
-        ANT="ant.m"
-        ;;
-esac
+# Add permissions for ant.m
+chmod +x "$MAJOR_HOME"/bin/ant.m
 
 echo "Running mutation test on $1"
 echo
 
-# Link to the base directory of the source code
+# Path to the base directory of the source code
 SRC_BASE_DIR="$(realpath "$SCRIPTDIR/../subject-programs/src/$SRC_JAR_NAME")"
 
-# Link to src jar
+# Path to src jar
 SRC_JAR=$(realpath "$SCRIPTDIR/../subject-programs/$SRC_JAR_NAME.jar")
 
 # Map test case to their respective source
@@ -172,8 +175,8 @@ if [[ $CLASSPATH ]]; then
 fi
 
 if [[ "$VERBOSE" -eq 1 ]]; then
-    echo "Source dir: $JAVA_SRC_DIR"
-    echo "Dependency dir: $CLASSPATH"
+    echo "JAVA_SRC_DIR: $JAVA_SRC_DIR"
+    echo "CLASSPATH: $CLASSPATH"
     echo
 fi
 
@@ -190,9 +193,6 @@ fi
 echo "TIME_LIMIT: $TIME_LIMIT seconds"
 echo
 
-# Random seed for Randoop
-RANDOM_SEED=0
-
 # Path to the replacement file for replacecall
 REPLACEMENT_FILE_PATH="build-variants/$SRC_JAR_NAME/replacecall-replacements.txt"
 
@@ -205,10 +205,17 @@ declare -A replacement_files=(
 # Command to run replacecall
 REPLACECALL_COMMAND="$REPLACECALL_JAR${replacement_files[$SRC_JAR_NAME]}"
 
-# Variable that stores command line inputs common among all commands
-# Note that if there is no project_deps entry, this command adds a classpath
-# element of '*', but it doesn't seem to matter.
-RANDOOP_BASE_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR:$REPLACECALL_JAR -javaagent:$JACOCO_AGENT_JAR -javaagent:$REPLACECALL_COMMAND -classpath $CLASSPATH*:$SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=$TIME_LIMIT --deterministic=false --no-error-revealing-tests=true --randomseed=$RANDOM_SEED"
+RANDOOP_BASE_COMMAND="java \
+-Xbootclasspath/a:$JACOCO_AGENT_JAR:$REPLACECALL_JAR \
+-javaagent:$JACOCO_AGENT_JAR \
+-javaagent:$REPLACECALL_COMMAND \
+-classpath $CLASSPATH*:$SRC_JAR:$RANDOOP_JAR \
+randoop.main.Main gentests \
+--testjar=$SRC_JAR \
+--time-limit=$TIME_LIMIT \
+--deterministic=false \
+--no-error-revealing-tests=true \
+--randomseed=0"
 
 # NOTE: The following omits are based on BASELINE Randoop, seed 0.
 declare -A command_suffix=(
@@ -236,7 +243,7 @@ declare -A command_suffix=(
 RANDOOP_COMMAND="$RANDOOP_BASE_COMMAND ${command_suffix[$SRC_JAR_NAME]}"
 
 echo "Modifying build.xml for $SRC_JAR_NAME..."
-./diff-patch.sh $SRC_JAR_NAME
+./apply-build-patch.sh $SRC_JAR_NAME
 
 echo "Check out include-major branch, if present..."
 # ignore error if branch doesn't exist, will stay on main branch
@@ -432,7 +439,7 @@ done
 echo
 echo "Restoring build.xml"
 # restore build.xml
-./diff-patch.sh > /dev/null
+./apply-build-patch.sh > /dev/null
 
 echo "Restoring $JAVA_SRC_DIR to main branch"
 # switch to main branch (may already be there)
