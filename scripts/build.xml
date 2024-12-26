@@ -29,7 +29,7 @@
         <mkdir dir="build/bin"/>
     </target>
 
-<!-- Target to compile the project. -->
+<!-- Target to compile the project -->
     <target name="compile" depends="init" description="Compile">
         <!-- For projects that don't use UTF-8 encoding, add: encoding="iso-8859-1" -->
         <javac includeantruntime="true"
