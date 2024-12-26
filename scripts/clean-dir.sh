@@ -7,7 +7,7 @@ echo "NOTE: Ensure to modify this script to exclude the files that should not be
 
 # Find and move all files except those specified
 find . -maxdepth 1 -type f ! -name "build.xml" \
-    ! -name "diff-patch.sh" \
+    ! -name "apply-build-patch.sh" \
     ! -name "Makefile" \
     ! -name "mutation.sh" \
     ! -name "project-config-status.csv" \

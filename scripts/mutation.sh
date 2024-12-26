@@ -1,20 +1,22 @@
 #!/bin/bash
 
+#===============================================================================
+# Overview
+#===============================================================================
 # For documentation of how to run this script, see file `reproinstructions.txt`.
+#
+# This script does mutation testing with Randoop-generated test suites. Mutation
+# testing is used on projects provided in table 2 of the GRT paper.
+#
+# - Randoop's test suites are created in a "build/test*" subdirectory.
+# - Compiled tests and code go in "build/bin".
+# - Various mutants of the source project are generated using Major and tested.
+#
+# Finally, each experiment can run multiple times, with a configurable time (in
+# seconds) per class. Various stats of each iteration go to "results/info.csv".
+# Everything else specific to the most recent iteration goes to "results/".
 
-# This script does mutation testing with Randoop-generated test suites. Different
-# test suites can be generated with Bloodhound, Orienteering, neither (baseline), or both.
-# Mutation testing is used on projects provided in table 2 of the GRT paper.
 
-# This script will create Randoop's test suites in a "build/test*" subdirectory.
-# Compiled tests and code will be stored in the "build/bin" subdirectory.
-# The script will generate various mutants of the source project using Major and run these tests on those mutants.
-
-# Finally, each experiment can run a given amount of times and a given amount of seconds per class.
-# Various statistics of each iteration will be logged to a file "results/info.csv".
-# All other files logged to the "results" subdirectory are specific to the most recent iteration of the experiment.
-
-# Fail this script on errors.
 set -e
 set -o pipefail
 
@@ -25,50 +27,41 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
-# Check for Java 8
+
+#===============================================================================
+# Environment Variables
+#===============================================================================
+
+# Do not proceed if Java version is not 8
 JAVA_VERSION=$(java -version 2>&1 | awk -F'[._"]' 'NR==1{print ($2 == "version" && $3 < 9) ? $4 : $3}')
 if [ "$JAVA_VERSION" -ne 8 ]; then
     echo "Requires Java 8. Please use Java 8 to proceed."
     exit 1
 fi
 
-SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-
-# Link to the major directory
-MAJOR_HOME=$(realpath "build/major/")
-
-# Link to current directory
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+MAJOR_HOME=$(realpath "build/major/") # Major home directory, for mutation testing
 CURR_DIR=$(realpath "$(pwd)")
+RANDOOP_JAR=$(realpath "build/randoop-all-4.3.3.jar") # Randoop jar file
+JACOCO_AGENT_JAR=$(realpath "build/jacocoagent.jar") # For Bloodhound
+JACOCO_CLI_JAR=$(realpath "build/jacococli.jar") # For coverage report generation
+REPLACECALL_JAR=$(realpath "build/replacecall-4.3.3.jar") # For replacing undesired method calls
 
-# Link to Randoop jar file. Replace with different file if new GRT component is being tested.
-RANDOOP_JAR=$(realpath "build/randoop-all-4.3.3.jar")
 
-# Link to jacoco agent jar. This is necessary for Bloodhound.
-JACOCO_AGENT_JAR=$(realpath "build/jacocoagent.jar")
+#===============================================================================
+# Command-line Arguments and Experiment Configuration
+#===============================================================================
+SECONDS_CLASS="2"      # Default seconds per class.
+                       # The paper runs Randoop with 4 different time limits:
+                       # 2 s/class, 10 s/class, 30 s/class, and 60 s/class.
 
-# Link to jacoco cli jar. This is necessary for coverage report generation.
-JACOCO_CLI_JAR=$(realpath "build/jacococli.jar")
+TOTAL_TIME=""          # Total experiment time, mutually exclusive with SECONDS_CLASS
+NUM_LOOP=1             # Number of experiment runs (10 in GRT paper)
+VERBOSE=0              # Verbose option
+REDIRECT=0             # Redirect output to mutation_output.txt
 
-# Link to replacecall jar. This is necessary for not calling certain undesired methods,
-# such as JOptionPane.showMessageDialog.
-REPLACECALL_JAR=$(realpath "build/replacecall-4.3.3.jar")
 
-# The paper runs Randoop with 4 different time limits. These are: 2 s/class, 10 s/class, 30 s/class, and 60 s/class.
-SECONDS_CLASS="2" # Default time limit
-
-# Total time to run the experiment. Mutually exclusive with SECONDS_CLASS.
-TOTAL_TIME="" # Lower priority than SECONDS_CLASS when no value is provided
-
-# Number of times to run experiments (10 in GRT paper)
-NUM_LOOP=1
-
-# Verbose option
-VERBOSE=0
-
-# Redirect output to mutation_output.txt
-REDIRECT=0
-
-# Enforce that mutually exclusive options are not bundled together
+# Enforce that -t and -c aren't combined
 for arg in "$@"; do
   if [[ "$arg" =~ ^-.*[tc].*[tc] ]]; then
     echo "Options -t and -c cannot be used together in any form (e.g., -tc or -ct)."
@@ -110,28 +103,41 @@ done
 
 shift $((OPTIND -1))
 
-# Name of test case
+# Name of the subject program
 SRC_JAR_NAME="$1"
 
-# Name of ant executable to use.
-# Use alternative ant executable if replacecall is being used for specific projects.
+# Select the ant executable based on the subject program
 if [ "$SRC_JAR_NAME" = "ClassViewer-5.0.5b" ] || [ "$SRC_JAR_NAME" = "jcommander-1.35" ] || [ "$SRC_JAR_NAME" = "fixsuite-r48" ]; then
     ANT="ant.m"
+    chmod +x "$MAJOR_HOME"/bin/ant.m
 else
     ANT="ant"
 fi
 
-# Add permissions for ant.m
-chmod +x "$MAJOR_HOME"/bin/ant.m
-
 echo "Running mutation test on $1"
 echo
 
+#===============================================================================
+# Source Code Paths and Dependencies
+#===============================================================================
 # Path to the base directory of the source code
-SRC_BASE_DIR="$(realpath "$SCRIPTDIR/../subject-programs/src/$SRC_JAR_NAME")"
+SRC_BASE_DIR="$(realpath "$SCRIPT_DIR/../subject-programs/src/$SRC_JAR_NAME")"
 
 # Path to src jar
-SRC_JAR=$(realpath "$SCRIPTDIR/../subject-programs/$SRC_JAR_NAME.jar")
+SRC_JAR=$(realpath "$SCRIPT_DIR/../subject-programs/$SRC_JAR_NAME.jar")
+
+# Number of classes in given jar file.
+NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
+
+# Time limit for running Randoop.
+if [[ -n "$TOTAL_TIME" ]]; then
+    TIME_LIMIT="$TOTAL_TIME"
+else
+    TIME_LIMIT=$((NUM_CLASSES * SECONDS_CLASS))
+fi
+
+echo "TIME_LIMIT: $TIME_LIMIT seconds"
+echo
 
 # Map test case to their respective source
 declare -A project_src=(
@@ -151,6 +157,7 @@ declare -A project_src=(
     ["shiro-core-1.2.3"]="/core/"
     ["slf4j-api-1.7.12"]="/slf4j-api"
 )
+JAVA_SRC_DIR=$SRC_BASE_DIR${project_src[$SRC_JAR_NAME]}
 
 # Map project names to their respective dependencies
 declare -A project_deps=(
@@ -163,12 +170,8 @@ declare -A project_deps=(
     ["sat4j-core-2.3.5"]="$SRC_BASE_DIR/lib/"
 )
 #   ["hamcrest-core-1.3"]="$SRC_BASE_DIR/lib/"  this one needs changes?
-
-# Link to src files for mutation generation and analysis
-JAVA_SRC_DIR=$SRC_BASE_DIR${project_src[$SRC_JAR_NAME]}
-
-# Link to dependencies
 CLASSPATH=${project_deps[$SRC_JAR_NAME]}
+
 LIB_ARG=""
 if [[ $CLASSPATH ]]; then
     LIB_ARG="-lib $CLASSPATH"
@@ -180,19 +183,10 @@ if [[ "$VERBOSE" -eq 1 ]]; then
     echo
 fi
 
-# Number of classes in given jar file.
-NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
 
-# Time limit for running Randoop.
-if [[ -n "$TOTAL_TIME" ]]; then
-    TIME_LIMIT="$TOTAL_TIME"
-else
-    TIME_LIMIT=$((NUM_CLASSES * SECONDS_CLASS))
-fi
-
-echo "TIME_LIMIT: $TIME_LIMIT seconds"
-echo
-
+#===============================================================================
+# Replacecall Setup
+#===============================================================================
 # Path to the replacement file for replacecall
 REPLACEMENT_FILE_PATH="project-config/$SRC_JAR_NAME/replacecall-replacements.txt"
 
@@ -201,10 +195,12 @@ declare -A replacement_files=(
      # Do not wait for user input
      ["jcommander-1.35"]="=--replacement_file=$REPLACEMENT_FILE_PATH"
 )
-
-# Command to run replacecall
 REPLACECALL_COMMAND="$REPLACECALL_JAR${replacement_files[$SRC_JAR_NAME]}"
 
+
+#===============================================================================
+# Base Randoop Command
+#===============================================================================
 RANDOOP_BASE_COMMAND="java \
 -Xbootclasspath/a:$JACOCO_AGENT_JAR:$REPLACECALL_JAR \
 -javaagent:$JACOCO_AGENT_JAR \
@@ -217,7 +213,8 @@ randoop.main.Main gentests \
 --no-error-revealing-tests=true \
 --randomseed=0"
 
-# NOTE: The following omits are based on BASELINE Randoop, seed 0.
+# Add special command suffixes for certain projects.
+# TODO: Add more special cases as needed
 declare -A command_suffix=(
     # Bad inputs generated and caused infinite loops
     ["ClassViewer-5.0.5b"]="--specifications=project-specs/ClassViewer-5.0.5b-specs.json"
@@ -242,6 +239,10 @@ declare -A command_suffix=(
 
 RANDOOP_COMMAND="$RANDOOP_BASE_COMMAND ${command_suffix[$SRC_JAR_NAME]}"
 
+
+#===============================================================================
+# Build Files Preparation
+#===============================================================================
 echo "Modifying build.xml for $SRC_JAR_NAME..."
 ./apply-build-patch.sh $SRC_JAR_NAME
 
@@ -257,6 +258,10 @@ if [ ! -f "results/info.csv" ]; then
     echo -e "RandoopVersion,FileName,TimeLimit,Seed,InstructionCoverage,BranchCoverage,MutationScore" > results/info.csv
 fi
 
+
+#===============================================================================
+# Randoop Features
+#===============================================================================
 # The feature names must not contain whitespace.
 ALL_RANDOOP_FEATURES=("BASELINE" "BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
 # The different features of Randoop to use. Adjust according to the features you are testing.
@@ -274,6 +279,10 @@ for RANDOOP_FEATURE in "${RANDOOP_FEATURES[@]}" ; do
     fi
 done
 
+
+#===============================================================================
+# Run Randoop and Mutation Testing
+#===============================================================================
 # shellcheck disable=SC2034 # i counts iterations but is not otherwise used.
 for i in $(seq 1 $NUM_LOOP)
 do
@@ -338,6 +347,10 @@ do
         fi
 
         $RANDOOP_COMMAND_2
+
+        #===============================================================================
+        # Mutation Testing
+        #===============================================================================
 
         RESULT_DIR="results/$(date +%Y%m%d-%H%M%S)-$FEATURE_NAME-$SRC_JAR_NAME-Seed-$RANDOM_SEED"
         mkdir -p "$RESULT_DIR"
@@ -436,6 +449,10 @@ do
     set -e
 done
 
+
+#===============================================================================
+# Restore Build
+#===============================================================================
 echo
 echo "Restoring build.xml"
 # restore build.xml
