@@ -13,9 +13,10 @@
 # - Compiled tests and code go in "build/bin".
 # - Various mutants of the source project are generated using Major and tested.
 #
-# Finally, each experiment can run multiple times, with a configurable time (in
-# seconds) per class. Various stats of each iteration go to "results/info.csv".
-# Everything else specific to the most recent iteration goes to "results/".
+# Each experiment can run multiple times, with a configurable time (in
+# seconds per class or total time). Various stats of each iteration go to
+# "results/info.csv". Everything else specific to the most recent iteration
+# goes to "results/".
 
 
 set -e
@@ -124,7 +125,7 @@ echo
 # Path to the base directory of the source code
 SRC_BASE_DIR="$(realpath "$SCRIPT_DIR/../subject-programs/src/$SRC_JAR_NAME")"
 
-# Path to src jar
+# Path to the jar file of the subject program
 SRC_JAR=$(realpath "$SCRIPT_DIR/../subject-programs/$SRC_JAR_NAME.jar")
 
 # Number of classes in given jar file.
@@ -192,7 +193,9 @@ fi
 # Path to the replacement file for replacecall
 REPLACEMENT_FILE_PATH="project-config/$SRC_JAR_NAME/replacecall-replacements.txt"
 
-# Map project names to their respective replacement files
+# Configure method call replacements to avoid undesired behaviors during test
+# generation.
+# Map project names to their respective replacement files.
 declare -A replacement_files=(
      # Do not wait for user input
      ["jcommander-1.35"]="=--replacement_file=$REPLACEMENT_FILE_PATH"
@@ -269,11 +272,12 @@ ALL_RANDOOP_FEATURES=("BASELINE" "BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORI
 # The different features of Randoop to use. Adjust according to the features you are testing.
 RANDOOP_FEATURES=("BASELINE") #"BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
 
-# When ABLATION is set to false, the script tests the Randoop features specified in the RANDOOP_FEATURES array.
-# When ABLATION is set to true, each run tests all Randoop features except the one specified in the RANDOOP_FEATURES array.
+# ABLATION controls whether to perform feature ablation studies.
+# If false, the script tests the Randoop features specified in the RANDOOP_FEATURES array.
+# If true, each run tests all Randoop features except the one specified in the RANDOOP_FEATURES array.
 ABLATION=false
 
-# Ensure the given features are legal.
+# Ensure the given features are are recognized and supported by the script
 for RANDOOP_FEATURE in "${RANDOOP_FEATURES[@]}" ; do
     if [[ ! " ${ALL_RANDOOP_FEATURES[*]} " =~ [[:space:]]${RANDOOP_FEATURE}[[:space:]] ]]; then
         echo "$RANDOOP_FEATURE" is not in "${RANDOOP_FEATURES[@]}"
@@ -291,7 +295,8 @@ do
     for RANDOOP_FEATURE in "${RANDOOP_FEATURES[@]}"
     do
 
-        # Check if output needs to be redirected for this loop
+        # Check if output needs to be redirected for this loop.
+        # If the REDIRECT flag is set, redirect all output to a log file for this iteration.
         if [[ "$REDIRECT" -eq 1 ]]; then
             touch mutation_output.txt
             echo "Redirecting output to $RESULT_DIR/mutation_output.txt..."
