@@ -5,8 +5,9 @@
 #===============================================================================
 # For documentation of how to run this script, see file `reproinstructions.txt`.
 #
-# This script does mutation testing with Randoop-generated test suites. Mutation
-# testing is used on projects provided in table 2 of the GRT paper.
+# This script uses Randoop to generate test suites for subject programs and
+# performs mutation testing to determine how Randoop features affect
+# various coverage metrics including coverage and mutation score.
 #
 # - Randoop's test suites are created in a "build/test*" subdirectory.
 # - Compiled tests and code go in "build/bin".
@@ -170,6 +171,7 @@ declare -A project_deps=(
     ["sat4j-core-2.3.5"]="$SRC_BASE_DIR/lib/"
 )
 #   ["hamcrest-core-1.3"]="$SRC_BASE_DIR/lib/"  this one needs changes?
+
 CLASSPATH=${project_deps[$SRC_JAR_NAME]}
 
 LIB_ARG=""
