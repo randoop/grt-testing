@@ -9,7 +9,7 @@ build/jacoco.jar:
 
 build/randoop-all-4.3.3.jar:
 	mkdir -p build
-	echo "See scripts/reprointstruction.txt to obtain randoop-all-4.3.3.jar"
+	echo "See scripts/reproinstruction.txt to obtain randoop-all-4.3.3.jar"
 
 build/major:
 	mkdir -p build
@@ -28,7 +28,7 @@ results:
 	mkdir -p results
 
 clean:
-	rm -rf build && rm -rf results
+	rm -rf build results
 
 src:
 	../subject-programs/get-all-subject-src.sh

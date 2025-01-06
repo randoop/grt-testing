@@ -1,42 +1,48 @@
 #!/bin/bash
 
+#===============================================================================
+# Overview
+#===============================================================================
 # For documentation of how to run this script, see file `reproinstructions.txt`.
+#
+# This script uses Randoop to generate test suites for subject programs and
+# performs mutation testing to determine how Randoop features affect
+# various coverage metrics including coverage and mutation score.
+#
+# - Randoop's test suites are created in a "build/test*" subdirectory.
+# - Compiled tests and code go in "build/bin".
+# - Various mutants of the source project are generated using Major and tested.
+#
+# Each experiment can run multiple times, with a configurable time (in
+# seconds per class or total time). Various stats of each iteration go to
+# "results/info.csv". Everything else specific to the most recent iteration
+# goes to "results/".
 
-# This script does mutation testing with Randoop-generated test suites. Different
-# test suites can be generated with Bloodhound, Orienteering, neither (baseline), or both.
-# Mutation testing is used on projects provided in table 2 of the GRT paper.
 
-# This script will create Randoop's test suites in a "build/test*" subdirectory.
-# Compiled tests and code will be stored in the "build/bin" subdirectory.
-# The script will generate various mutants of the source project using Major and run these tests on those mutants.
-
-# Finally, each experiment can run a given amount of times and a given amount of seconds per class.
-# Various statistics of each iteration will be logged to a file "results/info.csv".
-# All other files logged to the "results" subdirectory are specific to the most recent iteration of the experiment.
-
-# Fail this script on errors.
 set -e
 set -o pipefail
-#set -x
+
+USAGE_STRING="usage: mutation.sh [-h] [-v] [-r] [-t total_time] [-c time_per_class] <test case name>"
 
 if [ $# -eq 0 ]; then
-    echo $0: "usage: mutation.sh [-vr] <test case name>"
+    echo $0: $USAGE_STRING
     exit 1
 fi
 
-# Check for Java 8
+
+#===============================================================================
+# Environment Variables
+#===============================================================================
+
+# Do not proceed if Java version is not 8
 JAVA_VERSION=$(java -version 2>&1 | awk -F'[._"]' 'NR==1{print ($2 == "version" && $3 < 9) ? $4 : $3}')
 if [ "$JAVA_VERSION" -ne 8 ]; then
     echo "Requires Java 8. Please use Java 8 to proceed."
     exit 1
 fi
 
-SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-
-# Link to the major directory
-MAJOR_HOME=$(realpath "build/major/")
-
-# Link to current directory
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+MAJOR_HOME=$(realpath "build/major/") # Major home directory, for mutation testing
 CURR_DIR=$(realpath "$(pwd)")
 
 # Link to Randoop jar file. Replace with different file if new GRT component is being tested.
@@ -67,7 +73,7 @@ VERBOSE=0
 # Redirect output to mutation_output.txt
 REDIRECT=0
 
-# Enforce that mutually exclusive options are not bundled together
+# Enforce that -t and -c aren't combined
 for arg in "$@"; do
   if [[ "$arg" =~ ^-.*[tc].*[tc] ]]; then
     echo "Options -t and -c cannot be used together in any form (e.g., -tc or -ct)."
@@ -79,7 +85,7 @@ done
 while getopts ":hvrt:c:" opt; do
   case ${opt} in
     h )
-      echo "Usage: mutation.sh [-h] [-v] [-r] [-t total_time] [-c time_per_class] <test case name>"
+      echo $USAGE_STRING
       exit 0
       ;;
     v )
@@ -96,12 +102,12 @@ while getopts ":hvrt:c:" opt; do
       ;;
     \? )
       echo "Invalid option: -$OPTARG" >&2
-      echo "Usage: mutation.sh [-v] [-r] [-t total_time] [-c time_per_class] <test case name>"
+      echo $USAGE_STRING
       exit 1
       ;;
     : )
       echo "Option -$OPTARG requires an argument." >&2
-      echo "Usage: mutation.sh [-v] [-r] [-t total_time] [-c time_per_class] <test case name>"
+      echo $USAGE_STRING
       exit 1
       ;;
   esac
@@ -109,27 +115,41 @@ done
 
 shift $((OPTIND -1))
 
-# Name of test case
+# Name of the subject program
 SRC_JAR_NAME="$1"
 
-# Name of ant file to use
-ANT="ant"
-
-# Use alternative ant file if replacecall is being used for specific projects
-case "$SRC_JAR_NAME" in
-    "ClassViewer-5.0.5b" | "jcommander-1.35" | "fixsuite-r48")
-        ANT="ant.m"
-        ;;
-esac
+# Select the ant executable based on the subject program
+if [ "$SRC_JAR_NAME" = "ClassViewer-5.0.5b" ] || [ "$SRC_JAR_NAME" = "jcommander-1.35" ] || [ "$SRC_JAR_NAME" = "fixsuite-r48" ]; then
+    ANT="ant.m"
+    chmod +x "$MAJOR_HOME"/bin/ant.m
+else
+    ANT="ant"
+fi
 
 echo "Running mutation test on $1"
 echo
 
-# Link to the base directory of the source code
-SRC_BASE_DIR="$(realpath "$SCRIPTDIR/../subject-programs/src/$SRC_JAR_NAME")"
+#===============================================================================
+# Source Code Paths and Dependencies
+#===============================================================================
+# Path to the base directory of the source code
+SRC_BASE_DIR="$(realpath "$SCRIPT_DIR/../subject-programs/src/$SRC_JAR_NAME")"
 
-# Link to src jar
-SRC_JAR=$(realpath "$SCRIPTDIR/../subject-programs/$SRC_JAR_NAME.jar")
+# Path to the jar file of the subject program
+SRC_JAR=$(realpath "$SCRIPT_DIR/../subject-programs/$SRC_JAR_NAME.jar")
+
+# Number of classes in given jar file.
+NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
+
+# Time limit for running Randoop.
+if [[ -n "$TOTAL_TIME" ]]; then
+    TIME_LIMIT="$TOTAL_TIME"
+else
+    TIME_LIMIT=$((NUM_CLASSES * SECONDS_CLASS))
+fi
+
+echo "TIME_LIMIT: $TIME_LIMIT seconds"
+echo
 
 # Map test case to their respective source
 declare -A project_src=(
@@ -149,6 +169,7 @@ declare -A project_src=(
     ["shiro-core-1.2.3"]="/core/"
     ["slf4j-api-1.7.12"]="/slf4j-api"
 )
+JAVA_SRC_DIR=$SRC_BASE_DIR${project_src[$SRC_JAR_NAME]}
 
 # Map project names to their respective dependencies
 declare -A project_deps=(
@@ -162,58 +183,53 @@ declare -A project_deps=(
 )
 #   ["hamcrest-core-1.3"]="$SRC_BASE_DIR/lib/"  this one needs changes?
 
-# Link to src files for mutation generation and analysis
-JAVA_SRC_DIR=$SRC_BASE_DIR${project_src[$SRC_JAR_NAME]}
-
-# Link to dependencies
 CLASSPATH=${project_deps[$SRC_JAR_NAME]}
+
 LIB_ARG=""
 if [[ $CLASSPATH ]]; then
     LIB_ARG="-lib $CLASSPATH"
 fi
 
 if [[ "$VERBOSE" -eq 1 ]]; then
-    echo "Source dir: $JAVA_SRC_DIR"
-    echo "Dependency dir: $CLASSPATH"
+    echo "JAVA_SRC_DIR: $JAVA_SRC_DIR"
+    echo "CLASSPATH: $CLASSPATH"
     echo
 fi
 
-# Number of classes in given jar file.
-NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
 
-# Time limit for running Randoop.
-if [[ -n "$TOTAL_TIME" ]]; then
-    TIME_LIMIT="$TOTAL_TIME"
-elif [[ -n "$SECONDS_CLASS" ]]; then
-    TIME_LIMIT=$((NUM_CLASSES * SECONDS_CLASS))
-else
-    TIME_LIMIT=$((NUM_CLASSES * 2))
-fi
-# TIME_LIMIT=60
-echo "TIME_LIMIT: $TIME_LIMIT seconds"
-echo
-
-# Random seed for Randoop
-RANDOM_SEED=0
-
+#===============================================================================
+# Replacecall Setup
+#===============================================================================
 # Path to the replacement file for replacecall
-REPLACEMENT_FILE_PATH="build-variants/$SRC_JAR_NAME/replacecall-replacements.txt"
+REPLACEMENT_FILE_PATH="project-config/$SRC_JAR_NAME/replacecall-replacements.txt"
 
-# Map project names to their respective replacement files
+# Configure method call replacements to avoid undesired behaviors during test
+# generation.
+# Map project names to their respective replacement files.
 declare -A replacement_files=(
      # Do not wait for user input
      ["jcommander-1.35"]="=--replacement_file=$REPLACEMENT_FILE_PATH"
 )
-
-# Command to run replacecall
 REPLACECALL_COMMAND="$REPLACECALL_JAR${replacement_files[$SRC_JAR_NAME]}"
 
-# Variable that stores command line inputs common among all commands
-# Note that if there is no project_deps entry, this command adds a classpath
-# element of '*', but it doesn't seem to matter.
-RANDOOP_BASE_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR:$REPLACECALL_JAR -javaagent:$JACOCO_AGENT_JAR -javaagent:$REPLACECALL_COMMAND -classpath $CLASSPATH*:$SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=$TIME_LIMIT --deterministic=false --no-error-revealing-tests=true --randomseed=$RANDOM_SEED"
 
-# NOTE: The following omits are based on BASELINE Randoop, seed 0.
+#===============================================================================
+# Base Randoop Command
+#===============================================================================
+RANDOOP_BASE_COMMAND="java \
+-Xbootclasspath/a:$JACOCO_AGENT_JAR:$REPLACECALL_JAR \
+-javaagent:$JACOCO_AGENT_JAR \
+-javaagent:$REPLACECALL_COMMAND \
+-classpath $CLASSPATH*:$SRC_JAR:$RANDOOP_JAR \
+randoop.main.Main gentests \
+--testjar=$SRC_JAR \
+--time-limit=$TIME_LIMIT \
+--deterministic=false \
+--no-error-revealing-tests=true \
+--randomseed=0"
+
+# Add special command suffixes for certain projects.
+# TODO: Add more special cases as needed
 declare -A command_suffix=(
     # Bad inputs generated and caused infinite loops
     ["ClassViewer-5.0.5b"]="--specifications=project-specs/ClassViewer-5.0.5b-specs.json"
@@ -238,8 +254,12 @@ declare -A command_suffix=(
 
 RANDOOP_COMMAND="$RANDOOP_BASE_COMMAND ${command_suffix[$SRC_JAR_NAME]}"
 
+
+#===============================================================================
+# Build Files Preparation
+#===============================================================================
 echo "Modifying build.xml for $SRC_JAR_NAME..."
-./diff-patch.sh $SRC_JAR_NAME
+./apply-build-patch.sh $SRC_JAR_NAME
 
 echo "Check out include-major branch, if present..."
 # ignore error if branch doesn't exist, will stay on main branch
@@ -253,16 +273,21 @@ if [ ! -f "results/info.csv" ]; then
     echo -e "RandoopVersion,FileName,TimeLimit,Seed,InstructionCoverage,BranchCoverage,MutationScore" > results/info.csv
 fi
 
+
+#===============================================================================
+# Randoop Features
+#===============================================================================
 # The feature names must not contain whitespace.
 ALL_RANDOOP_FEATURES=("BASELINE" "BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
 # The different features of Randoop to use. Adjust according to the features you are testing.
 RANDOOP_FEATURES=("BASELINE") #"BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
 
-# When ABLATION is set to false, the script tests the Randoop features specified in the RANDOOP_FEATURES array.
-# When ABLATION is set to true, each run tests all Randoop features except the one specified in the RANDOOP_FEATURES array.
+# ABLATION controls whether to perform feature ablation studies.
+# If false, the script tests the Randoop features specified in the RANDOOP_FEATURES array.
+# If true, each run tests all Randoop features except the one specified in the RANDOOP_FEATURES array.
 ABLATION=false
 
-# Ensure the given features are legal.
+# Ensure the given features are are recognized and supported by the script
 for RANDOOP_FEATURE in "${RANDOOP_FEATURES[@]}" ; do
     if [[ ! " ${ALL_RANDOOP_FEATURES[*]} " =~ [[:space:]]${RANDOOP_FEATURE}[[:space:]] ]]; then
         echo "$RANDOOP_FEATURE" is not in "${RANDOOP_FEATURES[@]}"
@@ -270,13 +295,18 @@ for RANDOOP_FEATURE in "${RANDOOP_FEATURES[@]}" ; do
     fi
 done
 
+
+#===============================================================================
+# Run Randoop and Mutation Testing
+#===============================================================================
 # shellcheck disable=SC2034 # i counts iterations but is not otherwise used.
 for i in $(seq 1 $NUM_LOOP)
 do
     for RANDOOP_FEATURE in "${RANDOOP_FEATURES[@]}"
     do
 
-        # Check if output needs to be redirected for this loop
+        # Check if output needs to be redirected for this loop.
+        # If the REDIRECT flag is set, redirect all output to a log file for this iteration.
         if [[ "$REDIRECT" -eq 1 ]]; then
             touch mutation_output.txt
             echo "Redirecting output to $RESULT_DIR/mutation_output.txt..."
@@ -299,41 +329,53 @@ do
 
         RANDOOP_COMMAND_2="$RANDOOP_COMMAND --junit-output-dir=$TEST_DIRECTORY"
 
+        # Bloodhound
         if [[ ( "$RANDOOP_FEATURE" == "BLOODHOUND" && "$ABLATION" != "true" ) || ( "$RANDOOP_FEATURE" != "BLOODHOUND" && "$ABLATION" == "true" ) ]]; then
             RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2 --method-selection=BLOODHOUND"
         fi
 
+        # Baseline
         if [[ ( "$RANDOOP_FEATURE" == "BASELINE" && "$ABLATION" != "true" ) || ( "$RANDOOP_FEATURE" != "BASELINE" && "$ABLATION" == "true" ) ]]; then
             ## There is nothing to do in this case.
             # RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2"
             true
         fi
 
+        # Orienteering
         if [[ ( "$RANDOOP_FEATURE" == "ORIENTEERING" && "$ABLATION" != "true" ) || ( "$RANDOOP_FEATURE" != "ORIENTEERING" && "$ABLATION" == "true" ) ]]; then
             RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2 --input-selection=ORIENTEERING"
         fi
 
+        # Bloodhound and Orienteering
         if [[ ( "$RANDOOP_FEATURE" == "BLOODHOUND_AND_ORIENTEERING" && "$ABLATION" != "true" ) || ( "$RANDOOP_FEATURE" != "BLOODHOUND_AND_ORIENTEERING" && "$ABLATION" == "true" ) ]]; then
             RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2 --input-selection=ORIENTEERING --method-selection=BLOODHOUND"
         fi
 
+        # Detective (Demand-Driven)
         if [[ ( "$RANDOOP_FEATURE" == "DETECTIVE" && "$ABLATION" != "true" ) || ( "$RANDOOP_FEATURE" != "DETECTIVE" && "$ABLATION" == "true" ) ]]; then
             RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2 --demand-driven=true --demand-driven-logging=demand-driven.log"
         fi
 
+        # GRT Fuzzing
         if [[ ( "$RANDOOP_FEATURE" == "GRT_FUZZING" && "$ABLATION" != "true" ) || ( "$RANDOOP_FEATURE" != "GRT_FUZZING" && "$ABLATION" == "true" ) ]]; then
             RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2 --grt-fuzzing=true"
         fi
 
+        # Elephant Brain
         if [[ ( "$RANDOOP_FEATURE" == "ELEPHANT_BRAIN" && "$ABLATION" != "true" ) || ( "$RANDOOP_FEATURE" != "ELEPHANT_BRAIN" && "$ABLATION" == "true" ) ]]; then
             RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2 --elephant-brain=true"
         fi
 
+        # Constant Mining
         if [[ ( "$RANDOOP_FEATURE" == "CONSTANT_MINING" && "$ABLATION" != "true" ) || ( "$RANDOOP_FEATURE" != "CONSTANT_MINING" && "$ABLATION" == "true" ) ]]; then
             RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2 --constant-mining=true"
         fi
 
         $RANDOOP_COMMAND_2
+
+        #===============================================================================
+        # Mutation Testing
+        #===============================================================================
 
         RESULT_DIR="results/$(date +%Y%m%d-%H%M%S)-$FEATURE_NAME-$SRC_JAR_NAME-Seed-$RANDOM_SEED"
         mkdir -p "$RESULT_DIR"
@@ -433,10 +475,14 @@ do
     set -e
 done
 
+
+#===============================================================================
+# Restore Build
+#===============================================================================
 echo
 echo "Restoring build.xml"
 # restore build.xml
-./diff-patch.sh > /dev/null
+./apply-build-patch.sh > /dev/null
 
 echo "Restoring $JAVA_SRC_DIR to main branch"
 # switch to main branch (may already be there)
