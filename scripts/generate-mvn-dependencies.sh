@@ -63,7 +63,18 @@ for jar in "$LIBS_DIR"/*.jar; do
         echo "Dependency for $artifactId is already in pom.xml. Skipping addition."
     else
         # Create the corresponding <dependency> entry for the pom.xml
-        dependency="  <dependency>\n    <groupId>$groupId</groupId>\n    <artifactId>$artifactId</artifactId>\n    <version>$version</version>\n  </dependency>"
+        dependency="  <dependency>\n    <groupId>$groupId</groupId>\n    <artifactId>$artifactId</artifactId>\n    <version>$version</version>\n"
+
+        # Add exclusion if the dependency is log4j-1.2.15
+        if [[ "$groupId" == "com.example" && "$artifactId" == "log4j-1.2.15" && "$version" == "1.2.15" ]]; then
+            exclusion="<exclusions>\n      <exclusion>\n        <groupId>com.sun.jmx</groupId>\n        <artifactId>jmxri</artifactId>\n      </exclusion>\n      <exclusion>\n        <groupId>com.sun.jdmk</groupId>\n        <artifactId>jmxtools</artifactId>\n      </exclusion>\n      <exclusion>\n        <groupId>javax.jms</groupId>\n        <artifactId>jms</artifactId>\n      </exclusion>\n  </exclusions>"
+
+            # Append the exclusion to the dependency
+            dependency="$dependency$exclusion"
+        fi
+
+        # Close the <dependency> tag
+        dependency="$dependency\n  </dependency>"
 
         # Add the dependency entry to pom.xml (inside <dependencies> section)
         # This will append the dependency just before the closing </dependencies> tag

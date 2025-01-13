@@ -53,7 +53,7 @@ results:
 	mkdir -p results
 
 clean:
-	rm -rf build results
+	rm -rf build results evosuite-tests evosuite-report target libs 
 
 src:
 	../subject-programs/get-all-subject-src.sh

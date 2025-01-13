@@ -139,7 +139,7 @@ declare -A project_src=(
     ["jvc-1.1"]="/src/"
     ["nekomud-r16"]="/src/"
     ["shiro-core-1.2.3"]="/core/"
-    ["slf4j-api-1.7.12"]="/slf4j-api"
+    ["slf4j-api-1.7.12"]="/slf4j-api/src/main/java/"
 )
 
 # Map project names to their respective dependencies
@@ -287,12 +287,12 @@ do
         echo "$MAJOR_HOME"/bin/"$ANT" -buildfile build-evosuite.xml -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
     fi
     echo "$MAJOR_HOME"/bin/"$ANT" -buildfile build-evosuite.xml -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
-    "$MAJOR_HOME"/bin/"$ANT" -buildfile build-evosuite.xml -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
+    "$MAJOR_HOME"/bin/ant -buildfile build-evosuite.xml -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
 
     # Calculate Mutation Score
-    mutants_covered=$(awk -F, 'NR==2 {print $3}' results/summary.csv)
+    mutants_generated=$(awk -F, 'NR==2 {print $1}' results/summary.csv)
     mutants_killed=$(awk -F, 'NR==2 {print $4}' results/summary.csv)
-    mutation_score=$(echo "scale=4; $mutants_killed / $mutants_covered * 100" | bc)
+    mutation_score=$(echo "scale=4; $mutants_killed / $mutants_generated * 100" | bc)
     mutation_score=$(printf "%.2f" "$mutation_score")
 
 
