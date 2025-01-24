@@ -250,6 +250,8 @@ declare -A command_suffix=(
     ["jaxen-1.1.6"]="--specifications=project-specs/jaxen-1.1.6-specs.json"
     # Bad inputs cause exceptions in different threads, directly terminating Randoop
     ["sat4j-core-2.3.5"]="--specifications=project-specs/sat4j-core-2.3.5-specs.json"
+    # Large inputs to perm take too much time
+    ["commons-collections4-4.0"]="--specifications=project-specs/commons-collections4-4.0-specs.json"
 )
 
 RANDOOP_COMMAND="$RANDOOP_BASE_COMMAND ${command_suffix[$SRC_JAR_NAME]}"
