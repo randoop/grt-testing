@@ -1,0 +1,43 @@
+--- build-variants/build-evosuite.xml	2025-01-09 20:34:04.657319152 -0800
++++ build-evosuite.xml	2025-01-25 23:12:49.990798714 -0800
+@@ -36,14 +36,23 @@
+         <mkdir dir="build/bin"/>
+     </target>
+ 
++    <path id="compile.classpath">
++        <pathelement location="libs/rundoc-0.11.jar"/>
++        <pathelement location="libs/snip-0.11.jar"/>
++        <pathelement location="libs/xstream-1.4.21.jar"/>
++    </path>
++
+ <!-- Target to compile the project -->
+     <target name="compile" depends="init" description="Compile">
+         <javac includeantruntime="true" 
+                srcdir="${src}"
+                destdir="build/bin"
+-               debug="yes">
++               debug="yes"
++               source="1.4"
++               target="1.4">
+             <classpath location="${major.jar}"/>
+             <compilerarg value="${plugin}"/>
++            <classpath refid="compile.classpath"/>
+         </javac>
+     </target>
+ 
+@@ -53,6 +62,7 @@
+                srcdir="${test}"
+                debug="yes">
+                <classpath refid="project.classpath"/>
++               <classpath refid="compile.classpath"/>
+         </javac>
+     </target>
+ 
+@@ -70,6 +80,7 @@
+                testMapFile="results/testMap.csv"
+                killMapFile="results/killMap.csv">
+             <classpath refid="project.classpath"/>
++            <classpath refid="compile.classpath"/>
+             <batchtest fork="false">
+                 <fileset dir="${test}">
+                     <include name="**/*Test.java"/>

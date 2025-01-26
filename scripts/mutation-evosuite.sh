@@ -147,7 +147,6 @@ declare -A project_deps=(
     ["a4j-1.0b"]="$SRC_BASE_DIR/jars/"
     ["fixsuite-r48"]="$SRC_BASE_DIR/lib/jdom.jar:$SRC_BASE_DIR/lib/log4j-1.2.15.jar:$SRC_BASE_DIR/lib/slf4j-api-1.5.0.jar:$SRC_BASE_DIR/lib/slf4j-log4j12-1.5.0.jar"
     ["jdom-1.0"]="$MAJOR_HOME/lib/ant:$SRC_BASE_DIR/lib/"
-    ["JSAP-2.1"]="$MAJOR_HOME/lib/ant:$SRC_BASE_DIR/lib/"  # need to override ant.jar in $SRC_BASE_DIR/lib
     ["jvc-1.1"]="$SRC_BASE_DIR/lib/"
     ["nekomud-r16"]="$SRC_BASE_DIR/lib/"
     ["sat4j-core-2.3.5"]="$SRC_BASE_DIR/lib/"
@@ -186,6 +185,36 @@ for path in $JAR_PATHS; do
     fi
 done
 IFS=$OLDIFS
+
+# Check if src jar is JSAP-2.1
+if [ "$SRC_JAR_NAME" == "JSAP-2.1" ]; then
+
+    JSAP_JAR_DIR="$CURR_DIR/../subject-programs/src/JSAP-2.1/lib"  # Define the directory that contains the jars
+
+    # Directory where jars will be copied
+    SPECIFIC_JAR_DIR="$CURR_DIR/../subject-programs/src/JSAP-2.1/lib"
+
+    # Manually download xstream into libs folder
+    JAR_URL="https://repo1.maven.org/maven2/com/thoughtworks/xstream/xstream/1.4.21/xstream-1.4.21.jar"
+    JAR_FILE="libs/xstream-1.4.21.jar"
+
+    # Check if xstream is already in libs
+    if [ ! -f "$JAR_FILE" ]; then
+        echo "Downloading xstream-1.4.21.jar..."
+        curl -L "$JAR_URL" -o "$JAR_FILE"
+    else
+        echo "xstream-1.4.21.jar already exists in libs. Skipping download."
+    fi
+
+    # Loop through all other jars and copy them to libs
+    for jar in "ant.jar" "rundoc-0.11.jar" "snip-0.11.jar"; do
+        if [ -f "$SPECIFIC_JAR_DIR/$jar" ]; then
+            cp "$SPECIFIC_JAR_DIR/$jar" libs/
+        else
+            echo "Warning: $SPECIFIC_JAR_DIR/$jar does not exist"
+        fi
+    done
+fi
 
 ./generate-mvn-dependencies.sh
 
@@ -226,6 +255,9 @@ EVOSUITE_COMMAND=(
     "-projectCP" "$JAR_PATHS:$EVOSUITE_JAR"
     "-Dsearch_budget=$TIME_LIMIT"
 )
+if [ "$SRC_JAR_NAME" == "JSAP-2.1" ]; then
+    EVOSUITE_COMMAND+=("-Dsandbox=false")
+fi
 
 echo "Modifying build-evosuite.xml for $SRC_JAR_NAME..."
 ./diff-patch.sh _ $SRC_JAR_NAME
