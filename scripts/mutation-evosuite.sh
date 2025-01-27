@@ -133,6 +133,7 @@ declare -A project_src=(
     ["commons-math3-3.2"]="/src/main/java/"
     ["commons-primitives-1.0"]="/src/java/"
     ["dcParseArgs-10.2008"]="/src/"
+    ["easymock-3.2"]="/easymock/src/main/java/"
     ["javassist-3.19"]="/src/main/"
     ["jdom-1.0"]="/src/"
     ["JSAP-2.1"]="/src/"
@@ -161,6 +162,26 @@ CLASSPATH=${project_deps[$SRC_JAR_NAME]}
 
 # Ensure the directory contains the JAR files
 JAR_PATHS="build/evosuite-standalone-runtime-1.2.0.jar:evosuite-tests/:build/junit-4.12.jar:build/hamcrest-core-1.3.jar"
+JAR_PATHS="$JAR_PATHS:$SRC_JAR"
+
+if [[ "$SRC_JAR_NAME" == "easymock-3.2" ]]; then
+    # Download the 3 necessary JAR files using wget
+    wget -P build/ https://repo1.maven.org/maven2/com/google/dexmaker/dexmaker/1.0/dexmaker-1.0.jar
+    wget -P build/ https://repo1.maven.org/maven2/org/objenesis/objenesis/1.3/objenesis-1.3.jar
+    wget -P build/ https://repo1.maven.org/maven2/cglib/cglib-nodep/2.2.2/cglib-nodep-2.2.2.jar
+    
+    # Add the downloaded JAR files to JAR_PATHS
+    JAR_PATHS="$JAR_PATHS:build/dexmaker-1.0.jar:build/objenesis-1.3.jar:build/cglib-nodep-2.2.2.jar"
+fi
+
+if [[ "$SRC_JAR_NAME" == "JSAP-2.1" ]]; then
+    # Download the 3 necessary JAR files using wget
+    wget -P build/ "https://repo1.maven.org/maven2/com/thoughtworks/xstream/xstream/1.4.21/xstream-1.4.21.jar"
+    SPECIFIC_JAR_DIR="$CURR_DIR/../subject-programs/src/JSAP-2.1/lib"
+    
+    # Add the downloaded JAR files to JAR_PATHS
+    JAR_PATHS="$JAR_PATHS:build/xstream-1.4.21.jar:$SPECIFIC_JAR_DIR/rundoc-0.11.jar:$SPECIFIC_JAR_DIR/snip-0.11.jar:$SPECIFIC_JAR_DIR/ant.jar"
+fi
 
 # Loop through the JAR files in the specified directory
 for jar in $CLASSPATH/*.jar; do
@@ -168,8 +189,6 @@ for jar in $CLASSPATH/*.jar; do
         JAR_PATHS="$JAR_PATHS:$jar"  # Append the jar to the path
     fi
 done
-
-JAR_PATHS="$JAR_PATHS:$SRC_JAR"
 
 rm -rf libs && mkdir -p libs
 # Loop through the JAR_PATHS, splitting by colon and handling each path correctly
@@ -186,37 +205,12 @@ for path in $JAR_PATHS; do
 done
 IFS=$OLDIFS
 
-# Check if src jar is JSAP-2.1
-if [ "$SRC_JAR_NAME" == "JSAP-2.1" ]; then
-
-    JSAP_JAR_DIR="$CURR_DIR/../subject-programs/src/JSAP-2.1/lib"  # Define the directory that contains the jars
-
-    # Directory where jars will be copied
-    SPECIFIC_JAR_DIR="$CURR_DIR/../subject-programs/src/JSAP-2.1/lib"
-
-    # Manually download xstream into libs folder
-    JAR_URL="https://repo1.maven.org/maven2/com/thoughtworks/xstream/xstream/1.4.21/xstream-1.4.21.jar"
-    JAR_FILE="libs/xstream-1.4.21.jar"
-
-    # Check if xstream is already in libs
-    if [ ! -f "$JAR_FILE" ]; then
-        echo "Downloading xstream-1.4.21.jar..."
-        curl -L "$JAR_URL" -o "$JAR_FILE"
-    else
-        echo "xstream-1.4.21.jar already exists in libs. Skipping download."
-    fi
-
-    # Loop through all other jars and copy them to libs
-    for jar in "ant.jar" "rundoc-0.11.jar" "snip-0.11.jar"; do
-        if [ -f "$SPECIFIC_JAR_DIR/$jar" ]; then
-            cp "$SPECIFIC_JAR_DIR/$jar" libs/
-        else
-            echo "Warning: $SPECIFIC_JAR_DIR/$jar does not exist"
-        fi
-    done
-fi
-
 ./generate-mvn-dependencies.sh
+
+# use junit 4.13 if using easymock-3.2
+if [[ "$SRC_JAR_NAME" == "easymock-3.2" ]]; then
+    sed -i 's/<junit.version>4.12<\/junit.version>/<junit.version>4.13<\/junit.version>/' pom.xml
+fi
 
 LIB_ARG=""
 if [[ $JAR_PATHS ]]; then
@@ -290,6 +284,11 @@ do
     TEST_DIRECTORY="$CURR_DIR/evosuite-tests/"
 
     "${EVOSUITE_COMMAND[@]}"
+
+    if [[ "$SRC_JAR_NAME" == "JSAP-2.1" ]]; then
+        echo "Removing ant.jar from -lib option"
+        LIB_ARG=$(echo "$LIB_ARG" | sed 's/\([^:]*\)[^:]*$/:/' )
+    fi
 
     RESULT_DIR="results/$(date +%Y%m%d-%H%M%S)-$SRC_JAR_NAME-evosuite"
     mkdir -p "$RESULT_DIR"
