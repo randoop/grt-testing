@@ -205,6 +205,8 @@ for path in $JAR_PATHS; do
 done
 IFS=$OLDIFS
 
+# Install Jacoco 0.8.0 runtime
+mvn install:install-file -Dfile="build/org.jacoco.agent-0.8.0-runtime.jar" -DgroupId="org.jacoco" -DartifactId="org.jacoco.agent" -Dversion="0.8.0" -Dclassifier="runtime" -Dpackaging=jar 
 ./generate-mvn-dependencies.sh
 
 # use junit 4.13 if using easymock-3.2
