@@ -326,9 +326,6 @@ do
     mutation_score=$(echo "scale=4; $mutants_killed / $mutants_generated * 100" | bc)
     mutation_score=$(printf "%.2f" "$mutation_score")
 
-
-    python3 update_evo_runner.py -d $TEST_DIRECTORY -s false
-
     echo
     echo "Running tests with coverage..."
     if [[ "$VERBOSE" -eq 1 ]]; then
@@ -336,7 +333,7 @@ do
         echo "mvn clean test -Dmain.source.dir="$JAVA_SRC_DIR""
     fi
     echo
-    mvn clean test -Dmain.source.dir="$JAVA_SRC_DIR"
+    mvn clean test jacoco:restore-instrumented-classes jacoco:report -Dmain.source.dir="$JAVA_SRC_DIR"
 
     # Calculate Instruction Coverage
     inst_missed=$(awk -F, 'NR>1 {sum+=$4} END {print sum}' target/jacoco.csv)
