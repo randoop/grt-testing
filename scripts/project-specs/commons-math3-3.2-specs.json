@@ -1,0 +1,655 @@
+[
+  {
+    "operation": {
+      "classname": "org.apache.commons.math3.analysis.differentiation.DerivativeStructure",
+      "name": "DerivativeStructure",
+      "parameterTypes": [ "int", "int", "int", "double" ]
+    },
+    "identifiers": {
+      "parameters": [ "parameters", "order", "index", "value" ],
+      "receiverName": "this",
+      "returnName": "instance"
+    },
+    "pre": [
+      {
+        "description": "Derivation order must be non-negative and not exceed the safe maximum",
+        "guard": {
+          "condition": "parameters * order <= 20",
+          "description": "order is between 0 and 50 (inclusive)"
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  },
+  {
+    "operation": {
+      "classname": "org.apache.commons.math3.dfp.DfpField",
+      "name": "DfpField",
+      "parameterTypes": [ "int" ]
+    },
+    "identifiers": {
+      "parameters": [ "decimalDigits" ],
+      "receiverName": "receiver",
+      "returnName": "instance"
+    },
+    "pre": [
+      {
+        "description": "Ensure that the precision is positive",
+        "guard": {
+          "condition": "decimalDigits > 0 && decimalDigits <= 50",
+          "description": "decimalDigits must be greater than 0"
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  },
+  {
+    "operation": {
+      "classname": "org.apache.commons.math3.ode.nonstiff.AdamsBashforthIntegrator",
+      "name": "AdamsBashforthIntegrator",
+      "parameterTypes": [ "int", "double", "double", "double", "double" ]
+    },
+    "identifiers": {
+      "parameters": [ "nSteps", "minStep", "maxStep", "scalAbsoluteTolerance", "scalRelativeTolerance" ],
+      "receiverName": "this"
+    },
+    "pre": [
+      {
+        "description": "nSteps must be greater than 1",
+        "guard": {
+          "condition": "nSteps > 1",
+          "description": "nSteps must be > 1"
+        }
+      },
+      {
+        "description": "minStep must be positive",
+        "guard": {
+          "condition": "minStep > 0",
+          "description": "minStep > 0"
+        }
+      },
+      {
+        "description": "maxStep must be positive and at least minStep",
+        "guard": {
+          "condition": "maxStep > 0 && maxStep >= minStep",
+          "description": "maxStep must be > 0 and >= minStep"
+        }
+      },
+      {
+        "description": "scalAbsoluteTolerance must be positive",
+        "guard": {
+          "condition": "scalAbsoluteTolerance > 0",
+          "description": "scalAbsoluteTolerance > 0"
+        }
+      },
+      {
+        "description": "scalRelativeTolerance must be positive",
+        "guard": {
+          "condition": "scalRelativeTolerance > 0",
+          "description": "scalRelativeTolerance > 0"
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  },
+  {
+    "operation": {
+      "classname": "org.apache.commons.math3.analysis.solvers.BaseUnivariateSolver",
+      "name": "solve",
+      "parameterTypes": [ "int", "org.apache.commons.math3.analysis.UnivariateFunction", "double", "double" ]
+    },
+    "identifiers": {
+      "parameters": [ "maxEval", "f", "min", "max" ],
+      "receiverName": "receiver",
+      "returnName": "result"
+    },
+    "pre": [
+      {
+        "description": "maxEval must be positive",
+        "guard": {
+          "condition": "maxEval > 0",
+          "description": "maxEval > 0"
+        }
+      },
+      {
+        "description": "f must not be null",
+        "guard": {
+          "condition": "f != null",
+          "description": "f != null"
+        }
+      },
+      {
+        "description": "min must be less than max",
+        "guard": {
+          "condition": "min < max",
+          "description": "min < max"
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  },
+  {
+    "operation": {
+      "classname": "org.apache.commons.math3.analysis.solvers.NewtonSolver",
+      "name": "solve",
+      "parameterTypes": [
+        "int",
+        "org.apache.commons.math3.analysis.UnivariateFunction",
+        "double",
+        "double"
+      ]
+    },
+    "identifiers": {
+      "parameters": [ "maxEval", "f", "min", "max" ],
+      "receiverName": "target",
+      "returnName": "result"
+    },
+    "pre": [
+      {
+        "description": "Maximum evaluation count must be positive",
+        "guard": {
+          "condition": "maxEval > 0",
+          "description": "maxEval must be greater than 0"
+        }
+      },
+      {
+        "description": "The function to solve must not be null",
+        "guard": {
+          "condition": "f != null",
+          "description": "f must not be null"
+        }
+      },
+      {
+        "description": "The interval is defined with min < max",
+        "guard": {
+          "condition": "min < max",
+          "description": "min must be less than max"
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  },
+  {
+    "operation": {
+      "classname": "org.apache.commons.math3.analysis.solvers.NewtonRaphsonSolver",
+      "name": "solve",
+      "parameterTypes": [
+        "int",
+        "org.apache.commons.math3.analysis.differentiation.UnivariateDifferentiableFunction",
+        "double",
+        "double"
+      ]
+    },
+    "identifiers": {
+      "parameters": [ "maxEval", "f", "min", "max" ],
+      "receiverName": "target",
+      "returnName": "result"
+    },
+    "pre": [
+      {
+        "description": "The maximum evaluation count must be positive.",
+        "guard": {
+          "condition": "maxEval > 0",
+          "description": "maxEval > 0"
+        }
+      },
+      {
+        "description": "The differentiable function must not be null.",
+        "guard": {
+          "condition": "f != null",
+          "description": "f != null"
+        }
+      },
+      {
+        "description": "The lower bound must be less than the upper bound.",
+        "guard": {
+          "condition": "min < max",
+          "description": "min < max"
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  },
+  {
+    "operation": {
+      "classname": "org.apache.commons.math3.analysis.solvers.NewtonRaphsonSolver",
+      "name": "solve",
+      "parameterTypes": [
+        "int",
+        "org.apache.commons.math3.analysis.UnivariateFunction",
+        "double",
+        "double"
+      ]
+    },
+    "identifiers": {
+      "parameters": [ "maxEval", "f", "min", "max" ],
+      "receiverName": "target",
+      "returnName": "result"
+    },
+    "pre": [
+      {
+        "description": "The maximum evaluation count must be positive.",
+        "guard": {
+          "condition": "maxEval > 0",
+          "description": "maxEval > 0"
+        }
+      },
+      {
+        "description": "The function must not be null.",
+        "guard": {
+          "condition": "f != null",
+          "description": "f != null"
+        }
+      },
+      {
+        "description": "The lower bound must be less than the upper bound.",
+        "guard": {
+          "condition": "min < max",
+          "description": "min < max"
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  },
+  {
+    "operation": {
+      "classname": "org.apache.commons.math3.analysis.solvers.NewtonRaphsonSolver",
+      "name": "NewtonRaphsonSolver",
+      "parameterTypes": [
+        "double"
+      ]
+    },
+    "identifiers": {
+      "parameters": [ "absoluteAccuracy" ],
+      "receiverName": "this",
+      "returnName": "instance"
+    },
+    "pre": [
+      {
+        "description": "The absolute accuracy must be positive.",
+        "guard": {
+          "condition": "absoluteAccuracy > 0",
+          "description": "absoluteAccuracy > 0"
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  },
+  {
+    "operation": {
+      "classname": "org.apache.commons.math3.distribution.ZipfDistribution",
+      "name": "ZipfDistribution",
+      "parameterTypes": [ "int", "double" ]
+    },
+    "identifiers": {
+      "parameters": [ "numberOfElements", "exponent" ],
+      "receiverName": "this",
+      "returnName": "instance"
+    },
+    "pre": [
+      {
+        "description": "Number of elements must be strictly positive",
+        "guard": {
+          "condition": "numberOfElements > 0",
+          "description": "numberOfElements > 0"
+        }
+      },
+      {
+        "description": "Exponent must be strictly positive",
+        "guard": {
+          "condition": "exponent > 0",
+          "description": "exponent > 0"
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  },
+  {
+    "operation": {
+      "classname": "org.apache.commons.math3.distribution.ZipfDistribution",
+      "name": "ZipfDistribution",
+      "parameterTypes": [ "int", "double" ]
+    },
+    "identifiers": {
+      "parameters": [ "numberOfElements", "exponent" ],
+      "receiverName": "instance"
+    },
+    "pre": [
+      {
+        "description": "numberOfElements must be strictly positive",
+        "guard": {
+          "condition": "numberOfElements > 0",
+          "description": "numberOfElements > 0"
+        }
+      },
+      {
+        "description": "numberOfElements must be at most 10000 to avoid excessive computation in cumulativeProbability",
+        "guard": {
+          "condition": "numberOfElements <= 10000",
+          "description": "numberOfElements <= 10000"
+        }
+      },
+      {
+        "description": "exponent must be strictly positive",
+        "guard": {
+          "condition": "exponent > 0",
+          "description": "exponent > 0"
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  },
+  {
+    "operation": {
+      "classname": "org.apache.commons.math3.distribution.KolmogorovSmirnovDistribution",
+      "name": "KolmogorovSmirnovDistribution",
+      "parameterTypes": [ "int" ]
+    },
+    "identifiers": {
+      "parameters": [ "n" ],
+      "receiverName": "this",
+      "returnName": "instance"
+    },
+    "pre": [
+      {
+        "description": "Number of observations must be strictly positive",
+        "guard": {
+          "condition": "n < 50",
+          "description": "n < 50"
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  },
+  {
+    "operation": {
+      "classname": "org.apache.commons.math3.analysis.integration.gauss.GaussIntegratorFactory",
+      "name": "legendreHighPrecision",
+      "parameterTypes": [ "int" ]
+    },
+    "identifiers": {
+      "parameters": [ "numberOfPoints" ],
+      "receiverName": "target",
+      "returnName": "instance"
+    },
+    "pre": [
+      {
+        "description": "numberOfPoints must be positive and no greater than 50 to avoid excessive computation",
+        "guard": {
+          "condition": "numberOfPoints > 0 && numberOfPoints <= 50",
+          "description": "Ensures that the order is in the safe range (1 to 50)"
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  },
+  {
+    "operation": {
+      "classname": "org.apache.commons.math3.analysis.integration.gauss.GaussIntegratorFactory",
+      "name": "legendreHighPrecision",
+      "parameterTypes": [ "int", "double", "double" ]
+    },
+    "identifiers": {
+      "parameters": [ "numberOfPoints", "lowerBound", "upperBound" ],
+      "receiverName": "target",
+      "returnName": "instance"
+    },
+    "pre": [
+      {
+        "description": "numberOfPoints must be positive and no greater than 50 to avoid excessive computation",
+        "guard": {
+          "condition": "numberOfPoints > 0 && numberOfPoints <= 50",
+          "description": "Ensures that the order is in the safe range (1 to 50)"
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  },
+  {
+    "operation": {
+      "classname": "org.apache.commons.math3.analysis.integration.gauss.GaussIntegratorFactory",
+      "name": "legendre",
+      "parameterTypes": [ "int", "double", "double" ]
+    },
+    "identifiers": {
+      "parameters": [ "numberOfPoints", "lowerBound", "upperBound" ],
+      "receiverName": "target",
+      "returnName": "instance"
+    },
+    "pre": [
+      {
+        "description": "numberOfPoints must be positive and no greater than 50 to avoid excessive computation",
+        "guard": {
+          "condition": "numberOfPoints > 0 && numberOfPoints <= 50",
+          "description": "Ensures that the order is in the safe range (1 to 50)"
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  },
+  {
+    "operation": {
+      "classname": "org.apache.commons.math3.analysis.polynomials.PolynomialsUtils",
+      "name": "createHermitePolynomial",
+      "parameterTypes": [ "int" ]
+    },
+    "identifiers": {
+      "parameters": [ "degree" ],
+      "receiverName": "target",
+      "returnName": "result"
+    },
+    "pre": [
+      {
+        "description": "Degree must be non-negative and no greater than 50 to avoid excessive computation.",
+        "guard": {
+          "condition": "degree >= 0 && degree <= 50",
+          "description": "degree in [0, 50]"
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  },
+  {
+    "operation": {
+      "classname": "org.apache.commons.math3.analysis.polynomials.PolynomialsUtils",
+      "name": "createLegendrePolynomial",
+      "parameterTypes": [ "int" ]
+    },
+    "identifiers": {
+      "parameters": [ "degree" ],
+      "receiverName": "target",
+      "returnName": "result"
+    },
+    "pre": [
+      {
+        "description": "Degree must be non-negative and no greater than 50 to avoid excessive computation.",
+        "guard": {
+          "condition": "degree >= 0 && degree <= 50",
+          "description": "degree in [0, 50]"
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  },
+  {
+    "operation": {
+      "classname": "org.apache.commons.math3.analysis.polynomials.PolynomialsUtils",
+      "name": "createJacobiPolynomial",
+      "parameterTypes": [ "int", "int", "int" ]
+    },
+    "identifiers": {
+      "parameters": [ "degree", "v", "w" ],
+      "receiverName": "target",
+      "returnName": "result"
+    },
+    "pre": [
+      {
+        "description": "Degree must be non-negative and no greater than 50 to avoid excessive computation.",
+        "guard": {
+          "condition": "degree >= 0 && degree <= 50",
+          "description": "degree in [0, 50]"
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  },
+  {
+    "operation": {
+      "classname": "org.apache.commons.math3.optimization.direct.NelderMeadSimplex",
+      "name": "NelderMeadSimplex",
+      "parameterTypes": [ "int" ]
+    },
+    "identifiers": {
+      "parameters": [ "n" ],
+      "receiverName": "this"
+    },
+    "pre": [
+      {
+        "description": "Ensure that the dimension is positive and not too large to prevent excessive computation.",
+        "guard": {
+          "condition": "n > 0 && n <= 50",
+          "description": "n must be greater than 0 and at most 50"
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  },
+  {
+    "operation": {
+      "classname": "org.apache.commons.math3.optimization.direct.NelderMeadSimplex",
+      "name": "NelderMeadSimplex",
+      "parameterTypes": [ "int", "double" ]
+    },
+    "identifiers": {
+      "parameters": [ "n", "sideLength" ],
+      "receiverName": "this"
+    },
+    "pre": [
+      {
+        "description": "Ensure that the dimension is positive and not too large to prevent excessive computation.",
+        "guard": {
+          "condition": "n > 0 && n <= 50",
+          "description": "n must be greater than 0 and at most 50"
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  },
+  {
+    "operation": {
+      "classname": "org.apache.commons.math3.optimization.direct.NelderMeadSimplex",
+      "name": "NelderMeadSimplex",
+      "parameterTypes": [ "int", "double", "double", "double", "double" ]
+    },
+    "identifiers": {
+      "parameters": [ "n", "rho", "khi", "gamma", "sigma" ],
+      "receiverName": "this"
+    },
+    "pre": [
+      {
+        "description": "Ensure that the dimension is positive and not too large to prevent excessive computation.",
+        "guard": {
+          "condition": "n > 0 && n <= 50",
+          "description": "n must be greater than 0 and at most 50"
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  },
+  {
+    "operation": {
+      "classname": "org.apache.commons.math3.linear.MatrixUtils",
+      "name": "createRealMatrix",
+      "parameterTypes": [ "int", "int" ]
+    },
+    "identifiers": {
+      "parameters": [ "rows", "columns" ],
+      "receiverName": "receiver",
+      "returnName": "result"
+    },
+    "pre": [
+      {
+        "description": "The total number of matrix elements must not exceed 4096 to prevent excessive memory allocation.",
+        "guard": {
+          "condition": "rows * columns <= 4096",
+          "description": "rows * columns must be less than or equal to 4096"
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  },
+  {
+    "operation": {
+      "classname": "org.apache.commons.math3.linear.BlockFieldMatrix",
+      "name": "createMatrix",
+      "parameterTypes": [ "int", "int" ]
+    },
+    "identifiers": {
+      "parameters": [ "rowDimension", "columnDimension" ],
+      "receiverName": "target",
+      "returnName": "result"
+    },
+    "pre": [
+      {
+        "description": "Row dimension must be positive and at most 10000 to avoid excessive computation",
+        "guard": {
+          "condition": "rowDimension > 0 && rowDimension <= 10000",
+          "description": "rowDimension is in the range (0, 10000]"
+        }
+      },
+      {
+        "description": "Column dimension must be positive and at most 10000 to avoid excessive computation",
+        "guard": {
+          "condition": "columnDimension > 0 && columnDimension <= 10000",
+          "description": "columnDimension is in the range (0, 10000]"
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  },
+  {
+    "operation": {
+      "classname": "org.apache.commons.math3.util.ArithmeticUtils",
+      "name": "factorialDouble",
+      "parameterTypes": [ "int" ]
+    },
+    "identifiers": {
+      "parameters": [ "n" ],
+      "receiverName": "target",
+      "returnName": "result"
+    },
+    "pre": [
+      {
+        "description": "n must be non-negative and small enough to prevent excessive computation (n must be at most 170, the largest value for which n! is less than Double.MAX_VALUE)",
+        "guard": {
+          "condition": "n >= 0 && n <= 170",
+          "description": "n is between 0 and 170 (inclusive)"
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  }
+]
