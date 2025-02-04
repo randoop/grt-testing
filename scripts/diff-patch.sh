@@ -6,6 +6,7 @@
 # Restore the original build.xml before looking for a patch
 cp build-variants/build.xml build.xml
 cp build-variants/build-evosuite.xml build-evosuite.xml
+cp build-variants/pom.xml pom.xml
 
 # If a second argument is provided, apply the patch to build-evosuite.xml
 if [ -n "$2" ]; then
@@ -17,6 +18,14 @@ if [ -n "$2" ]; then
   else
     echo "No build-evosuite.patch found in build-variants/$2."
     echo "build-evosuite.xml was restored to its original version..."
+  fi
+  if [ -f "build-variants/$2/pom.patch" ]; then
+    echo "pom.patch found in build-variants/$2. Applying patch to pom.xml..."
+    patch pom.xml < "build-variants/$2/pom.patch" 1>/dev/null
+    rm -f pom.xml.orig
+  else
+    echo "No pom.patch found in build-variants/$2."
+    echo "pom.xml was restored to its original version..."
   fi
 # Check if a subject-program is provided
 elif [ -n "$1" ]; then

@@ -141,6 +141,7 @@ declare -A project_src=(
     ["nekomud-r16"]="/src/"
     ["shiro-core-1.2.3"]="/core/"
     ["slf4j-api-1.7.12"]="/slf4j-api/src/main/java/"
+    ["pmd-core-5.2.2"]="/pmd-core/src/main/java/"
 )
 
 # Map project names to their respective dependencies
@@ -172,6 +173,10 @@ if [[ "$SRC_JAR_NAME" == "easymock-3.2" ]]; then
     
     # Add the downloaded JAR files to JAR_PATHS
     JAR_PATHS="$JAR_PATHS:build/dexmaker-1.0.jar:build/objenesis-1.3.jar:build/cglib-nodep-2.2.2.jar"
+fi
+
+if [[ "$SRC_JAR_NAME" == "pmd-core-5.2.2" ]]; then
+    JAR_PATHS="$JAR_PATHS:../subject-programs/src/pmd-core-5.2.2/pmd-core/lib/asm-9.7.jar"
 fi
 
 if [[ "$SRC_JAR_NAME" == "JSAP-2.1" ]]; then
@@ -207,7 +212,6 @@ IFS=$OLDIFS
 
 # Install Jacoco 0.8.0 runtime
 mvn install:install-file -Dfile="build/org.jacoco.agent-0.8.0-runtime.jar" -DgroupId="org.jacoco" -DartifactId="org.jacoco.agent" -Dversion="0.8.0" -Dclassifier="runtime" -Dpackaging=jar 
-./generate-mvn-dependencies.sh
 
 # use junit 4.13 if using easymock-3.2
 if [[ "$SRC_JAR_NAME" == "easymock-3.2" ]]; then
@@ -250,13 +254,13 @@ EVOSUITE_COMMAND=(
     "-target" "$SRC_JAR"
     "-projectCP" "$JAR_PATHS:$EVOSUITE_JAR"
     "-Dsearch_budget=$TIME_LIMIT"
+    "-Drandom_seed=0"
+    "-Dsandbox_mode=OFF"
 )
-if [ "$SRC_JAR_NAME" == "JSAP-2.1" ]; then
-    EVOSUITE_COMMAND+=("-Dsandbox=false")
-fi
 
 echo "Modifying build-evosuite.xml for $SRC_JAR_NAME..."
 ./diff-patch.sh _ $SRC_JAR_NAME
+./generate-mvn-dependencies.sh
 
 echo "Check out include-major branch, if present..."
 # ignore error if branch doesn't exist, will stay on main branch
@@ -352,7 +356,7 @@ do
     mv target/jacoco.csv "$RESULT_DIR"
 
     # Restore pom.xml back to original
-    cp pom.xml.bak pom.xml && rm pom.xml.bak
+    cp build-variants/pom.xml pom.xml && rm pom.xml.bak
 
     echo "Instruction Coverage: $instruction_coverage%"
     echo "Branch Coverage: $branch_coverage%"

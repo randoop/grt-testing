@@ -1,0 +1,39 @@
+--- build-variants/pom.xml	2025-02-03 22:56:48.963596912 -0800
++++ pom.xml	2025-02-03 22:57:29.030799065 -0800
+@@ -43,6 +43,36 @@
+     <testSourceDirectory>evosuite-tests</testSourceDirectory>
+     <plugins>
+       <plugin>
++        <groupId>org.apache.maven.plugins</groupId>
++        <artifactId>maven-compiler-plugin</artifactId>
++        <version>3.8.1</version>
++        <executions>
++          <execution>
++            <id>default-compile</id>
++            <phase>compile</phase>  <!-- This binds the plugin to the compile phase -->
++            <goals>
++              <goal>compile</goal>
++            </goals>
++            <configuration>
++              <compilerArgs>
++                <arg>-Xbootclasspath/p:../subject-programs/src/tinySQL-2.26/src/com/sqlmagic/tinysql/jdk5.rt.jar</arg>
++              </compilerArgs>
++            </configuration>
++          </execution>
++          <execution>
++            <id>default-testCompile</id>
++            <phase>test-compile</phase>  <!-- This binds the plugin to the compile phase -->
++            <goals>
++              <goal>testCompile</goal>
++            </goals>
++            <configuration>
++              <source>1.8</source> 
++              <target>1.8</target>
++            </configuration>
++          </execution>
++        </executions>
++      </plugin>
++      <plugin>
+         <groupId>org.jacoco</groupId>
+         <artifactId>jacoco-maven-plugin</artifactId>
+         <version>0.8.0</version>
