@@ -44,34 +44,24 @@ fi
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 MAJOR_HOME=$(realpath "build/major/") # Major home directory, for mutation testing
 CURR_DIR=$(realpath "$(pwd)")
+RANDOOP_JAR=$(realpath "build/randoop-all-4.3.3.jar") # Randoop jar file
+JACOCO_AGENT_JAR=$(realpath "build/jacocoagent.jar") # For Bloodhound
+JACOCO_CLI_JAR=$(realpath "build/jacococli.jar") # For coverage report generation
+REPLACECALL_JAR=$(realpath "build/replacecall-4.3.3.jar") # For replacing undesired method calls
 
-# Link to Randoop jar file. Replace with different file if new GRT component is being tested.
-RANDOOP_JAR=/Users/yashmathur/Documents/Old/Research/randoopFinal/build/libs/randoop-all-4.3.3.jar
 
-# Link to jacoco agent jar. This is necessary for Bloodhound.
-JACOCO_AGENT_JAR=$(realpath "build/jacocoagent.jar")
+#===============================================================================
+# Command-line Arguments and Experiment Configuration
+#===============================================================================
+SECONDS_CLASS="2"      # Default seconds per class.
+                       # The paper runs Randoop with 4 different time limits:
+                       # 2 s/class, 10 s/class, 30 s/class, and 60 s/class.
 
-# Link to jacoco cli jar. This is necessary for coverage report generation.
-JACOCO_CLI_JAR=$(realpath "build/jacococli.jar")
+TOTAL_TIME=""          # Total experiment time, mutually exclusive with SECONDS_CLASS
+NUM_LOOP=1             # Number of experiment runs (10 in GRT paper)
+VERBOSE=0              # Verbose option
+REDIRECT=0             # Redirect output to mutation_output.txt
 
-# Link to replacecall jar. This is necessary for not calling certain undesired methods,
-# such as JOptionPane.showMessageDialog.
-REPLACECALL_JAR=$(realpath "build/replacecall-4.3.3.jar")
-
-# The paper runs Randoop with 4 different time limits. These are: 2 s/class, 10 s/class, 30 s/class, and 60 s/class.
-SECONDS_CLASS="2"
-
-# Total time to run the experiment. Mutually exclusive with SECONDS_CLASS.
-TOTAL_TIME=""
-
-# Number of times to run experiments (10 in GRT paper)
-NUM_LOOP=1
-
-# Verbose option
-VERBOSE=0
-
-# Redirect output to mutation_output.txt
-REDIRECT=0
 
 # Enforce that -t and -c aren't combined
 for arg in "$@"; do
@@ -253,7 +243,7 @@ declare -A command_suffix=(
     # Large inputs to perm take too much time
     ["commons-collections4-4.0"]="--specifications=project-specs/commons-collections4-4.0-specs.json"
     # Bad inputs generated and caused infinite loops
-    ["commons-math3-3.2"]="--specifications=project-specs/commons-math3-3.2-specs.json"
+    ["commons-math3-3.2"]="--usethreads=true"
 )
 
 RANDOOP_COMMAND="$RANDOOP_BASE_COMMAND ${command_suffix[$SRC_JAR_NAME]}"
@@ -357,7 +347,7 @@ do
 
         # Detective (Demand-Driven)
         if [[ ( "$RANDOOP_FEATURE" == "DETECTIVE" && "$ABLATION" != "true" ) || ( "$RANDOOP_FEATURE" != "DETECTIVE" && "$ABLATION" == "true" ) ]]; then
-            RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2 --demand-driven=true --demand-driven-logging=demand-driven.log"
+            RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2 --demand-driven=true"
         fi
 
         # GRT Fuzzing
@@ -430,28 +420,28 @@ do
 
         mv results/report.csv "$RESULT_DIR"
 
-#        echo
-#        echo "Running tests with mutation analysis..."
-#        if [[ "$VERBOSE" -eq 1 ]]; then
-#            echo command:
-#            echo "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
-#        fi
-#        echo
-#        "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
+        echo
+        echo "Running tests with mutation analysis..."
+        if [[ "$VERBOSE" -eq 1 ]]; then
+            echo command:
+            echo "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
+        fi
+        echo
+        "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
 
         # Calculate Mutation Score
-#        mutants_covered=$(awk -F, 'NR==2 {print $3}' results/summary.csv)
-#        mutants_killed=$(awk -F, 'NR==2 {print $4}' results/summary.csv)
-#        mutation_score=$(echo "scale=4; $mutants_killed / $mutants_covered * 100" | bc)
-#        mutation_score=$(printf "%.2f" "$mutation_score")
+        mutants_covered=$(awk -F, 'NR==2 {print $3}' results/summary.csv)
+        mutants_killed=$(awk -F, 'NR==2 {print $4}' results/summary.csv)
+        mutation_score=$(echo "scale=4; $mutants_killed / $mutants_covered * 100" | bc)
+        mutation_score=$(printf "%.2f" "$mutation_score")
 
         echo "Instruction Coverage: $instruction_coverage%"
         echo "Branch Coverage: $branch_coverage%"
-#        echo "Mutation Score: $mutation_score%"
+        echo "Mutation Score: $mutation_score%"
 
         mv results/summary.csv "$RESULT_DIR"
 
-        row="$FEATURE_NAME,$(basename "$SRC_JAR"),$TIME_LIMIT,$RANDOM_SEED,$instruction_coverage%,$branch_coverage%"
+        row="$FEATURE_NAME,$(basename "$SRC_JAR"),$TIME_LIMIT,$RANDOM_SEED,$instruction_coverage%,$branch_coverage%,$mutation_score%"
         # info.csv contains a record of each pass.
         echo -e "$row" >> results/info.csv
 
@@ -459,19 +449,18 @@ do
         echo "Copying test suites to results directory..."
         cp -r "$TEST_DIRECTORY" "$RESULT_DIR"
 
-#        if [[ "$REDIRECT" -eq 1 ]]; then
-#            echo "Move mutation_output to results directory..."
-#            mv mutation_output.txt "$RESULT_DIR"
-#            exec 1>&3 2>&4
-#            exec 3>&- 4>&-
-#        fi
+        if [[ "$REDIRECT" -eq 1 ]]; then
+            echo "Move mutation_output to results directory..."
+            mv mutation_output.txt "$RESULT_DIR"
+            exec 1>&3 2>&4
+            exec 3>&- 4>&-
+        fi
     done
 
     echo "Results will be saved in $RESULT_DIR"
     set +e
     # Move all output files into the results directory
     # suppression.log may be in one of two locations depending on if using include-major branch
-    mv demand-driven.log results
     mv "$JAVA_SRC_DIR"/suppression.log "$RESULT_DIR" 2>/dev/null
     mv suppression.log "$RESULT_DIR" 2>/dev/null
     mv major.log mutants.log "$RESULT_DIR"
