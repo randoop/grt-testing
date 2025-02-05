@@ -13,8 +13,8 @@ if [ ! -f "$POM_FILE" ]; then
 fi
 
 # Backup the pom.xml before modifying it
-cp "$POM_FILE" "$POM_FILE.bak"
-echo "Backup of pom.xml created at $POM_FILE.bak"
+cp "$POM_FILE" "build/$POM_FILE.bak"
+echo "Backup of pom.xml created at build/$POM_FILE.bak"
 
 # Define mappings from jar filenames to groupId and artifactId
 declare -A groupIdMap

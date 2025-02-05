@@ -63,7 +63,7 @@
                showoutput="false"
                mutationAnalysis="true"
                serializedMapsFile="results/preprocessing.ser"
-               mutantsLogFile="mutants.log"
+               mutantsLogFile="build/mutants.log"
                summaryFile="results/summary.csv"
                mutantDetailsFile="results/details.csv"
                covMapFile="results/covMap.csv"

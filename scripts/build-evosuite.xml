@@ -41,9 +41,12 @@
         <javac includeantruntime="true" 
                srcdir="${src}"
                destdir="build/bin"
-               debug="yes">
+               debug="yes"
+               source="1.5"
+               target="1.5">
             <classpath location="${major.jar}"/>
             <compilerarg value="${plugin}"/>
+            <compilerarg value="-Xbootclasspath/p:../subject-programs/src/tinySQL-2.26/src/com/sqlmagic/tinysql/jdk5.rt.jar"/>
         </javac>
     </target>
 
@@ -63,7 +66,7 @@
                showoutput="false"
                mutationAnalysis="true"
                serializedMapsFile="results/preprocessing.ser"
-               mutantsLogFile="mutants.log"
+               mutantsLogFile="build/mutants.log"
                summaryFile="results/summary.csv"
                mutantDetailsFile="results/details.csv"
                covMapFile="results/covMap.csv"

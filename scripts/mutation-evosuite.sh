@@ -134,7 +134,9 @@ declare -A project_src=(
     ["commons-primitives-1.0"]="/src/java/"
     ["dcParseArgs-10.2008"]="/src/"
     ["easymock-3.2"]="/easymock/src/main/java/"
+    ["fixsuite-r48"]="/library/"
     ["javassist-3.19"]="/src/main/"
+    ["jcommander-1.35"]="/src/main/java"
     ["jdom-1.0"]="/src/"
     ["JSAP-2.1"]="/src/java/"
     ["jvc-1.1"]="/src/"
@@ -245,6 +247,7 @@ echo "TIME_LIMIT: $TIME_LIMIT seconds"
 echo
 
 rm -rf evosuite-tests && mkdir -p evosuite-tests && rm -rf evosuite-report && mkdir -p evosuite-report
+rm -rf target && mkdir -p target
 
 # Construct the command without a colon after JAR_PATHS
 EVOSUITE_COMMAND="java -jar $EVOSUITE_JAR -target $SRC_JAR -projectCP $JAR_PATHS:$EVOSUITE_JAR -Dsearch_budget=$TIME_LIMIT"
@@ -317,6 +320,10 @@ do
     echo
     "$MAJOR_HOME"/bin/ant -buildfile build-evosuite.xml -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" compile.tests
 
+    mv major.log build/major.log 
+    mv mutants.log build/mutants.log
+    mv suppression.log build/suppression.log
+
     echo
     echo "Running tests with mutation analysis..."
     if [[ "$VERBOSE" -eq 1 ]]; then
@@ -356,7 +363,7 @@ do
     mv target/jacoco.csv "$RESULT_DIR"
 
     # Restore pom.xml back to original
-    cp build-variants/pom.xml pom.xml && rm pom.xml.bak
+    cp build-variants/pom.xml pom.xml && rm -f build/pom.xml.bak
 
     echo "Instruction Coverage: $instruction_coverage%"
     echo "Branch Coverage: $branch_coverage%"
@@ -384,8 +391,8 @@ do
     # Move all output files into the results directory
     # suppression.log may be in one of two locations depending on if using include-major branch
     mv "$JAVA_SRC_DIR"/suppression.log "$RESULT_DIR" 2>/dev/null
-    mv suppression.log "$RESULT_DIR" 2>/dev/null
-    mv major.log mutants.log "$RESULT_DIR"
+    mv build/suppression.log "$RESULT_DIR" 2>/dev/null
+    mv build/major.log build/mutants.log "$RESULT_DIR"
     (cd results; mv covMap.csv details.csv testMap.csv preprocessing.ser ../"$RESULT_DIR")
     set -e
 done
