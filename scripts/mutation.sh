@@ -47,7 +47,6 @@ CURR_DIR=$(realpath "$(pwd)")
 
 # Link to Randoop jar file. Replace with different file if new GRT component is being tested.
 RANDOOP_JAR=/Users/yashmathur/Documents/Old/Research/randoopFinal/build/libs/randoop-all-4.3.3.jar
-# RANDOOP_JAR=/Users/yashmathur/Documents/researchNew/randoop/build/libs/randoop-all-4.3.3.jar
 
 # Link to jacoco agent jar. This is necessary for Bloodhound.
 JACOCO_AGENT_JAR=$(realpath "build/jacocoagent.jar")
@@ -227,8 +226,7 @@ randoop.main.Main gentests \
 --time-limit=$TIME_LIMIT \
 --deterministic=false \
 --no-error-revealing-tests=true \
---randomseed=0 \
---log=randoop.log"
+--randomseed=0"
 
 # Add special command suffixes for certain projects.
 # TODO: Add more special cases as needed
@@ -255,7 +253,7 @@ declare -A command_suffix=(
     # Large inputs to perm take too much time
     ["commons-collections4-4.0"]="--specifications=project-specs/commons-collections4-4.0-specs.json"
     # Bad inputs generated and caused infinite loops
-    ["commons-math3-3.2"]="--usethreads=true"
+    ["commons-math3-3.2"]="--specifications=project-specs/commons-math3-3.2-specs.json"
 )
 
 RANDOOP_COMMAND="$RANDOOP_BASE_COMMAND ${command_suffix[$SRC_JAR_NAME]}"
