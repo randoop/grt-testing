@@ -1,38 +1,11 @@
-You may use the script 'get-all-subject-src.sh' in this directory to obtain
-the subject program source files.  They will be created in a subdirectory
-of the current directory named 'src'.  They are slightly different than the
-originals (whose location appears below) because these projects are several
-years old and in some cases we have made modifications to get them to
-compile correctly.
+This file gives instructions about how to build the subject programs from
+source.
+If you don't need to do that, you can ignore this file.
 
-If you wish to only get the source for a single subject program, the name of its
-source repository is test directory name as noted below, prepended with 'grt-'.
-For example, to get the source for bcel-5.2:
-```
-  mkdir -p src
-  cd src
-  git clone git@github.com:randoop/grt-bcel-5.2 bcel-5.2
-  cd bcel-5.2
-```
-
-After cloning the source, follow the build instructions given below.
-You must install *both* Java 8 and Java 11.
-Java 8 should be the default (see the output of `java -version`), and 
-environment variable `JAVA_HOME` should be set; for example:
-```
-  export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
-```
-
-You must define two scripts or aliases `usejdk8` and `usejdk11` that switch
-between Java 8 and Java 11.  One way to do this is to make JAVA_HOME refer
-to a symbolic link, and put $JAVA_HOME/bin on your PATH.  Then, the two
-scripts just change the symbolic link.
-```
-export JAVA_HOME=$HOME/java/jdk
-alias usejdk8='(cd ~/java && rm -f jdk && ln -s jdk8 jdk)'
-alias usejdk11='(cd ~/java && rm -f jdk && ln -s jdk11 jdk)'
-```
-Other implementations of `usejdk8` and `usejdk11` are possible.
+First, clone the source by running `../scripts/get-all-subject-src.sh`,
+which leaves them in the `src/` directory.  They are slightly different
+than the originals (whose location appears below) if we made modifications
+to get them to compile.
 
 
 Maven (mvn) builds
@@ -78,7 +51,7 @@ jvc-1.1:                  ant tools       (result is in dist subdir)
 nekomud-r16:              ant             (result is in dist subdir)
 pmd-core-5.2.2:           cd pmd-core; mvn -B clean package -Dmaven.test.skip -Dmaven.javadoc.skip -DjavaccBuildNotRequired
 sat4j.core-2.3.5:         (uses mvn)      (result is in org.sat4j.core/target)
-shiro-root-1.2.3:         (uses mvn - but 'cd core' first)
+shiro-core-1.2.3:         (uses mvn - but 'cd core' first)
 slf4j-api-1.7.12:         (uses mvn - but 'cd slf4j-api' first)
 tinySQL-2.26:             ./build.sh      (result is in classes subdir)
 
