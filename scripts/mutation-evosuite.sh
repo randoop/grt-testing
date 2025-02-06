@@ -135,6 +135,7 @@ declare -A project_src=(
     ["dcParseArgs-10.2008"]="/src/"
     ["easymock-3.2"]="/easymock/src/main/java/"
     ["fixsuite-r48"]="/library/"
+    ["hamcrest-core-1.3"]="/hamcrest-core/src/main/java/"
     ["javassist-3.19"]="/src/main/"
     ["jcommander-1.35"]="/src/main/java"
     ["jdom-1.0"]="/src/"
@@ -165,6 +166,9 @@ CLASSPATH=${project_deps[$SRC_JAR_NAME]}
 
 # Ensure the directory contains the JAR files
 JAR_PATHS="build/evosuite-standalone-runtime-1.2.0.jar:evosuite-tests/:build/junit-4.12.jar:build/hamcrest-core-1.3.jar"
+if [[ "$SRC_JAR_NAME" == "hamcrest-core-1.3" ]]; then
+    JAR_PATHS=$(echo "$JAR_PATHS" | sed 's|:build/hamcrest-core-1.3.jar||')
+fi
 JAR_PATHS="$JAR_PATHS:$SRC_JAR"
 
 if [[ "$SRC_JAR_NAME" == "easymock-3.2" ]]; then
@@ -261,6 +265,10 @@ EVOSUITE_COMMAND=(
     "-Dsandbox_mode=OFF"
 )
 
+if [[ "$SRC_JAR_NAME" == "easymock-3.2" ]]; then
+    EVOSUITE_COMMAND+=("-Dreset_static_field_gets=true")
+fi
+
 echo "Modifying build-evosuite.xml for $SRC_JAR_NAME..."
 ./diff-patch.sh _ $SRC_JAR_NAME
 ./generate-mvn-dependencies.sh
@@ -292,6 +300,7 @@ do
     echo
     TEST_DIRECTORY="$CURR_DIR/evosuite-tests/"
 
+    echo "${EVOSUITE_COMMAND[@]}"
     "${EVOSUITE_COMMAND[@]}"
 
     if [[ "$SRC_JAR_NAME" == "JSAP-2.1" ]]; then

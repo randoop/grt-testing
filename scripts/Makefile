@@ -9,6 +9,7 @@ all: \
     build/evosuite-1.2.0.jar \
     build/evosuite-standalone-runtime-1.2.0.jar \
     build/junit-4.12.jar \
+	build/junit-4.13.2.jar \
     build/hamcrest-core-1.3.jar \
     build/major/bin/ant.m \
     results
@@ -41,6 +42,10 @@ build/evosuite-standalone-runtime-1.2.0.jar:
 build/junit-4.12.jar:
 	wget https://repo1.maven.org/maven2/junit/junit/4.12/junit-4.12.jar
 	mv junit-4.12.jar build/
+
+build/junit-4.13.2.jar:
+	wget https://repo1.maven.org/maven2/junit/junit/4.13.2/junit-4.13.2.jar
+	mv junit-4.13.2.jar build/
 
 build/hamcrest-core-1.3.jar:
 	cp ../subject-programs/hamcrest-core-1.3.jar build/
