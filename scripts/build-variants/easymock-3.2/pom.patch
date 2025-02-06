@@ -1,0 +1,19 @@
+--- build-variants/pom.xml	2025-02-05 23:04:24.091072806 -0800
++++ pom.xml	2025-02-05 23:05:02.155274335 -0800
+@@ -7,7 +7,7 @@
+   <version>0.0.1-SNAPSHOT</version>
+ 
+   <properties>
+-    <junit.version>4.12</junit.version>
++    <junit.version>4.13.2</junit.version>
+     <main.source.dir>${env.MAIN_SOURCE_DIR}</main.source.dir>
+   </properties>
+ 
+@@ -86,6 +86,7 @@
+           <systemPropertyVariables>
+             <jacoco-agent.destfile>${project.build.directory}/coverage-reports/jacoco-ut.exec</jacoco-agent.destfile>
+           </systemPropertyVariables>
++          <argLine>-ea</argLine>
+           <testFailureIgnore>true</testFailureIgnore>
+         </configuration>
+       </plugin>

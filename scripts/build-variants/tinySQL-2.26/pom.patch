@@ -1,5 +1,5 @@
---- build-variants/pom.xml	2025-02-03 22:56:48.963596912 -0800
-+++ pom.xml	2025-02-03 22:57:29.030799065 -0800
+--- build-variants/pom.xml	2025-02-05 23:04:24.091072806 -0800
++++ pom.xml	2025-02-05 23:07:18.889997733 -0800
 @@ -43,6 +43,36 @@
      <testSourceDirectory>evosuite-tests</testSourceDirectory>
      <plugins>

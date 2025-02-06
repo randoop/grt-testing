@@ -252,6 +252,8 @@ echo
 
 rm -rf evosuite-tests && mkdir -p evosuite-tests && rm -rf evosuite-report && mkdir -p evosuite-report
 rm -rf target && mkdir -p target
+mkdir -p target/coverage-reports
+touch target/coverage-reports/jacoco-ut.exec
 
 # Construct the command without a colon after JAR_PATHS
 EVOSUITE_COMMAND="java -jar $EVOSUITE_JAR -target $SRC_JAR -projectCP $JAR_PATHS:$EVOSUITE_JAR -Dsearch_budget=$TIME_LIMIT"
@@ -262,7 +264,6 @@ EVOSUITE_COMMAND=(
     "-projectCP" "$JAR_PATHS:$EVOSUITE_JAR"
     "-Dsearch_budget=$TIME_LIMIT"
     "-Drandom_seed=0"
-    "-Dsandbox_mode=OFF"
 )
 
 if [[ "$SRC_JAR_NAME" == "easymock-3.2" ]]; then
@@ -355,7 +356,7 @@ do
         echo "mvn clean test -Dmain.source.dir="$JAVA_SRC_DIR""
     fi
     echo
-    mvn clean test jacoco:restore-instrumented-classes jacoco:report -Dmain.source.dir="$JAVA_SRC_DIR"
+    mvn test jacoco:restore-instrumented-classes jacoco:report -Dmain.source.dir="$JAVA_SRC_DIR"
 
     # Calculate Instruction Coverage
     inst_missed=$(awk -F, 'NR>1 {sum+=$4} END {print sum}' target/jacoco.csv)
