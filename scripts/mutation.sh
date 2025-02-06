@@ -3,29 +3,40 @@
 #===============================================================================
 # Overview
 #===============================================================================
-# For documentation of how to run this script, see file `reproinstructions.txt`.
+
+# For documentation of how to run this script, see file `mutation-repro.md`.
 #
-# This script uses Randoop to generate test suites for subject programs and
-# performs mutation testing to determine how Randoop features affect
-# various coverage metrics including coverage and mutation score.
-#
-# - Randoop's test suites are created in a "build/test*" subdirectory.
-# - Compiled tests and code go in "build/bin".
-# - Various mutants of the source project are generated using Major and tested.
+# This script uses Randoop to:
+#  * generate test suites for subject programs and
+#  * performs mutation testing to determine how Randoop features affect
+#    various coverage metrics including coverage and mutation score
+#    (mutants are generated using Major).
 #
 # Each experiment can run multiple times, with a configurable time (in
-# seconds per class or total time). Various stats of each iteration go to
-# "results/info.csv". Everything else specific to the most recent iteration
-# goes to "results/".
+# seconds per class or total time).
+#
+# Directories and files:
+# - `build/test*`: Randoop-created test suites.
+# - `build/bin`: Compiled tests and code.
+# - `results/info.csv`: statistics about each iteration.
+# - 'results/`: everything else specific to the most recent iteration.
 
 
+# Fail this script on errors.
 set -e
 set -o pipefail
+
+# Check for Java 8
+JAVA_VERSION=$(java -version 2>&1 | awk -F'[._"]' 'NR==1{print ($2 == "version" && $3 < 9) ? $4 : $3}')
+if [ "$JAVA_VERSION" -ne 8 ]; then
+  echo "Requires Java 8. Please use Java 8 to proceed."
+  exit 1
+fi
 
 USAGE_STRING="usage: mutation.sh [-h] [-v] [-r] [-t total_time] [-c time_per_class] <test case name>"
 
 if [ $# -eq 0 ]; then
-    echo $0: $USAGE_STRING
+    echo "$0: $USAGE_STRING"
     exit 1
 fi
 
@@ -75,7 +86,7 @@ done
 while getopts ":hvrt:c:" opt; do
   case ${opt} in
     h )
-      echo $USAGE_STRING
+      echo "$USAGE_STRING"
       exit 0
       ;;
     v )
@@ -92,12 +103,12 @@ while getopts ":hvrt:c:" opt; do
       ;;
     \? )
       echo "Invalid option: -$OPTARG" >&2
-      echo $USAGE_STRING
+      echo "$USAGE_STRING"
       exit 1
       ;;
     : )
       echo "Option -$OPTARG requires an argument." >&2
-      echo $USAGE_STRING
+      echo "$USAGE_STRING"
       exit 1
       ;;
   esac
@@ -106,10 +117,10 @@ done
 shift $((OPTIND -1))
 
 # Name of the subject program
-SRC_JAR_NAME="$1"
+SUBJECT_PROGRAM="$1"
 
 # Select the ant executable based on the subject program
-if [ "$SRC_JAR_NAME" = "ClassViewer-5.0.5b" ] || [ "$SRC_JAR_NAME" = "jcommander-1.35" ] || [ "$SRC_JAR_NAME" = "fixsuite-r48" ]; then
+if [ "$SUBJECT_PROGRAM" = "ClassViewer-5.0.5b" ] || [ "$SUBJECT_PROGRAM" = "jcommander-1.35" ] || [ "$SUBJECT_PROGRAM" = "fixsuite-r48" ]; then
     ANT="ant.m"
     chmod +x "$MAJOR_HOME"/bin/ant.m
 else
@@ -123,10 +134,10 @@ echo
 # Source Code Paths and Dependencies
 #===============================================================================
 # Path to the base directory of the source code
-SRC_BASE_DIR="$(realpath "$SCRIPT_DIR/../subject-programs/src/$SRC_JAR_NAME")"
+SRC_BASE_DIR="$(realpath "$SCRIPT_DIR/../subject-programs/src/$SUBJECT_PROGRAM")"
 
 # Path to the jar file of the subject program
-SRC_JAR=$(realpath "$SCRIPT_DIR/../subject-programs/$SRC_JAR_NAME.jar")
+SRC_JAR=$(realpath "$SCRIPT_DIR/../subject-programs/$SUBJECT_PROGRAM.jar")
 
 # Number of classes in given jar file.
 NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
@@ -159,7 +170,7 @@ declare -A project_src=(
     ["shiro-core-1.2.3"]="/core/"
     ["slf4j-api-1.7.12"]="/slf4j-api"
 )
-JAVA_SRC_DIR=$SRC_BASE_DIR${project_src[$SRC_JAR_NAME]}
+JAVA_SRC_DIR=$SRC_BASE_DIR${project_src[$SUBJECT_PROGRAM]}
 
 # Map project names to their respective dependencies
 declare -A project_deps=(
@@ -173,7 +184,7 @@ declare -A project_deps=(
 )
 #   ["hamcrest-core-1.3"]="$SRC_BASE_DIR/lib/"  this one needs changes?
 
-CLASSPATH=${project_deps[$SRC_JAR_NAME]}
+CLASSPATH=${project_deps[$SUBJECT_PROGRAM]}
 
 LIB_ARG=""
 if [[ $CLASSPATH ]]; then
@@ -191,7 +202,7 @@ fi
 # Replacecall Setup
 #===============================================================================
 # Path to the replacement file for replacecall
-REPLACEMENT_FILE_PATH="project-config/$SRC_JAR_NAME/replacecall-replacements.txt"
+REPLACEMENT_FILE_PATH="project-config/$SUBJECT_PROGRAM/replacecall-replacements.txt"
 
 # Configure method call replacements to avoid undesired behaviors during test
 # generation.
@@ -200,7 +211,7 @@ declare -A replacement_files=(
      # Do not wait for user input
      ["jcommander-1.35"]="=--replacement_file=$REPLACEMENT_FILE_PATH"
 )
-REPLACECALL_COMMAND="$REPLACECALL_JAR${replacement_files[$SRC_JAR_NAME]}"
+REPLACECALL_COMMAND="$REPLACECALL_JAR${replacement_files[$SUBJECT_PROGRAM]}"
 
 
 #===============================================================================
@@ -246,18 +257,20 @@ declare -A command_suffix=(
     ["commons-math3-3.2"]="--usethreads=true"
 )
 
-RANDOOP_COMMAND="$RANDOOP_BASE_COMMAND ${command_suffix[$SRC_JAR_NAME]}"
+RANDOOP_COMMAND="$RANDOOP_BASE_COMMAND ${command_suffix[$SUBJECT_PROGRAM]}"
 
 
 #===============================================================================
 # Build Files Preparation
 #===============================================================================
-echo "Modifying build.xml for $SRC_JAR_NAME..."
-./apply-build-patch.sh $SRC_JAR_NAME
 
-echo "Check out include-major branch, if present..."
-# ignore error if branch doesn't exist, will stay on main branch
-(cd  $JAVA_SRC_DIR; git checkout include-major 2>/dev/null) || true
+echo "Modifying build.xml for $SUBJECT_PROGRAM..."
+./apply-build-patch.sh "$SUBJECT_PROGRAM"
+
+if git show-ref --quiet refs/heads/include-major ; then
+    echo "Checking out include-major branch..."
+    (cd "$JAVA_SRC_DIR" && git checkout include-major)
+fi
 echo
 
 # Output file for runtime information
@@ -271,6 +284,7 @@ fi
 #===============================================================================
 # Randoop Features
 #===============================================================================
+
 # The feature names must not contain whitespace.
 ALL_RANDOOP_FEATURES=("BASELINE" "BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
 # The different features of Randoop to use. Adjust according to the features you are testing.
@@ -293,6 +307,7 @@ done
 #===============================================================================
 # Run Randoop and Mutation Testing
 #===============================================================================
+
 # shellcheck disable=SC2034 # i counts iterations but is not otherwise used.
 for i in $(seq 1 $NUM_LOOP)
 do
@@ -371,7 +386,7 @@ do
         # Mutation Testing
         #===============================================================================
 
-        RESULT_DIR="results/$(date +%Y%m%d-%H%M%S)-$FEATURE_NAME-$SRC_JAR_NAME-Seed-$RANDOM_SEED"
+        RESULT_DIR="results/$(date +%Y%m%d-%H%M%S)-$FEATURE_NAME-$SUBJECT_PROGRAM-Seed-$RANDOM_SEED"
         mkdir -p "$RESULT_DIR"
 
         echo
@@ -458,14 +473,12 @@ do
     done
 
     echo "Results will be saved in $RESULT_DIR"
-    set +e
-    # Move all output files into the results directory
+    # Move all output files into the results/ directory.
     # suppression.log may be in one of two locations depending on if using include-major branch
-    mv "$JAVA_SRC_DIR"/suppression.log "$RESULT_DIR" 2>/dev/null
-    mv suppression.log "$RESULT_DIR" 2>/dev/null
+    mv "$JAVA_SRC_DIR"/suppression.log "$RESULT_DIR" 2>/dev/null || true
+    mv suppression.log "$RESULT_DIR" 2>/dev/null || true
     mv major.log mutants.log "$RESULT_DIR"
     (cd results; mv covMap.csv details.csv testMap.csv preprocessing.ser jacoco.exec ../"$RESULT_DIR")
-    set -e
 done
 
 
@@ -479,4 +492,4 @@ echo "Restoring build.xml"
 
 echo "Restoring $JAVA_SRC_DIR to main branch"
 # switch to main branch (may already be there)
-(cd  $JAVA_SRC_DIR; git checkout main 1>/dev/null)
+(cd "$JAVA_SRC_DIR"; git checkout main 1>/dev/null)

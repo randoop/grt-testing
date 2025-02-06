@@ -47,14 +47,8 @@
             <fileset dir="${src}/target/classes"/>
         </copy>
 
-        <exec executable="mv">
-            <arg value="${src}/major.log"/>
-            <arg value="./"/>
-        </exec>
-        <exec executable="mv">
-            <arg value="${src}/mutants.log"/>
-            <arg value="./"/>
-        </exec>
+        <move file="${src}/major.log" tofile="./"/>
+        <move file="${src}/mutants.log" tofile="./"/>
     </target>
 
 <!-- Target to compile the test suite -->
@@ -96,7 +90,7 @@
                     showoutput="true"
                     haltonfailure="false"
                     fork="true" forkmode="once">
-                <formatter type="brief" usefile="false"/>
+                <formatter type="plain" usefile="false"/>
                 <classpath path="build/bin"/>
 
                 <batchtest fork="no">
