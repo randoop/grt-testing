@@ -1,4 +1,4 @@
-You may use the script 'get-all-subject-src.sh' in this directory to obtain
+You may use the script `get-all-subject-src.sh` in this directory to obtain
 the subject program source files.  They will be created in a subdirectory
 of the current directory named 'src'.  They are slightly different than the
 originals (whose location appears below) because these projects are several
