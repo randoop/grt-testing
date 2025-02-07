@@ -15,10 +15,25 @@ For example, to get the source for bcel-5.2:
   cd bcel-5.2
 ```
 
-After cloning the source, follow the build instructions given below.  In
-almost all cases, Java 8 is required to build. Also, the environment
-variable JAVA_HOME should be set; for example:
+After cloning the source, follow the build instructions given below.
+You must install *both* Java 8 and Java 11.
+Java 8 should be the default (see the output of `java -version`), and 
+environment variable `JAVA_HOME` should be set; for example:
+```
   export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+```
+
+You must define two scripts or aliases `usejdk8` and `usejdk11` that switch
+between Java 8 and Java 11.  One way to do this is to make JAVA_HOME refer
+to a symbolic link, and put $JAVA_HOME/bin on your PATH.  Then, the two
+scripts just change the symbolic link.
+```
+export JAVA_HOME=$HOME/java/jdk
+alias usejdk8='(cd ~/java && rm -f jdk && ln -s jdk8 jdk)'
+alias usejdk11='(cd ~/java && rm -f jdk && ln -s jdk11 jdk)'
+```
+Other implementations of `usejdk8` and `usejdk11` are possible.
+
 
 Maven (mvn) builds
 ------------------
