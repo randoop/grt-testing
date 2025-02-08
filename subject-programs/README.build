@@ -17,7 +17,7 @@ For example, to get the source for bcel-5.2:
 
 After cloning the source, follow the build instructions given below.
 You must install *both* Java 8 and Java 11.
-Java 8 should be the default (see the output of `java -version`), and 
+Java 8 should be the default (see the output of `java -version`), and
 environment variable `JAVA_HOME` should be set; for example:
 ```
   export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
