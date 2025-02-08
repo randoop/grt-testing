@@ -365,7 +365,9 @@ do
             RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2 --constant-mining=true"
         fi
 
+        usejdk11
         $RANDOOP_COMMAND_2
+        usejdk8
 
         #===============================================================================
         # Mutation Testing
