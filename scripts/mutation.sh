@@ -42,15 +42,8 @@ fi
 
 
 #===============================================================================
-# Environment Variables
+# Environment Setup
 #===============================================================================
-
-# Do not proceed if Java version is not 8
-JAVA_VERSION=$(java -version 2>&1 | awk -F'[._"]' 'NR==1{print ($2 == "version" && $3 < 9) ? $4 : $3}')
-if [ "$JAVA_VERSION" -ne 8 ]; then
-    echo "Requires Java 8. Please use Java 8 to proceed."
-    exit 1
-fi
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 MAJOR_HOME=$(realpath "build/major/") # Major home directory, for mutation testing
@@ -62,7 +55,7 @@ REPLACECALL_JAR=$(realpath "build/replacecall-4.3.3.jar") # For replacing undesi
 
 
 #===============================================================================
-# Command-line Arguments and Experiment Configuration
+# Argument Parsing & Experiment Configuration
 #===============================================================================
 SECONDS_CLASS="2"      # Default seconds per class.
                        # The paper runs Randoop with 4 different time limits:
@@ -131,7 +124,7 @@ echo "Running mutation test on $1"
 echo
 
 #===============================================================================
-# Source Code Paths and Dependencies
+# Project Paths & Dependencies
 #===============================================================================
 # Path to the base directory of the source code
 SRC_BASE_DIR="$(realpath "$SCRIPT_DIR/../subject-programs/src/$SUBJECT_PROGRAM")"
@@ -199,7 +192,7 @@ fi
 
 
 #===============================================================================
-# Replacecall Setup
+# Method Call Replacement Setup
 #===============================================================================
 # Path to the replacement file for replacecall
 REPLACEMENT_FILE_PATH="project-config/$SUBJECT_PROGRAM/replacecall-replacements.txt"
@@ -215,7 +208,7 @@ REPLACECALL_COMMAND="$REPLACECALL_JAR${replacement_files[$SUBJECT_PROGRAM]}"
 
 
 #===============================================================================
-# Base Randoop Command
+# Randoop Command Configuration
 #===============================================================================
 RANDOOP_BASE_COMMAND="java \
 -Xbootclasspath/a:$JACOCO_AGENT_JAR:$REPLACECALL_JAR \
@@ -261,7 +254,7 @@ RANDOOP_COMMAND="$RANDOOP_BASE_COMMAND ${command_suffix[$SUBJECT_PROGRAM]}"
 
 
 #===============================================================================
-# Build Files Preparation
+# Build System Preparation
 #===============================================================================
 
 echo "Modifying build.xml for $SUBJECT_PROGRAM..."
@@ -282,7 +275,7 @@ fi
 
 
 #===============================================================================
-# Randoop Features
+# Randoop Feature Selection
 #===============================================================================
 
 # The feature names must not contain whitespace.
@@ -305,7 +298,7 @@ done
 
 
 #===============================================================================
-# Run Randoop and Mutation Testing
+# Test Generation & Execution
 #===============================================================================
 
 # shellcheck disable=SC2034 # i counts iterations but is not otherwise used.
@@ -383,10 +376,10 @@ do
         $RANDOOP_COMMAND_2
 
         #===============================================================================
-        # Mutation Testing
+        # Coverage & Mutation Analysis
         #===============================================================================
 
-        RESULT_DIR="results/$(date +%Y%m%d-%H%M%S)-$FEATURE_NAME-$SUBJECT_PROGRAM-Seed-$RANDOM_SEED"
+        RESULT_DIR="results/$(date +%Y%m%d-%H%M%S)-$FEATURE_NAME-$SUBJECT_PROGRAM"
         mkdir -p "$RESULT_DIR"
 
         echo
@@ -456,7 +449,7 @@ do
 
         mv results/summary.csv "$RESULT_DIR"
 
-        row="$FEATURE_NAME,$(basename "$SRC_JAR"),$TIME_LIMIT,$RANDOM_SEED,$instruction_coverage%,$branch_coverage%,$mutation_score%"
+        row="$FEATURE_NAME,$(basename "$SRC_JAR"),$TIME_LIMIT,0,$instruction_coverage%,$branch_coverage%,$mutation_score%"
         # info.csv contains a record of each pass.
         echo -e "$row" >> results/info.csv
 
@@ -483,7 +476,7 @@ done
 
 
 #===============================================================================
-# Restore Build
+# Build System Cleanup
 #===============================================================================
 echo
 echo "Restoring build.xml"
