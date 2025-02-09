@@ -24,6 +24,7 @@
 
 3. Obtain the mutation programs, some dependencies, and the source code for the subject programs:
    ```
+   cd scripts
    make
    ```
 
@@ -34,9 +35,14 @@
    cd build
    git clone git@github.com:randoop/randoop.git
    cd randoop
-   ./gradlew jar
+   ./gradlew shadowJar
    mv -f build/libs/randoop-all-4.3.3.jar build/libs/replacecall-4.3.3.jar ../build/
    usejdk8
    ```
-
    You may delete the Randoop repository after the above instructions.
+
+5. To get all subject programs, run:
+   ```
+   cd ../..
+   ./get-all-subject-src.sh
+   ```

@@ -33,7 +33,17 @@ if [ "$JAVA_VERSION" -ne 8 ]; then
   exit 1
 fi
 
-make
+USAGE_STRING="usage: mutation.sh [-h] [-v] [-r] [-t total_time] [-c time_per_class] <test case name>"
+
+if [ $# -eq 0 ]; then
+    echo "$0: $USAGE_STRING"
+    exit 1
+fi
+
+
+#===============================================================================
+# Environment Setup
+#===============================================================================
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 MAJOR_HOME=$(realpath "build/major/") # Major home directory, for mutation testing
@@ -44,7 +54,7 @@ JACOCO_CLI_JAR=$(realpath "build/jacococli.jar") # For coverage report generatio
 REPLACECALL_JAR=$(realpath "build/replacecall-4.3.3.jar") # For replacing undesired method calls
 
 #===============================================================================
-# Command-line Arguments and Experiment Configuration
+# Argument Parsing & Experiment Configuration
 #===============================================================================
 SECONDS_CLASS="2"      # Default seconds per class.
                        # The paper runs Randoop with 4 different time limits:
@@ -53,7 +63,7 @@ SECONDS_CLASS="2"      # Default seconds per class.
 NUM_LOOP=1             # Number of experiment runs (10 in GRT paper)
 
 #===============================================================================
-# Source Code Paths and Dependencies
+# Project Paths & Dependencies
 #===============================================================================
 
 # Path to the base directory of the source code
@@ -92,7 +102,7 @@ CLASSPATH="$(echo "$JAR_DIR"/*.jar | tr ' ' ':')"
 
 
 #===============================================================================
-# Randoop Features
+# Randoop Feature Selection
 #===============================================================================
 
 # The feature names must not contain whitespace.
@@ -115,7 +125,7 @@ done
 
 
 #===============================================================================
-# Run Randoop and Mutation Testing
+# Test Generation & Execution
 #===============================================================================
 
 # shellcheck disable=SC2034 # i counts iterations but is not otherwise used.
@@ -185,7 +195,7 @@ do
         usejdk8
 
         #===============================================================================
-        # Mutation Testing
+        # Coverage & Mutation Analysis
         #===============================================================================
 
         echo

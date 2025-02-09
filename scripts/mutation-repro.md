@@ -16,9 +16,9 @@ Parameters:
     - `-v`: Enables verbose mode
     - `-r`: Redirect Randoop and Major output to `results/result/mutation_output.txt`
     - `-t`: Specifies the total time limit for Randoop to generate tests (in seconds)
-    - `-c`: Specifies the time limit for Randoop to generate tests per class (in seconds), mutually exclusive with `-t`
+    - `-c`: Specifies the time limit for Randoop to generate tests per class (in seconds, defaults to 2s/c), mutually exclusive with `-t`
     - `[subject project]`: The name of the subject program for which you want to generate tests
-    and perform mutation testing. The name is one of the jar files in `../subject-programs/`, wihtout ".jar".
+    and perform mutation testing. The name is one of the jar files in `../subject-programs/`, without ".jar".
 
     For example, to run the script on the `commons-lang3-3.0` project, with verbose output and output directed to a file, you would run:
     ```
@@ -37,8 +37,6 @@ statistics of each iteration will be logged to a file "results/info.txt".
 
 ## Randoop version
 
-**NOTE**: Randoop version 4.3.3 does not implement functionality for
-Orienteering. If you wish to work with Orienteering, you should download and
-build Randoop from GitHub and replace $RANDOOP_JAR with the absolute path.  For
-Demand-driven (PR #1260), GRT Fuzzing (PR #1304), and Elephant Brain (PR #1347),
-checkout the respective pull requests from the Randoop repository.
+**NOTE**: For Demand-driven (PR #1260), GRT Fuzzing (PR #1304), and Elephant Brain (PR #1347),
+checkout the respective pull requests from the Randoop repository and build the
+project.
