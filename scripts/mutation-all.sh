@@ -1,4 +1,7 @@
 #!/bin/bash
+# shellcheck disable=SC2086 # MUTATION_ARGS should not be quoted
+
+# This script runs `mutation.sh` on all the subject programs.
 
 # Initialize default values
 VERBOSE=0
@@ -6,19 +9,11 @@ REDIRECT=0
 TOTAL_TIME=""
 SECONDS_CLASS=""
 
-# Enforce that mutually exclusive options are not bundled together
-for arg in "$@"; do
-  if [[ "$arg" =~ ^-.*[tc].*[tc] ]]; then
-    echo "Options -t and -c cannot be used together in any form (e.g., -tc or -ct)."
-    exit 1
-  fi
-done
-
 # Parse command-line arguments
 while getopts ":hvrt:c:" opt; do
   case ${opt} in
     h )
-      echo "Usage: run-all.sh [-h] [-v] [-r] [-t total_time] [-c time_per_class]"
+      echo "Usage: mutation-all.sh [-h] [-v] [-r] [-t total_time] [-c time_per_class]"
       exit 0
       ;;
     v )
@@ -47,6 +42,12 @@ while getopts ":hvrt:c:" opt; do
 done
 
 shift $((OPTIND -1))
+
+# Enforce that mutually exclusive options are not bundled together
+if [[ -n "$TOTAL_TIME" ]] && [[ -n "$SECONDS_CLASS" ]]; then
+  echo "Do not use -t and -c together."
+  exit 1
+fi
 
 # Prepare the arguments for mutation.sh based on flags
 MUTATION_ARGS=""

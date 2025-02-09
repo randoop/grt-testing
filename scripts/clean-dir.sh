@@ -11,8 +11,8 @@ find . -maxdepth 1 -type f ! -name "build.xml" \
     ! -name "Makefile" \
     ! -name "mutation.sh" \
     ! -name "project-config-status.csv" \
-    ! -name "reproinstructions.txt" \
-    ! -name "run-all.sh" \
+    ! -name "mutation-repro.md" \
+    ! -name "mutation-all.sh" \
     ! -name "run-some.sh" \
     ! -name "clean-dir.sh" \
     -exec mv {} temp/ \;
