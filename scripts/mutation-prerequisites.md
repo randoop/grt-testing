@@ -39,5 +39,10 @@
    mv -f build/libs/randoop-all-4.3.3.jar agent/replacecall/build/libs/replacecall-4.3.3.jar ../../build   
    usejdk8
    ```
-
    You may delete the Randoop repository after the above instructions.
+
+5. To get all subject programs, run:
+   ```
+   cd ../..
+   ./get-all-subject-src.sh
+   ```

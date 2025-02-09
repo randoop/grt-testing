@@ -16,7 +16,7 @@ Parameters:
     - `-v`: Enables verbose mode
     - `-r`: Redirect Randoop and Major output to `results/result/mutation_output.txt`
     - `-t`: Specifies the total time limit for Randoop to generate tests (in seconds)
-    - `-c`: Specifies the time limit for Randoop to generate tests per class (in seconds), mutually exclusive with `-t`
+    - `-c`: Specifies the time limit for Randoop to generate tests per class (in seconds, defaults to 2s/c), mutually exclusive with `-t`
     - `[subject project]`: The name of the subject program for which you want to generate tests
     and perform mutation testing. The name is one of the jar files in `../subject-programs/`, without ".jar".
 
