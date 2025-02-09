@@ -145,6 +145,7 @@ echo
 #===============================================================================
 # Project Paths & Dependencies
 #===============================================================================
+
 # Path to the base directory of the source code
 SRC_BASE_DIR="$(realpath "$SCRIPT_DIR/../subject-programs/src/$SUBJECT_PROGRAM")"
 
@@ -307,7 +308,7 @@ RANDOOP_FEATURES=("BASELINE") #"BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORIEN
 # If true, each run tests all Randoop features except the one specified in the RANDOOP_FEATURES array.
 ABLATION=false
 
-# Ensure the given features are are recognized and supported by the script
+# Ensure the given features are are recognized and supported by the script.
 for RANDOOP_FEATURE in "${RANDOOP_FEATURES[@]}" ; do
     if [[ ! " ${ALL_RANDOOP_FEATURES[*]} " =~ [[:space:]]${RANDOOP_FEATURE}[[:space:]] ]]; then
         echo "$RANDOOP_FEATURE" is not in "${RANDOOP_FEATURES[@]}"
