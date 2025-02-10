@@ -36,7 +36,7 @@
    git clone git@github.com:randoop/randoop.git
    cd randoop
    ./gradlew shadowJar
-   mv -f build/libs/randoop-all-4.3.3.jar agent/replacecall/build/libs/replacecall-4.3.3.jar ../../build
+   mv -f build/libs/randoop-all-4.3.3.jar agent/replacecall/build/libs/replacecall-4.3.3.jar ..
    usejdk8
    ```
    You may delete the Randoop repository after the above instructions.
