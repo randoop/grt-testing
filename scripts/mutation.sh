@@ -53,6 +53,31 @@ JACOCO_AGENT_JAR=$(realpath "build/jacocoagent.jar") # For Bloodhound
 JACOCO_CLI_JAR=$(realpath "build/jacococli.jar") # For coverage report generation
 REPLACECALL_JAR=$(realpath "build/replacecall-4.3.3.jar") # For replacing undesired method calls
 
+# Ensure the user has set both JAVA8_HOME and JAVA11_HOME
+if [ -z "$JAVA8_HOME" ]; then
+    echo "Error: JAVA8_HOME is not set."
+    exit 1
+fi
+
+if [ -z "$JAVA11_HOME" ]; then
+    echo "Error: JAVA11_HOME is not set."
+    exit 1
+fi
+
+# Switch to Java 8
+usejdk8() {
+    export JAVA_HOME="$JAVA8_HOME"
+    export PATH="$JAVA_HOME/bin:$PATH"
+    echo "Switched to Java 8 ($JAVA_HOME)"
+}
+
+# Switch to Java 11
+usejdk11() {
+    export JAVA_HOME="$JAVA11_HOME"
+    export PATH="$JAVA_HOME/bin:$PATH"
+    echo "Switched to Java 11 ($JAVA_HOME)"
+}
+
 #===============================================================================
 # Argument Parsing & Experiment Configuration
 #===============================================================================
@@ -190,9 +215,9 @@ do
             RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2 --constant-mining=true"
         fi
 
-        usejdk11
+        usejdk11 # Randoop requires Java 11
         $RANDOOP_COMMAND_2
-        usejdk8
+        usejdk8 # Subject programs require Java 8
 
         #===============================================================================
         # Coverage & Mutation Analysis
