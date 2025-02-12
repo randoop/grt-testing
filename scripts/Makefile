@@ -11,8 +11,8 @@ build/randoop-all-4.3.3.jar:
 
 build/major:
 	mkdir -p build
-	cd build && wget -nv http://mutation-testing.org/major-latest.zip
-	cd build && unzip -o major-latest.zip
+	cd build && wget -nv https://mutation-testing.org/downloads/files/major-2.2.0_jre8.zip
+	cd build && unzip -o major-2.2.0_jre8.zip
 
 results/:
 	mkdir -p results
