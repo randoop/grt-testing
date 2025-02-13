@@ -39,15 +39,6 @@ usejdk11() {
     echo "Switched to Java 11 ($JAVA_HOME)"
 }
 
-usejdk8
-
-# Check for Java 8
-JAVA_VERSION=$(java -version 2>&1 | awk -F'[._"]' 'NR==1{print ($2 == "version" && $3 < 9) ? $4 : $3}')
-if [ "$JAVA_VERSION" -ne 8 ]; then
-  echo "Requires Java 8. Please use Java 8 to proceed."
-  exit 1
-fi
-
 USAGE_STRING="usage: mutation.sh [-h] [-v] [-r] [-t total_time] [-c time_per_class] <test case name>"
 
 if [ $# -eq 0 ]; then
@@ -78,7 +69,6 @@ if [ -z "$JAVA11_HOME" ]; then
     echo "Error: JAVA11_HOME is not set."
     exit 1
 fi
-
 
 
 #===============================================================================
