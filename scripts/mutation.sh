@@ -25,6 +25,21 @@
 # Fail this script on errors.
 set -e
 set -o pipefail
+# Switch to Java 8
+usejdk8() {
+    export JAVA_HOME="$JAVA8_HOME"
+    export PATH="$JAVA_HOME/bin:$PATH"
+    echo "Switched to Java 8 ($JAVA_HOME)"
+}
+
+# Switch to Java 11
+usejdk11() {
+    export JAVA_HOME="$JAVA11_HOME"
+    export PATH="$JAVA_HOME/bin:$PATH"
+    echo "Switched to Java 11 ($JAVA_HOME)"
+}
+
+usejdk8
 
 # Check for Java 8
 JAVA_VERSION=$(java -version 2>&1 | awk -F'[._"]' 'NR==1{print ($2 == "version" && $3 < 9) ? $4 : $3}')
@@ -64,19 +79,7 @@ if [ -z "$JAVA11_HOME" ]; then
     exit 1
 fi
 
-# Switch to Java 8
-usejdk8() {
-    export JAVA_HOME="$JAVA8_HOME"
-    export PATH="$JAVA_HOME/bin:$PATH"
-    echo "Switched to Java 8 ($JAVA_HOME)"
-}
 
-# Switch to Java 11
-usejdk11() {
-    export JAVA_HOME="$JAVA11_HOME"
-    export PATH="$JAVA_HOME/bin:$PATH"
-    echo "Switched to Java 11 ($JAVA_HOME)"
-}
 
 #===============================================================================
 # Argument Parsing & Experiment Configuration
