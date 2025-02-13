@@ -93,13 +93,6 @@ NUM_LOOP=1             # Number of experiment runs (10 in GRT paper)
 #===============================================================================
 # Project Paths & Dependencies
 #===============================================================================
-
-# Path to the base directory of the source code
-SRC_BASE_DIR="$(realpath "$SCRIPT_DIR/../subject-programs/src/$SUBJECT_PROGRAM")"
-
-# Path to the jar file of the subject program
-SRC_JAR=$(realpath "$SCRIPT_DIR/../subject-programs/$SUBJECT_PROGRAM.jar")
-
 # Link to src jar.
 SRC_JAR=$(realpath "$SCRIPT_DIR/../subject-programs/$1")
 
