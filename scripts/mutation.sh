@@ -18,10 +18,11 @@
 set -e
 set -o pipefail
 
+source ./usejdk8.sh
 # Check for Java 8
 JAVA_VERSION=$(java -version 2>&1 | awk -F'[._"]' 'NR==1{print ($2 == "version" && $3 < 9) ? $4 : $3}')
 if [ "$JAVA_VERSION" -ne 8 ]; then
-  echo "Requires Java 8. Please use Java 8 to proceed."
+  echo "Requires Java 8. Check your usejdk8 script to ensure it is properly created. Please use Java 8 to proceed."
   exit 1
 fi
 
@@ -36,7 +37,7 @@ MAJOR_HOME=$(realpath "build/major/")
 CURR_DIR=$(realpath "$(pwd)")
 
 # Link to Randoop jar file. Replace with different file if new GRT component is being tested.
-RANDOOP_JAR=$(realpath "build/randoop-all-4.3.3.jar")
+RANDOOP_JAR=/Users/yashmathur/Documents/researchNew/randoop/build/libs/randoop-all-4.3.3.jar
 
 # Link to jacoco agent jar. This is necessary for Bloodhound.
 JACOCO_AGENT_JAR=$(realpath "build/jacocoagent.jar")
@@ -81,11 +82,11 @@ CLASSPATH="$(echo "$JAR_DIR"/*.jar | tr ' ' ':')"
 # The feature names must not contain whitespace.
 ALL_RANDOOP_FEATURES=("BASELINE" "BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
 # The different features of Randoop to use. Adjust according to the features you are testing.
-RANDOOP_FEATURES=("BASELINE" "BLOODHOUND") #"ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
+RANDOOP_FEATURES=("BASELINE") #"ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
 
 # When ABLATION is set to false, the script tests the Randoop features specified in the RANDOOP_FEATURES array.
 # When ABLATION is set to true, each run tests all Randoop features except the one specified in the RANDOOP_FEATURES array.
-ABLATION=true
+ABLATION=false
 
 # Ensure the given features are legal.
 for RANDOOP_FEATURE in "${RANDOOP_FEATURES[@]}" ; do
@@ -143,9 +144,9 @@ do
             RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2 --constant-mining=true"
         fi
 
-        usejdk11
+        source ./usejdk11.sh
         $RANDOOP_COMMAND_2
-        usejdk8
+        source ./usejdk8.sh
 
         echo
         echo "Compiling and mutating project"

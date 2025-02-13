@@ -23,16 +23,13 @@ environment variable `JAVA_HOME` should be set; for example:
   export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 ```
 
-You must define two scripts or aliases `usejdk8` and `usejdk11` that switch
-between Java 8 and Java 11.  One way to do this is to make JAVA_HOME refer
-to a symbolic link, and put $JAVA_HOME/bin on your PATH.  Then, the two
-scripts just change the symbolic link.
-```
-export JAVA_HOME=$HOME/java/jdk
-alias usejdk8='(cd ~/java && rm -f jdk && ln -s jdk8 jdk)'
-alias usejdk11='(cd ~/java && rm -f jdk && ln -s jdk11 jdk)'
-```
-Other implementations of `usejdk8` and `usejdk11` are possible.
+You must define two scripts `./scripts/usejdk8.sh` and `./scripts/usejdk11.sh` that switch
+between Java 8 and Java 11. An example of how to do this is given in the current scripts. 
+Other implementations of `usejdk8` and `usejdk11` are possible. Before running the mutation 
+scripts ensure you run the following commands in the scripts directory:
+
+chmod +x usejdk8.sh
+chmod +x usejdk11.sh
 
 
 Maven (mvn) builds
