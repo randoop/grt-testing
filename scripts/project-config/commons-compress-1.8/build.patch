@@ -1,5 +1,5 @@
---- build-variants/build.xml	2024-10-02 01:32:23.000000000 -0700
-+++ build.xml	2024-12-22 23:13:52.497026864 -0800
+--- project-config/build.xml	2025-02-07 18:10:01.170522518 -0800
++++ build.xml	2025-02-13 18:32:09.060307604 -0800
 @@ -7,7 +7,7 @@
       ############################################## -->
      <property name="major.jar" value="build/major/lib/major.jar"/>
@@ -9,7 +9,16 @@
      <property name="jacoco.destfile" value="results/jacoco.exec"/>
  
  <!-- Import JaCoCo Ant tasks -->
-@@ -31,13 +31,23 @@
+@@ -19,7 +19,7 @@
+     <target name="clean" description="Clean">
+         <delete dir="build/bin"/>
+         <delete>
+-            <fileset dir="./results" includes="*.csv" excludes="info.csv"/>
++            <fileset dir="./results" includes="*.csv"/>
+             <fileset dir="./results" includes="*.log"/>
+         </delete>
+     </target>
+@@ -31,13 +31,29 @@
  
  <!-- Target to compile the project -->
      <target name="compile" depends="init" description="Compile">
@@ -35,8 +44,14 @@
 +        <copy todir="build/bin">
 +            <fileset dir="${src}/target/classes"/>
 +        </copy>
-+        <move file="${src}/major.log" todir="./"/>
-+        <move file="${src}/mutants.log" todir="./"/>
++        <exec executable="mv">
++            <arg value="${src}/major.log"/>
++            <arg value="./"/>
++        </exec>
++        <exec executable="mv">
++            <arg value="${src}/mutants.log"/>
++            <arg value="./"/>
++        </exec>
      </target>
  
  <!-- Target to compile the test suite -->

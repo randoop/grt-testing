@@ -280,10 +280,14 @@ RANDOOP_COMMAND="$RANDOOP_BASE_COMMAND ${command_suffix[$SUBJECT_PROGRAM]}"
 echo "Modifying build.xml for $SUBJECT_PROGRAM..."
 ./apply-build-patch.sh "$SUBJECT_PROGRAM"
 
-if git show-ref --quiet refs/heads/include-major ; then
-    echo "Checking out include-major branch..."
-    (cd "$JAVA_SRC_DIR" && git checkout include-major)
-fi
+(
+    cd "$JAVA_SRC_DIR" || exit 1
+    if git rev-parse --verify include-major >/dev/null 2>&1; then
+        echo "Checking out include-major..."
+        git checkout include-major
+    fi
+)
+
 echo
 
 # Output file for runtime information
