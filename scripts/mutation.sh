@@ -12,14 +12,11 @@
 #    various coverage metrics including coverage and mutation score
 #    (mutants are generated using Major).
 #
-# Each experiment can run multiple times, with a configurable time (in
-# seconds per class or total time).
-#
 # Directories and files:
 # - `build/test*`: Randoop-created test suites.
 # - `build/bin`: Compiled tests and code.
 # - `results/info.csv`: statistics about each iteration.
-# - 'results/`: everything else specific to the most recent iteration.
+# - `results/`: everything else specific to the most recent iteration.
 
 
 # Fail this script on errors.
@@ -39,7 +36,7 @@ usejdk11() {
     echo "Switched to Java 11 ($JAVA_HOME)"
 }
 
-USAGE_STRING="usage: mutation.sh [-h] [-v] [-r] [-t total_time] [-c time_per_class] <test case name>"
+USAGE_STRING="usage: mutation.sh <test case name>"
 
 if [ $# -eq 0 ]; then
     echo "$0: $USAGE_STRING"
@@ -57,7 +54,6 @@ CURR_DIR=$(realpath "$(pwd)")
 RANDOOP_JAR=$(realpath "build/randoop-all-4.3.3.jar") # Randoop jar file
 JACOCO_AGENT_JAR=$(realpath "build/jacocoagent.jar") # For Bloodhound
 JACOCO_CLI_JAR=$(realpath "build/jacococli.jar") # For coverage report generation
-REPLACECALL_JAR=$(realpath "build/replacecall-4.3.3.jar") # For replacing undesired method calls
 
 # Ensure the user has set both JAVA8_HOME and JAVA11_HOME
 if [ -z "$JAVA8_HOME" ]; then
@@ -94,6 +90,9 @@ NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
 
 # Time limit for running Randoop.
 TIME_LIMIT=$((NUM_CLASSES * SECONDS_CLASS))
+
+# Number of iterations to run the experiment.
+NUM_LOOP=1
 
 # Command line inputs common among all commands.
 RANDOOP_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOCO_AGENT_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=$TIME_LIMIT"
@@ -211,7 +210,7 @@ do
 
         echo
         echo "Compiling and mutating project..."
-        echo '(ant -Dmutator="=mml:'"$MAJOR_HOME"'/mml/all.mml.bin" clean compile)'
+        echo "($MAJOR_HOME/bin/ant -Dmutator=\"mml:$MAJOR_HOME/mml/all.mml.bin\" -Dsrc=\"$JAVA_SRC_DIR\" -lib \"$CLASSPATH\" clean compile)"
         echo
         "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" clean compile
 
@@ -222,7 +221,7 @@ do
 
         echo
         echo "Running tests with coverage..."
-        echo '(ant -Dmutator="=mml:'"$MAJOR_HOME"'/mml/all.mml.bin" clean compile)'
+        echo "($MAJOR_HOME/bin/ant -Dmutator=\"mml:$MAJOR_HOME/mml/all.mml.bin\" -Dtest=\"$TEST_DIRECTORY\" -Dsrc=\"$JAVA_SRC_DIR\" -lib \"$CLASSPATH\" test)"
         echo
         "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" test
         mv jacoco.exec results
