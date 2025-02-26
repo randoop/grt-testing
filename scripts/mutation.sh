@@ -36,7 +36,7 @@ usejdk11() {
     echo "Switched to Java 11 ($JAVA_HOME)"
 }
 
-USAGE_STRING="usage: mutation.sh <subject-jar-name> <java-src-dir> <lib-dir>"
+USAGE_STRING="usage: mutation.sh <subject-jar> <java-src-dir> <lib-dir>"
 if [ $# -eq 0 ]; then
     echo "$0: $USAGE_STRING"
     exit 1

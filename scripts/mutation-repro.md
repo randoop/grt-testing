@@ -1,38 +1,30 @@
 # Reproduction Instructions for Mutation Testing Script
 
-This document describes how to run the mutation testing script ([mutation.sh]).
-You can also run `mutation-all.sh`
-to run `mutation.sh` on all the subject programs.
+This document describes how to run the mutation testing script `mutation.sh`.
 
 
 ## Prerequisites
 
-See [mutation-prerequisites.md].
+See `mutation-prerequisites.md`.
 
 
 ## Running the mutation test script
 
 Parameters:
-    - `-v`: Enables verbose mode
-    - `-r`: Redirect Randoop and Major output to `results/result/mutation_output.txt`
-    - `-t`: Specifies the total time limit for Randoop to generate tests (in seconds)
-    - `-c`: Specifies the time limit for Randoop to generate tests per class (in seconds, defaults to 2s/c), mutually exclusive with `-t`
-    - `[subject project]`: The name of the subject program for which you want to generate tests
-    and perform mutation testing. The name is one of the jar files in `../subject-programs/`, without ".jar".
+- `<subject-jar>`: The path to the subject program jar file.
+- `<java-src-dir>`: The path to the Java source directory used for mutation generation and analysis. Located in the `subject-programs/src` directory.
+- `<lib-dir>`: The directory containing additional jar files (dependencies) used during compilation (e.g., for Ant’s -lib option).
 
-    For example, to run the script on the `commons-lang3-3.0` project, with verbose output and output directed to a file, you would run:
+    For example, to run the script on the subject program `a4j-1.0b`:
     ```
-    ./mutation.sh -vr commons-lang3-3.0
+    ./mutation.sh a4j-1.0b ../subject-programs/src/a4j-1.0b/src/ ../subject-programs/src/a4j-1.0b/jars/
     ```
 
 3. **Output**:
-The script will generate Randoop's test suites in a "build/test"
-subdirectory. The result subdirectory for a specific run under 'results' also
-contains a copy of the test suites. Compiled tests and code will be stored in a
-"build/bin" subdirectory. The script will generate various mutants of the source
-project using Major and run these tests on those mutants. Each experiment can
-run a given number of times and a given number of seconds per class. Various
-statistics of each iteration will be logged to a file "results/info.txt".
+The script will generate Randoop's test suites in a `scripts/build/test` subdirectory. 
+Compiled tests and code will be stored in `scripts/build/bin` subdirectory. 
+`results/` directory contains the results of coverage and mutation analysis. 
+See `results/info.txt` for a summary of coverage and mutation scores from previous runs.
 
 
 ## Randoop version
