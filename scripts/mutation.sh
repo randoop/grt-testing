@@ -91,9 +91,6 @@ NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
 # Time limit for running Randoop.
 TIME_LIMIT=$((NUM_CLASSES * SECONDS_CLASS))
 
-# Number of iterations to run the experiment.
-NUM_LOOP=1
-
 # Command line inputs common among all commands.
 RANDOOP_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOCO_AGENT_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=$TIME_LIMIT"
 
@@ -137,6 +134,8 @@ done
 #===============================================================================
 # Test Generation & Execution
 #===============================================================================
+# Remove old test directories.
+rm -rf "$CURR_DIR"/build/test*
 
 # shellcheck disable=SC2034 # i counts iterations but is not otherwise used.
 for i in $(seq 1 $NUM_LOOP)
@@ -150,10 +149,9 @@ do
             FEATURE_NAME="$RANDOOP_FEATURE"
         fi
 
-        rm -rf "$CURR_DIR"/build/test*
         echo "Using $FEATURE_NAME"
         echo
-        TEST_DIRECTORY="$CURR_DIR/build/test/$FEATURE_NAME"
+        TEST_DIRECTORY="$CURR_DIR/build/test/$FEATURE_NAME/iteration-$i"
         mkdir -p "$TEST_DIRECTORY"
 
         RANDOOP_COMMAND_2="$RANDOOP_COMMAND --junit-output-dir=$TEST_DIRECTORY"
@@ -224,18 +222,23 @@ do
         echo "($MAJOR_HOME/bin/ant -Dmutator=\"mml:$MAJOR_HOME/mml/all.mml.bin\" -Dtest=\"$TEST_DIRECTORY\" -Dsrc=\"$JAVA_SRC_DIR\" -lib \"$CLASSPATH\" test)"
         echo
         "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" test
-        mv jacoco.exec results
-        java -jar "$JACOCO_CLI_JAR" report "results/jacoco.exec" --classfiles "$SRC_JAR" --sourcefiles "$JAVA_SRC_DIR" --csv results/report.csv
+
+        # Result directory for each test generation and execution.
+        RESULTS_DIR="$CURR_DIR/results/$1-$FEATURE_NAME-$(date +%Y%m%d-%H%M%S)"
+        mkdir -p "$RESULTS_DIR"
+
+        mv jacoco.exec "$RESULTS_DIR"
+        java -jar "$JACOCO_CLI_JAR" report "$RESULTS_DIR/jacoco.exec" --classfiles "$SRC_JAR" --sourcefiles "$JAVA_SRC_DIR" --csv "$RESULTS_DIR"/report.csv
 
         # Calculate Instruction Coverage
-        inst_missed=$(awk -F, 'NR>1 {sum+=$4} END {print sum}' results/report.csv)
-        inst_covered=$(awk -F, 'NR>1 {sum+=$5} END {print sum}' results/report.csv)
+        inst_missed=$(awk -F, 'NR>1 {sum+=$4} END {print sum}' "$RESULTS_DIR"/report.csv)
+        inst_covered=$(awk -F, 'NR>1 {sum+=$5} END {print sum}' "$RESULTS_DIR"/report.csv)
         instruction_coverage=$(echo "scale=4; $inst_covered / ($inst_missed + $inst_covered) * 100" | bc)
         instruction_coverage=$(printf "%.2f" "$instruction_coverage")
 
         # Calculate Branch Coverage
-        branch_missed=$(awk -F, 'NR>1 {sum+=$6} END {print sum}' results/report.csv)
-        branch_covered=$(awk -F, 'NR>1 {sum+=$7} END {print sum}' results/report.csv)
+        branch_missed=$(awk -F, 'NR>1 {sum+=$6} END {print sum}' "$RESULTS_DIR"/report.csv)
+        branch_covered=$(awk -F, 'NR>1 {sum+=$7} END {print sum}' "$RESULTS_DIR"/report.csv)
         branch_coverage=$(echo "scale=4; $branch_covered / ($branch_missed + $branch_covered) * 100" | bc)
         branch_coverage=$(printf "%.2f" "$branch_coverage")
 
@@ -246,9 +249,11 @@ do
         echo "Running tests with mutation analysis..."
         "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -lib "$CLASSPATH" mutation.test
 
+        mv results/summary.csv "$RESULTS_DIR"
+
         # Calculate Mutation Score
-        mutants_covered=$(awk -F, 'NR==2 {print $3}' results/summary.csv)
-        mutants_killed=$(awk -F, 'NR==2 {print $4}' results/summary.csv)
+        mutants_covered=$(awk -F, 'NR==2 {print $3}' "$RESULTS_DIR"/summary.csv)
+        mutants_killed=$(awk -F, 'NR==2 {print $4}' "$RESULTS_DIR"/summary.csv)
         mutation_score=$(echo "scale=4; $mutants_killed / $mutants_covered * 100" | bc)
         mutation_score=$(printf "%.2f" "$mutation_score")
 
@@ -259,6 +264,15 @@ do
         echo -e "$row" >> results/info.csv
     done
 
-    # Move all output files into the results/ directory.
-    mv suppression.log major.log mutants.log results
+    # Move output files into the $RESULTS_DIR directory.
+    FILES_TO_MOVE=(
+        "suppression.log"
+        "major.log"
+        "mutants.log"
+        "results/covMap.csv"
+        "results/details.csv"
+        "results/preprocessing.ser"
+        "results/testMap.csv"
+    )
+    mv "${FILES_TO_MOVE[@]}" "$RESULTS_DIR"
 done
