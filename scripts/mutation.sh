@@ -36,8 +36,7 @@ usejdk11() {
     echo "Switched to Java 11 ($JAVA_HOME)"
 }
 
-USAGE_STRING="usage: mutation.sh <test case name>"
-
+USAGE_STRING="usage: mutation.sh <subject-jar-name> <java-src-dir> <lib-dir>"
 if [ $# -eq 0 ]; then
     echo "$0: $USAGE_STRING"
     exit 1
@@ -151,8 +150,15 @@ do
 
         echo "Using $FEATURE_NAME"
         echo
-        TEST_DIRECTORY="$CURR_DIR/build/test/$FEATURE_NAME/iteration-$i"
+
+        TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+        # Test directory for each iteration.
+        TEST_DIRECTORY="$CURR_DIR/build/test/$FEATURE_NAME/$TIMESTAMP"
         mkdir -p "$TEST_DIRECTORY"
+
+        # Result directory for each test generation and execution.
+        RESULTS_DIR="$CURR_DIR/results/$1-$FEATURE_NAME-$TIMESTAMP"
+        mkdir -p "$RESULTS_DIR"
 
         RANDOOP_COMMAND_2="$RANDOOP_COMMAND --junit-output-dir=$TEST_DIRECTORY"
 
@@ -223,10 +229,6 @@ do
         echo
         "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" test
 
-        # Result directory for each test generation and execution.
-        RESULTS_DIR="$CURR_DIR/results/$1-$FEATURE_NAME-$(date +%Y%m%d-%H%M%S)"
-        mkdir -p "$RESULTS_DIR"
-
         mv jacoco.exec "$RESULTS_DIR"
         java -jar "$JACOCO_CLI_JAR" report "$RESULTS_DIR/jacoco.exec" --classfiles "$SRC_JAR" --sourcefiles "$JAVA_SRC_DIR" --csv "$RESULTS_DIR"/report.csv
 
@@ -262,17 +264,17 @@ do
         row="$RANDOOP_FEATURE,$(basename "$SRC_JAR"),$instruction_coverage%,$branch_coverage%,$mutation_score%"
         # info.csv contains a record of each pass.
         echo -e "$row" >> results/info.csv
-    done
 
-    # Move output files into the $RESULTS_DIR directory.
-    FILES_TO_MOVE=(
-        "suppression.log"
-        "major.log"
-        "mutants.log"
-        "results/covMap.csv"
-        "results/details.csv"
-        "results/preprocessing.ser"
-        "results/testMap.csv"
-    )
-    mv "${FILES_TO_MOVE[@]}" "$RESULTS_DIR"
+        # Move output files into the $RESULTS_DIR directory.
+        FILES_TO_MOVE=(
+            "suppression.log"
+            "major.log"
+            "mutants.log"
+            "results/covMap.csv"
+            "results/details.csv"
+            "results/preprocessing.ser"
+            "results/testMap.csv"
+        )
+        mv "${FILES_TO_MOVE[@]}" "$RESULTS_DIR"
+    done
 done
