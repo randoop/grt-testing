@@ -11,8 +11,7 @@
 
 2. Obtain the mutation programs, some dependencies, and the source code for the subject programs:
    ```
-   cd scripts
-   make
+   make -C scripts
    ```
 
 3. Clone the Randoop repository from GitHub. After cloning, go to the Randoop directory and build the

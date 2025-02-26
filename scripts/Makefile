@@ -7,12 +7,18 @@ build/jacoco.jar:
 
 build/randoop-all-4.3.3.jar:
 	mkdir -p build
-	cd build && wget -nv https://github.com/randoop/randoop/releases/download/v4.3.3/randoop-all-4.3.3.jar
+	cd build
+	wget -nv https://github.com/randoop/randoop/releases/download/v4.3.3/randoop-all-4.3.3.jar
 
 build/major:
 	mkdir -p build
 	cd build && wget -nv https://mutation-testing.org/downloads/files/major-2.2.0_jre8.zip
 	cd build && unzip -o major-2.2.0_jre8.zip
+
+randoop-from-source:
+
+build/libs/randoop-all-4.3.3.jar:
+mv -f build/libs/randoop-all-4.3.3.jar agent/replacecall/build/libs/replacecall-4.3.3.jar ..
 
 results/:
 	mkdir -p results

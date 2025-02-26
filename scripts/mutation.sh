@@ -22,19 +22,6 @@
 # Fail this script on errors.
 set -e
 set -o pipefail
-# Switch to Java 8
-usejdk8() {
-    export JAVA_HOME="$JAVA8_HOME"
-    export PATH="$JAVA_HOME/bin:$PATH"
-    echo "Switched to Java 8 ($JAVA_HOME)"
-}
-
-# Switch to Java 11
-usejdk11() {
-    export JAVA_HOME="$JAVA11_HOME"
-    export PATH="$JAVA_HOME/bin:$PATH"
-    echo "Switched to Java 11 ($JAVA_HOME)"
-}
 
 USAGE_STRING="usage: mutation.sh <subject-jar> <java-src-dir> <lib-dir>"
 if [ $# -eq 0 ]; then
@@ -64,6 +51,8 @@ if [ -z "$JAVA11_HOME" ]; then
     echo "Error: JAVA11_HOME is not set."
     exit 1
 fi
+
+. ${SCRIPT_DIR}/usejdk.sh
 
 
 #===============================================================================
