@@ -14,21 +14,13 @@
    make -C scripts
    ```
 
-3. Clone the Randoop repository from GitHub. After cloning, go to the Randoop directory and build the
-   project. NOTE, Randoop requires Java 11 to build. You can do this by running:
+3. Use the latest version of Randoop.  (By default, this project uses a released version of Randoop.)
+
    ```
-   cd build
-   git clone git@github.com:randoop/randoop.git
-   cd randoop
-   # set JAVA_HOME to Java 11
-   ./gradlew shadowJar
-   mv -f build/libs/randoop-all-4.3.3.jar agent/replacecall/build/libs/replacecall-4.3.3.jar ..
-   usejdk8
+   make -C scripts randoop-from-source
    ```
-   You may delete the Randoop repository after the above instructions.
 
 4. To get all subject programs, run:
    ```
-   cd ../..
    ./get-all-subject-src.sh
    ```

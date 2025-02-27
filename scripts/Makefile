@@ -1,3 +1,5 @@
+MAKEFILE_DIR := $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
+
 all: build/jacoco.jar build/randoop-all-4.3.3.jar build/major results/
 
 build/jacoco.jar:
@@ -15,7 +17,18 @@ build/major:
 	cd build && wget -nv https://mutation-testing.org/downloads/files/major-2.2.0_jre8.zip
 	cd build && unzip -o major-2.2.0_jre8.zip
 
-randoop-from-source:
+build/randoop:
+	mkdir -p build
+	cd build && git clone git@github.com:randoop/randoop.git
+
+randoop-from-source: build/randoop
+	cd build/randoop
+	git pull
+	. ${MAKEFILE_DIR}/usejdk.sh
+	usejdk11
+	./gradlew shadowJar
+	mv -f build/libs/randoop-all-4.3.3.jar agent/replacecall/build/libs/replacecall-4.3.3.jar ..
+	usejdk8
 
 build/libs/randoop-all-4.3.3.jar:
 mv -f build/libs/randoop-all-4.3.3.jar agent/replacecall/build/libs/replacecall-4.3.3.jar ..

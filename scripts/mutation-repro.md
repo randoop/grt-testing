@@ -5,7 +5,7 @@ This document describes how to run the mutation testing script `mutation.sh`.
 
 ## Prerequisites
 
-See `mutation-prerequisites.md`.
+See [mutation-prerequisites.md].
 
 
 ## Running the mutation test script
