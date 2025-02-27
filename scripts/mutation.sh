@@ -45,7 +45,7 @@ JACOCO_AGENT_JAR=$(realpath "build/jacocoagent.jar")
 JACOCO_CLI_JAR=$(realpath "build/jacococli.jar")
 
 # The paper runs Randoop with 4 different time limits. These are: 2 s/class, 10 s/class, 30 s/class, and 60 s/class.
-SECONDS_CLASS="2"
+SECONDS_PER_CLASS="2"
 
 # Number of times to run experiments (10 in GRT paper).
 NUM_LOOP=2
@@ -60,7 +60,7 @@ JAVA_SRC_DIR="$2"
 NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
 
 # Time limit for running Randoop.
-TIME_LIMIT=$((NUM_CLASSES * SECONDS_CLASS))
+TIME_LIMIT=$((NUM_CLASSES * SECONDS_PER_CLASS))
 
 # Command line inputs common among all commands.
 RANDOOP_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOCO_AGENT_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=$TIME_LIMIT"
