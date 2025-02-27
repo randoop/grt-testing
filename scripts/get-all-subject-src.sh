@@ -4,9 +4,9 @@
 # ./src/ relative to this script.  The script can be called from any
 # directory.
 
-SCRIPTDIR="$(cd "$(dirname "$0")" >/dev/null 2>&1 && pwd -P)"
+SCRIPT_DIR="$(cd "$(dirname "$0")" >/dev/null 2>&1 && pwd -P)"
 
-SUBJECT_SRC_DIR="${SCRIPTDIR}/../subject-programs/src"
+SUBJECT_SRC_DIR="${SCRIPT_DIR}/../subject-programs/src"
 mkdir -p "${SUBJECT_SRC_DIR}"
 cd "${SUBJECT_SRC_DIR}" || (echo "Directory does not exist: ${SUBJECT_SRC_DIR}" && exit 2)
 # echo "Working in $(pwd)"

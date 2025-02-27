@@ -6,8 +6,8 @@
 
 # For documentation of how to run this script, see file `mutation-repro.md`.
 #
-# This script uses Randoop to:
-#  * generate test suites for subject programs and
+# This script:
+#  * uses Randoop to generate test suites for subject programs and
 #  * performs mutation testing to determine how Randoop features affect
 #    various coverage metrics including coverage and mutation score
 #    (mutants are generated using Major).
@@ -35,22 +35,11 @@ fi
 #===============================================================================
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-MAJOR_HOME=$(realpath "build/major/") # Major home directory, for mutation testing
+MAJOR_HOME=$(realpath "${SCRIPT_DIR}/build/major/") # Major home directory, for mutation testing
 CURR_DIR=$(realpath "$(pwd)")
-RANDOOP_JAR=$(realpath "build/randoop-all-4.3.3.jar") # Randoop jar file
-JACOCO_AGENT_JAR=$(realpath "build/jacocoagent.jar") # For Bloodhound
-JACOCO_CLI_JAR=$(realpath "build/jacococli.jar") # For coverage report generation
-
-# Ensure the user has set both JAVA8_HOME and JAVA11_HOME
-if [ -z "$JAVA8_HOME" ]; then
-    echo "Error: JAVA8_HOME is not set."
-    exit 1
-fi
-
-if [ -z "$JAVA11_HOME" ]; then
-    echo "Error: JAVA11_HOME is not set."
-    exit 1
-fi
+RANDOOP_JAR=$(realpath "${SCRIPT_DIR}/build/randoop-all-4.3.3.jar") # Randoop jar file
+JACOCO_AGENT_JAR=$(realpath "${SCRIPT_DIR}/build/jacocoagent.jar") # For Bloodhound
+JACOCO_CLI_JAR=$(realpath "${SCRIPT_DIR}/build/jacococli.jar") # For coverage report generation
 
 . ${SCRIPT_DIR}/usejdk.sh
 
@@ -58,7 +47,7 @@ fi
 #===============================================================================
 # Argument Parsing & Experiment Configuration
 #===============================================================================
-SECONDS_CLASS="2"      # Default seconds per class.
+SECONDS_PER_CLASS="2"  # Default seconds per class.
                        # The paper runs Randoop with 4 different time limits:
                        # 2 s/class, 10 s/class, 30 s/class, and 60 s/class.
 
@@ -77,7 +66,7 @@ JAVA_SRC_DIR="$2"
 NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
 
 # Time limit for running Randoop.
-TIME_LIMIT=$((NUM_CLASSES * SECONDS_CLASS))
+TIME_LIMIT=$((NUM_CLASSES * SECONDS_PER_CLASS))
 
 # Command line inputs common among all commands.
 RANDOOP_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOCO_AGENT_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=$TIME_LIMIT"
@@ -106,8 +95,8 @@ ALL_RANDOOP_FEATURES=("BASELINE" "BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORI
 RANDOOP_FEATURES=("BASELINE") #"BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
 
 # ABLATION controls whether to perform feature ablation studies.
-# If false, the script tests the Randoop features specified in the RANDOOP_FEATURES array.
-# If true, each run tests all Randoop features except the one specified in the RANDOOP_FEATURES array.
+# If false, Randoop only uses the features specified in the RANDOOP_FEATURES array.
+# If true, each run uses all Randoop features *except* the one specified in the RANDOOP_FEATURES array.
 ABLATION=false
 
 # Ensure the given features are are recognized and supported by the script.
