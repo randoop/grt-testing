@@ -21,17 +21,18 @@ build/randoop:
 	mkdir -p build
 	cd build && git clone git@github.com:randoop/randoop.git
 
-randoop-from-source: build/randoop
-	cd build/randoop
-	git pull
-	. ${MAKEFILE_DIR}/usejdk.sh
-	usejdk11
-	./gradlew shadowJar
-	mv -f build/libs/randoop-all-4.3.3.jar agent/replacecall/build/libs/replacecall-4.3.3.jar ..
+randoop-from-source:
+	cd build/randoop && \
+	git pull && \
+	. "${MAKEFILE_DIR}usejdk.sh" && \
+	. ../../usejdk.sh && \
+	usejdk11 && \
+	./gradlew shadowJar && \
+	mv -f build/libs/randoop-all-4.3.3.jar agent/replacecall/build/libs/replacecall-4.3.3.jar .. && \
 	usejdk8
 
 build/libs/randoop-all-4.3.3.jar:
-mv -f build/libs/randoop-all-4.3.3.jar agent/replacecall/build/libs/replacecall-4.3.3.jar ..
+	mv -f build/libs/randoop-all-4.3.3.jar agent/replacecall/build/libs/replacecall-4.3.3.jar ..
 
 results/:
 	mkdir -p results
