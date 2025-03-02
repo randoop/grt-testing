@@ -1,8 +1,8 @@
 #!/bin/sh
 
 # This script obtains the source code for each subject program, in
-# ./src/ relative to this script.  The script can be called from any
-# directory.
+# /../subject-programs/src/ relative to this script.  The script
+# can be called from any directory.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" >/dev/null 2>&1 && pwd -P)"
 

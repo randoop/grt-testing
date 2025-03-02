@@ -36,7 +36,6 @@ fi
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 MAJOR_HOME=$(realpath "${SCRIPT_DIR}/build/major/") # Major home directory, for mutation testing
-CURR_DIR=$(realpath "$(pwd)")
 RANDOOP_JAR=$(realpath "${SCRIPT_DIR}/build/randoop-all-4.3.3.jar") # Randoop jar file
 JACOCO_AGENT_JAR=$(realpath "${SCRIPT_DIR}/build/jacocoagent.jar") # For Bloodhound
 JACOCO_CLI_JAR=$(realpath "${SCRIPT_DIR}/build/jacococli.jar") # For coverage report generation
@@ -112,7 +111,7 @@ done
 # Test Generation & Execution
 #===============================================================================
 # Remove old test directories.
-rm -rf "$CURR_DIR"/build/test*
+rm -rf "$SCRIPT_DIR"/build/test*
 
 # shellcheck disable=SC2034 # i counts iterations but is not otherwise used.
 for i in $(seq 1 $NUM_LOOP)
@@ -131,11 +130,11 @@ do
 
         TIMESTAMP=$(date +%Y%m%d-%H%M%S)
         # Test directory for each iteration.
-        TEST_DIRECTORY="$CURR_DIR/build/test/$FEATURE_NAME/$TIMESTAMP"
+        TEST_DIRECTORY="$SCRIPT_DIR/build/test/$FEATURE_NAME/$TIMESTAMP"
         mkdir -p "$TEST_DIRECTORY"
 
         # Result directory for each test generation and execution.
-        RESULTS_DIR="$CURR_DIR/results/$1-$FEATURE_NAME-$TIMESTAMP"
+        RESULTS_DIR="$SCRIPT_DIR/results/$1-$FEATURE_NAME-$TIMESTAMP"
         mkdir -p "$RESULTS_DIR"
 
         RANDOOP_COMMAND_2="$RANDOOP_COMMAND --junit-output-dir=$TEST_DIRECTORY"
