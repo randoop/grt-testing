@@ -12,7 +12,7 @@ You must have JDK 8 as your default java/javac for most of the subject-programs.
 
 (The following steps need to be done only once. Make sure you are in the `scripts` directory.)
 
-1. Install the mutation programs and some dependencies.  You can do this by running:
+1. Install the mutation programs and some dependencies (MOST IMPORTANT STEP).  You can do this by running:
    ```
    make
    ```
@@ -85,11 +85,16 @@ times and a given number of seconds per class. Various statistics of each iterat
 a file "results/info.csv".
 
 For EvoSuite, generated and compiled test suites will be generated in a "evosuite-tests" directory. Compiled code
-will be stored in a "build/bin" subdirectory. A "target" subdirectory will be generated for the purposes of 
-measuring code coverage. The result subdirectory for a specific run under 'results' contains various information 
-about statistics of that run. The script will generate various mutants of the source project using Major and 
-run these tests on those mutants. Each experiment can run a given number of times and a given number of seconds per 
-class. Various statistics of each iteration will be logged to a file "results/info.csv".
+for Major will be stored in a "build/bin" subdirectory. A "target" subdirectory (containing compiled source and test files) 
+will be generated for the purposes of measuring code coverage. The result subdirectory for a specific run under 'results' 
+contains various information about statistics of that run. The script will generate various mutants of the source project 
+using Major and run these tests on those mutants. Each experiment can run a given number of times and a given number of seconds 
+per class. Various statistics of each iteration will be logged to a file "results/info.csv".
+
+For EvoSuite, most subject programs should have very few tests that fail with ant (for Major), with maven (for Jacoco), or both. 
+Subject programs that have a considerable number of flaky tests (40-50 methods) are: javassist-3.19, sat4j-core-2.3.5, and slf4j-api-1.7.12. 
+The reasons for these flaky tests are out of our control (issues with Evosuite, limitations with Major, etc.). If you are experiencing subject 
+programs other than these  listed above that have a lot of flaky tests, then something is most likely wrong. Please reach out to varuniy@cs.washington.edu. 
 
 
 You can also run:

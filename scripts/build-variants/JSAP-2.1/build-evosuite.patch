@@ -1,5 +1,5 @@
---- build-variants/build-evosuite.xml	2025-01-09 20:34:04.657319152 -0800
-+++ build-evosuite.xml	2025-01-25 23:12:49.990798714 -0800
+--- build-variants/build-evosuite.xml	2025-02-20 23:16:59.120734596 -0800
++++ build-evosuite.xml	2025-02-22 20:14:01.672665968 -0800
 @@ -36,14 +36,23 @@
          <mkdir dir="build/bin"/>
      </target>
@@ -33,7 +33,7 @@
          </javac>
      </target>
  
-@@ -70,6 +80,7 @@
+@@ -71,6 +81,7 @@
                 testMapFile="results/testMap.csv"
                 killMapFile="results/killMap.csv">
              <classpath refid="project.classpath"/>

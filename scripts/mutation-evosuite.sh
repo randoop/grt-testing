@@ -124,25 +124,31 @@ SRC_JAR=$(realpath "$SCRIPTDIR/../subject-programs/$SRC_JAR_NAME.jar")
 # Map test case to their respective source
 declare -A project_src=(
     ["a4j-1.0b"]="/src/"
-    ["asm-5.0.1"]="/src/"
-    ["bcel-5.2"]="/src/"
+    ["asm-5.0.1"]="/src/main/java/"
+    ["bcel-5.2"]="/src/java/"
     ["commons-codec-1.9"]="/src/main/java/"
     ["commons-cli-1.2"]="/src/java/"
     ["commons-collections4-4.0"]="/src/main/java/"
+    ["commons-compress-1.8"]="/src/main/java/"
     ["commons-lang3-3.0"]="/src/main/java/"
     ["commons-math3-3.2"]="/src/main/java/"
     ["commons-primitives-1.0"]="/src/java/"
     ["dcParseArgs-10.2008"]="/src/"
     ["easymock-3.2"]="/easymock/src/main/java/"
     ["fixsuite-r48"]="/library/"
+    ["guava-16.0.1"]="/src/"
     ["hamcrest-core-1.3"]="/hamcrest-core/src/main/java/"
     ["javassist-3.19"]="/src/main/"
+    ["javax.mail-1.5.1"]="/src/main/java/"
+    ["jaxen-1.1.6"]="/src/java/main/"
     ["jcommander-1.35"]="/src/main/java"
     ["jdom-1.0"]="/src/"
+    ["joda-time-2.3"]="/src/main/java/"
     ["JSAP-2.1"]="/src/java/"
     ["jvc-1.1"]="/src/"
     ["nekomud-r16"]="/src/"
-    ["shiro-core-1.2.3"]="/core/"
+    ["sat4j-core-2.3.5"]="/org.sat4j.core/src/main/java/"
+    ["shiro-core-1.2.3"]="/core/src/main/java/"
     ["slf4j-api-1.7.12"]="/slf4j-api/src/main/java/"
     ["pmd-core-5.2.2"]="/pmd-core/src/main/java/"
 )
@@ -150,7 +156,7 @@ declare -A project_src=(
 # Map project names to their respective dependencies
 declare -A project_deps=(
     ["a4j-1.0b"]="$SRC_BASE_DIR/jars/"
-    ["fixsuite-r48"]="$SRC_BASE_DIR/lib/jdom.jar:$SRC_BASE_DIR/lib/log4j-1.2.15.jar:$SRC_BASE_DIR/lib/slf4j-api-1.5.0.jar:$SRC_BASE_DIR/lib/slf4j-log4j12-1.5.0.jar"
+    ["fixsuite-r48"]="$SRC_BASE_DIR/lib/"
     ["jdom-1.0"]="$MAJOR_HOME/lib/ant:$SRC_BASE_DIR/lib/"
     ["jvc-1.1"]="$SRC_BASE_DIR/lib/"
     ["nekomud-r16"]="$SRC_BASE_DIR/lib/"
@@ -165,7 +171,12 @@ JAVA_SRC_DIR=$SRC_BASE_DIR${project_src[$SRC_JAR_NAME]}
 CLASSPATH=${project_deps[$SRC_JAR_NAME]}
 
 # Ensure the directory contains the JAR files
-JAR_PATHS="build/evosuite-standalone-runtime-1.2.0.jar:evosuite-tests/:build/junit-4.12.jar:build/hamcrest-core-1.3.jar"
+if [[ "$SRC_JAR_NAME" == "hamcrest-core-1.3" ]]; then
+    JAR_PATHS="build/evosuite-standalone-runtime-1.2.0.jar:build/junit-4.12.jar"
+else
+    JAR_PATHS="build/evosuite-standalone-runtime-1.2.0.jar:evosuite-tests/:build/junit-4.12.jar:build/hamcrest-core-1.3.jar"
+fi
+
 if [[ "$SRC_JAR_NAME" == "hamcrest-core-1.3" ]]; then
     JAR_PATHS=$(echo "$JAR_PATHS" | sed 's|:build/hamcrest-core-1.3.jar||')
 fi
@@ -194,10 +205,52 @@ if [[ "$SRC_JAR_NAME" == "JSAP-2.1" ]]; then
     JAR_PATHS="$JAR_PATHS:build/xstream-1.4.21.jar:$SPECIFIC_JAR_DIR/rundoc-0.11.jar:$SPECIFIC_JAR_DIR/snip-0.11.jar:$SPECIFIC_JAR_DIR/ant.jar"
 fi
 
+if [[ "$SRC_JAR_NAME" == "commons-compress-1.8" ]]; then
+    wget -P build/ "https://repo1.maven.org/maven2/org/tukaani/xz/1.5/xz-1.5.jar"
+    JAR_PATHS="$JAR_PATHS:build/xz-1.5.jar"
+fi
+
+if [[ "$SRC_JAR_NAME" == "guava-16.0.1" ]]; then
+    wget -P build/ "https://repo1.maven.org/maven2/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar"
+    JAR_PATHS="$JAR_PATHS:build/jsr305-3.0.2.jar"
+fi
+
+if [[ "$SRC_JAR_NAME" == "javassist-3.19" ]]; then
+    wget -P build/ "https://maven.jahia.org/maven2/com/sun/tools/1.5.0/tools-1.5.0.jar"
+    JAR_PATHS="$JAR_PATHS:build/tools-1.5.0.jar"
+fi
+
+if [[ "$SRC_JAR_NAME" == "jaxen-1.1.6" ]]; then
+    wget -P build/ "https://repo1.maven.org/maven2/dom4j/dom4j/1.6.1/dom4j-1.6.1.jar"
+    wget -P build/ "https://repo1.maven.org/maven2/jdom/jdom/1.0/jdom-1.0.jar"
+    wget -P build/ "https://repo1.maven.org/maven2/xml-apis/xml-apis/1.3.02/xml-apis-1.3.02.jar"
+    wget -P build/ "https://repo1.maven.org/maven2/xerces/xercesImpl/2.6.2/xercesImpl-2.6.2.jar"
+    wget -P build/ "https://repo1.maven.org/maven2/xom/xom/1.0/xom-1.0.jar"
+    JAR_PATHS="$JAR_PATHS:build/dom4j-1.6.1.jar:build/jdom-1.0.jar:build/xml-apis-1.3.02.jar:build/xercesImpl-2.6.2.jar:build/xom-1.0.jar"
+fi
+
+if [[ "$SRC_JAR_NAME" == "joda-time-2.3" ]]; then
+    wget -P build/ "https://repo1.maven.org/maven2/org/joda/joda-convert/1.2/joda-convert-1.2.jar"
+    JAR_PATHS="$JAR_PATHS:build/joda-convert-1.2.jar"
+fi
+
+if [[ "$SRC_JAR_NAME" == "shiro-core-1.2.3" ]]; then
+    wget -P build/ "https://repo1.maven.org/maven2/commons-beanutils/commons-beanutils/1.8.3/commons-beanutils-1.8.3.jar"
+    JAR_PATHS="$JAR_PATHS:build/commons-beanutils-1.8.3.jar"
+fi
+
 # Loop through the JAR files in the specified directory
 for jar in $CLASSPATH/*.jar; do
     if [ -f "$jar" ]; then  # Check if the file exists
-        JAR_PATHS="$JAR_PATHS:$jar"  # Append the jar to the path
+        # If the current file is log4j-1.2.15.jar, skip it
+        if [[ "$SRC_JAR_NAME" == "nekomud-r16" && "$(basename "$jar")" == "slf4j-log4j12-1.5.2.jar" ]]; then
+            continue  # Skip this JAR
+        fi
+        if [[ "$SRC_JAR_NAME" == "fixsuite-r48" && "$(basename "$jar")" == "slf4j-log4j12-1.5.0.jar" ]]; then
+            continue  # Skip this JAR
+        fi
+        # Append the jar to the path
+        JAR_PATHS="$JAR_PATHS:$jar"
     fi
 done
 
@@ -222,6 +275,11 @@ mvn install:install-file -Dfile="build/org.jacoco.agent-0.8.0-runtime.jar" -Dgro
 # use junit 4.13 if using easymock-3.2
 if [[ "$SRC_JAR_NAME" == "easymock-3.2" ]]; then
     sed -i 's/<junit.version>4.12<\/junit.version>/<junit.version>4.13<\/junit.version>/' pom.xml
+fi
+
+if [[ $SRC_JAR_NAME == "javassist-3.19" ]]; then
+    # Exclude build/tools-1.5.0.jar from JAR_PATHS for javassist-3.19
+    JAR_PATHS=$(echo $JAR_PATHS | sed 's|build/tools-1.5.0.jar:||g' | sed 's|:build/tools-1.5.0.jar||g')
 fi
 
 LIB_ARG=""
