@@ -321,7 +321,7 @@ fi
 # The feature names must not contain whitespace.
 ALL_RANDOOP_FEATURES=("BASELINE" "BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
 # The different features of Randoop to use. Adjust according to the features you are testing.
-RANDOOP_FEATURES=("BASELINE") #"BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
+RANDOOP_FEATURES=("BLOODHOUND") # "BASELINE" "BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
 
 # ABLATION controls whether to perform feature ablation studies.
 # If false, the script tests the Randoop features specified in the RANDOOP_FEATURES array.
@@ -470,26 +470,26 @@ do
 
         mv results/report.csv "$RESULT_DIR"
 
-        echo
-        echo "Running tests with mutation analysis..."
-        if [[ "$VERBOSE" -eq 1 ]]; then
-            echo command:
-            echo "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
-        fi
-        echo
-        "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
-
-        # Calculate Mutation Score
-        mutants_covered=$(awk -F, 'NR==2 {print $3}' results/summary.csv)
-        mutants_killed=$(awk -F, 'NR==2 {print $4}' results/summary.csv)
-        mutation_score=$(echo "scale=4; $mutants_killed / $mutants_covered * 100" | bc)
-        mutation_score=$(printf "%.2f" "$mutation_score")
-
-        echo "Instruction Coverage: $instruction_coverage%"
-        echo "Branch Coverage: $branch_coverage%"
-        echo "Mutation Score: $mutation_score%"
-
-        mv results/summary.csv "$RESULT_DIR"
+#        echo
+#        echo "Running tests with mutation analysis..."
+#        if [[ "$VERBOSE" -eq 1 ]]; then
+#            echo command:
+#            echo "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
+#        fi
+#        echo
+#        "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
+#
+#        # Calculate Mutation Score
+#        mutants_covered=$(awk -F, 'NR==2 {print $3}' results/summary.csv)
+#        mutants_killed=$(awk -F, 'NR==2 {print $4}' results/summary.csv)
+#        mutation_score=$(echo "scale=4; $mutants_killed / $mutants_covered * 100" | bc)
+#        mutation_score=$(printf "%.2f" "$mutation_score")
+#
+#        echo "Instruction Coverage: $instruction_coverage%"
+#        echo "Branch Coverage: $branch_coverage%"
+#        echo "Mutation Score: $mutation_score%"
+#
+#        mv results/summary.csv "$RESULT_DIR"
 
         row="$FEATURE_NAME,$(basename "$SRC_JAR"),$TIME_LIMIT,0,$instruction_coverage%,$branch_coverage%,$mutation_score%"
         # info.csv contains a record of each pass.
