@@ -198,6 +198,7 @@ declare -A project_src=(
     ["nekomud-r16"]="/src/"
     ["shiro-core-1.2.3"]="/core/"
     ["slf4j-api-1.7.12"]="/slf4j-api"
+#    ["jvc-1.1"]="/src/"
 )
 JAVA_SRC_DIR=$SRC_BASE_DIR${project_src[$SUBJECT_PROGRAM]}
 
@@ -210,6 +211,8 @@ declare -A project_deps=(
     ["jvc-1.1"]="$SRC_BASE_DIR/lib/"
     ["nekomud-r16"]="$SRC_BASE_DIR/lib/"
     ["sat4j-core-2.3.5"]="$SRC_BASE_DIR/lib/"
+    ["asm-5.0.1"]="$SRC_BASE_DIR/"
+#    ["jvc-1.1"]="$SRC_BASE_DIR/lib/"
 )
 #   ["hamcrest-core-1.3"]="$SRC_BASE_DIR/lib/"  this one needs changes?
 
@@ -321,7 +324,7 @@ fi
 # The feature names must not contain whitespace.
 ALL_RANDOOP_FEATURES=("BASELINE" "BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
 # The different features of Randoop to use. Adjust according to the features you are testing.
-RANDOOP_FEATURES=("BLOODHOUND") # "BASELINE" "BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
+RANDOOP_FEATURES=("BASELINE") # "BASELINE" "BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
 
 # ABLATION controls whether to perform feature ablation studies.
 # If false, the script tests the Randoop features specified in the RANDOOP_FEATURES array.
@@ -514,6 +517,10 @@ do
     mv suppression.log "$RESULT_DIR" 2>/dev/null || true
     mv major.log mutants.log "$RESULT_DIR"
     (cd results; mv covMap.csv details.csv testMap.csv preprocessing.ser jacoco.exec ../"$RESULT_DIR")
+
+    echo
+    echo
+    echo
 done
 
 
