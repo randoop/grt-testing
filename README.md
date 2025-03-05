@@ -14,5 +14,5 @@ For instructions on using the scripts, refer to `scripts/mutation-repro.md`.
 
 The compiled subject programs used by the GRT paper appear in the `subject-programs/` directory.
 
-To obtain the sources of the subject programs, see 
+To obtain the sources of the subject programs, see
 [subject-programs/README.build].

@@ -2,6 +2,8 @@
 
 all: build/jacoco.jar build/randoop-all-4.3.3.jar build/major build/replacecall-4.3.3.jar build/major/bin/ant.m results
 
+MAKEFILE_DIR := $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
+
 build/jacoco.jar:
 	mkdir -p build
 	cd build && wget -nv -O jacoco-0.8.12.zip https://search.maven.org/remotecontent?filepath=org/jacoco/jacoco/0.8.12/jacoco-0.8.12.zip
@@ -9,12 +11,30 @@ build/jacoco.jar:
 
 build/randoop-all-4.3.3.jar:
 	mkdir -p build
-	echo "See scripts/mutation-repro.md to obtain randoop-all-4.3.3.jar"
+	cd build
+	wget -nv https://github.com/randoop/randoop/releases/download/v4.3.3/randoop-all-4.3.3.jar
 
 build/major:
 	mkdir -p build
-	cd build && wget -nv http://mutation-testing.org/downloads/files/major-2.2.0_jre8.zip
+	cd build && wget -nv https://mutation-testing.org/downloads/files/major-2.2.0_jre8.zip
 	cd build && unzip -o major-2.2.0_jre8.zip
+
+build/randoop:
+	mkdir -p build
+	cd build && git clone git@github.com:randoop/randoop.git
+
+randoop-from-source:
+	cd build/randoop && \
+	git pull && \
+	. "${MAKEFILE_DIR}usejdk.sh" && \
+	. ../../usejdk.sh && \
+	usejdk11 && \
+	./gradlew shadowJar && \
+	mv -f build/libs/randoop-all-4.3.3.jar agent/replacecall/build/libs/replacecall-4.3.3.jar .. && \
+	usejdk8
+
+build/libs/randoop-all-4.3.3.jar:
+	mv -f build/libs/randoop-all-4.3.3.jar agent/replacecall/build/libs/replacecall-4.3.3.jar ..
 
 build/replacecall-4.3.3.jar:
 	wget https://github.com/776styjsu/randoop/releases/download/replacecall-grt-v1.0.1/replacecall-4.3.3.jar
