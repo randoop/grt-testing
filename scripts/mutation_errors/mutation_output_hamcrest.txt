@@ -1,0 +1,164 @@
+Using BASELINE
+
+openjdk version "11.0.13" 2021-10-19
+OpenJDK Runtime Environment Temurin-11.0.13+8 (build 11.0.13+8)
+OpenJDK 64-Bit Server VM Temurin-11.0.13+8 (build 11.0.13+8, mixed mode)
+Randoop for Java version "4.3.3, branch master, commit 27d6ec8, 2025-02-26".
+
+Will try to generate tests for 41 classes.
+PUBLIC MEMBERS=218
+Explorer = ForwardGenerator(steps: 0, null steps: 0, num_sequences_generated: 0;
+    allSequences: 0, regresson seqs: 0, error seqs: 0=0=0, invalid seqs: 0, subsumed_sequences: 0, num_failed_output_test: 0;
+    sideEffectFreeMethods: 1115, runtimePrimitivesSeen: 38)
+
+Progress update: steps=1, test inputs generated=0, failing inputs=0      (2025-03-05T04:21:54.159016Z     51.5M used)Unexpected exception java.lang.NullPointerException (null) in CallReplacementTransformer.transform(com/sun/source/doctree/DocCommentTree)
+java.lang.NullPointerException
+	at replacecall.org.apache.bcel.generic.ConstantPoolGen.<init>(ConstantPoolGen.java:159)
+	at replacecall.org.apache.bcel.generic.ConstantPoolGen.<init>(ConstantPoolGen.java:216)
+	at replacecall.org.apache.bcel.generic.ClassGen.<init>(ClassGen.java:143)
+	at randoop.instrument.CallReplacementTransformer.transform(CallReplacementTransformer.java:131)
+	at java.instrument/java.lang.instrument.ClassFileTransformer.transform(ClassFileTransformer.java:246)
+	at java.instrument/sun.instrument.TransformerManager.transform(TransformerManager.java:188)
+	at java.instrument/sun.instrument.InstrumentationImpl.transform(InstrumentationImpl.java:563)
+	at java.base/java.lang.ClassLoader.defineClass2(Native Method)
+	at java.base/java.lang.ClassLoader.defineClass(ClassLoader.java:1109)
+	at java.base/java.security.SecureClassLoader.defineClass(SecureClassLoader.java:206)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.defineClass(BuiltinClassLoader.java:759)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.findClassInModuleOrNull(BuiltinClassLoader.java:680)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClassOrNull(BuiltinClassLoader.java:605)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:579)
+	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:178)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:522)
+	at jdk.compiler/com.sun.tools.javac.parser.ParserFactory.<init>(ParserFactory.java:76)
+	at jdk.compiler/com.sun.tools.javac.parser.ParserFactory.instance(ParserFactory.java:56)
+	at jdk.compiler/com.sun.tools.javac.main.JavaCompiler.<init>(JavaCompiler.java:401)
+	at jdk.compiler/com.sun.tools.javac.main.JavaCompiler.instance(JavaCompiler.java:115)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.prepareCompiler(JavacTaskImpl.java:203)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.lambda$doCall$0(JavacTaskImpl.java:101)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.handleExceptions(JavacTaskImpl.java:147)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.doCall(JavacTaskImpl.java:100)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.call(JavacTaskImpl.java:94)
+	at randoop.compile.SequenceCompiler.compile(SequenceCompiler.java:176)
+	at randoop.compile.SequenceCompiler.isCompilable(SequenceCompiler.java:105)
+	at randoop.test.CompilableTestPredicate.testSource(CompilableTestPredicate.java:114)
+	at randoop.test.CompilableTestPredicate.test(CompilableTestPredicate.java:93)
+	at randoop.test.CompilableTestPredicate.test(CompilableTestPredicate.java:25)
+	at java.base/java.util.function.Predicate.lambda$and$0(Predicate.java:69)
+	at randoop.generation.AbstractGenerator.createAndClassifySequences(AbstractGenerator.java:320)
+	at randoop.main.GenTests.handle(GenTests.java:569)
+	at randoop.main.Main.nonStaticMain(Main.java:69)
+	at randoop.main.Main.main(Main.java:31)
+Unexpected exception java.lang.NullPointerException (null) in CallReplacementTransformer.transform(com/sun/source/doctree/DocTreeVisitor)
+java.lang.NullPointerException
+	at replacecall.org.apache.bcel.generic.ConstantPoolGen.<init>(ConstantPoolGen.java:159)
+	at replacecall.org.apache.bcel.generic.ConstantPoolGen.<init>(ConstantPoolGen.java:216)
+	at replacecall.org.apache.bcel.generic.ClassGen.<init>(ClassGen.java:143)
+	at randoop.instrument.CallReplacementTransformer.transform(CallReplacementTransformer.java:131)
+	at java.instrument/java.lang.instrument.ClassFileTransformer.transform(ClassFileTransformer.java:246)
+	at java.instrument/sun.instrument.TransformerManager.transform(TransformerManager.java:188)
+	at java.instrument/sun.instrument.InstrumentationImpl.transform(InstrumentationImpl.java:563)
+	at java.base/java.lang.ClassLoader.defineClass2(Native Method)
+	at java.base/java.lang.ClassLoader.defineClass(ClassLoader.java:1109)
+	at java.base/java.security.SecureClassLoader.defineClass(SecureClassLoader.java:206)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.defineClass(BuiltinClassLoader.java:759)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.findClassInModuleOrNull(BuiltinClassLoader.java:680)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClassOrNull(BuiltinClassLoader.java:605)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:579)
+	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:178)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:522)
+	at jdk.compiler/com.sun.tools.javac.tree.DocTreeMaker.<init>(DocTreeMaker.java:146)
+	at jdk.compiler/com.sun.tools.javac.tree.DocTreeMaker.instance(DocTreeMaker.java:124)
+	at jdk.compiler/com.sun.tools.javac.parser.ParserFactory.<init>(ParserFactory.java:76)
+	at jdk.compiler/com.sun.tools.javac.parser.ParserFactory.instance(ParserFactory.java:56)
+	at jdk.compiler/com.sun.tools.javac.main.JavaCompiler.<init>(JavaCompiler.java:401)
+	at jdk.compiler/com.sun.tools.javac.main.JavaCompiler.instance(JavaCompiler.java:115)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.prepareCompiler(JavacTaskImpl.java:203)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.lambda$doCall$0(JavacTaskImpl.java:101)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.handleExceptions(JavacTaskImpl.java:147)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.doCall(JavacTaskImpl.java:100)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.call(JavacTaskImpl.java:94)
+	at randoop.compile.SequenceCompiler.compile(SequenceCompiler.java:176)
+	at randoop.compile.SequenceCompiler.isCompilable(SequenceCompiler.java:105)
+	at randoop.test.CompilableTestPredicate.testSource(CompilableTestPredicate.java:114)
+	at randoop.test.CompilableTestPredicate.test(CompilableTestPredicate.java:93)
+	at randoop.test.CompilableTestPredicate.test(CompilableTestPredicate.java:25)
+	at java.base/java.util.function.Predicate.lambda$and$0(Predicate.java:69)
+	at randoop.generation.AbstractGenerator.createAndClassifySequences(AbstractGenerator.java:320)
+	at randoop.main.GenTests.handle(GenTests.java:569)
+	at randoop.main.Main.nonStaticMain(Main.java:69)
+	at randoop.main.Main.main(Main.java:31)
+
+Progress update: steps=400, test inputs generated=202, failing inputs=0      (2025-03-05T04:22:04.183728Z     312M used)
+Normal method executions: 421726
+Exceptional method executions: 43
+
+Average method execution time (normal termination):      0.000153
+Average method execution time (exceptional termination): 0.108
+Approximate memory usage 312M
+Explorer = ForwardGenerator(steps: 400, null steps: 198, num_sequences_generated: 202;
+    allSequences: 202, regresson seqs: 135, error seqs: 0=0=0, invalid seqs: 0, subsumed_sequences: 0, num_failed_output_test: 67;
+    sideEffectFreeMethods: 1115, runtimePrimitivesSeen: 45)
+
+About to look for failing assertions in 86 regression sequences.
+
+Regression test output:
+Regression test count: 86
+Writing regression JUnit tests...
+Created file /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java
+Created file /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest.java
+Wrote regression JUnit tests.
+About to look for flaky methods.
+Done looking for flaky methods.
+
+Invalid tests generated: 0
+
+Uncompilable sequences generated (count: 63).
+Please report uncompilable sequences at https://github.com/randoop/randoop/issues ,
+providing the information requested at https://randoop.github.io/randoop/manual/index.html#bug-reporting .
+java version "1.8.0_202"
+Java(TM) SE Runtime Environment (build 1.8.0_202-b08)
+Java HotSpot(TM) 64-Bit Server VM (build 25.202-b08, mixed mode)
+
+Compiling and mutating project...
+command:
+/Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/major/bin/ant -Dmutator=mml:/Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/major/mml/all.mml.bin -Dsrc=/Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/hamcrest-core-1.3  clean compile
+
+Buildfile: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build.xml
+
+clean:
+   [delete] Deleting directory /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/bin
+
+init:
+    [mkdir] Created dir: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/bin
+
+compile:
+
+BUILD FAILED
+/Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build.xml:36: The following error occurred while executing this line:
+java.io.FileNotFoundException: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/hamcrest-core-1.3/build-original.xml (No such file or directory)
+	at java.io.FileInputStream.open0(Native Method)
+	at java.io.FileInputStream.open(FileInputStream.java:195)
+	at java.io.FileInputStream.<init>(FileInputStream.java:138)
+	at org.apache.tools.ant.helper.ProjectHelper2.parse(ProjectHelper2.java:278)
+	at org.apache.tools.ant.helper.ProjectHelper2.parse(ProjectHelper2.java:178)
+	at org.apache.tools.ant.ProjectHelper.configureProject(ProjectHelper.java:82)
+	at org.apache.tools.ant.taskdefs.Ant.execute(Ant.java:393)
+	at org.apache.tools.ant.UnknownElement.execute(UnknownElement.java:291)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.apache.tools.ant.dispatch.DispatchUtils.execute(DispatchUtils.java:106)
+	at org.apache.tools.ant.Task.perform(Task.java:348)
+	at org.apache.tools.ant.Target.execute(Target.java:392)
+	at org.apache.tools.ant.Target.performTasks(Target.java:413)
+	at org.apache.tools.ant.Project.executeSortedTargets(Project.java:1399)
+	at org.apache.tools.ant.Project.executeTarget(Project.java:1368)
+	at org.apache.tools.ant.helper.DefaultExecutor.executeTargets(DefaultExecutor.java:41)
+	at org.apache.tools.ant.Project.executeTargets(Project.java:1251)
+	at org.apache.tools.ant.Main.runBuild(Main.java:811)
+	at org.apache.tools.ant.Main.startAnt(Main.java:217)
+	at org.apache.tools.ant.launch.Launcher.run(Launcher.java:280)
+	at org.apache.tools.ant.launch.Launcher.main(Launcher.java:109)
+
+Total time: 0 seconds

@@ -1,0 +1,186 @@
+Using BASELINE
+
+openjdk version "11.0.13" 2021-10-19
+OpenJDK Runtime Environment Temurin-11.0.13+8 (build 11.0.13+8)
+OpenJDK 64-Bit Server VM Temurin-11.0.13+8 (build 11.0.13+8, mixed mode)
+Randoop for Java version "4.3.3, branch master, commit 27d6ec8, 2025-02-26".
+
+Will try to generate tests for 333 classes.
+PUBLIC MEMBERS=3453
+Explorer = ForwardGenerator(steps: 0, null steps: 0, num_sequences_generated: 0;
+    allSequences: 0, regresson seqs: 0, error seqs: 0=0=0, invalid seqs: 0, subsumed_sequences: 0, num_failed_output_test: 0;
+    sideEffectFreeMethods: 1115, runtimePrimitivesSeen: 38)
+
+Progress update: steps=1, test inputs generated=0, failing inputs=0      (2025-03-04T22:57:53.879203Z     742M used)Unexpected exception java.lang.NullPointerException (null) in CallReplacementTransformer.transform(com/sun/source/doctree/DocCommentTree)
+java.lang.NullPointerException
+	at replacecall.org.apache.bcel.generic.ConstantPoolGen.<init>(ConstantPoolGen.java:159)
+	at replacecall.org.apache.bcel.generic.ConstantPoolGen.<init>(ConstantPoolGen.java:216)
+	at replacecall.org.apache.bcel.generic.ClassGen.<init>(ClassGen.java:143)
+	at randoop.instrument.CallReplacementTransformer.transform(CallReplacementTransformer.java:131)
+	at java.instrument/java.lang.instrument.ClassFileTransformer.transform(ClassFileTransformer.java:246)
+	at java.instrument/sun.instrument.TransformerManager.transform(TransformerManager.java:188)
+	at java.instrument/sun.instrument.InstrumentationImpl.transform(InstrumentationImpl.java:563)
+	at java.base/java.lang.ClassLoader.defineClass2(Native Method)
+	at java.base/java.lang.ClassLoader.defineClass(ClassLoader.java:1109)
+	at java.base/java.security.SecureClassLoader.defineClass(SecureClassLoader.java:206)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.defineClass(BuiltinClassLoader.java:759)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.findClassInModuleOrNull(BuiltinClassLoader.java:680)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClassOrNull(BuiltinClassLoader.java:605)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:579)
+	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:178)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:522)
+	at jdk.compiler/com.sun.tools.javac.parser.ParserFactory.<init>(ParserFactory.java:76)
+	at jdk.compiler/com.sun.tools.javac.parser.ParserFactory.instance(ParserFactory.java:56)
+	at jdk.compiler/com.sun.tools.javac.main.JavaCompiler.<init>(JavaCompiler.java:401)
+	at jdk.compiler/com.sun.tools.javac.main.JavaCompiler.instance(JavaCompiler.java:115)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.prepareCompiler(JavacTaskImpl.java:203)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.lambda$doCall$0(JavacTaskImpl.java:101)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.handleExceptions(JavacTaskImpl.java:147)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.doCall(JavacTaskImpl.java:100)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.call(JavacTaskImpl.java:94)
+	at randoop.compile.SequenceCompiler.compile(SequenceCompiler.java:176)
+	at randoop.compile.SequenceCompiler.isCompilable(SequenceCompiler.java:105)
+	at randoop.test.CompilableTestPredicate.testSource(CompilableTestPredicate.java:114)
+	at randoop.test.CompilableTestPredicate.test(CompilableTestPredicate.java:93)
+	at randoop.test.CompilableTestPredicate.test(CompilableTestPredicate.java:25)
+	at java.base/java.util.function.Predicate.lambda$and$0(Predicate.java:69)
+	at randoop.generation.AbstractGenerator.createAndClassifySequences(AbstractGenerator.java:320)
+	at randoop.main.GenTests.handle(GenTests.java:569)
+	at randoop.main.Main.nonStaticMain(Main.java:69)
+	at randoop.main.Main.main(Main.java:31)
+Unexpected exception java.lang.NullPointerException (null) in CallReplacementTransformer.transform(com/sun/source/doctree/DocTreeVisitor)
+java.lang.NullPointerException
+	at replacecall.org.apache.bcel.generic.ConstantPoolGen.<init>(ConstantPoolGen.java:159)
+	at replacecall.org.apache.bcel.generic.ConstantPoolGen.<init>(ConstantPoolGen.java:216)
+	at replacecall.org.apache.bcel.generic.ClassGen.<init>(ClassGen.java:143)
+	at randoop.instrument.CallReplacementTransformer.transform(CallReplacementTransformer.java:131)
+	at java.instrument/java.lang.instrument.ClassFileTransformer.transform(ClassFileTransformer.java:246)
+	at java.instrument/sun.instrument.TransformerManager.transform(TransformerManager.java:188)
+	at java.instrument/sun.instrument.InstrumentationImpl.transform(InstrumentationImpl.java:563)
+	at java.base/java.lang.ClassLoader.defineClass2(Native Method)
+	at java.base/java.lang.ClassLoader.defineClass(ClassLoader.java:1109)
+	at java.base/java.security.SecureClassLoader.defineClass(SecureClassLoader.java:206)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.defineClass(BuiltinClassLoader.java:759)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.findClassInModuleOrNull(BuiltinClassLoader.java:680)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClassOrNull(BuiltinClassLoader.java:605)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:579)
+	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:178)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:522)
+	at jdk.compiler/com.sun.tools.javac.tree.DocTreeMaker.<init>(DocTreeMaker.java:146)
+	at jdk.compiler/com.sun.tools.javac.tree.DocTreeMaker.instance(DocTreeMaker.java:124)
+	at jdk.compiler/com.sun.tools.javac.parser.ParserFactory.<init>(ParserFactory.java:76)
+	at jdk.compiler/com.sun.tools.javac.parser.ParserFactory.instance(ParserFactory.java:56)
+	at jdk.compiler/com.sun.tools.javac.main.JavaCompiler.<init>(JavaCompiler.java:401)
+	at jdk.compiler/com.sun.tools.javac.main.JavaCompiler.instance(JavaCompiler.java:115)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.prepareCompiler(JavacTaskImpl.java:203)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.lambda$doCall$0(JavacTaskImpl.java:101)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.handleExceptions(JavacTaskImpl.java:147)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.doCall(JavacTaskImpl.java:100)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.call(JavacTaskImpl.java:94)
+	at randoop.compile.SequenceCompiler.compile(SequenceCompiler.java:176)
+	at randoop.compile.SequenceCompiler.isCompilable(SequenceCompiler.java:105)
+	at randoop.test.CompilableTestPredicate.testSource(CompilableTestPredicate.java:114)
+	at randoop.test.CompilableTestPredicate.test(CompilableTestPredicate.java:93)
+	at randoop.test.CompilableTestPredicate.test(CompilableTestPredicate.java:25)
+	at java.base/java.util.function.Predicate.lambda$and$0(Predicate.java:69)
+	at randoop.generation.AbstractGenerator.createAndClassifySequences(AbstractGenerator.java:320)
+	at randoop.main.GenTests.handle(GenTests.java:569)
+	at randoop.main.Main.nonStaticMain(Main.java:69)
+	at randoop.main.Main.main(Main.java:31)
+Warning: the fonts "Times" and "Times" are not available for the Java logical font "Serif", which may have unexpected appearance or behavior. Re-enable the "Times" font to remove this warning.
+
+Progress update: steps=347, test inputs generated=106, failing inputs=0      (2025-03-04T22:58:03.887067Z     192M used)
+Normal method executions: 286
+Exceptional method executions: 10
+
+Average method execution time (normal termination):      17.1
+Average method execution time (exceptional termination): 0.0924
+Approximate memory usage 192M
+Explorer = ForwardGenerator(steps: 347, null steps: 241, num_sequences_generated: 106;
+    allSequences: 106, regresson seqs: 106, error seqs: 0=0=0, invalid seqs: 0, subsumed_sequences: 0, num_failed_output_test: 0;
+    sideEffectFreeMethods: 1115, runtimePrimitivesSeen: 76)
+
+About to look for failing assertions in 97 regression sequences.
+
+Regression test output:
+Regression test count: 97
+Writing regression JUnit tests...
+Created file /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java
+Created file /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest.java
+Wrote regression JUnit tests.
+About to look for flaky methods.
+Done looking for flaky methods.
+
+Invalid tests generated: 0
+
+Compiling and mutating project...
+command:
+/Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/major/bin/ant -Dmutator=mml:/Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/major/mml/all.mml.bin -Dsrc=/Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/bcel-5.2/src/  clean compile
+
+Buildfile: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build.xml
+
+clean:
+   [delete] Deleting directory /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/bin
+
+init:
+    [mkdir] Created dir: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/bin
+
+compile:
+    [javac] Compiling 335 source files to /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/bin
+WARNING: An illegal reflective access operation has occurred
+WARNING: Illegal reflective access by org.mutationtesting.major.providers.ReflectionProvider (file:/Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/major/lib/major.jar) to field com.sun.tools.javac.comp.Enter.typeEnvs
+WARNING: Please consider reporting this to the maintainers of org.mutationtesting.major.providers.ReflectionProvider
+WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+WARNING: All illegal access operations will be denied in a future release
+    [javac] An exception has occurred in the compiler (11.0.13). Please file a bug against the Java compiler via the Java bug reporting page (http://bugreport.java.com) after checking the Bug Database (http://bugs.java.com) for duplicates. Include your program and the following diagnostic in your report. Thank you.
+    [javac] com.sun.tools.javac.util.ClientCodeException: java.lang.NoSuchMethodError: 'com.sun.tools.javac.code.Scope com.sun.tools.javac.code.Symbol$ClassSymbol.members()'
+    [javac] 	at jdk.compiler/com.sun.tools.javac.api.ClientCodeWrapper$WrappedTaskListener.finished(ClientCodeWrapper.java:832)
+    [javac] 	at jdk.compiler/com.sun.tools.javac.api.MultiTaskListener.finished(MultiTaskListener.java:132)
+    [javac] 	at jdk.compiler/com.sun.tools.javac.main.JavaCompiler.flow(JavaCompiler.java:1418)
+    [javac] 	at jdk.compiler/com.sun.tools.javac.main.JavaCompiler.flow(JavaCompiler.java:1375)
+    [javac] 	at jdk.compiler/com.sun.tools.javac.main.JavaCompiler.compile(JavaCompiler.java:973)
+    [javac] 	at jdk.compiler/com.sun.tools.javac.main.Main.compile(Main.java:311)
+    [javac] 	at jdk.compiler/com.sun.tools.javac.main.Main.compile(Main.java:170)
+    [javac] 	at jdk.compiler/com.sun.tools.javac.Main.compile(Main.java:57)
+    [javac] 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+    [javac] 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+    [javac] 	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+    [javac] 	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+    [javac] 	at org.apache.tools.ant.taskdefs.compilers.Javac13.execute(Javac13.java:57)
+    [javac] 	at org.apache.tools.ant.taskdefs.Javac.compile(Javac.java:1153)
+    [javac] 	at org.apache.tools.ant.taskdefs.Javac.execute(Javac.java:930)
+    [javac] 	at org.apache.tools.ant.UnknownElement.execute(UnknownElement.java:291)
+    [javac] 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+    [javac] 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+    [javac] 	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+    [javac] 	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+    [javac] 	at org.apache.tools.ant.dispatch.DispatchUtils.execute(DispatchUtils.java:106)
+    [javac] 	at org.apache.tools.ant.Task.perform(Task.java:348)
+    [javac] 	at org.apache.tools.ant.Target.execute(Target.java:392)
+    [javac] 	at org.apache.tools.ant.Target.performTasks(Target.java:413)
+    [javac] 	at org.apache.tools.ant.Project.executeSortedTargets(Project.java:1399)
+    [javac] 	at org.apache.tools.ant.Project.executeTarget(Project.java:1368)
+    [javac] 	at org.apache.tools.ant.helper.DefaultExecutor.executeTargets(DefaultExecutor.java:41)
+    [javac] 	at org.apache.tools.ant.Project.executeTargets(Project.java:1251)
+    [javac] 	at org.apache.tools.ant.Main.runBuild(Main.java:811)
+    [javac] 	at org.apache.tools.ant.Main.startAnt(Main.java:217)
+    [javac] 	at org.apache.tools.ant.launch.Launcher.run(Launcher.java:280)
+    [javac] 	at org.apache.tools.ant.launch.Launcher.main(Launcher.java:109)
+    [javac] Caused by: java.lang.NoSuchMethodError: 'com.sun.tools.javac.code.Scope com.sun.tools.javac.code.Symbol$ClassSymbol.members()'
+    [javac] 	at org.mutationtesting.major.mutation.SymtabUtil$SymtabUpdater.enterBinop(SymtabUtil.java:166)
+    [javac] 	at org.mutationtesting.major.mutation.SymtabUtil$SymtabUpdater.enterIntoSymtab(SymtabUtil.java:82)
+    [javac] 	at org.mutationtesting.major.mutation.SymtabUtil$SymtabUpdater.access$100(SymtabUtil.java:40)
+    [javac] 	at org.mutationtesting.major.mutation.SymtabUtil.updateSymtabForMutation(SymtabUtil.java:32)
+    [javac] 	at org.mutationtesting.major.mutation.Mutator.<init>(Mutator.java:269)
+    [javac] 	at org.mutationtesting.major.mutation.Mutator.instance(Mutator.java:167)
+    [javac] 	at org.mutationtesting.major.plugin.MajorPluginTaskListener.mutate(MajorPluginTaskListener.java:316)
+    [javac] 	at org.mutationtesting.major.plugin.MajorPluginTaskListener.lambda$finished$1(MajorPluginTaskListener.java:122)
+    [javac] 	at java.base/java.util.Optional.ifPresent(Optional.java:183)
+    [javac] 	at org.mutationtesting.major.plugin.MajorPluginTaskListener.finished(MajorPluginTaskListener.java:122)
+    [javac] 	at jdk.compiler/com.sun.tools.javac.api.ClientCodeWrapper$WrappedTaskListener.finished(ClientCodeWrapper.java:828)
+    [javac] 	... 31 more
+
+BUILD FAILED
+/Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build.xml:38: Compile failed; see the compiler error output for details.
+
+Total time: 2 seconds

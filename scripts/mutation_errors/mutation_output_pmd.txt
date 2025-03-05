@@ -1,0 +1,1416 @@
+Using BASELINE
+
+openjdk version "11.0.13" 2021-10-19
+OpenJDK Runtime Environment Temurin-11.0.13+8 (build 11.0.13+8)
+OpenJDK 64-Bit Server VM Temurin-11.0.13+8 (build 11.0.13+8, mixed mode)
+Randoop for Java version "4.3.3, branch master, commit 27d6ec8, 2025-02-26".
+
+Will try to generate tests for 30 classes.
+PUBLIC MEMBERS=259
+Explorer = ForwardGenerator(steps: 0, null steps: 0, num_sequences_generated: 0;
+    allSequences: 0, regresson seqs: 0, error seqs: 0=0=0, invalid seqs: 0, subsumed_sequences: 0, num_failed_output_test: 0;
+    sideEffectFreeMethods: 1115, runtimePrimitivesSeen: 38)
+
+Progress update: steps=1, test inputs generated=0, failing inputs=0      (2025-03-05T04:43:32.077979Z     73.4M used)Unexpected exception java.lang.NullPointerException (null) in CallReplacementTransformer.transform(com/sun/source/doctree/DocCommentTree)
+java.lang.NullPointerException
+	at replacecall.org.apache.bcel.generic.ConstantPoolGen.<init>(ConstantPoolGen.java:159)
+	at replacecall.org.apache.bcel.generic.ConstantPoolGen.<init>(ConstantPoolGen.java:216)
+	at replacecall.org.apache.bcel.generic.ClassGen.<init>(ClassGen.java:143)
+	at randoop.instrument.CallReplacementTransformer.transform(CallReplacementTransformer.java:131)
+	at java.instrument/java.lang.instrument.ClassFileTransformer.transform(ClassFileTransformer.java:246)
+	at java.instrument/sun.instrument.TransformerManager.transform(TransformerManager.java:188)
+	at java.instrument/sun.instrument.InstrumentationImpl.transform(InstrumentationImpl.java:563)
+	at java.base/java.lang.ClassLoader.defineClass2(Native Method)
+	at java.base/java.lang.ClassLoader.defineClass(ClassLoader.java:1109)
+	at java.base/java.security.SecureClassLoader.defineClass(SecureClassLoader.java:206)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.defineClass(BuiltinClassLoader.java:759)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.findClassInModuleOrNull(BuiltinClassLoader.java:680)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClassOrNull(BuiltinClassLoader.java:605)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:579)
+	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:178)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:522)
+	at jdk.compiler/com.sun.tools.javac.parser.ParserFactory.<init>(ParserFactory.java:76)
+	at jdk.compiler/com.sun.tools.javac.parser.ParserFactory.instance(ParserFactory.java:56)
+	at jdk.compiler/com.sun.tools.javac.main.JavaCompiler.<init>(JavaCompiler.java:401)
+	at jdk.compiler/com.sun.tools.javac.main.JavaCompiler.instance(JavaCompiler.java:115)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.prepareCompiler(JavacTaskImpl.java:203)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.lambda$doCall$0(JavacTaskImpl.java:101)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.handleExceptions(JavacTaskImpl.java:147)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.doCall(JavacTaskImpl.java:100)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.call(JavacTaskImpl.java:94)
+	at randoop.compile.SequenceCompiler.compile(SequenceCompiler.java:176)
+	at randoop.compile.SequenceCompiler.isCompilable(SequenceCompiler.java:105)
+	at randoop.test.CompilableTestPredicate.testSource(CompilableTestPredicate.java:114)
+	at randoop.test.CompilableTestPredicate.test(CompilableTestPredicate.java:93)
+	at randoop.test.CompilableTestPredicate.test(CompilableTestPredicate.java:25)
+	at java.base/java.util.function.Predicate.lambda$and$0(Predicate.java:69)
+	at randoop.generation.AbstractGenerator.createAndClassifySequences(AbstractGenerator.java:320)
+	at randoop.main.GenTests.handle(GenTests.java:569)
+	at randoop.main.Main.nonStaticMain(Main.java:69)
+	at randoop.main.Main.main(Main.java:31)
+Unexpected exception java.lang.NullPointerException (null) in CallReplacementTransformer.transform(com/sun/source/doctree/DocTreeVisitor)
+java.lang.NullPointerException
+	at replacecall.org.apache.bcel.generic.ConstantPoolGen.<init>(ConstantPoolGen.java:159)
+	at replacecall.org.apache.bcel.generic.ConstantPoolGen.<init>(ConstantPoolGen.java:216)
+	at replacecall.org.apache.bcel.generic.ClassGen.<init>(ClassGen.java:143)
+	at randoop.instrument.CallReplacementTransformer.transform(CallReplacementTransformer.java:131)
+	at java.instrument/java.lang.instrument.ClassFileTransformer.transform(ClassFileTransformer.java:246)
+	at java.instrument/sun.instrument.TransformerManager.transform(TransformerManager.java:188)
+	at java.instrument/sun.instrument.InstrumentationImpl.transform(InstrumentationImpl.java:563)
+	at java.base/java.lang.ClassLoader.defineClass2(Native Method)
+	at java.base/java.lang.ClassLoader.defineClass(ClassLoader.java:1109)
+	at java.base/java.security.SecureClassLoader.defineClass(SecureClassLoader.java:206)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.defineClass(BuiltinClassLoader.java:759)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.findClassInModuleOrNull(BuiltinClassLoader.java:680)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClassOrNull(BuiltinClassLoader.java:605)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:579)
+	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:178)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:522)
+	at jdk.compiler/com.sun.tools.javac.tree.DocTreeMaker.<init>(DocTreeMaker.java:146)
+	at jdk.compiler/com.sun.tools.javac.tree.DocTreeMaker.instance(DocTreeMaker.java:124)
+	at jdk.compiler/com.sun.tools.javac.parser.ParserFactory.<init>(ParserFactory.java:76)
+	at jdk.compiler/com.sun.tools.javac.parser.ParserFactory.instance(ParserFactory.java:56)
+	at jdk.compiler/com.sun.tools.javac.main.JavaCompiler.<init>(JavaCompiler.java:401)
+	at jdk.compiler/com.sun.tools.javac.main.JavaCompiler.instance(JavaCompiler.java:115)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.prepareCompiler(JavacTaskImpl.java:203)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.lambda$doCall$0(JavacTaskImpl.java:101)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.handleExceptions(JavacTaskImpl.java:147)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.doCall(JavacTaskImpl.java:100)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.call(JavacTaskImpl.java:94)
+	at randoop.compile.SequenceCompiler.compile(SequenceCompiler.java:176)
+	at randoop.compile.SequenceCompiler.isCompilable(SequenceCompiler.java:105)
+	at randoop.test.CompilableTestPredicate.testSource(CompilableTestPredicate.java:114)
+	at randoop.test.CompilableTestPredicate.test(CompilableTestPredicate.java:93)
+	at randoop.test.CompilableTestPredicate.test(CompilableTestPredicate.java:25)
+	at java.base/java.util.function.Predicate.lambda$and$0(Predicate.java:69)
+	at randoop.generation.AbstractGenerator.createAndClassifySequences(AbstractGenerator.java:320)
+	at randoop.main.GenTests.handle(GenTests.java:569)
+	at randoop.main.Main.nonStaticMain(Main.java:69)
+	at randoop.main.Main.main(Main.java:31)
+----------------------------------------
+----------------------------------------
+----------------------------------------
+----------------------------------------
+----------------------------------------
+----------------------------------------
+----------------------------------------
+----------------------------------------
+----------------------------------------
+----------------------------------------
+----------------------------------------
+----------------------------------------
+----------------------------------------
+----------------------------------------
+----------------------------------------
+	Fields (0):
+----------------------------------------
+----------------------------------------
+----------------------------------------
+----------------------------------------
+----------------------------------------
+----------------------------------------
+	Fields (0):
+----------------------------------------
+----------------------------------------
+----------------------------------------
+----------------------------------------
+----------------------------------------
+----------------------------------------
+	Fields (0):
+----------------------------------------
+----------------------------------------
+----------------------------------------
+----------------------------------------
+----------------------------------------
+----------------------------------------
+	Fields (0):
+----------------------------------------
+----------------------------------------
+	Fields (0):
+	Fields (0):
+	Constructors (0):
+	Methods (0):
+----------------------------------------
+----------------------------------------
+Class: not (null)
+	Fields (0):
+	Constructors (0):
+	Methods (1):
+
+Progress update: steps=410, test inputs generated=210, failing inputs=0      (2025-03-05T04:43:42.099101Z     58.9M used)
+Normal method executions: 331221
+Exceptional method executions: 108
+
+Average method execution time (normal termination):      0.000258
+Average method execution time (exceptional termination): 0.111
+Approximate memory usage 58.9M
+Explorer = ForwardGenerator(steps: 410, null steps: 200, num_sequences_generated: 210;
+    allSequences: 210, regresson seqs: 204, error seqs: 0=0=0, invalid seqs: 0, subsumed_sequences: 0, num_failed_output_test: 6;
+    sideEffectFreeMethods: 1115, runtimePrimitivesSeen: 49)
+
+About to look for failing assertions in 115 regression sequences.
+
+Regression test output:
+Regression test count: 115
+Writing regression JUnit tests...
+Created file /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java
+Created file /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest.java
+Wrote regression JUnit tests.
+About to look for flaky methods.
+Done looking for flaky methods.
+
+Invalid tests generated: 0
+java version "1.8.0_202"
+Java(TM) SE Runtime Environment (build 1.8.0_202-b08)
+Java HotSpot(TM) 64-Bit Server VM (build 25.202-b08, mixed mode)
+
+Compiling and mutating project...
+command:
+/Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/major/bin/ant -Dmutator=mml:/Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/major/mml/all.mml.bin -Dsrc=/Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2  clean compile
+
+Buildfile: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build.xml
+
+clean:
+   [delete] Deleting directory /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/bin
+
+init:
+    [mkdir] Created dir: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/bin
+
+compile:
+     [exec] [INFO] Scanning for projects...
+     [exec] [INFO]
+     [exec] [INFO] --------------------< net.sourceforge.pmd:pmd-core >--------------------
+     [exec] [INFO] Building PMD Core 5.2.2
+     [exec] [INFO]   from pom.xml
+     [exec] [INFO] --------------------------------[ jar ]---------------------------------
+     [exec] [INFO]
+     [exec] [INFO] --- clean:2.6:clean (default-clean) @ pmd-core ---
+     [exec] [INFO] Deleting /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/target
+     [exec] [INFO]
+     [exec] [INFO] --- antrun:1.7:run (pmd-clean) @ pmd-core ---
+     [exec] [INFO] Executing tasks
+     [exec]
+     [exec] main:
+     [exec]      [echo] PMD specific tasks: cleaning generated xdocs
+     [exec] [INFO] Executed tasks
+     [exec] [INFO]
+     [exec] [INFO] --- enforcer:1.0:enforce (enforce-maven) @ pmd-core ---
+     [exec] [INFO]
+     [exec] [INFO] --- antrun:1.7:run (generate-sources) @ pmd-core ---
+     [exec] [INFO] Executing tasks
+     [exec]
+     [exec] main:
+     [exec]
+     [exec] checkUpToDate:
+     [exec]      [echo] up to date check: javaccBuildNotRequired=true
+     [exec]
+     [exec] init:
+     [exec]
+     [exec] dummyjjtree:
+     [exec]
+     [exec] cleanup:
+     [exec]
+     [exec] alljavacc:
+     [exec] [INFO] Executed tasks
+     [exec] [INFO]
+     [exec] [INFO] --- build-helper:1.9.1:add-source (add-javacc-generated-sources) @ pmd-core ---
+     [exec] [INFO] Source directory: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/target/generated-sources/javacc added.
+     [exec] [INFO]
+     [exec] [INFO] --- resources:2.7:resources (default-resources) @ pmd-core ---
+     [exec] [INFO] Using 'UTF-8' encoding to copy filtered resources.
+     [exec] [INFO] Copying 34 resources
+     [exec] [INFO]
+     [exec] [INFO] --- compiler:3.2:compile (default-compile) @ pmd-core ---
+     [exec] [INFO] Changes detected - recompiling the module!
+     [exec] [INFO] Compiling 29 source files to /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/target/classes
+     [exec] [INFO] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/main/java/net/sourceforge/pmd/dcd/graph/UsageGraphBuilder.java: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/main/java/net/sourceforge/pmd/dcd/graph/UsageGraphBuilder.java uses or overrides a deprecated API.
+     [exec] [INFO] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/main/java/net/sourceforge/pmd/dcd/graph/UsageGraphBuilder.java: Recompile with -Xlint:deprecation for details.
+     [exec] [INFO] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/main/java/net/sourceforge/pmd/dcd/graph/UsageGraph.java: Some input files use unchecked or unsafe operations.
+     [exec] [INFO] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/main/java/net/sourceforge/pmd/dcd/graph/UsageGraph.java: Recompile with -Xlint:unchecked for details.
+     [exec] [INFO]
+     [exec] [INFO] --- resources:2.7:testResources (default-testResources) @ pmd-core ---
+     [exec] [INFO] Using 'UTF-8' encoding to copy filtered resources.
+     [exec] [INFO] Copying 19 resources
+     [exec] [INFO]
+     [exec] [INFO] --- compiler:3.2:testCompile (default-testCompile) @ pmd-core ---
+     [exec] [INFO] Changes detected - recompiling the module!
+     [exec] [INFO] Compiling 77 source files to /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/target/test-classes
+     [exec] [INFO] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/util/database/DBURITest.java: Some input files use or override a deprecated API.
+     [exec] [INFO] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/util/database/DBURITest.java: Recompile with -Xlint:deprecation for details.
+     [exec] [INFO] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/util/database/DBURITest.java: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/util/database/DBURITest.java uses unchecked or unsafe operations.
+     [exec] [INFO] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/util/database/DBURITest.java: Recompile with -Xlint:unchecked for details.
+     [exec] [INFO] -------------------------------------------------------------
+     [exec] [ERROR] COMPILATION ERROR :
+     [exec] [INFO] -------------------------------------------------------------
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/IDEAJRendererTest.java:[3,27] cannot find symbol
+     [exec]   symbol:   class PMD
+     [exec]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/AbstractRendererTst.java:[8,27] cannot find symbol
+     [exec]   symbol:   class Report
+     [exec]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/AbstractRendererTst.java:[9,34] package net.sourceforge.pmd.Report does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/AbstractRendererTst.java:[11,27] cannot find symbol
+     [exec]   symbol:   class RuleContext
+     [exec]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/AbstractRendererTst.java:[12,27] cannot find symbol
+     [exec]   symbol:   class RuleViolation
+     [exec]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/AbstractRendererTst.java:[14,36] cannot find symbol
+     [exec]   symbol:   class Node
+     [exec]   location: package net.sourceforge.pmd.lang.ast
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/AbstractRendererTst.java:[15,37] package net.sourceforge.pmd.lang.rule does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/IDEAJRendererTest.java:[7,12] cannot find symbol
+     [exec]   symbol:   class Renderer
+     [exec]   location: class net.sourceforge.pmd.renderers.IDEAJRendererTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/AbstractRendererTst.java:[22,21] cannot find symbol
+     [exec]   symbol:   class Renderer
+     [exec]   location: class net.sourceforge.pmd.renderers.AbstractRendererTst
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/AbstractRendererTst.java:[30,36] cannot find symbol
+     [exec]   symbol:   class ProcessingError
+     [exec]   location: class net.sourceforge.pmd.renderers.AbstractRendererTst
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/AbstractRendererTst.java:[43,20] cannot find symbol
+     [exec]   symbol:   class Report
+     [exec]   location: class net.sourceforge.pmd.renderers.AbstractRendererTst
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/AbstractRendererTst.java:[49,20] cannot find symbol
+     [exec]   symbol:   class Report
+     [exec]   location: class net.sourceforge.pmd.renderers.AbstractRendererTst
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/AbstractRendererTst.java:[56,20] cannot find symbol
+     [exec]   symbol:   class RuleViolation
+     [exec]   location: class net.sourceforge.pmd.renderers.AbstractRendererTst
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/DoublePropertyTest.java:[3,27] cannot find symbol
+     [exec]   symbol:   class PropertyDescriptor
+     [exec]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/DoublePropertyTest.java:[4,48] package net.sourceforge.pmd.lang.rule.properties does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/DoublePropertyTest.java:[5,48] package net.sourceforge.pmd.lang.rule.properties does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/AbstractPropertyDescriptorTester.java:[7,27] cannot find symbol
+     [exec]   symbol:   class PropertyDescriptor
+     [exec]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/AbstractPropertyDescriptorTester.java:[8,32] cannot find symbol
+     [exec]   symbol:   class CollectionUtil
+     [exec]   location: package net.sourceforge.pmd.util
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/DoublePropertyTest.java:[64,19] cannot find symbol
+     [exec]   symbol:   class PropertyDescriptor
+     [exec]   location: class net.sourceforge.pmd.properties.DoublePropertyTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/DoublePropertyTest.java:[77,19] cannot find symbol
+     [exec]   symbol:   class PropertyDescriptor
+     [exec]   location: class net.sourceforge.pmd.properties.DoublePropertyTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/AbstractPropertyDescriptorTester.java:[52,28] cannot find symbol
+     [exec]   symbol:   class PropertyDescriptor
+     [exec]   location: class net.sourceforge.pmd.properties.AbstractPropertyDescriptorTester
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/AbstractPropertyDescriptorTester.java:[61,28] cannot find symbol
+     [exec]   symbol:   class PropertyDescriptor
+     [exec]   location: class net.sourceforge.pmd.properties.AbstractPropertyDescriptorTester
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/RuleViolationComparatorTest.java:[17,36] cannot find symbol
+     [exec]   symbol:   class Node
+     [exec]   location: package net.sourceforge.pmd.lang.ast
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/RuleViolationComparatorTest.java:[18,37] package net.sourceforge.pmd.lang.rule does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/RuleViolationComparatorTest.java:[19,37] package net.sourceforge.pmd.lang.rule does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/RuleViolationComparatorTest.java:[71,51] cannot find symbol
+     [exec]   symbol:   class Rule
+     [exec]   location: class net.sourceforge.pmd.RuleViolationComparatorTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/RuleViolationComparatorTest.java:[71,13] cannot find symbol
+     [exec]   symbol:   class RuleViolation
+     [exec]   location: class net.sourceforge.pmd.RuleViolationComparatorTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[13,27] cannot find symbol
+     [exec]   symbol:   class Rule
+     [exec]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[14,27] cannot find symbol
+     [exec]   symbol:   class RuleContext
+     [exec]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[15,27] cannot find symbol
+     [exec]   symbol:   class RuleViolation
+     [exec]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[17,36] cannot find symbol
+     [exec]   symbol:   class Node
+     [exec]   location: package net.sourceforge.pmd.lang.ast
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[18,36] cannot find symbol
+     [exec]   symbol:   class ParseException
+     [exec]   location: package net.sourceforge.pmd.lang.ast
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[19,37] package net.sourceforge.pmd.lang.rule does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[20,37] package net.sourceforge.pmd.lang.rule does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[21,37] package net.sourceforge.pmd.lang.rule does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[27,42] cannot find symbol
+     [exec]   symbol: class BaseLanguageModule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[45,55] cannot find symbol
+     [exec]   symbol:   class AbstractRuleChainVisitor
+     [exec]   location: class net.sourceforge.pmd.lang.DummyLanguageModule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[47,30] cannot find symbol
+     [exec]   symbol:   class Rule
+     [exec]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.DummyRuleChainVisitor
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[47,41] cannot find symbol
+     [exec]   symbol:   class Node
+     [exec]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.DummyRuleChainVisitor
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[47,52] cannot find symbol
+     [exec]   symbol:   class RuleContext
+     [exec]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.DummyRuleChainVisitor
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[51,40] cannot find symbol
+     [exec]   symbol:   class Node
+     [exec]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.DummyRuleChainVisitor
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[51,53] cannot find symbol
+     [exec]   symbol:   class RuleContext
+     [exec]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.DummyRuleChainVisitor
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[63,41] cannot find symbol
+     [exec]   symbol:   class AbstractLanguageVersionHandler
+     [exec]   location: class net.sourceforge.pmd.lang.DummyLanguageModule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[96,54] cannot find symbol
+     [exec]   symbol:   class AbstractRuleViolationFactory
+     [exec]   location: class net.sourceforge.pmd.lang.DummyLanguageModule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[70,33] cannot find symbol
+     [exec]   symbol:   class ParserOptions
+     [exec]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.Handler
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[70,16] cannot find symbol
+     [exec]   symbol:   class Parser
+     [exec]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.Handler
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[98,53] cannot find symbol
+     [exec]   symbol:   class Rule
+     [exec]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.RuleViolationFactory
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[98,64] cannot find symbol
+     [exec]   symbol:   class RuleContext
+     [exec]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.RuleViolationFactory
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[98,89] cannot find symbol
+     [exec]   symbol:   class Node
+     [exec]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.RuleViolationFactory
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[98,19] cannot find symbol
+     [exec]   symbol:   class RuleViolation
+     [exec]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.RuleViolationFactory
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[102,53] cannot find symbol
+     [exec]   symbol:   class Rule
+     [exec]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.RuleViolationFactory
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[102,64] cannot find symbol
+     [exec]   symbol:   class RuleContext
+     [exec]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.RuleViolationFactory
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[102,89] cannot find symbol
+     [exec]   symbol:   class Node
+     [exec]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.RuleViolationFactory
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[102,19] cannot find symbol
+     [exec]   symbol:   class RuleViolation
+     [exec]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.RuleViolationFactory
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/Dummy2LanguageModule.java:[9,43] cannot find symbol
+     [exec]   symbol: class BaseLanguageModule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/RuleViolationTest.java:[10,36] cannot find symbol
+     [exec]   symbol:   class Node
+     [exec]   location: package net.sourceforge.pmd.lang.ast
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/RuleViolationTest.java:[11,37] package net.sourceforge.pmd.lang.rule does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/RuleViolationTest.java:[12,37] package net.sourceforge.pmd.lang.rule does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/stat/MockStatisticalRule.java:[28,27] cannot find symbol
+     [exec]   symbol:   class RuleContext
+     [exec]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/stat/MockStatisticalRule.java:[29,36] cannot find symbol
+     [exec]   symbol:   class Node
+     [exec]   location: package net.sourceforge.pmd.lang.ast
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/stat/MockStatisticalRule.java:[30,42] package net.sourceforge.pmd.lang.rule.stat does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/stat/MockStatisticalRule.java:[31,42] package net.sourceforge.pmd.lang.rule.stat does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/FooRule.java:[9,32] cannot find symbol
+     [exec]   symbol:   class LanguageRegistry
+     [exec]   location: package net.sourceforge.pmd.lang
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/FooRule.java:[10,36] cannot find symbol
+     [exec]   symbol:   class Node
+     [exec]   location: package net.sourceforge.pmd.lang.ast
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/FooRule.java:[11,37] package net.sourceforge.pmd.lang.rule does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/FooRule.java:[16,30] cannot find symbol
+     [exec]   symbol: class AbstractRule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/stat/MockStatisticalRule.java:[33,61] cannot find symbol
+     [exec]   symbol: class StatisticalRule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/stat/MockStatisticalRule.java:[35,13] cannot find symbol
+     [exec]   symbol:   class StatisticalRuleHelper
+     [exec]   location: class net.sourceforge.pmd.stat.MockStatisticalRule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/stat/MockStatisticalRule.java:[47,38] cannot find symbol
+     [exec]   symbol:   class Node
+     [exec]   location: class net.sourceforge.pmd.stat.MockStatisticalRule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/stat/MockStatisticalRule.java:[47,51] cannot find symbol
+     [exec]   symbol:   class RuleContext
+     [exec]   location: class net.sourceforge.pmd.stat.MockStatisticalRule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/stat/MockStatisticalRule.java:[53,30] cannot find symbol
+     [exec]   symbol:   class DataPoint
+     [exec]   location: class net.sourceforge.pmd.stat.MockStatisticalRule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/stat/MockStatisticalRule.java:[58,44] cannot find symbol
+     [exec]   symbol:   class DataPoint
+     [exec]   location: class net.sourceforge.pmd.stat.MockStatisticalRule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/FooRule.java:[38,38] cannot find symbol
+     [exec]   symbol:   class Node
+     [exec]   location: class net.sourceforge.pmd.FooRule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/FooRule.java:[38,51] cannot find symbol
+     [exec]   symbol:   class RuleContext
+     [exec]   location: class net.sourceforge.pmd.FooRule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/FooRule.java:[44,26] cannot find symbol
+     [exec]   symbol:   class Node
+     [exec]   location: class net.sourceforge.pmd.FooRule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/FooRule.java:[44,37] cannot find symbol
+     [exec]   symbol:   class RuleContext
+     [exec]   location: class net.sourceforge.pmd.FooRule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/YAHTMLRendererTest.java:[6,27] cannot find symbol
+     [exec]   symbol:   class PMD
+     [exec]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/YAHTMLRendererTest.java:[7,34] package net.sourceforge.pmd.Report does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/YAHTMLRendererTest.java:[50,12] cannot find symbol
+     [exec]   symbol:   class Renderer
+     [exec]   location: class net.sourceforge.pmd.renderers.YAHTMLRendererTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/YAHTMLRendererTest.java:[72,36] cannot find symbol
+     [exec]   symbol:   class ProcessingError
+     [exec]   location: class net.sourceforge.pmd.renderers.YAHTMLRendererTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/TypePropertyTest.java:[9,27] cannot find symbol
+     [exec]   symbol:   class PropertyDescriptor
+     [exec]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/TypePropertyTest.java:[10,48] package net.sourceforge.pmd.lang.rule.properties does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/TypePropertyTest.java:[11,48] package net.sourceforge.pmd.lang.rule.properties does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/TypePropertyTest.java:[65,19] cannot find symbol
+     [exec]   symbol:   class PropertyDescriptor
+     [exec]   location: class net.sourceforge.pmd.properties.TypePropertyTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/TypePropertyTest.java:[77,19] cannot find symbol
+     [exec]   symbol:   class PropertyDescriptor
+     [exec]   location: class net.sourceforge.pmd.properties.TypePropertyTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/ant/FormatterTest.java:[12,37] cannot find symbol
+     [exec]   symbol:   class CSVRenderer
+     [exec]   location: package net.sourceforge.pmd.renderers
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/ant/FormatterTest.java:[13,37] cannot find symbol
+     [exec]   symbol:   class HTMLRenderer
+     [exec]   location: package net.sourceforge.pmd.renderers
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/ant/FormatterTest.java:[14,37] cannot find symbol
+     [exec]   symbol:   class TextRenderer
+     [exec]   location: package net.sourceforge.pmd.renderers
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/ant/FormatterTest.java:[15,37] cannot find symbol
+     [exec]   symbol:   class XMLRenderer
+     [exec]   location: package net.sourceforge.pmd.renderers
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/EnumeratedPropertyTest.java:[6,27] cannot find symbol
+     [exec]   symbol:   class PropertyDescriptor
+     [exec]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/EnumeratedPropertyTest.java:[7,48] package net.sourceforge.pmd.lang.rule.properties does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/EnumeratedPropertyTest.java:[8,48] package net.sourceforge.pmd.lang.rule.properties does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/EnumeratedPropertyTest.java:[70,19] cannot find symbol
+     [exec]   symbol:   class PropertyDescriptor
+     [exec]   location: class net.sourceforge.pmd.properties.EnumeratedPropertyTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/EnumeratedPropertyTest.java:[82,19] cannot find symbol
+     [exec]   symbol:   class PropertyDescriptor
+     [exec]   location: class net.sourceforge.pmd.properties.EnumeratedPropertyTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/cpd/FileReporterTest.java:[28,42] cannot find symbol
+     [exec]   symbol:   class ReportException
+     [exec]   location: class net.sourceforge.pmd.cpd.FileReporterTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/cpd/FileReporterTest.java:[38,37] cannot find symbol
+     [exec]   symbol:   class ReportException
+     [exec]   location: class net.sourceforge.pmd.cpd.FileReporterTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/cpd/FileReporterTest.java:[49,42] cannot find symbol
+     [exec]   symbol:   class ReportException
+     [exec]   location: class net.sourceforge.pmd.cpd.FileReporterTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/ConfigurationTest.java:[14,37] cannot find symbol
+     [exec]   symbol:   class CSVRenderer
+     [exec]   location: package net.sourceforge.pmd.renderers
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/ConfigurationTest.java:[15,37] cannot find symbol
+     [exec]   symbol:   class Renderer
+     [exec]   location: package net.sourceforge.pmd.renderers
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/ConfigurationTest.java:[16,32] cannot find symbol
+     [exec]   symbol:   class ClasspathClassLoader
+     [exec]   location: package net.sourceforge.pmd.util
+     [exec] [INFO] 100 errors
+     [exec] [INFO] -------------------------------------------------------------
+     [exec] [INFO] ------------------------------------------------------------------------
+     [exec] [INFO] BUILD FAILURE
+     [exec] [INFO] ------------------------------------------------------------------------
+     [exec] [INFO] Total time:  3.568 s
+     [exec] [INFO] Finished at: 2025-03-04T20:43:50-08:00
+     [exec] [INFO] ------------------------------------------------------------------------
+     [exec] [ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.2:testCompile (default-testCompile) on project pmd-core: Compilation failure: Compilation failure:
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/IDEAJRendererTest.java:[3,27] cannot find symbol
+     [exec] [ERROR]   symbol:   class PMD
+     [exec] [ERROR]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/AbstractRendererTst.java:[8,27] cannot find symbol
+     [exec] [ERROR]   symbol:   class Report
+     [exec] [ERROR]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/AbstractRendererTst.java:[9,34] package net.sourceforge.pmd.Report does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/AbstractRendererTst.java:[11,27] cannot find symbol
+     [exec] [ERROR]   symbol:   class RuleContext
+     [exec] [ERROR]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/AbstractRendererTst.java:[12,27] cannot find symbol
+     [exec] [ERROR]   symbol:   class RuleViolation
+     [exec] [ERROR]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/AbstractRendererTst.java:[14,36] cannot find symbol
+     [exec] [ERROR]   symbol:   class Node
+     [exec] [ERROR]   location: package net.sourceforge.pmd.lang.ast
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/AbstractRendererTst.java:[15,37] package net.sourceforge.pmd.lang.rule does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/IDEAJRendererTest.java:[7,12] cannot find symbol
+     [exec] [ERROR]   symbol:   class Renderer
+     [exec] [ERROR]   location: class net.sourceforge.pmd.renderers.IDEAJRendererTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/AbstractRendererTst.java:[22,21] cannot find symbol
+     [exec] [ERROR]   symbol:   class Renderer
+     [exec] [ERROR]   location: class net.sourceforge.pmd.renderers.AbstractRendererTst
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/AbstractRendererTst.java:[30,36] cannot find symbol
+     [exec] [ERROR]   symbol:   class ProcessingError
+     [exec] [ERROR]   location: class net.sourceforge.pmd.renderers.AbstractRendererTst
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/AbstractRendererTst.java:[43,20] cannot find symbol
+     [exec] [ERROR]   symbol:   class Report
+     [exec] [ERROR]   location: class net.sourceforge.pmd.renderers.AbstractRendererTst
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/AbstractRendererTst.java:[49,20] cannot find symbol
+     [exec] [ERROR]   symbol:   class Report
+     [exec] [ERROR]   location: class net.sourceforge.pmd.renderers.AbstractRendererTst
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/AbstractRendererTst.java:[56,20] cannot find symbol
+     [exec] [ERROR]   symbol:   class RuleViolation
+     [exec] [ERROR]   location: class net.sourceforge.pmd.renderers.AbstractRendererTst
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/DoublePropertyTest.java:[3,27] cannot find symbol
+     [exec] [ERROR]   symbol:   class PropertyDescriptor
+     [exec] [ERROR]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/DoublePropertyTest.java:[4,48] package net.sourceforge.pmd.lang.rule.properties does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/DoublePropertyTest.java:[5,48] package net.sourceforge.pmd.lang.rule.properties does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/AbstractPropertyDescriptorTester.java:[7,27] cannot find symbol
+     [exec] [ERROR]   symbol:   class PropertyDescriptor
+     [exec] [ERROR]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/AbstractPropertyDescriptorTester.java:[8,32] cannot find symbol
+     [exec] [ERROR]   symbol:   class CollectionUtil
+     [exec] [ERROR]   location: package net.sourceforge.pmd.util
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/DoublePropertyTest.java:[64,19] cannot find symbol
+     [exec] [ERROR]   symbol:   class PropertyDescriptor
+     [exec] [ERROR]   location: class net.sourceforge.pmd.properties.DoublePropertyTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/DoublePropertyTest.java:[77,19] cannot find symbol
+     [exec] [ERROR]   symbol:   class PropertyDescriptor
+     [exec] [ERROR]   location: class net.sourceforge.pmd.properties.DoublePropertyTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/AbstractPropertyDescriptorTester.java:[52,28] cannot find symbol
+     [exec] [ERROR]   symbol:   class PropertyDescriptor
+     [exec] [ERROR]   location: class net.sourceforge.pmd.properties.AbstractPropertyDescriptorTester
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/AbstractPropertyDescriptorTester.java:[61,28] cannot find symbol
+     [exec] [ERROR]   symbol:   class PropertyDescriptor
+     [exec] [ERROR]   location: class net.sourceforge.pmd.properties.AbstractPropertyDescriptorTester
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/RuleViolationComparatorTest.java:[17,36] cannot find symbol
+     [exec] [ERROR]   symbol:   class Node
+     [exec] [ERROR]   location: package net.sourceforge.pmd.lang.ast
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/RuleViolationComparatorTest.java:[18,37] package net.sourceforge.pmd.lang.rule does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/RuleViolationComparatorTest.java:[19,37] package net.sourceforge.pmd.lang.rule does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/RuleViolationComparatorTest.java:[71,51] cannot find symbol
+     [exec] [ERROR]   symbol:   class Rule
+     [exec] [ERROR]   location: class net.sourceforge.pmd.RuleViolationComparatorTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/RuleViolationComparatorTest.java:[71,13] cannot find symbol
+     [exec] [ERROR]   symbol:   class RuleViolation
+     [exec] [ERROR]   location: class net.sourceforge.pmd.RuleViolationComparatorTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[13,27] cannot find symbol
+     [exec] [ERROR]   symbol:   class Rule
+     [exec] [ERROR]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[14,27] cannot find symbol
+     [exec] [ERROR]   symbol:   class RuleContext
+     [exec] [ERROR]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[15,27] cannot find symbol
+     [exec] [ERROR]   symbol:   class RuleViolation
+     [exec] [ERROR]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[17,36] cannot find symbol
+     [exec] [ERROR]   symbol:   class Node
+     [exec] [ERROR]   location: package net.sourceforge.pmd.lang.ast
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[18,36] cannot find symbol
+     [exec] [ERROR]   symbol:   class ParseException
+     [exec] [ERROR]   location: package net.sourceforge.pmd.lang.ast
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[19,37] package net.sourceforge.pmd.lang.rule does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[20,37] package net.sourceforge.pmd.lang.rule does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[21,37] package net.sourceforge.pmd.lang.rule does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[27,42] cannot find symbol
+     [exec] [ERROR]   symbol: class BaseLanguageModule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[45,55] cannot find symbol
+     [exec] [ERROR]   symbol:   class AbstractRuleChainVisitor
+     [exec] [ERROR]   location: class net.sourceforge.pmd.lang.DummyLanguageModule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[47,30] cannot find symbol
+     [exec] [ERROR]   symbol:   class Rule
+     [exec] [ERROR]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.DummyRuleChainVisitor
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[47,41] cannot find symbol
+     [exec] [ERROR]   symbol:   class Node
+     [exec] [ERROR]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.DummyRuleChainVisitor
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[47,52] cannot find symbol
+     [exec] [ERROR]   symbol:   class RuleContext
+     [exec] [ERROR]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.DummyRuleChainVisitor
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[51,40] cannot find symbol
+     [exec] [ERROR]   symbol:   class Node
+     [exec] [ERROR]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.DummyRuleChainVisitor
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[51,53] cannot find symbol
+     [exec] [ERROR]   symbol:   class RuleContext
+     [exec] [ERROR]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.DummyRuleChainVisitor
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[63,41] cannot find symbol
+     [exec] [ERROR]   symbol:   class AbstractLanguageVersionHandler
+     [exec] [ERROR]   location: class net.sourceforge.pmd.lang.DummyLanguageModule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[96,54] cannot find symbol
+     [exec] [ERROR]   symbol:   class AbstractRuleViolationFactory
+     [exec] [ERROR]   location: class net.sourceforge.pmd.lang.DummyLanguageModule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[70,33] cannot find symbol
+     [exec] [ERROR]   symbol:   class ParserOptions
+     [exec] [ERROR]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.Handler
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[70,16] cannot find symbol
+     [exec] [ERROR]   symbol:   class Parser
+     [exec] [ERROR]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.Handler
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[98,53] cannot find symbol
+     [exec] [ERROR]   symbol:   class Rule
+     [exec] [ERROR]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.RuleViolationFactory
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[98,64] cannot find symbol
+     [exec] [ERROR]   symbol:   class RuleContext
+     [exec] [ERROR]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.RuleViolationFactory
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[98,89] cannot find symbol
+     [exec] [ERROR]   symbol:   class Node
+     [exec] [ERROR]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.RuleViolationFactory
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[98,19] cannot find symbol
+     [exec] [ERROR]   symbol:   class RuleViolation
+     [exec] [ERROR]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.RuleViolationFactory
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[102,53] cannot find symbol
+     [exec] [ERROR]   symbol:   class Rule
+     [exec] [ERROR]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.RuleViolationFactory
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[102,64] cannot find symbol
+     [exec] [ERROR]   symbol:   class RuleContext
+     [exec] [ERROR]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.RuleViolationFactory
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[102,89] cannot find symbol
+     [exec] [ERROR]   symbol:   class Node
+     [exec] [ERROR]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.RuleViolationFactory
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[102,19] cannot find symbol
+     [exec] [ERROR]   symbol:   class RuleViolation
+     [exec] [ERROR]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.RuleViolationFactory
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/Dummy2LanguageModule.java:[9,43] cannot find symbol
+     [exec] [ERROR]   symbol: class BaseLanguageModule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/RuleViolationTest.java:[10,36] cannot find symbol
+     [exec] [ERROR]   symbol:   class Node
+     [exec] [ERROR]   location: package net.sourceforge.pmd.lang.ast
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/RuleViolationTest.java:[11,37] package net.sourceforge.pmd.lang.rule does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/RuleViolationTest.java:[12,37] package net.sourceforge.pmd.lang.rule does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/stat/MockStatisticalRule.java:[28,27] cannot find symbol
+     [exec] [ERROR]   symbol:   class RuleContext
+     [exec] [ERROR]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/stat/MockStatisticalRule.java:[29,36] cannot find symbol
+     [exec] [ERROR]   symbol:   class Node
+     [exec] [ERROR]   location: package net.sourceforge.pmd.lang.ast
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/stat/MockStatisticalRule.java:[30,42] package net.sourceforge.pmd.lang.rule.stat does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/stat/MockStatisticalRule.java:[31,42] package net.sourceforge.pmd.lang.rule.stat does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/FooRule.java:[9,32] cannot find symbol
+     [exec] [ERROR]   symbol:   class LanguageRegistry
+     [exec] [ERROR]   location: package net.sourceforge.pmd.lang
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/FooRule.java:[10,36] cannot find symbol
+     [exec] [ERROR]   symbol:   class Node
+     [exec] [ERROR]   location: package net.sourceforge.pmd.lang.ast
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/FooRule.java:[11,37] package net.sourceforge.pmd.lang.rule does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/FooRule.java:[16,30] cannot find symbol
+     [exec] [ERROR]   symbol: class AbstractRule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/stat/MockStatisticalRule.java:[33,61] cannot find symbol
+     [exec] [ERROR]   symbol: class StatisticalRule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/stat/MockStatisticalRule.java:[35,13] cannot find symbol
+     [exec] [ERROR]   symbol:   class StatisticalRuleHelper
+     [exec] [ERROR]   location: class net.sourceforge.pmd.stat.MockStatisticalRule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/stat/MockStatisticalRule.java:[47,38] cannot find symbol
+     [exec] [ERROR]   symbol:   class Node
+     [exec] [ERROR]   location: class net.sourceforge.pmd.stat.MockStatisticalRule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/stat/MockStatisticalRule.java:[47,51] cannot find symbol
+     [exec] [ERROR]   symbol:   class RuleContext
+     [exec] [ERROR]   location: class net.sourceforge.pmd.stat.MockStatisticalRule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/stat/MockStatisticalRule.java:[53,30] cannot find symbol
+     [exec] [ERROR]   symbol:   class DataPoint
+     [exec] [ERROR]   location: class net.sourceforge.pmd.stat.MockStatisticalRule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/stat/MockStatisticalRule.java:[58,44] cannot find symbol
+     [exec] [ERROR]   symbol:   class DataPoint
+     [exec] [ERROR]   location: class net.sourceforge.pmd.stat.MockStatisticalRule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/FooRule.java:[38,38] cannot find symbol
+     [exec] [ERROR]   symbol:   class Node
+     [exec] [ERROR]   location: class net.sourceforge.pmd.FooRule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/FooRule.java:[38,51] cannot find symbol
+     [exec] [ERROR]   symbol:   class RuleContext
+     [exec] [ERROR]   location: class net.sourceforge.pmd.FooRule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/FooRule.java:[44,26] cannot find symbol
+     [exec] [ERROR]   symbol:   class Node
+     [exec] [ERROR]   location: class net.sourceforge.pmd.FooRule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/FooRule.java:[44,37] cannot find symbol
+     [exec] [ERROR]   symbol:   class RuleContext
+     [exec] [ERROR]   location: class net.sourceforge.pmd.FooRule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/YAHTMLRendererTest.java:[6,27] cannot find symbol
+     [exec] [ERROR]   symbol:   class PMD
+     [exec] [ERROR]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/YAHTMLRendererTest.java:[7,34] package net.sourceforge.pmd.Report does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/YAHTMLRendererTest.java:[50,12] cannot find symbol
+     [exec] [ERROR]   symbol:   class Renderer
+     [exec] [ERROR]   location: class net.sourceforge.pmd.renderers.YAHTMLRendererTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/YAHTMLRendererTest.java:[72,36] cannot find symbol
+     [exec] [ERROR]   symbol:   class ProcessingError
+     [exec] [ERROR]   location: class net.sourceforge.pmd.renderers.YAHTMLRendererTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/TypePropertyTest.java:[9,27] cannot find symbol
+     [exec] [ERROR]   symbol:   class PropertyDescriptor
+     [exec] [ERROR]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/TypePropertyTest.java:[10,48] package net.sourceforge.pmd.lang.rule.properties does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/TypePropertyTest.java:[11,48] package net.sourceforge.pmd.lang.rule.properties does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/TypePropertyTest.java:[65,19] cannot find symbol
+     [exec] [ERROR]   symbol:   class PropertyDescriptor
+     [exec] [ERROR]   location: class net.sourceforge.pmd.properties.TypePropertyTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/TypePropertyTest.java:[77,19] cannot find symbol
+     [exec] [ERROR]   symbol:   class PropertyDescriptor
+     [exec] [ERROR]   location: class net.sourceforge.pmd.properties.TypePropertyTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/ant/FormatterTest.java:[12,37] cannot find symbol
+     [exec] [ERROR]   symbol:   class CSVRenderer
+     [exec] [ERROR]   location: package net.sourceforge.pmd.renderers
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/ant/FormatterTest.java:[13,37] cannot find symbol
+     [exec] [ERROR]   symbol:   class HTMLRenderer
+     [exec] [ERROR]   location: package net.sourceforge.pmd.renderers
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/ant/FormatterTest.java:[14,37] cannot find symbol
+     [exec] [ERROR]   symbol:   class TextRenderer
+     [exec] [ERROR]   location: package net.sourceforge.pmd.renderers
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/ant/FormatterTest.java:[15,37] cannot find symbol
+     [exec] [ERROR]   symbol:   class XMLRenderer
+     [exec] [ERROR]   location: package net.sourceforge.pmd.renderers
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/EnumeratedPropertyTest.java:[6,27] cannot find symbol
+     [exec] [ERROR]   symbol:   class PropertyDescriptor
+     [exec] [ERROR]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/EnumeratedPropertyTest.java:[7,48] package net.sourceforge.pmd.lang.rule.properties does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/EnumeratedPropertyTest.java:[8,48] package net.sourceforge.pmd.lang.rule.properties does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/EnumeratedPropertyTest.java:[70,19] cannot find symbol
+     [exec] [ERROR]   symbol:   class PropertyDescriptor
+     [exec] [ERROR]   location: class net.sourceforge.pmd.properties.EnumeratedPropertyTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/EnumeratedPropertyTest.java:[82,19] cannot find symbol
+     [exec] [ERROR]   symbol:   class PropertyDescriptor
+     [exec] [ERROR]   location: class net.sourceforge.pmd.properties.EnumeratedPropertyTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/cpd/FileReporterTest.java:[28,42] cannot find symbol
+     [exec] [ERROR]   symbol:   class ReportException
+     [exec] [ERROR]   location: class net.sourceforge.pmd.cpd.FileReporterTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/cpd/FileReporterTest.java:[38,37] cannot find symbol
+     [exec] [ERROR]   symbol:   class ReportException
+     [exec] [ERROR]   location: class net.sourceforge.pmd.cpd.FileReporterTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/cpd/FileReporterTest.java:[49,42] cannot find symbol
+     [exec] [ERROR]   symbol:   class ReportException
+     [exec] [ERROR]   location: class net.sourceforge.pmd.cpd.FileReporterTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/ConfigurationTest.java:[14,37] cannot find symbol
+     [exec] [ERROR]   symbol:   class CSVRenderer
+     [exec] [ERROR]   location: package net.sourceforge.pmd.renderers
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/ConfigurationTest.java:[15,37] cannot find symbol
+     [exec] [ERROR]   symbol:   class Renderer
+     [exec] [ERROR]   location: package net.sourceforge.pmd.renderers
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/ConfigurationTest.java:[16,32] cannot find symbol
+     [exec] [ERROR]   symbol:   class ClasspathClassLoader
+     [exec] [ERROR]   location: package net.sourceforge.pmd.util
+     [exec] [ERROR] -> [Help 1]
+     [exec] [ERROR]
+     [exec] [ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+     [exec] [ERROR] Re-run Maven using the -X switch to enable full debug logging.
+     [exec] [ERROR]
+     [exec] [ERROR] For more information about the errors and possible solutions, please read the following articles:
+     [exec] [ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
+     [exec] Result: 1
+     [copy] Copying 71 files to /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/bin
+     [exec] mv: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/major.log: No such file or directory
+     [exec] Result: 1
+     [exec] mv: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/mutants.log: No such file or directory
+     [exec] Result: 1
+
+BUILD SUCCESSFUL
+Total time: 7 seconds
+
+Compiling tests...
+command:
+/Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/major/bin/ant -Dtest=/Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE -Dsrc=/Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2  compile.tests
+
+Buildfile: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build.xml
+
+init:
+
+compile:
+     [exec] [INFO] Scanning for projects...
+     [exec] [INFO]
+     [exec] [INFO] --------------------< net.sourceforge.pmd:pmd-core >--------------------
+     [exec] [INFO] Building PMD Core 5.2.2
+     [exec] [INFO]   from pom.xml
+     [exec] [INFO] --------------------------------[ jar ]---------------------------------
+     [exec] [INFO]
+     [exec] [INFO] --- clean:2.6:clean (default-clean) @ pmd-core ---
+     [exec] [INFO] Deleting /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/target
+     [exec] [INFO]
+     [exec] [INFO] --- antrun:1.7:run (pmd-clean) @ pmd-core ---
+     [exec] [INFO] Executing tasks
+     [exec]
+     [exec] main:
+     [exec]      [echo] PMD specific tasks: cleaning generated xdocs
+     [exec] [INFO] Executed tasks
+     [exec] [INFO]
+     [exec] [INFO] --- enforcer:1.0:enforce (enforce-maven) @ pmd-core ---
+     [exec] [INFO]
+     [exec] [INFO] --- antrun:1.7:run (generate-sources) @ pmd-core ---
+     [exec] [INFO] Executing tasks
+     [exec]
+     [exec] main:
+     [exec]
+     [exec] checkUpToDate:
+     [exec]      [echo] up to date check: javaccBuildNotRequired=true
+     [exec]
+     [exec] init:
+     [exec]
+     [exec] dummyjjtree:
+     [exec]
+     [exec] cleanup:
+     [exec]
+     [exec] alljavacc:
+     [exec] [INFO] Executed tasks
+     [exec] [INFO]
+     [exec] [INFO] --- build-helper:1.9.1:add-source (add-javacc-generated-sources) @ pmd-core ---
+     [exec] [INFO] Source directory: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/target/generated-sources/javacc added.
+     [exec] [INFO]
+     [exec] [INFO] --- resources:2.7:resources (default-resources) @ pmd-core ---
+     [exec] [INFO] Using 'UTF-8' encoding to copy filtered resources.
+     [exec] [INFO] Copying 34 resources
+     [exec] [INFO]
+     [exec] [INFO] --- compiler:3.2:compile (default-compile) @ pmd-core ---
+     [exec] [INFO] Changes detected - recompiling the module!
+     [exec] [INFO] Compiling 29 source files to /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/target/classes
+     [exec] [INFO] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/main/java/net/sourceforge/pmd/dcd/graph/UsageGraphBuilder.java: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/main/java/net/sourceforge/pmd/dcd/graph/UsageGraphBuilder.java uses or overrides a deprecated API.
+     [exec] [INFO] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/main/java/net/sourceforge/pmd/dcd/graph/UsageGraphBuilder.java: Recompile with -Xlint:deprecation for details.
+     [exec] [INFO] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/main/java/net/sourceforge/pmd/dcd/graph/UsageGraph.java: Some input files use unchecked or unsafe operations.
+     [exec] [INFO] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/main/java/net/sourceforge/pmd/dcd/graph/UsageGraph.java: Recompile with -Xlint:unchecked for details.
+     [exec] [INFO]
+     [exec] [INFO] --- resources:2.7:testResources (default-testResources) @ pmd-core ---
+     [exec] [INFO] Using 'UTF-8' encoding to copy filtered resources.
+     [exec] [INFO] Copying 19 resources
+     [exec] [INFO]
+     [exec] [INFO] --- compiler:3.2:testCompile (default-testCompile) @ pmd-core ---
+     [exec] [INFO] Changes detected - recompiling the module!
+     [exec] [INFO] Compiling 77 source files to /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/target/test-classes
+     [exec] [INFO] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/util/database/DBURITest.java: Some input files use or override a deprecated API.
+     [exec] [INFO] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/util/database/DBURITest.java: Recompile with -Xlint:deprecation for details.
+     [exec] [INFO] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/util/database/DBURITest.java: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/util/database/DBURITest.java uses unchecked or unsafe operations.
+     [exec] [INFO] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/util/database/DBURITest.java: Recompile with -Xlint:unchecked for details.
+     [exec] [INFO] -------------------------------------------------------------
+     [exec] [ERROR] COMPILATION ERROR :
+     [exec] [INFO] -------------------------------------------------------------
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/IDEAJRendererTest.java:[3,27] cannot find symbol
+     [exec]   symbol:   class PMD
+     [exec]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/AbstractRendererTst.java:[8,27] cannot find symbol
+     [exec]   symbol:   class Report
+     [exec]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/AbstractRendererTst.java:[9,34] package net.sourceforge.pmd.Report does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/AbstractRendererTst.java:[11,27] cannot find symbol
+     [exec]   symbol:   class RuleContext
+     [exec]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/AbstractRendererTst.java:[12,27] cannot find symbol
+     [exec]   symbol:   class RuleViolation
+     [exec]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/AbstractRendererTst.java:[14,36] cannot find symbol
+     [exec]   symbol:   class Node
+     [exec]   location: package net.sourceforge.pmd.lang.ast
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/AbstractRendererTst.java:[15,37] package net.sourceforge.pmd.lang.rule does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/IDEAJRendererTest.java:[7,12] cannot find symbol
+     [exec]   symbol:   class Renderer
+     [exec]   location: class net.sourceforge.pmd.renderers.IDEAJRendererTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/AbstractRendererTst.java:[22,21] cannot find symbol
+     [exec]   symbol:   class Renderer
+     [exec]   location: class net.sourceforge.pmd.renderers.AbstractRendererTst
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/AbstractRendererTst.java:[30,36] cannot find symbol
+     [exec]   symbol:   class ProcessingError
+     [exec]   location: class net.sourceforge.pmd.renderers.AbstractRendererTst
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/AbstractRendererTst.java:[43,20] cannot find symbol
+     [exec]   symbol:   class Report
+     [exec]   location: class net.sourceforge.pmd.renderers.AbstractRendererTst
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/AbstractRendererTst.java:[49,20] cannot find symbol
+     [exec]   symbol:   class Report
+     [exec]   location: class net.sourceforge.pmd.renderers.AbstractRendererTst
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/AbstractRendererTst.java:[56,20] cannot find symbol
+     [exec]   symbol:   class RuleViolation
+     [exec]   location: class net.sourceforge.pmd.renderers.AbstractRendererTst
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/DoublePropertyTest.java:[3,27] cannot find symbol
+     [exec]   symbol:   class PropertyDescriptor
+     [exec]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/DoublePropertyTest.java:[4,48] package net.sourceforge.pmd.lang.rule.properties does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/DoublePropertyTest.java:[5,48] package net.sourceforge.pmd.lang.rule.properties does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/AbstractPropertyDescriptorTester.java:[7,27] cannot find symbol
+     [exec]   symbol:   class PropertyDescriptor
+     [exec]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/AbstractPropertyDescriptorTester.java:[8,32] cannot find symbol
+     [exec]   symbol:   class CollectionUtil
+     [exec]   location: package net.sourceforge.pmd.util
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/DoublePropertyTest.java:[64,19] cannot find symbol
+     [exec]   symbol:   class PropertyDescriptor
+     [exec]   location: class net.sourceforge.pmd.properties.DoublePropertyTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/DoublePropertyTest.java:[77,19] cannot find symbol
+     [exec]   symbol:   class PropertyDescriptor
+     [exec]   location: class net.sourceforge.pmd.properties.DoublePropertyTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/AbstractPropertyDescriptorTester.java:[52,28] cannot find symbol
+     [exec]   symbol:   class PropertyDescriptor
+     [exec]   location: class net.sourceforge.pmd.properties.AbstractPropertyDescriptorTester
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/AbstractPropertyDescriptorTester.java:[61,28] cannot find symbol
+     [exec]   symbol:   class PropertyDescriptor
+     [exec]   location: class net.sourceforge.pmd.properties.AbstractPropertyDescriptorTester
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/RuleViolationComparatorTest.java:[17,36] cannot find symbol
+     [exec]   symbol:   class Node
+     [exec]   location: package net.sourceforge.pmd.lang.ast
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/RuleViolationComparatorTest.java:[18,37] package net.sourceforge.pmd.lang.rule does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/RuleViolationComparatorTest.java:[19,37] package net.sourceforge.pmd.lang.rule does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/RuleViolationComparatorTest.java:[71,51] cannot find symbol
+     [exec]   symbol:   class Rule
+     [exec]   location: class net.sourceforge.pmd.RuleViolationComparatorTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/RuleViolationComparatorTest.java:[71,13] cannot find symbol
+     [exec]   symbol:   class RuleViolation
+     [exec]   location: class net.sourceforge.pmd.RuleViolationComparatorTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[13,27] cannot find symbol
+     [exec]   symbol:   class Rule
+     [exec]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[14,27] cannot find symbol
+     [exec]   symbol:   class RuleContext
+     [exec]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[15,27] cannot find symbol
+     [exec]   symbol:   class RuleViolation
+     [exec]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[17,36] cannot find symbol
+     [exec]   symbol:   class Node
+     [exec]   location: package net.sourceforge.pmd.lang.ast
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[18,36] cannot find symbol
+     [exec]   symbol:   class ParseException
+     [exec]   location: package net.sourceforge.pmd.lang.ast
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[19,37] package net.sourceforge.pmd.lang.rule does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[20,37] package net.sourceforge.pmd.lang.rule does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[21,37] package net.sourceforge.pmd.lang.rule does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[27,42] cannot find symbol
+     [exec]   symbol: class BaseLanguageModule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[45,55] cannot find symbol
+     [exec]   symbol:   class AbstractRuleChainVisitor
+     [exec]   location: class net.sourceforge.pmd.lang.DummyLanguageModule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[47,30] cannot find symbol
+     [exec]   symbol:   class Rule
+     [exec]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.DummyRuleChainVisitor
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[47,41] cannot find symbol
+     [exec]   symbol:   class Node
+     [exec]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.DummyRuleChainVisitor
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[47,52] cannot find symbol
+     [exec]   symbol:   class RuleContext
+     [exec]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.DummyRuleChainVisitor
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[51,40] cannot find symbol
+     [exec]   symbol:   class Node
+     [exec]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.DummyRuleChainVisitor
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[51,53] cannot find symbol
+     [exec]   symbol:   class RuleContext
+     [exec]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.DummyRuleChainVisitor
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[63,41] cannot find symbol
+     [exec]   symbol:   class AbstractLanguageVersionHandler
+     [exec]   location: class net.sourceforge.pmd.lang.DummyLanguageModule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[96,54] cannot find symbol
+     [exec]   symbol:   class AbstractRuleViolationFactory
+     [exec]   location: class net.sourceforge.pmd.lang.DummyLanguageModule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[70,33] cannot find symbol
+     [exec]   symbol:   class ParserOptions
+     [exec]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.Handler
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[70,16] cannot find symbol
+     [exec]   symbol:   class Parser
+     [exec]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.Handler
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[98,53] cannot find symbol
+     [exec]   symbol:   class Rule
+     [exec]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.RuleViolationFactory
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[98,64] cannot find symbol
+     [exec]   symbol:   class RuleContext
+     [exec]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.RuleViolationFactory
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[98,89] cannot find symbol
+     [exec]   symbol:   class Node
+     [exec]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.RuleViolationFactory
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[98,19] cannot find symbol
+     [exec]   symbol:   class RuleViolation
+     [exec]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.RuleViolationFactory
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[102,53] cannot find symbol
+     [exec]   symbol:   class Rule
+     [exec]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.RuleViolationFactory
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[102,64] cannot find symbol
+     [exec]   symbol:   class RuleContext
+     [exec]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.RuleViolationFactory
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[102,89] cannot find symbol
+     [exec]   symbol:   class Node
+     [exec]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.RuleViolationFactory
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[102,19] cannot find symbol
+     [exec]   symbol:   class RuleViolation
+     [exec]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.RuleViolationFactory
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/Dummy2LanguageModule.java:[9,43] cannot find symbol
+     [exec]   symbol: class BaseLanguageModule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/RuleViolationTest.java:[10,36] cannot find symbol
+     [exec]   symbol:   class Node
+     [exec]   location: package net.sourceforge.pmd.lang.ast
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/RuleViolationTest.java:[11,37] package net.sourceforge.pmd.lang.rule does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/RuleViolationTest.java:[12,37] package net.sourceforge.pmd.lang.rule does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/stat/MockStatisticalRule.java:[28,27] cannot find symbol
+     [exec]   symbol:   class RuleContext
+     [exec]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/stat/MockStatisticalRule.java:[29,36] cannot find symbol
+     [exec]   symbol:   class Node
+     [exec]   location: package net.sourceforge.pmd.lang.ast
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/stat/MockStatisticalRule.java:[30,42] package net.sourceforge.pmd.lang.rule.stat does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/stat/MockStatisticalRule.java:[31,42] package net.sourceforge.pmd.lang.rule.stat does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/FooRule.java:[9,32] cannot find symbol
+     [exec]   symbol:   class LanguageRegistry
+     [exec]   location: package net.sourceforge.pmd.lang
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/FooRule.java:[10,36] cannot find symbol
+     [exec]   symbol:   class Node
+     [exec]   location: package net.sourceforge.pmd.lang.ast
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/FooRule.java:[11,37] package net.sourceforge.pmd.lang.rule does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/FooRule.java:[16,30] cannot find symbol
+     [exec]   symbol: class AbstractRule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/stat/MockStatisticalRule.java:[33,61] cannot find symbol
+     [exec]   symbol: class StatisticalRule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/stat/MockStatisticalRule.java:[35,13] cannot find symbol
+     [exec]   symbol:   class StatisticalRuleHelper
+     [exec]   location: class net.sourceforge.pmd.stat.MockStatisticalRule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/stat/MockStatisticalRule.java:[47,38] cannot find symbol
+     [exec]   symbol:   class Node
+     [exec]   location: class net.sourceforge.pmd.stat.MockStatisticalRule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/stat/MockStatisticalRule.java:[47,51] cannot find symbol
+     [exec]   symbol:   class RuleContext
+     [exec]   location: class net.sourceforge.pmd.stat.MockStatisticalRule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/stat/MockStatisticalRule.java:[53,30] cannot find symbol
+     [exec]   symbol:   class DataPoint
+     [exec]   location: class net.sourceforge.pmd.stat.MockStatisticalRule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/stat/MockStatisticalRule.java:[58,44] cannot find symbol
+     [exec]   symbol:   class DataPoint
+     [exec]   location: class net.sourceforge.pmd.stat.MockStatisticalRule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/FooRule.java:[38,38] cannot find symbol
+     [exec]   symbol:   class Node
+     [exec]   location: class net.sourceforge.pmd.FooRule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/FooRule.java:[38,51] cannot find symbol
+     [exec]   symbol:   class RuleContext
+     [exec]   location: class net.sourceforge.pmd.FooRule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/FooRule.java:[44,26] cannot find symbol
+     [exec]   symbol:   class Node
+     [exec]   location: class net.sourceforge.pmd.FooRule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/FooRule.java:[44,37] cannot find symbol
+     [exec]   symbol:   class RuleContext
+     [exec]   location: class net.sourceforge.pmd.FooRule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/YAHTMLRendererTest.java:[6,27] cannot find symbol
+     [exec]   symbol:   class PMD
+     [exec]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/YAHTMLRendererTest.java:[7,34] package net.sourceforge.pmd.Report does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/YAHTMLRendererTest.java:[50,12] cannot find symbol
+     [exec]   symbol:   class Renderer
+     [exec]   location: class net.sourceforge.pmd.renderers.YAHTMLRendererTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/YAHTMLRendererTest.java:[72,36] cannot find symbol
+     [exec]   symbol:   class ProcessingError
+     [exec]   location: class net.sourceforge.pmd.renderers.YAHTMLRendererTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/TypePropertyTest.java:[9,27] cannot find symbol
+     [exec]   symbol:   class PropertyDescriptor
+     [exec]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/TypePropertyTest.java:[10,48] package net.sourceforge.pmd.lang.rule.properties does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/TypePropertyTest.java:[11,48] package net.sourceforge.pmd.lang.rule.properties does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/TypePropertyTest.java:[65,19] cannot find symbol
+     [exec]   symbol:   class PropertyDescriptor
+     [exec]   location: class net.sourceforge.pmd.properties.TypePropertyTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/TypePropertyTest.java:[77,19] cannot find symbol
+     [exec]   symbol:   class PropertyDescriptor
+     [exec]   location: class net.sourceforge.pmd.properties.TypePropertyTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/ant/FormatterTest.java:[12,37] cannot find symbol
+     [exec]   symbol:   class CSVRenderer
+     [exec]   location: package net.sourceforge.pmd.renderers
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/ant/FormatterTest.java:[13,37] cannot find symbol
+     [exec]   symbol:   class HTMLRenderer
+     [exec]   location: package net.sourceforge.pmd.renderers
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/ant/FormatterTest.java:[14,37] cannot find symbol
+     [exec]   symbol:   class TextRenderer
+     [exec]   location: package net.sourceforge.pmd.renderers
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/ant/FormatterTest.java:[15,37] cannot find symbol
+     [exec]   symbol:   class XMLRenderer
+     [exec]   location: package net.sourceforge.pmd.renderers
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/EnumeratedPropertyTest.java:[6,27] cannot find symbol
+     [exec]   symbol:   class PropertyDescriptor
+     [exec]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/EnumeratedPropertyTest.java:[7,48] package net.sourceforge.pmd.lang.rule.properties does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/EnumeratedPropertyTest.java:[8,48] package net.sourceforge.pmd.lang.rule.properties does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/EnumeratedPropertyTest.java:[70,19] cannot find symbol
+     [exec]   symbol:   class PropertyDescriptor
+     [exec]   location: class net.sourceforge.pmd.properties.EnumeratedPropertyTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/EnumeratedPropertyTest.java:[82,19] cannot find symbol
+     [exec]   symbol:   class PropertyDescriptor
+     [exec]   location: class net.sourceforge.pmd.properties.EnumeratedPropertyTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/cpd/FileReporterTest.java:[28,42] cannot find symbol
+     [exec]   symbol:   class ReportException
+     [exec]   location: class net.sourceforge.pmd.cpd.FileReporterTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/cpd/FileReporterTest.java:[38,37] cannot find symbol
+     [exec]   symbol:   class ReportException
+     [exec]   location: class net.sourceforge.pmd.cpd.FileReporterTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/cpd/FileReporterTest.java:[49,42] cannot find symbol
+     [exec]   symbol:   class ReportException
+     [exec]   location: class net.sourceforge.pmd.cpd.FileReporterTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/ConfigurationTest.java:[14,37] cannot find symbol
+     [exec]   symbol:   class CSVRenderer
+     [exec]   location: package net.sourceforge.pmd.renderers
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/ConfigurationTest.java:[15,37] cannot find symbol
+     [exec]   symbol:   class Renderer
+     [exec]   location: package net.sourceforge.pmd.renderers
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/ConfigurationTest.java:[16,32] cannot find symbol
+     [exec]   symbol:   class ClasspathClassLoader
+     [exec]   location: package net.sourceforge.pmd.util
+     [exec] [INFO] 100 errors
+     [exec] [INFO] -------------------------------------------------------------
+     [exec] [INFO] ------------------------------------------------------------------------
+     [exec] [INFO] BUILD FAILURE
+     [exec] [INFO] ------------------------------------------------------------------------
+     [exec] [INFO] Total time:  3.417 s
+     [exec] [INFO] Finished at: 2025-03-04T20:43:58-08:00
+     [exec] [INFO] ------------------------------------------------------------------------
+     [exec] [ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.2:testCompile (default-testCompile) on project pmd-core: Compilation failure: Compilation failure:
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/IDEAJRendererTest.java:[3,27] cannot find symbol
+     [exec] [ERROR]   symbol:   class PMD
+     [exec] [ERROR]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/AbstractRendererTst.java:[8,27] cannot find symbol
+     [exec] [ERROR]   symbol:   class Report
+     [exec] [ERROR]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/AbstractRendererTst.java:[9,34] package net.sourceforge.pmd.Report does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/AbstractRendererTst.java:[11,27] cannot find symbol
+     [exec] [ERROR]   symbol:   class RuleContext
+     [exec] [ERROR]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/AbstractRendererTst.java:[12,27] cannot find symbol
+     [exec] [ERROR]   symbol:   class RuleViolation
+     [exec] [ERROR]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/AbstractRendererTst.java:[14,36] cannot find symbol
+     [exec] [ERROR]   symbol:   class Node
+     [exec] [ERROR]   location: package net.sourceforge.pmd.lang.ast
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/AbstractRendererTst.java:[15,37] package net.sourceforge.pmd.lang.rule does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/IDEAJRendererTest.java:[7,12] cannot find symbol
+     [exec] [ERROR]   symbol:   class Renderer
+     [exec] [ERROR]   location: class net.sourceforge.pmd.renderers.IDEAJRendererTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/AbstractRendererTst.java:[22,21] cannot find symbol
+     [exec] [ERROR]   symbol:   class Renderer
+     [exec] [ERROR]   location: class net.sourceforge.pmd.renderers.AbstractRendererTst
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/AbstractRendererTst.java:[30,36] cannot find symbol
+     [exec] [ERROR]   symbol:   class ProcessingError
+     [exec] [ERROR]   location: class net.sourceforge.pmd.renderers.AbstractRendererTst
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/AbstractRendererTst.java:[43,20] cannot find symbol
+     [exec] [ERROR]   symbol:   class Report
+     [exec] [ERROR]   location: class net.sourceforge.pmd.renderers.AbstractRendererTst
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/AbstractRendererTst.java:[49,20] cannot find symbol
+     [exec] [ERROR]   symbol:   class Report
+     [exec] [ERROR]   location: class net.sourceforge.pmd.renderers.AbstractRendererTst
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/AbstractRendererTst.java:[56,20] cannot find symbol
+     [exec] [ERROR]   symbol:   class RuleViolation
+     [exec] [ERROR]   location: class net.sourceforge.pmd.renderers.AbstractRendererTst
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/DoublePropertyTest.java:[3,27] cannot find symbol
+     [exec] [ERROR]   symbol:   class PropertyDescriptor
+     [exec] [ERROR]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/DoublePropertyTest.java:[4,48] package net.sourceforge.pmd.lang.rule.properties does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/DoublePropertyTest.java:[5,48] package net.sourceforge.pmd.lang.rule.properties does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/AbstractPropertyDescriptorTester.java:[7,27] cannot find symbol
+     [exec] [ERROR]   symbol:   class PropertyDescriptor
+     [exec] [ERROR]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/AbstractPropertyDescriptorTester.java:[8,32] cannot find symbol
+     [exec] [ERROR]   symbol:   class CollectionUtil
+     [exec] [ERROR]   location: package net.sourceforge.pmd.util
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/DoublePropertyTest.java:[64,19] cannot find symbol
+     [exec] [ERROR]   symbol:   class PropertyDescriptor
+     [exec] [ERROR]   location: class net.sourceforge.pmd.properties.DoublePropertyTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/DoublePropertyTest.java:[77,19] cannot find symbol
+     [exec] [ERROR]   symbol:   class PropertyDescriptor
+     [exec] [ERROR]   location: class net.sourceforge.pmd.properties.DoublePropertyTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/AbstractPropertyDescriptorTester.java:[52,28] cannot find symbol
+     [exec] [ERROR]   symbol:   class PropertyDescriptor
+     [exec] [ERROR]   location: class net.sourceforge.pmd.properties.AbstractPropertyDescriptorTester
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/AbstractPropertyDescriptorTester.java:[61,28] cannot find symbol
+     [exec] [ERROR]   symbol:   class PropertyDescriptor
+     [exec] [ERROR]   location: class net.sourceforge.pmd.properties.AbstractPropertyDescriptorTester
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/RuleViolationComparatorTest.java:[17,36] cannot find symbol
+     [exec] [ERROR]   symbol:   class Node
+     [exec] [ERROR]   location: package net.sourceforge.pmd.lang.ast
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/RuleViolationComparatorTest.java:[18,37] package net.sourceforge.pmd.lang.rule does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/RuleViolationComparatorTest.java:[19,37] package net.sourceforge.pmd.lang.rule does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/RuleViolationComparatorTest.java:[71,51] cannot find symbol
+     [exec] [ERROR]   symbol:   class Rule
+     [exec] [ERROR]   location: class net.sourceforge.pmd.RuleViolationComparatorTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/RuleViolationComparatorTest.java:[71,13] cannot find symbol
+     [exec] [ERROR]   symbol:   class RuleViolation
+     [exec] [ERROR]   location: class net.sourceforge.pmd.RuleViolationComparatorTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[13,27] cannot find symbol
+     [exec] [ERROR]   symbol:   class Rule
+     [exec] [ERROR]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[14,27] cannot find symbol
+     [exec] [ERROR]   symbol:   class RuleContext
+     [exec] [ERROR]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[15,27] cannot find symbol
+     [exec] [ERROR]   symbol:   class RuleViolation
+     [exec] [ERROR]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[17,36] cannot find symbol
+     [exec] [ERROR]   symbol:   class Node
+     [exec] [ERROR]   location: package net.sourceforge.pmd.lang.ast
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[18,36] cannot find symbol
+     [exec] [ERROR]   symbol:   class ParseException
+     [exec] [ERROR]   location: package net.sourceforge.pmd.lang.ast
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[19,37] package net.sourceforge.pmd.lang.rule does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[20,37] package net.sourceforge.pmd.lang.rule does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[21,37] package net.sourceforge.pmd.lang.rule does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[27,42] cannot find symbol
+     [exec] [ERROR]   symbol: class BaseLanguageModule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[45,55] cannot find symbol
+     [exec] [ERROR]   symbol:   class AbstractRuleChainVisitor
+     [exec] [ERROR]   location: class net.sourceforge.pmd.lang.DummyLanguageModule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[47,30] cannot find symbol
+     [exec] [ERROR]   symbol:   class Rule
+     [exec] [ERROR]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.DummyRuleChainVisitor
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[47,41] cannot find symbol
+     [exec] [ERROR]   symbol:   class Node
+     [exec] [ERROR]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.DummyRuleChainVisitor
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[47,52] cannot find symbol
+     [exec] [ERROR]   symbol:   class RuleContext
+     [exec] [ERROR]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.DummyRuleChainVisitor
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[51,40] cannot find symbol
+     [exec] [ERROR]   symbol:   class Node
+     [exec] [ERROR]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.DummyRuleChainVisitor
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[51,53] cannot find symbol
+     [exec] [ERROR]   symbol:   class RuleContext
+     [exec] [ERROR]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.DummyRuleChainVisitor
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[63,41] cannot find symbol
+     [exec] [ERROR]   symbol:   class AbstractLanguageVersionHandler
+     [exec] [ERROR]   location: class net.sourceforge.pmd.lang.DummyLanguageModule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[96,54] cannot find symbol
+     [exec] [ERROR]   symbol:   class AbstractRuleViolationFactory
+     [exec] [ERROR]   location: class net.sourceforge.pmd.lang.DummyLanguageModule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[70,33] cannot find symbol
+     [exec] [ERROR]   symbol:   class ParserOptions
+     [exec] [ERROR]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.Handler
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[70,16] cannot find symbol
+     [exec] [ERROR]   symbol:   class Parser
+     [exec] [ERROR]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.Handler
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[98,53] cannot find symbol
+     [exec] [ERROR]   symbol:   class Rule
+     [exec] [ERROR]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.RuleViolationFactory
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[98,64] cannot find symbol
+     [exec] [ERROR]   symbol:   class RuleContext
+     [exec] [ERROR]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.RuleViolationFactory
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[98,89] cannot find symbol
+     [exec] [ERROR]   symbol:   class Node
+     [exec] [ERROR]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.RuleViolationFactory
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[98,19] cannot find symbol
+     [exec] [ERROR]   symbol:   class RuleViolation
+     [exec] [ERROR]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.RuleViolationFactory
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[102,53] cannot find symbol
+     [exec] [ERROR]   symbol:   class Rule
+     [exec] [ERROR]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.RuleViolationFactory
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[102,64] cannot find symbol
+     [exec] [ERROR]   symbol:   class RuleContext
+     [exec] [ERROR]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.RuleViolationFactory
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[102,89] cannot find symbol
+     [exec] [ERROR]   symbol:   class Node
+     [exec] [ERROR]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.RuleViolationFactory
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/DummyLanguageModule.java:[102,19] cannot find symbol
+     [exec] [ERROR]   symbol:   class RuleViolation
+     [exec] [ERROR]   location: class net.sourceforge.pmd.lang.DummyLanguageModule.RuleViolationFactory
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/lang/Dummy2LanguageModule.java:[9,43] cannot find symbol
+     [exec] [ERROR]   symbol: class BaseLanguageModule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/RuleViolationTest.java:[10,36] cannot find symbol
+     [exec] [ERROR]   symbol:   class Node
+     [exec] [ERROR]   location: package net.sourceforge.pmd.lang.ast
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/RuleViolationTest.java:[11,37] package net.sourceforge.pmd.lang.rule does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/RuleViolationTest.java:[12,37] package net.sourceforge.pmd.lang.rule does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/stat/MockStatisticalRule.java:[28,27] cannot find symbol
+     [exec] [ERROR]   symbol:   class RuleContext
+     [exec] [ERROR]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/stat/MockStatisticalRule.java:[29,36] cannot find symbol
+     [exec] [ERROR]   symbol:   class Node
+     [exec] [ERROR]   location: package net.sourceforge.pmd.lang.ast
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/stat/MockStatisticalRule.java:[30,42] package net.sourceforge.pmd.lang.rule.stat does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/stat/MockStatisticalRule.java:[31,42] package net.sourceforge.pmd.lang.rule.stat does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/FooRule.java:[9,32] cannot find symbol
+     [exec] [ERROR]   symbol:   class LanguageRegistry
+     [exec] [ERROR]   location: package net.sourceforge.pmd.lang
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/FooRule.java:[10,36] cannot find symbol
+     [exec] [ERROR]   symbol:   class Node
+     [exec] [ERROR]   location: package net.sourceforge.pmd.lang.ast
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/FooRule.java:[11,37] package net.sourceforge.pmd.lang.rule does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/FooRule.java:[16,30] cannot find symbol
+     [exec] [ERROR]   symbol: class AbstractRule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/stat/MockStatisticalRule.java:[33,61] cannot find symbol
+     [exec] [ERROR]   symbol: class StatisticalRule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/stat/MockStatisticalRule.java:[35,13] cannot find symbol
+     [exec] [ERROR]   symbol:   class StatisticalRuleHelper
+     [exec] [ERROR]   location: class net.sourceforge.pmd.stat.MockStatisticalRule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/stat/MockStatisticalRule.java:[47,38] cannot find symbol
+     [exec] [ERROR]   symbol:   class Node
+     [exec] [ERROR]   location: class net.sourceforge.pmd.stat.MockStatisticalRule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/stat/MockStatisticalRule.java:[47,51] cannot find symbol
+     [exec] [ERROR]   symbol:   class RuleContext
+     [exec] [ERROR]   location: class net.sourceforge.pmd.stat.MockStatisticalRule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/stat/MockStatisticalRule.java:[53,30] cannot find symbol
+     [exec] [ERROR]   symbol:   class DataPoint
+     [exec] [ERROR]   location: class net.sourceforge.pmd.stat.MockStatisticalRule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/stat/MockStatisticalRule.java:[58,44] cannot find symbol
+     [exec] [ERROR]   symbol:   class DataPoint
+     [exec] [ERROR]   location: class net.sourceforge.pmd.stat.MockStatisticalRule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/FooRule.java:[38,38] cannot find symbol
+     [exec] [ERROR]   symbol:   class Node
+     [exec] [ERROR]   location: class net.sourceforge.pmd.FooRule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/FooRule.java:[38,51] cannot find symbol
+     [exec] [ERROR]   symbol:   class RuleContext
+     [exec] [ERROR]   location: class net.sourceforge.pmd.FooRule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/FooRule.java:[44,26] cannot find symbol
+     [exec] [ERROR]   symbol:   class Node
+     [exec] [ERROR]   location: class net.sourceforge.pmd.FooRule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/FooRule.java:[44,37] cannot find symbol
+     [exec] [ERROR]   symbol:   class RuleContext
+     [exec] [ERROR]   location: class net.sourceforge.pmd.FooRule
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/YAHTMLRendererTest.java:[6,27] cannot find symbol
+     [exec] [ERROR]   symbol:   class PMD
+     [exec] [ERROR]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/YAHTMLRendererTest.java:[7,34] package net.sourceforge.pmd.Report does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/YAHTMLRendererTest.java:[50,12] cannot find symbol
+     [exec] [ERROR]   symbol:   class Renderer
+     [exec] [ERROR]   location: class net.sourceforge.pmd.renderers.YAHTMLRendererTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/renderers/YAHTMLRendererTest.java:[72,36] cannot find symbol
+     [exec] [ERROR]   symbol:   class ProcessingError
+     [exec] [ERROR]   location: class net.sourceforge.pmd.renderers.YAHTMLRendererTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/TypePropertyTest.java:[9,27] cannot find symbol
+     [exec] [ERROR]   symbol:   class PropertyDescriptor
+     [exec] [ERROR]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/TypePropertyTest.java:[10,48] package net.sourceforge.pmd.lang.rule.properties does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/TypePropertyTest.java:[11,48] package net.sourceforge.pmd.lang.rule.properties does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/TypePropertyTest.java:[65,19] cannot find symbol
+     [exec] [ERROR]   symbol:   class PropertyDescriptor
+     [exec] [ERROR]   location: class net.sourceforge.pmd.properties.TypePropertyTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/TypePropertyTest.java:[77,19] cannot find symbol
+     [exec] [ERROR]   symbol:   class PropertyDescriptor
+     [exec] [ERROR]   location: class net.sourceforge.pmd.properties.TypePropertyTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/ant/FormatterTest.java:[12,37] cannot find symbol
+     [exec] [ERROR]   symbol:   class CSVRenderer
+     [exec] [ERROR]   location: package net.sourceforge.pmd.renderers
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/ant/FormatterTest.java:[13,37] cannot find symbol
+     [exec] [ERROR]   symbol:   class HTMLRenderer
+     [exec] [ERROR]   location: package net.sourceforge.pmd.renderers
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/ant/FormatterTest.java:[14,37] cannot find symbol
+     [exec] [ERROR]   symbol:   class TextRenderer
+     [exec] [ERROR]   location: package net.sourceforge.pmd.renderers
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/ant/FormatterTest.java:[15,37] cannot find symbol
+     [exec] [ERROR]   symbol:   class XMLRenderer
+     [exec] [ERROR]   location: package net.sourceforge.pmd.renderers
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/EnumeratedPropertyTest.java:[6,27] cannot find symbol
+     [exec] [ERROR]   symbol:   class PropertyDescriptor
+     [exec] [ERROR]   location: package net.sourceforge.pmd
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/EnumeratedPropertyTest.java:[7,48] package net.sourceforge.pmd.lang.rule.properties does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/EnumeratedPropertyTest.java:[8,48] package net.sourceforge.pmd.lang.rule.properties does not exist
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/EnumeratedPropertyTest.java:[70,19] cannot find symbol
+     [exec] [ERROR]   symbol:   class PropertyDescriptor
+     [exec] [ERROR]   location: class net.sourceforge.pmd.properties.EnumeratedPropertyTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/properties/EnumeratedPropertyTest.java:[82,19] cannot find symbol
+     [exec] [ERROR]   symbol:   class PropertyDescriptor
+     [exec] [ERROR]   location: class net.sourceforge.pmd.properties.EnumeratedPropertyTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/cpd/FileReporterTest.java:[28,42] cannot find symbol
+     [exec] [ERROR]   symbol:   class ReportException
+     [exec] [ERROR]   location: class net.sourceforge.pmd.cpd.FileReporterTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/cpd/FileReporterTest.java:[38,37] cannot find symbol
+     [exec] [ERROR]   symbol:   class ReportException
+     [exec] [ERROR]   location: class net.sourceforge.pmd.cpd.FileReporterTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/cpd/FileReporterTest.java:[49,42] cannot find symbol
+     [exec] [ERROR]   symbol:   class ReportException
+     [exec] [ERROR]   location: class net.sourceforge.pmd.cpd.FileReporterTest
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/ConfigurationTest.java:[14,37] cannot find symbol
+     [exec] [ERROR]   symbol:   class CSVRenderer
+     [exec] [ERROR]   location: package net.sourceforge.pmd.renderers
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/ConfigurationTest.java:[15,37] cannot find symbol
+     [exec] [ERROR]   symbol:   class Renderer
+     [exec] [ERROR]   location: package net.sourceforge.pmd.renderers
+     [exec] [ERROR] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/src/test/java/net/sourceforge/pmd/ConfigurationTest.java:[16,32] cannot find symbol
+     [exec] [ERROR]   symbol:   class ClasspathClassLoader
+     [exec] [ERROR]   location: package net.sourceforge.pmd.util
+     [exec] [ERROR] -> [Help 1]
+     [exec] [ERROR]
+     [exec] [ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+     [exec] [ERROR] Re-run Maven using the -X switch to enable full debug logging.
+     [exec] [ERROR]
+     [exec] [ERROR] For more information about the errors and possible solutions, please read the following articles:
+     [exec] [ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
+     [exec] Result: 1
+     [copy] Copying 71 files to /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/bin
+     [exec] mv: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/major.log: No such file or directory
+     [exec] Result: 1
+     [exec] mv: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/pmd-core-5.2.2/pmd-core/mutants.log: No such file or directory
+     [exec] Result: 1
+
+compile.tests:
+    [javac] Compiling 2 source files to /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/bin
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:326: error: package org.objectweb.asm.signature does not exist
+    [javac]         char char0 = org.objectweb.asm.signature.SignatureVisitor.EXTENDS;
+    [javac]                                                 ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:434: error: cannot access SignatureVisitor
+    [javac]             typeSignatureVisitor0.visitClassType("hi!");
+    [javac]                                  ^
+    [javac]   class file for org.objectweb.asm.signature.SignatureVisitor not found
+    [javac] Note: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java uses unchecked or unsafe operations.
+    [javac] Note: Recompile with -Xlint:unchecked for details.
+    [javac] 2 errors
+
+BUILD FAILED
+/Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build.xml:66: Compile failed; see the compiler error output for details.
+
+Total time: 8 seconds

@@ -1,0 +1,210 @@
+Using BASELINE
+
+openjdk version "11.0.13" 2021-10-19
+OpenJDK Runtime Environment Temurin-11.0.13+8 (build 11.0.13+8)
+OpenJDK 64-Bit Server VM Temurin-11.0.13+8 (build 11.0.13+8, mixed mode)
+Randoop for Java version "4.3.3, branch master, commit 27d6ec8, 2025-02-26".
+
+Will try to generate tests for 29 classes.
+PUBLIC MEMBERS=941
+Explorer = ForwardGenerator(steps: 0, null steps: 0, num_sequences_generated: 0;
+    allSequences: 0, regresson seqs: 0, error seqs: 0=0=0, invalid seqs: 0, subsumed_sequences: 0, num_failed_output_test: 0;
+    sideEffectFreeMethods: 1115, runtimePrimitivesSeen: 38)
+
+Progress update: steps=1, test inputs generated=0, failing inputs=0      (2025-03-05T04:25:07.384238Z     91.2M used)Unexpected exception java.lang.NullPointerException (null) in CallReplacementTransformer.transform(com/sun/source/doctree/DocCommentTree)
+java.lang.NullPointerException
+	at replacecall.org.apache.bcel.generic.ConstantPoolGen.<init>(ConstantPoolGen.java:159)
+	at replacecall.org.apache.bcel.generic.ConstantPoolGen.<init>(ConstantPoolGen.java:216)
+	at replacecall.org.apache.bcel.generic.ClassGen.<init>(ClassGen.java:143)
+	at randoop.instrument.CallReplacementTransformer.transform(CallReplacementTransformer.java:131)
+	at java.instrument/java.lang.instrument.ClassFileTransformer.transform(ClassFileTransformer.java:246)
+	at java.instrument/sun.instrument.TransformerManager.transform(TransformerManager.java:188)
+	at java.instrument/sun.instrument.InstrumentationImpl.transform(InstrumentationImpl.java:563)
+	at java.base/java.lang.ClassLoader.defineClass2(Native Method)
+	at java.base/java.lang.ClassLoader.defineClass(ClassLoader.java:1109)
+	at java.base/java.security.SecureClassLoader.defineClass(SecureClassLoader.java:206)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.defineClass(BuiltinClassLoader.java:759)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.findClassInModuleOrNull(BuiltinClassLoader.java:680)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClassOrNull(BuiltinClassLoader.java:605)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:579)
+	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:178)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:522)
+	at jdk.compiler/com.sun.tools.javac.parser.ParserFactory.<init>(ParserFactory.java:76)
+	at jdk.compiler/com.sun.tools.javac.parser.ParserFactory.instance(ParserFactory.java:56)
+	at jdk.compiler/com.sun.tools.javac.main.JavaCompiler.<init>(JavaCompiler.java:401)
+	at jdk.compiler/com.sun.tools.javac.main.JavaCompiler.instance(JavaCompiler.java:115)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.prepareCompiler(JavacTaskImpl.java:203)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.lambda$doCall$0(JavacTaskImpl.java:101)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.handleExceptions(JavacTaskImpl.java:147)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.doCall(JavacTaskImpl.java:100)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.call(JavacTaskImpl.java:94)
+	at randoop.compile.SequenceCompiler.compile(SequenceCompiler.java:176)
+	at randoop.compile.SequenceCompiler.isCompilable(SequenceCompiler.java:105)
+	at randoop.test.CompilableTestPredicate.testSource(CompilableTestPredicate.java:114)
+	at randoop.test.CompilableTestPredicate.test(CompilableTestPredicate.java:93)
+	at randoop.test.CompilableTestPredicate.test(CompilableTestPredicate.java:25)
+	at java.base/java.util.function.Predicate.lambda$and$0(Predicate.java:69)
+	at randoop.generation.AbstractGenerator.createAndClassifySequences(AbstractGenerator.java:320)
+	at randoop.main.GenTests.handle(GenTests.java:569)
+	at randoop.main.Main.nonStaticMain(Main.java:69)
+	at randoop.main.Main.main(Main.java:31)
+Unexpected exception java.lang.NullPointerException (null) in CallReplacementTransformer.transform(com/sun/source/doctree/DocTreeVisitor)
+java.lang.NullPointerException
+	at replacecall.org.apache.bcel.generic.ConstantPoolGen.<init>(ConstantPoolGen.java:159)
+	at replacecall.org.apache.bcel.generic.ConstantPoolGen.<init>(ConstantPoolGen.java:216)
+	at replacecall.org.apache.bcel.generic.ClassGen.<init>(ClassGen.java:143)
+	at randoop.instrument.CallReplacementTransformer.transform(CallReplacementTransformer.java:131)
+	at java.instrument/java.lang.instrument.ClassFileTransformer.transform(ClassFileTransformer.java:246)
+	at java.instrument/sun.instrument.TransformerManager.transform(TransformerManager.java:188)
+	at java.instrument/sun.instrument.InstrumentationImpl.transform(InstrumentationImpl.java:563)
+	at java.base/java.lang.ClassLoader.defineClass2(Native Method)
+	at java.base/java.lang.ClassLoader.defineClass(ClassLoader.java:1109)
+	at java.base/java.security.SecureClassLoader.defineClass(SecureClassLoader.java:206)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.defineClass(BuiltinClassLoader.java:759)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.findClassInModuleOrNull(BuiltinClassLoader.java:680)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClassOrNull(BuiltinClassLoader.java:605)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:579)
+	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:178)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:522)
+	at jdk.compiler/com.sun.tools.javac.tree.DocTreeMaker.<init>(DocTreeMaker.java:146)
+	at jdk.compiler/com.sun.tools.javac.tree.DocTreeMaker.instance(DocTreeMaker.java:124)
+	at jdk.compiler/com.sun.tools.javac.parser.ParserFactory.<init>(ParserFactory.java:76)
+	at jdk.compiler/com.sun.tools.javac.parser.ParserFactory.instance(ParserFactory.java:56)
+	at jdk.compiler/com.sun.tools.javac.main.JavaCompiler.<init>(JavaCompiler.java:401)
+	at jdk.compiler/com.sun.tools.javac.main.JavaCompiler.instance(JavaCompiler.java:115)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.prepareCompiler(JavacTaskImpl.java:203)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.lambda$doCall$0(JavacTaskImpl.java:101)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.handleExceptions(JavacTaskImpl.java:147)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.doCall(JavacTaskImpl.java:100)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.call(JavacTaskImpl.java:94)
+	at randoop.compile.SequenceCompiler.compile(SequenceCompiler.java:176)
+	at randoop.compile.SequenceCompiler.isCompilable(SequenceCompiler.java:105)
+	at randoop.test.CompilableTestPredicate.testSource(CompilableTestPredicate.java:114)
+	at randoop.test.CompilableTestPredicate.test(CompilableTestPredicate.java:93)
+	at randoop.test.CompilableTestPredicate.test(CompilableTestPredicate.java:25)
+	at java.base/java.util.function.Predicate.lambda$and$0(Predicate.java:69)
+	at randoop.generation.AbstractGenerator.createAndClassifySequences(AbstractGenerator.java:320)
+	at randoop.main.GenTests.handle(GenTests.java:569)
+	at randoop.main.Main.nonStaticMain(Main.java:69)
+	at randoop.main.Main.main(Main.java:31)
+Long execution time 40 sec for
+java.lang.String str3 = com.sqlmagic.tinysql.UtilString.replaceAll("\\", "", "''");
+
+
+Progress update: steps=353, test inputs generated=121, failing inputs=0      (2025-03-05T04:25:53.885339Z     6.47G used)
+Normal method executions: 966
+Exceptional method executions: 25
+
+Average method execution time (normal termination):      0.0614
+Average method execution time (exceptional termination): 1.63e+03
+Approximate memory usage 6.47G
+Explorer = ForwardGenerator(steps: 353, null steps: 232, num_sequences_generated: 121;
+    allSequences: 121, regresson seqs: 120, error seqs: 0=0=0, invalid seqs: 0, subsumed_sequences: 0, num_failed_output_test: 1;
+    sideEffectFreeMethods: 1115, runtimePrimitivesSeen: 50)
+
+About to look for failing assertions in 89 regression sequences.
+
+Regression test output:
+Regression test count: 89
+Writing regression JUnit tests...
+Created file /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java
+Created file /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest.java
+Wrote regression JUnit tests.
+About to look for flaky methods.
+Done looking for flaky methods.
+
+Invalid tests generated: 0
+java version "1.8.0_202"
+Java(TM) SE Runtime Environment (build 1.8.0_202-b08)
+Java HotSpot(TM) 64-Bit Server VM (build 25.202-b08, mixed mode)
+
+Compiling and mutating project...
+command:
+/Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/major/bin/ant -Dmutator=mml:/Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/major/mml/all.mml.bin -Dsrc=/Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/tinySQL-2.26  clean compile
+
+Buildfile: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build.xml
+
+clean:
+   [delete] Deleting directory /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/bin
+
+init:
+    [mkdir] Created dir: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/bin
+
+compile:
+    [javac] Compiling 31 source files to /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/bin
+    [javac] warning: [options] source value 1.5 is obsolete and will be removed in a future release
+    [javac] warning: [options] target value 1.5 is obsolete and will be removed in a future release
+    [javac] warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.
+    [javac] Generated 4861 mutants (5416 ms)
+    [javac] Note: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/tinySQL-2.26/src/com/sqlmagic/tinysql/tinySQLPreparedStatement.java uses or overrides a deprecated API.
+    [javac] Note: Recompile with -Xlint:deprecation for details.
+    [javac] Note: Some input files use unchecked or unsafe operations.
+    [javac] Note: Recompile with -Xlint:unchecked for details.
+    [javac] 3 warnings
+
+BUILD SUCCESSFUL
+Total time: 7 seconds
+
+Compiling tests...
+command:
+/Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/major/bin/ant -Dtest=/Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE -Dsrc=/Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/tinySQL-2.26  compile.tests
+
+Buildfile: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build.xml
+
+init:
+
+compile:
+    [javac] Compiling 31 source files to /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/bin
+    [javac] warning: [options] source value 1.5 is obsolete and will be removed in a future release
+    [javac] warning: [options] target value 1.5 is obsolete and will be removed in a future release
+    [javac] warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.
+    [javac] Generated 7076 mutants (8142 ms)
+    [javac] Note: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/tinySQL-2.26/src/com/sqlmagic/tinysql/tinySQLPreparedStatement.java uses or overrides a deprecated API.
+    [javac] Note: Recompile with -Xlint:deprecation for details.
+    [javac] Note: Some input files use unchecked or unsafe operations.
+    [javac] Note: Recompile with -Xlint:unchecked for details.
+    [javac] 3 warnings
+
+compile.tests:
+    [javac] Compiling 2 source files to /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/bin
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:343: error: cannot find symbol
+    [javac]         java.lang.String str3 = tinySQLStatement1.enquoteLiteral("");
+    [javac]                                                  ^
+    [javac]   symbol:   method enquoteLiteral(String)
+    [javac]   location: variable tinySQLStatement1 of type tinySQLStatement
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:561: error: cannot find symbol
+    [javac]         java.lang.String str3 = tinySQLStatement1.enquoteLiteral("");
+    [javac]                                                  ^
+    [javac]   symbol:   method enquoteLiteral(String)
+    [javac]   location: variable tinySQLStatement1 of type tinySQLStatement
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:628: error: cannot find symbol
+    [javac]         java.lang.String str3 = tinySQLStatement1.enquoteLiteral("");
+    [javac]                                                  ^
+    [javac]   symbol:   method enquoteLiteral(String)
+    [javac]   location: variable tinySQLStatement1 of type tinySQLStatement
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:735: error: cannot find symbol
+    [javac]         java.lang.String str3 = tinySQLStatement1.enquoteLiteral("");
+    [javac]                                                  ^
+    [javac]   symbol:   method enquoteLiteral(String)
+    [javac]   location: variable tinySQLStatement1 of type tinySQLStatement
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:975: error: cannot find symbol
+    [javac]         java.lang.String str3 = tinySQLStatement1.enquoteLiteral("");
+    [javac]                                                  ^
+    [javac]   symbol:   method enquoteLiteral(String)
+    [javac]   location: variable tinySQLStatement1 of type tinySQLStatement
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:1021: error: cannot find symbol
+    [javac]         java.lang.String str3 = tinySQLStatement1.enquoteLiteral("");
+    [javac]                                                  ^
+    [javac]   symbol:   method enquoteLiteral(String)
+    [javac]   location: variable tinySQLStatement1 of type tinySQLStatement
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:1191: error: cannot find symbol
+    [javac]         java.lang.String str3 = tinySQLStatement1.enquoteLiteral("");
+    [javac]                                                  ^
+    [javac]   symbol:   method enquoteLiteral(String)
+    [javac]   location: variable tinySQLStatement1 of type tinySQLStatement
+    [javac] 7 errors
+
+BUILD FAILED
+/Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build.xml:51: Compile failed; see the compiler error output for details.
+
+Total time: 9 seconds

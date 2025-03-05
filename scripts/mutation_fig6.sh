@@ -198,7 +198,7 @@ declare -A project_src=(
     ["nekomud-r16"]="/src/"
     ["shiro-core-1.2.3"]="/core/"
     ["slf4j-api-1.7.12"]="/slf4j-api"
-#    ["jvc-1.1"]="/src/"
+    ["jvc-1.1"]="/src/"
 )
 JAVA_SRC_DIR=$SRC_BASE_DIR${project_src[$SUBJECT_PROGRAM]}
 
@@ -212,7 +212,7 @@ declare -A project_deps=(
     ["nekomud-r16"]="$SRC_BASE_DIR/lib/"
     ["sat4j-core-2.3.5"]="$SRC_BASE_DIR/lib/"
     ["asm-5.0.1"]="$SRC_BASE_DIR/"
-#    ["jvc-1.1"]="$SRC_BASE_DIR/lib/"
+    ["jvc-1.1"]="$SRC_BASE_DIR/lib/"
 )
 #   ["hamcrest-core-1.3"]="$SRC_BASE_DIR/lib/"  this one needs changes?
 

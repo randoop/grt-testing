@@ -1,0 +1,45 @@
+
+Using BASELINE
+
+openjdk version "11.0.13" 2021-10-19
+OpenJDK Runtime Environment Temurin-11.0.13+8 (build 11.0.13+8)
+OpenJDK 64-Bit Server VM Temurin-11.0.13+8 (build 11.0.13+8, mixed mode)
+Randoop for Java version "4.3.3, branch master, commit 27d6ec8, 2025-02-26".
+Ignoring com.sun.mail.imap.IMAPNestedMessage which was read from /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/javax.mail-1.5.1.jar but a class could not be loaded: java.lang.NoClassDefFoundError: javax/activation/DataHandler
+Ignoring com.sun.mail.imap.IMAPBodyPart which was read from /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/javax.mail-1.5.1.jar but a class could not be loaded: java.lang.NoClassDefFoundError: javax/activation/DataHandler
+Ignoring com.sun.mail.imap.IMAPMultipartDataSource which was read from /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/javax.mail-1.5.1.jar but a class could not be loaded: java.lang.NoClassDefFoundError: javax/activation/DataSource
+Ignoring com.sun.mail.imap.IMAPMessage which was read from /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/javax.mail-1.5.1.jar but a class could not be loaded: java.lang.NoClassDefFoundError: javax/activation/DataHandler
+Ignoring com.sun.mail.smtp.SMTPMessage which was read from /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/javax.mail-1.5.1.jar but a class could not be loaded: java.lang.NoClassDefFoundError: javax/activation/DataHandler
+Ignoring com.sun.mail.handlers.text_xml which was read from /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/javax.mail-1.5.1.jar but a class could not be loaded: java.lang.NoClassDefFoundError: javax/activation/DataContentHandler
+Ignoring com.sun.mail.handlers.image_gif which was read from /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/javax.mail-1.5.1.jar but a class could not be loaded: java.lang.NoClassDefFoundError: javax/activation/DataContentHandler
+Ignoring com.sun.mail.handlers.image_jpeg which was read from /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/javax.mail-1.5.1.jar but a class could not be loaded: java.lang.NoClassDefFoundError: javax/activation/DataContentHandler
+Ignoring com.sun.mail.handlers.text_html which was read from /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/javax.mail-1.5.1.jar but a class could not be loaded: java.lang.NoClassDefFoundError: javax/activation/DataContentHandler
+Ignoring com.sun.mail.handlers.multipart_mixed which was read from /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/javax.mail-1.5.1.jar but a class could not be loaded: java.lang.NoClassDefFoundError: javax/activation/DataContentHandler
+
+Throwable thrown while handling command: java.lang.NoClassDefFoundError: javax/activation/DataContentHandler
+java.lang.NoClassDefFoundError: javax/activation/DataContentHandler
+	at java.base/java.lang.ClassLoader.defineClass1(Native Method)
+	at java.base/java.lang.ClassLoader.defineClass(ClassLoader.java:1017)
+	at java.base/java.security.SecureClassLoader.defineClass(SecureClassLoader.java:174)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.defineClass(BuiltinClassLoader.java:800)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.findClassOnClassPathOrNull(BuiltinClassLoader.java:698)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClassOrNull(BuiltinClassLoader.java:621)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:579)
+	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:178)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:522)
+	at java.base/java.lang.Class.getDeclaringClass0(Native Method)
+	at java.base/java.lang.Class.getDeclaringClass(Class.java:1471)
+	at randoop.reflection.AccessibilityPredicate$PublicAccessibilityPredicate.isAccessible(AccessibilityPredicate.java:99)
+	at randoop.main.GenInputsAbstract.getClassnamesFromJarFile(GenInputsAbstract.java:1224)
+	at randoop.main.GenInputsAbstract.getClassnamesFromArgs(GenInputsAbstract.java:1121)
+	at randoop.main.GenTests.handle(GenTests.java:262)
+	at randoop.main.Main.nonStaticMain(Main.java:69)
+	at randoop.main.Main.main(Main.java:31)
+Caused by: java.lang.ClassNotFoundException: javax.activation.DataContentHandler
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:581)
+	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:178)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:522)
+	... 17 more
+
+Randoop failed.
+No sequences generated.

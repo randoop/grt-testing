@@ -1,0 +1,424 @@
+Using BASELINE
+
+openjdk version "11.0.13" 2021-10-19
+OpenJDK Runtime Environment Temurin-11.0.13+8 (build 11.0.13+8)
+OpenJDK 64-Bit Server VM Temurin-11.0.13+8 (build 11.0.13+8, mixed mode)
+Randoop for Java version "4.3.3, branch master, commit 27d6ec8, 2025-02-26".
+
+Will try to generate tests for 7 classes.
+Unexpected exception java.lang.NullPointerException (null) in CallReplacementTransformer.transform(com/sun/source/doctree/DocCommentTree)
+java.lang.NullPointerException
+	at replacecall.org.apache.bcel.generic.ConstantPoolGen.<init>(ConstantPoolGen.java:159)
+	at replacecall.org.apache.bcel.generic.ConstantPoolGen.<init>(ConstantPoolGen.java:216)
+	at replacecall.org.apache.bcel.generic.ClassGen.<init>(ClassGen.java:143)
+	at randoop.instrument.CallReplacementTransformer.transform(CallReplacementTransformer.java:131)
+	at java.instrument/java.lang.instrument.ClassFileTransformer.transform(ClassFileTransformer.java:246)
+	at java.instrument/sun.instrument.TransformerManager.transform(TransformerManager.java:188)
+	at java.instrument/sun.instrument.InstrumentationImpl.transform(InstrumentationImpl.java:563)
+	at java.base/java.lang.ClassLoader.defineClass2(Native Method)
+	at java.base/java.lang.ClassLoader.defineClass(ClassLoader.java:1109)
+	at java.base/java.security.SecureClassLoader.defineClass(SecureClassLoader.java:206)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.defineClass(BuiltinClassLoader.java:759)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.findClassInModuleOrNull(BuiltinClassLoader.java:680)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClassOrNull(BuiltinClassLoader.java:605)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:579)
+	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:178)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:522)
+	at jdk.compiler/com.sun.tools.javac.parser.ParserFactory.<init>(ParserFactory.java:76)
+	at jdk.compiler/com.sun.tools.javac.parser.ParserFactory.instance(ParserFactory.java:56)
+	at jdk.compiler/com.sun.tools.javac.main.JavaCompiler.<init>(JavaCompiler.java:401)
+	at jdk.compiler/com.sun.tools.javac.main.JavaCompiler.instance(JavaCompiler.java:115)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.prepareCompiler(JavacTaskImpl.java:203)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.lambda$doCall$0(JavacTaskImpl.java:101)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.handleExceptions(JavacTaskImpl.java:147)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.doCall(JavacTaskImpl.java:100)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.call(JavacTaskImpl.java:94)
+	at randoop.compile.SequenceCompiler.compile(SequenceCompiler.java:176)
+	at randoop.compile.SequenceCompiler.compile(SequenceCompiler.java:145)
+	at randoop.compile.SequenceCompiler.compileAndLoad(SequenceCompiler.java:218)
+	at randoop.condition.ExecutableBooleanExpression.createMethod(ExecutableBooleanExpression.java:222)
+	at randoop.condition.ExecutableBooleanExpression.<init>(ExecutableBooleanExpression.java:88)
+	at randoop.condition.SpecificationTranslator.create(SpecificationTranslator.java:381)
+	at randoop.condition.SpecificationTranslator.getGuardExpressions(SpecificationTranslator.java:278)
+	at randoop.condition.SpecificationTranslator.createExecutableSpecification(SpecificationTranslator.java:260)
+	at randoop.condition.SpecificationCollection.getExecutableSpecification(SpecificationCollection.java:388)
+	at randoop.reflection.OperationExtractor.visit(OperationExtractor.java:483)
+	at randoop.reflection.ReflectionManager.applyTo(ReflectionManager.java:314)
+	at randoop.reflection.ReflectionManager.apply(ReflectionManager.java:155)
+	at randoop.reflection.OperationExtractor.operations(OperationExtractor.java:222)
+	at randoop.reflection.OperationModel.addOperationsFromClasses(OperationModel.java:693)
+	at randoop.reflection.OperationModel.createModel(OperationModel.java:175)
+	at randoop.main.GenTests.handle(GenTests.java:325)
+	at randoop.main.Main.nonStaticMain(Main.java:69)
+	at randoop.main.Main.main(Main.java:31)
+Unexpected exception java.lang.NullPointerException (null) in CallReplacementTransformer.transform(com/sun/source/doctree/DocTreeVisitor)
+java.lang.NullPointerException
+	at replacecall.org.apache.bcel.generic.ConstantPoolGen.<init>(ConstantPoolGen.java:159)
+	at replacecall.org.apache.bcel.generic.ConstantPoolGen.<init>(ConstantPoolGen.java:216)
+	at replacecall.org.apache.bcel.generic.ClassGen.<init>(ClassGen.java:143)
+	at randoop.instrument.CallReplacementTransformer.transform(CallReplacementTransformer.java:131)
+	at java.instrument/java.lang.instrument.ClassFileTransformer.transform(ClassFileTransformer.java:246)
+	at java.instrument/sun.instrument.TransformerManager.transform(TransformerManager.java:188)
+	at java.instrument/sun.instrument.InstrumentationImpl.transform(InstrumentationImpl.java:563)
+	at java.base/java.lang.ClassLoader.defineClass2(Native Method)
+	at java.base/java.lang.ClassLoader.defineClass(ClassLoader.java:1109)
+	at java.base/java.security.SecureClassLoader.defineClass(SecureClassLoader.java:206)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.defineClass(BuiltinClassLoader.java:759)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.findClassInModuleOrNull(BuiltinClassLoader.java:680)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClassOrNull(BuiltinClassLoader.java:605)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:579)
+	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:178)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:522)
+	at jdk.compiler/com.sun.tools.javac.tree.DocTreeMaker.<init>(DocTreeMaker.java:146)
+	at jdk.compiler/com.sun.tools.javac.tree.DocTreeMaker.instance(DocTreeMaker.java:124)
+	at jdk.compiler/com.sun.tools.javac.parser.ParserFactory.<init>(ParserFactory.java:76)
+	at jdk.compiler/com.sun.tools.javac.parser.ParserFactory.instance(ParserFactory.java:56)
+	at jdk.compiler/com.sun.tools.javac.main.JavaCompiler.<init>(JavaCompiler.java:401)
+	at jdk.compiler/com.sun.tools.javac.main.JavaCompiler.instance(JavaCompiler.java:115)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.prepareCompiler(JavacTaskImpl.java:203)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.lambda$doCall$0(JavacTaskImpl.java:101)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.handleExceptions(JavacTaskImpl.java:147)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.doCall(JavacTaskImpl.java:100)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.call(JavacTaskImpl.java:94)
+	at randoop.compile.SequenceCompiler.compile(SequenceCompiler.java:176)
+	at randoop.compile.SequenceCompiler.compile(SequenceCompiler.java:145)
+	at randoop.compile.SequenceCompiler.compileAndLoad(SequenceCompiler.java:218)
+	at randoop.condition.ExecutableBooleanExpression.createMethod(ExecutableBooleanExpression.java:222)
+	at randoop.condition.ExecutableBooleanExpression.<init>(ExecutableBooleanExpression.java:88)
+	at randoop.condition.SpecificationTranslator.create(SpecificationTranslator.java:381)
+	at randoop.condition.SpecificationTranslator.getGuardExpressions(SpecificationTranslator.java:278)
+	at randoop.condition.SpecificationTranslator.createExecutableSpecification(SpecificationTranslator.java:260)
+	at randoop.condition.SpecificationCollection.getExecutableSpecification(SpecificationCollection.java:388)
+	at randoop.reflection.OperationExtractor.visit(OperationExtractor.java:483)
+	at randoop.reflection.ReflectionManager.applyTo(ReflectionManager.java:314)
+	at randoop.reflection.ReflectionManager.apply(ReflectionManager.java:155)
+	at randoop.reflection.OperationExtractor.operations(OperationExtractor.java:222)
+	at randoop.reflection.OperationModel.addOperationsFromClasses(OperationModel.java:693)
+	at randoop.reflection.OperationModel.createModel(OperationModel.java:175)
+	at randoop.main.GenTests.handle(GenTests.java:325)
+	at randoop.main.Main.nonStaticMain(Main.java:69)
+	at randoop.main.Main.main(Main.java:31)
+Unexpected exception java.lang.NullPointerException (null) in CallReplacementTransformer.transform(com/jstevh/tools/RandoopExpressionClass0)
+java.lang.NullPointerException
+	at replacecall.org.apache.bcel.generic.ConstantPoolGen.<init>(ConstantPoolGen.java:159)
+	at replacecall.org.apache.bcel.generic.ConstantPoolGen.<init>(ConstantPoolGen.java:216)
+	at replacecall.org.apache.bcel.generic.ClassGen.<init>(ClassGen.java:143)
+	at randoop.instrument.CallReplacementTransformer.transform(CallReplacementTransformer.java:131)
+	at java.instrument/java.lang.instrument.ClassFileTransformer.transform(ClassFileTransformer.java:246)
+	at java.instrument/sun.instrument.TransformerManager.transform(TransformerManager.java:188)
+	at java.instrument/sun.instrument.InstrumentationImpl.transform(InstrumentationImpl.java:563)
+	at java.base/java.lang.ClassLoader.defineClass1(Native Method)
+	at java.base/java.lang.ClassLoader.defineClass(ClassLoader.java:1017)
+	at java.base/java.security.SecureClassLoader.defineClass(SecureClassLoader.java:174)
+	at java.base/java.net.URLClassLoader.defineClass(URLClassLoader.java:555)
+	at java.base/java.net.URLClassLoader$1.run(URLClassLoader.java:458)
+	at java.base/java.net.URLClassLoader$1.run(URLClassLoader.java:452)
+	at java.base/java.security.AccessController.doPrivileged(Native Method)
+	at java.base/java.net.URLClassLoader.findClass(URLClassLoader.java:451)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:589)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:522)
+	at randoop.compile.SequenceCompiler.loadClassFile(SequenceCompiler.java:234)
+	at randoop.compile.SequenceCompiler.compileAndLoad(SequenceCompiler.java:221)
+	at randoop.condition.ExecutableBooleanExpression.createMethod(ExecutableBooleanExpression.java:222)
+	at randoop.condition.ExecutableBooleanExpression.<init>(ExecutableBooleanExpression.java:88)
+	at randoop.condition.SpecificationTranslator.create(SpecificationTranslator.java:381)
+	at randoop.condition.SpecificationTranslator.getGuardExpressions(SpecificationTranslator.java:278)
+	at randoop.condition.SpecificationTranslator.createExecutableSpecification(SpecificationTranslator.java:260)
+	at randoop.condition.SpecificationCollection.getExecutableSpecification(SpecificationCollection.java:388)
+	at randoop.reflection.OperationExtractor.visit(OperationExtractor.java:483)
+	at randoop.reflection.ReflectionManager.applyTo(ReflectionManager.java:314)
+	at randoop.reflection.ReflectionManager.apply(ReflectionManager.java:155)
+	at randoop.reflection.OperationExtractor.operations(OperationExtractor.java:222)
+	at randoop.reflection.OperationModel.addOperationsFromClasses(OperationModel.java:693)
+	at randoop.reflection.OperationModel.createModel(OperationModel.java:175)
+	at randoop.main.GenTests.handle(GenTests.java:325)
+	at randoop.main.Main.nonStaticMain(Main.java:69)
+	at randoop.main.Main.main(Main.java:31)
+Removing com.jstevh.tools.StringTools from the classes under test due to problem extracting operations:
+randoop.condition.RandoopSpecificationError: Condition method did not compile:
+5:32: cannot find symbol
+  symbol:   variable Arrays
+  location: class com.jstevh.tools.RandoopExpressionClass1
+
+Class being compiled:
+package com.jstevh.tools;
+
+public class RandoopExpressionClass1 {
+  public static boolean signature_StringTools_String_StringARRAY(com.jstevh.tools.StringTools receiver, java.lang.String in, java.lang.String[] strings) throws Throwable {
+    return strings != null && !Arrays.asList(strings).contains("");
+  }
+}
+: Compilation failed
+	at randoop.condition.ExecutableBooleanExpression.createMethod(ExecutableBooleanExpression.java:225)
+	at randoop.condition.ExecutableBooleanExpression.<init>(ExecutableBooleanExpression.java:88)
+	at randoop.condition.SpecificationTranslator.create(SpecificationTranslator.java:381)
+	at randoop.condition.SpecificationTranslator.getGuardExpressions(SpecificationTranslator.java:278)
+	at randoop.condition.SpecificationTranslator.createExecutableSpecification(SpecificationTranslator.java:260)
+	at randoop.condition.SpecificationCollection.getExecutableSpecification(SpecificationCollection.java:388)
+	at randoop.reflection.OperationExtractor.visit(OperationExtractor.java:483)
+	at randoop.reflection.ReflectionManager.applyTo(ReflectionManager.java:314)
+	at randoop.reflection.ReflectionManager.apply(ReflectionManager.java:155)
+	at randoop.reflection.OperationExtractor.operations(OperationExtractor.java:222)
+	at randoop.reflection.OperationModel.addOperationsFromClasses(OperationModel.java:693)
+	at randoop.reflection.OperationModel.createModel(OperationModel.java:175)
+	at randoop.main.GenTests.handle(GenTests.java:325)
+	at randoop.main.Main.nonStaticMain(Main.java:69)
+	at randoop.main.Main.main(Main.java:31)
+Caused by: randoop.compile.SequenceCompilerException: Compilation failed
+	at randoop.compile.SequenceCompiler.compile(SequenceCompiler.java:147)
+	at randoop.compile.SequenceCompiler.compileAndLoad(SequenceCompiler.java:218)
+	at randoop.condition.ExecutableBooleanExpression.createMethod(ExecutableBooleanExpression.java:222)
+	... 14 more
+
+PUBLIC MEMBERS=382
+Explorer = ForwardGenerator(steps: 0, null steps: 0, num_sequences_generated: 0;
+    allSequences: 0, regresson seqs: 0, error seqs: 0=0=0, invalid seqs: 0, subsumed_sequences: 0, num_failed_output_test: 0;
+    sideEffectFreeMethods: 1115, runtimePrimitivesSeen: 38)
+
+Progress update: steps=1, test inputs generated=0, failing inputs=0      (2025-03-05T02:34:37.546622Z     113M used)
+Progress update: steps=434, test inputs generated=185, failing inputs=0      (2025-03-05T02:34:47.557647Z     382M used)
+Normal method executions: 6418
+Exceptional method executions: 15
+
+Average method execution time (normal termination):      0.586
+Average method execution time (exceptional termination): 0.801
+Approximate memory usage 382M
+Explorer = ForwardGenerator(steps: 434, null steps: 249, num_sequences_generated: 185;
+    allSequences: 185, regresson seqs: 183, error seqs: 0=0=0, invalid seqs: 0, subsumed_sequences: 0, num_failed_output_test: 2;
+    sideEffectFreeMethods: 1115, runtimePrimitivesSeen: 57)
+
+About to look for failing assertions in 115 regression sequences.
+
+Regression test output:
+Regression test count: 115
+Writing regression JUnit tests...
+JUnit version 4.13.2
+.................................E............E...............E..E........E..E..........E...E...........................E.E..E
+Time: 1.453
+There were 11 failures:
+1) test033(RegressionTest0)
+java.lang.AssertionError: 'false' != 'true'
+	at org.junit.Assert.fail(Assert.java:89)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at RegressionTest0.test033(RegressionTest0.java:306)
+2) test045(RegressionTest0)
+java.lang.NullPointerException
+	at RegressionTest0.test045(RegressionTest0.java:432)
+3) test060(RegressionTest0)
+org.junit.ComparisonFailure: '' != 'C:\\Program Files\\Mozilla Firefox\\firefox.exe' expected:<[]> but was:<[C:\\Program Files\\Mozilla Firefox\\firefox.exe]>
+	at org.junit.Assert.assertEquals(Assert.java:117)
+	at RegressionTest0.test060(RegressionTest0.java:683)
+4) test062(RegressionTest0)
+org.junit.ComparisonFailure: 'panel0' != 'panel4' expected:<panel[0]> but was:<panel[4]>
+	at org.junit.Assert.assertEquals(Assert.java:117)
+	at RegressionTest0.test062(RegressionTest0.java:715)
+5) test070(RegressionTest0)
+org.junit.ComparisonFailure: 'panel1' != 'panel5' expected:<panel[1]> but was:<panel[5]>
+	at org.junit.Assert.assertEquals(Assert.java:117)
+	at RegressionTest0.test070(RegressionTest0.java:864)
+6) test072(RegressionTest0)
+java.lang.AssertionError: '2' != '4'
+	at org.junit.Assert.fail(Assert.java:89)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at RegressionTest0.test072(RegressionTest0.java:893)
+7) test082(RegressionTest0)
+java.lang.AssertionError: '2' != '4'
+	at org.junit.Assert.fail(Assert.java:89)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at RegressionTest0.test082(RegressionTest0.java:1134)
+8) test085(RegressionTest0)
+org.junit.ComparisonFailure: 'panel2' != 'panel6' expected:<panel[2]> but was:<panel[6]>
+	at org.junit.Assert.assertEquals(Assert.java:117)
+	at RegressionTest0.test085(RegressionTest0.java:1194)
+9) test112(RegressionTest0)
+java.lang.AssertionError: '2' != '4'
+	at org.junit.Assert.fail(Assert.java:89)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at RegressionTest0.test112(RegressionTest0.java:1691)
+10) test113(RegressionTest0)
+org.junit.ComparisonFailure: 'panel3' != 'panel8' expected:<panel[3]> but was:<panel[8]>
+	at org.junit.Assert.assertEquals(Assert.java:117)
+	at RegressionTest0.test113(RegressionTest0.java:1712)
+11) test115(RegressionTest0)
+java.lang.AssertionError: '2' != '4'
+	at org.junit.Assert.fail(Assert.java:89)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at RegressionTest0.test115(RegressionTest0.java:1746)
+
+FAILURES!!!
+Tests run: 115,  Failures: 11
+JUnit version 4.13.2
+.............................................E...........................E........................................E...E
+Time: 1.511
+There were 4 failures:
+1) test045(RegressionTest0)
+java.lang.AssertionError: Expected exception of type java.lang.IndexOutOfBoundsException; message: Index 100 out of bounds for length 2
+	at org.junit.Assert.fail(Assert.java:89)
+	at RegressionTest0.test045(RegressionTest0.java:433)
+2) test072(RegressionTest0)
+array lengths differed, expected.length=3 actual.length=5; arrays first differed at element [2]; expected:<[]> but was:<[com.jstevh.viewer]>
+	at org.junit.internal.ComparisonCriteria.arrayEquals(ComparisonCriteria.java:78)
+	at org.junit.internal.ComparisonCriteria.arrayEquals(ComparisonCriteria.java:28)
+	at org.junit.Assert.internalArrayEquals(Assert.java:534)
+	at org.junit.Assert.assertArrayEquals(Assert.java:285)
+	at org.junit.Assert.assertArrayEquals(Assert.java:300)
+	at RegressionTest0.test072(RegressionTest0.java:895)
+	... 32 trimmed
+Caused by: org.junit.ComparisonFailure: expected:<[]> but was:<[com.jstevh.viewer]>
+	at org.junit.Assert.assertEquals(Assert.java:117)
+	at org.junit.Assert.assertEquals(Assert.java:146)
+	at org.junit.internal.ExactComparisonCriteria.assertElementsEqual(ExactComparisonCriteria.java:8)
+	at org.junit.internal.ComparisonCriteria.arrayEquals(ComparisonCriteria.java:76)
+	... 38 more
+3) test112(RegressionTest0)
+array lengths differed, expected.length=3 actual.length=5; arrays first differed at element [2]; expected:<[]> but was:<[com.jstevh.viewer]>
+	at org.junit.internal.ComparisonCriteria.arrayEquals(ComparisonCriteria.java:78)
+	at org.junit.internal.ComparisonCriteria.arrayEquals(ComparisonCriteria.java:28)
+	at org.junit.Assert.internalArrayEquals(Assert.java:534)
+	at org.junit.Assert.assertArrayEquals(Assert.java:285)
+	at org.junit.Assert.assertArrayEquals(Assert.java:300)
+	at RegressionTest0.test112(RegressionTest0.java:1693)
+	... 32 trimmed
+Caused by: org.junit.ComparisonFailure: expected:<[]> but was:<[com.jstevh.viewer]>
+	at org.junit.Assert.assertEquals(Assert.java:117)
+	at org.junit.Assert.assertEquals(Assert.java:146)
+	at org.junit.internal.ExactComparisonCriteria.assertElementsEqual(ExactComparisonCriteria.java:8)
+	at org.junit.internal.ComparisonCriteria.arrayEquals(ComparisonCriteria.java:76)
+	... 38 more
+4) test115(RegressionTest0)
+array lengths differed, expected.length=3 actual.length=5; arrays first differed at element [2]; expected:<[]> but was:<[com.jstevh.viewer]>
+	at org.junit.internal.ComparisonCriteria.arrayEquals(ComparisonCriteria.java:78)
+	at org.junit.internal.ComparisonCriteria.arrayEquals(ComparisonCriteria.java:28)
+	at org.junit.Assert.internalArrayEquals(Assert.java:534)
+	at org.junit.Assert.assertArrayEquals(Assert.java:285)
+	at org.junit.Assert.assertArrayEquals(Assert.java:300)
+	at RegressionTest0.test115(RegressionTest0.java:1748)
+	... 32 trimmed
+Caused by: org.junit.ComparisonFailure: expected:<[]> but was:<[com.jstevh.viewer]>
+	at org.junit.Assert.assertEquals(Assert.java:117)
+	at org.junit.Assert.assertEquals(Assert.java:146)
+	at org.junit.internal.ExactComparisonCriteria.assertElementsEqual(ExactComparisonCriteria.java:8)
+	at org.junit.internal.ComparisonCriteria.arrayEquals(ComparisonCriteria.java:76)
+	... 38 more
+
+FAILURES!!!
+Tests run: 115,  Failures: 4
+JUnit version 4.13.2
+.............................................E...........................E...........................................E
+Time: 1.532
+There were 3 failures:
+1) test045(RegressionTest0)
+java.lang.AssertionError
+	at org.junit.Assert.fail(Assert.java:87)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at org.junit.Assert.assertNotNull(Assert.java:713)
+	at org.junit.Assert.assertNotNull(Assert.java:723)
+	at RegressionTest0.test045(RegressionTest0.java:437)
+2) test072(RegressionTest0)
+java.lang.AssertionError: '3' != '5'
+	at org.junit.Assert.fail(Assert.java:89)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at RegressionTest0.test072(RegressionTest0.java:896)
+3) test115(RegressionTest0)
+array lengths differed, expected.length=3 actual.length=5; arrays first differed at element [2]; expected:<[]> but was:<[com.jstevh.viewer]>
+	at org.junit.internal.ComparisonCriteria.arrayEquals(ComparisonCriteria.java:78)
+	at org.junit.internal.ComparisonCriteria.arrayEquals(ComparisonCriteria.java:28)
+	at org.junit.Assert.internalArrayEquals(Assert.java:534)
+	at org.junit.Assert.assertArrayEquals(Assert.java:285)
+	at org.junit.Assert.assertArrayEquals(Assert.java:300)
+	at RegressionTest0.test115(RegressionTest0.java:1750)
+	... 32 trimmed
+Caused by: org.junit.ComparisonFailure: expected:<[]> but was:<[com.jstevh.viewer]>
+	at org.junit.Assert.assertEquals(Assert.java:117)
+	at org.junit.Assert.assertEquals(Assert.java:146)
+	at org.junit.internal.ExactComparisonCriteria.assertElementsEqual(ExactComparisonCriteria.java:8)
+	at org.junit.internal.ComparisonCriteria.arrayEquals(ComparisonCriteria.java:76)
+	... 38 more
+
+FAILURES!!!
+Tests run: 115,  Failures: 3
+Created file /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java
+Created file /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest.java
+Wrote regression JUnit tests.
+About to look for flaky methods.
+
+Flaky tests were generated. This means that your program contains
+methods that are nondeterministic or depend on non-local state.
+The following methods, in decreasing order of likelihood,
+are the most likely to be the problem.
+  Possibly flaky:  javax.swing.JApplet.getJMenuBar()
+  Possibly flaky:  java.awt.Container.print(java.awt.Graphics)
+  Possibly flaky:  java.awt.Container.isFocusTraversalPolicySet()
+  Possibly flaky:  java.awt.Component.requestFocusInWindow(java.awt.event.FocusEvent.Cause)
+  Possibly flaky:  java.awt.Component.removeHierarchyBoundsListener(java.awt.event.HierarchyBoundsListener)
+  Possibly flaky:  java.awt.Component.getToolkit()
+  Possibly flaky:  java.awt.Component.getName()
+  Possibly flaky:  java.applet.Applet.setStub(java.applet.AppletStub)
+  Possibly flaky:  com.jstevh.viewer.SAXDirParser.getLocalPackages()
+  Possibly flaky:  com.jstevh.viewer.SAXDirParser.getLocalBrowser()
+To prevent the generation of flaky tests, see section 'Randoop generated flaky tests'
+ at https://randoop.github.io/randoop/manual/#flaky-tests .
+
+Done looking for flaky methods.
+
+Invalid tests generated: 0
+java version "1.8.0_202"
+Java(TM) SE Runtime Environment (build 1.8.0_202-b08)
+Java HotSpot(TM) 64-Bit Server VM (build 25.202-b08, mixed mode)
+
+Compiling and mutating project...
+command:
+/Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/major/bin/ant -Dmutator=mml:/Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/major/mml/all.mml.bin -Dsrc=/Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/ClassViewer-5.0.5b  clean compile
+
+Buildfile: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build.xml
+
+clean:
+   [delete] Deleting directory /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/bin
+
+init:
+    [mkdir] Created dir: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/bin
+
+compile:
+    [javac] Compiling 7 source files to /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/bin
+    [javac] Generated 1208 mutants (2007 ms)
+    [javac] Note: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/ClassViewer-5.0.5b/com/jstevh/viewer/ClassViewer.java uses unchecked or unsafe operations.
+    [javac] Note: Recompile with -Xlint:unchecked for details.
+
+BUILD SUCCESSFUL
+Total time: 3 seconds
+
+Compiling tests...
+command:
+/Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/major/bin/ant -Dtest=/Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE -Dsrc=/Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/ClassViewer-5.0.5b  compile.tests
+
+Buildfile: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build.xml
+
+init:
+
+compile:
+
+compile.tests:
+    [javac] Compiling 2 source files to /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/bin
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:709: error: cannot find symbol
+    [javac]         java.awt.event.FocusEvent.Cause cause5 = null;
+    [javac]                                  ^
+    [javac]   symbol:   class Cause
+    [javac]   location: class FocusEvent
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:860: error: cannot find symbol
+    [javac]         java.awt.event.FocusEvent.Cause cause5 = null;
+    [javac]                                  ^
+    [javac]   symbol:   class Cause
+    [javac]   location: class FocusEvent
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:1560: error: cannot find symbol
+    [javac]         classViewer1.setMixingCutoutShape((java.awt.Shape) rectangle13);
+    [javac]                     ^
+    [javac]   symbol:   method setMixingCutoutShape(Shape)
+    [javac]   location: variable classViewer1 of type ClassViewer
+    [javac] Note: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java uses or overrides a deprecated API.
+    [javac] Note: Recompile with -Xlint:deprecation for details.
+    [javac] 3 errors
+
+BUILD FAILED
+/Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build.xml:49: Compile failed; see the compiler error output for details.
+
+Total time: 0 seconds

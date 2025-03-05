@@ -1,0 +1,1045 @@
+Using BASELINE
+
+openjdk version "11.0.13" 2021-10-19
+OpenJDK Runtime Environment Temurin-11.0.13+8 (build 11.0.13+8)
+OpenJDK 64-Bit Server VM Temurin-11.0.13+8 (build 11.0.13+8, mixed mode)
+Randoop for Java version "4.3.3, branch master, commit 27d6ec8, 2025-02-26".
+Ignoring org.sat4j.Messages which was read from /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/sat4j-core-2.3.5.jar but could not be initialized: java.lang.ExceptionInInitializerError
+
+Will try to generate tests for 192 classes.
+Unexpected exception java.lang.NullPointerException (null) in CallReplacementTransformer.transform(com/sun/source/doctree/DocCommentTree)
+java.lang.NullPointerException
+	at replacecall.org.apache.bcel.generic.ConstantPoolGen.<init>(ConstantPoolGen.java:159)
+	at replacecall.org.apache.bcel.generic.ConstantPoolGen.<init>(ConstantPoolGen.java:216)
+	at replacecall.org.apache.bcel.generic.ClassGen.<init>(ClassGen.java:143)
+	at randoop.instrument.CallReplacementTransformer.transform(CallReplacementTransformer.java:131)
+	at java.instrument/java.lang.instrument.ClassFileTransformer.transform(ClassFileTransformer.java:246)
+	at java.instrument/sun.instrument.TransformerManager.transform(TransformerManager.java:188)
+	at java.instrument/sun.instrument.InstrumentationImpl.transform(InstrumentationImpl.java:563)
+	at java.base/java.lang.ClassLoader.defineClass2(Native Method)
+	at java.base/java.lang.ClassLoader.defineClass(ClassLoader.java:1109)
+	at java.base/java.security.SecureClassLoader.defineClass(SecureClassLoader.java:206)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.defineClass(BuiltinClassLoader.java:759)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.findClassInModuleOrNull(BuiltinClassLoader.java:680)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClassOrNull(BuiltinClassLoader.java:605)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:579)
+	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:178)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:522)
+	at jdk.compiler/com.sun.tools.javac.parser.ParserFactory.<init>(ParserFactory.java:76)
+	at jdk.compiler/com.sun.tools.javac.parser.ParserFactory.instance(ParserFactory.java:56)
+	at jdk.compiler/com.sun.tools.javac.main.JavaCompiler.<init>(JavaCompiler.java:401)
+	at jdk.compiler/com.sun.tools.javac.main.JavaCompiler.instance(JavaCompiler.java:115)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.prepareCompiler(JavacTaskImpl.java:203)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.lambda$doCall$0(JavacTaskImpl.java:101)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.handleExceptions(JavacTaskImpl.java:147)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.doCall(JavacTaskImpl.java:100)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.call(JavacTaskImpl.java:94)
+	at randoop.compile.SequenceCompiler.compile(SequenceCompiler.java:176)
+	at randoop.compile.SequenceCompiler.compile(SequenceCompiler.java:145)
+	at randoop.compile.SequenceCompiler.compileAndLoad(SequenceCompiler.java:218)
+	at randoop.condition.ExecutableBooleanExpression.createMethod(ExecutableBooleanExpression.java:222)
+	at randoop.condition.ExecutableBooleanExpression.<init>(ExecutableBooleanExpression.java:88)
+	at randoop.condition.SpecificationTranslator.create(SpecificationTranslator.java:381)
+	at randoop.condition.SpecificationTranslator.getGuardExpressions(SpecificationTranslator.java:278)
+	at randoop.condition.SpecificationTranslator.createExecutableSpecification(SpecificationTranslator.java:260)
+	at randoop.condition.SpecificationCollection.getExecutableSpecification(SpecificationCollection.java:388)
+	at randoop.reflection.OperationExtractor.visit(OperationExtractor.java:483)
+	at randoop.reflection.ReflectionManager.applyTo(ReflectionManager.java:314)
+	at randoop.reflection.ReflectionManager.apply(ReflectionManager.java:155)
+	at randoop.reflection.OperationExtractor.operations(OperationExtractor.java:222)
+	at randoop.reflection.OperationModel.addOperationsFromClasses(OperationModel.java:693)
+	at randoop.reflection.OperationModel.createModel(OperationModel.java:175)
+	at randoop.main.GenTests.handle(GenTests.java:325)
+	at randoop.main.Main.nonStaticMain(Main.java:69)
+	at randoop.main.Main.main(Main.java:31)
+Unexpected exception java.lang.NullPointerException (null) in CallReplacementTransformer.transform(com/sun/source/doctree/DocTreeVisitor)
+java.lang.NullPointerException
+	at replacecall.org.apache.bcel.generic.ConstantPoolGen.<init>(ConstantPoolGen.java:159)
+	at replacecall.org.apache.bcel.generic.ConstantPoolGen.<init>(ConstantPoolGen.java:216)
+	at replacecall.org.apache.bcel.generic.ClassGen.<init>(ClassGen.java:143)
+	at randoop.instrument.CallReplacementTransformer.transform(CallReplacementTransformer.java:131)
+	at java.instrument/java.lang.instrument.ClassFileTransformer.transform(ClassFileTransformer.java:246)
+	at java.instrument/sun.instrument.TransformerManager.transform(TransformerManager.java:188)
+	at java.instrument/sun.instrument.InstrumentationImpl.transform(InstrumentationImpl.java:563)
+	at java.base/java.lang.ClassLoader.defineClass2(Native Method)
+	at java.base/java.lang.ClassLoader.defineClass(ClassLoader.java:1109)
+	at java.base/java.security.SecureClassLoader.defineClass(SecureClassLoader.java:206)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.defineClass(BuiltinClassLoader.java:759)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.findClassInModuleOrNull(BuiltinClassLoader.java:680)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClassOrNull(BuiltinClassLoader.java:605)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:579)
+	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:178)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:522)
+	at jdk.compiler/com.sun.tools.javac.tree.DocTreeMaker.<init>(DocTreeMaker.java:146)
+	at jdk.compiler/com.sun.tools.javac.tree.DocTreeMaker.instance(DocTreeMaker.java:124)
+	at jdk.compiler/com.sun.tools.javac.parser.ParserFactory.<init>(ParserFactory.java:76)
+	at jdk.compiler/com.sun.tools.javac.parser.ParserFactory.instance(ParserFactory.java:56)
+	at jdk.compiler/com.sun.tools.javac.main.JavaCompiler.<init>(JavaCompiler.java:401)
+	at jdk.compiler/com.sun.tools.javac.main.JavaCompiler.instance(JavaCompiler.java:115)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.prepareCompiler(JavacTaskImpl.java:203)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.lambda$doCall$0(JavacTaskImpl.java:101)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.handleExceptions(JavacTaskImpl.java:147)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.doCall(JavacTaskImpl.java:100)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.call(JavacTaskImpl.java:94)
+	at randoop.compile.SequenceCompiler.compile(SequenceCompiler.java:176)
+	at randoop.compile.SequenceCompiler.compile(SequenceCompiler.java:145)
+	at randoop.compile.SequenceCompiler.compileAndLoad(SequenceCompiler.java:218)
+	at randoop.condition.ExecutableBooleanExpression.createMethod(ExecutableBooleanExpression.java:222)
+	at randoop.condition.ExecutableBooleanExpression.<init>(ExecutableBooleanExpression.java:88)
+	at randoop.condition.SpecificationTranslator.create(SpecificationTranslator.java:381)
+	at randoop.condition.SpecificationTranslator.getGuardExpressions(SpecificationTranslator.java:278)
+	at randoop.condition.SpecificationTranslator.createExecutableSpecification(SpecificationTranslator.java:260)
+	at randoop.condition.SpecificationCollection.getExecutableSpecification(SpecificationCollection.java:388)
+	at randoop.reflection.OperationExtractor.visit(OperationExtractor.java:483)
+	at randoop.reflection.ReflectionManager.applyTo(ReflectionManager.java:314)
+	at randoop.reflection.ReflectionManager.apply(ReflectionManager.java:155)
+	at randoop.reflection.OperationExtractor.operations(OperationExtractor.java:222)
+	at randoop.reflection.OperationModel.addOperationsFromClasses(OperationModel.java:693)
+	at randoop.reflection.OperationModel.createModel(OperationModel.java:175)
+	at randoop.main.GenTests.handle(GenTests.java:325)
+	at randoop.main.Main.nonStaticMain(Main.java:69)
+	at randoop.main.Main.main(Main.java:31)
+Removing org.sat4j.opt.AbstractSelectorVariablesDecorator from the classes under test due to problem extracting operations:
+randoop.condition.RandoopSpecificationError: Condition method did not compile:
+5:20: solver has private access in org.sat4j.tools.SolverDecorator
+5:27: cannot find symbol
+  symbol:   method getModel()
+  location: variable solver of type T
+
+Class being compiled:
+package org.sat4j.tools;
+
+public class RandoopExpressionClass0 {
+  public static boolean signature_SolverDecorator(org.sat4j.tools.SolverDecorator receiver) throws Throwable {
+    return receiver.solver.getModel() != null;
+  }
+}
+: Compilation failed
+	at randoop.condition.ExecutableBooleanExpression.createMethod(ExecutableBooleanExpression.java:225)
+	at randoop.condition.ExecutableBooleanExpression.<init>(ExecutableBooleanExpression.java:88)
+	at randoop.condition.SpecificationTranslator.create(SpecificationTranslator.java:381)
+	at randoop.condition.SpecificationTranslator.getGuardExpressions(SpecificationTranslator.java:278)
+	at randoop.condition.SpecificationTranslator.createExecutableSpecification(SpecificationTranslator.java:260)
+	at randoop.condition.SpecificationCollection.getExecutableSpecification(SpecificationCollection.java:388)
+	at randoop.reflection.OperationExtractor.visit(OperationExtractor.java:483)
+	at randoop.reflection.ReflectionManager.applyTo(ReflectionManager.java:314)
+	at randoop.reflection.ReflectionManager.apply(ReflectionManager.java:155)
+	at randoop.reflection.OperationExtractor.operations(OperationExtractor.java:222)
+	at randoop.reflection.OperationModel.addOperationsFromClasses(OperationModel.java:693)
+	at randoop.reflection.OperationModel.createModel(OperationModel.java:175)
+	at randoop.main.GenTests.handle(GenTests.java:325)
+	at randoop.main.Main.nonStaticMain(Main.java:69)
+	at randoop.main.Main.main(Main.java:31)
+Caused by: randoop.compile.SequenceCompilerException: Compilation failed
+	at randoop.compile.SequenceCompiler.compile(SequenceCompiler.java:147)
+	at randoop.compile.SequenceCompiler.compileAndLoad(SequenceCompiler.java:218)
+	at randoop.condition.ExecutableBooleanExpression.createMethod(ExecutableBooleanExpression.java:222)
+	... 14 more
+
+Removing org.sat4j.opt.MaxSatDecorator from the classes under test due to problem extracting operations:
+randoop.condition.RandoopSpecificationError: Condition method did not compile:
+5:20: solver has private access in org.sat4j.tools.SolverDecorator
+5:27: cannot find symbol
+  symbol:   method getModel()
+  location: variable solver of type T
+
+Class being compiled:
+package org.sat4j.tools;
+
+public class RandoopExpressionClass1 {
+  public static boolean signature_SolverDecorator(org.sat4j.tools.SolverDecorator receiver) throws Throwable {
+    return receiver.solver.getModel() != null;
+  }
+}
+: Compilation failed
+	at randoop.condition.ExecutableBooleanExpression.createMethod(ExecutableBooleanExpression.java:225)
+	at randoop.condition.ExecutableBooleanExpression.<init>(ExecutableBooleanExpression.java:88)
+	at randoop.condition.SpecificationTranslator.create(SpecificationTranslator.java:381)
+	at randoop.condition.SpecificationTranslator.getGuardExpressions(SpecificationTranslator.java:278)
+	at randoop.condition.SpecificationTranslator.createExecutableSpecification(SpecificationTranslator.java:260)
+	at randoop.condition.SpecificationCollection.getExecutableSpecification(SpecificationCollection.java:388)
+	at randoop.reflection.OperationExtractor.visit(OperationExtractor.java:483)
+	at randoop.reflection.ReflectionManager.applyTo(ReflectionManager.java:314)
+	at randoop.reflection.ReflectionManager.apply(ReflectionManager.java:155)
+	at randoop.reflection.OperationExtractor.operations(OperationExtractor.java:222)
+	at randoop.reflection.OperationModel.addOperationsFromClasses(OperationModel.java:693)
+	at randoop.reflection.OperationModel.createModel(OperationModel.java:175)
+	at randoop.main.GenTests.handle(GenTests.java:325)
+	at randoop.main.Main.nonStaticMain(Main.java:69)
+	at randoop.main.Main.main(Main.java:31)
+Caused by: randoop.compile.SequenceCompilerException: Compilation failed
+	at randoop.compile.SequenceCompiler.compile(SequenceCompiler.java:147)
+	at randoop.compile.SequenceCompiler.compileAndLoad(SequenceCompiler.java:218)
+	at randoop.condition.ExecutableBooleanExpression.createMethod(ExecutableBooleanExpression.java:222)
+	... 14 more
+
+Removing org.sat4j.tools.AbstractClauseSelectorSolver<T> from the classes under test due to problem extracting operations:
+randoop.condition.RandoopSpecificationError: Condition method did not compile:
+5:20: solver has private access in org.sat4j.tools.SolverDecorator
+5:27: cannot find symbol
+  symbol:   method getModel()
+  location: variable solver of type T
+
+Class being compiled:
+package org.sat4j.tools;
+
+public class RandoopExpressionClass2 {
+  public static boolean signature_SolverDecorator(org.sat4j.tools.SolverDecorator receiver) throws Throwable {
+    return receiver.solver.getModel() != null;
+  }
+}
+: Compilation failed
+	at randoop.condition.ExecutableBooleanExpression.createMethod(ExecutableBooleanExpression.java:225)
+	at randoop.condition.ExecutableBooleanExpression.<init>(ExecutableBooleanExpression.java:88)
+	at randoop.condition.SpecificationTranslator.create(SpecificationTranslator.java:381)
+	at randoop.condition.SpecificationTranslator.getGuardExpressions(SpecificationTranslator.java:278)
+	at randoop.condition.SpecificationTranslator.createExecutableSpecification(SpecificationTranslator.java:260)
+	at randoop.condition.SpecificationCollection.getExecutableSpecification(SpecificationCollection.java:388)
+	at randoop.reflection.OperationExtractor.visit(OperationExtractor.java:483)
+	at randoop.reflection.ReflectionManager.applyTo(ReflectionManager.java:314)
+	at randoop.reflection.ReflectionManager.apply(ReflectionManager.java:155)
+	at randoop.reflection.OperationExtractor.operations(OperationExtractor.java:222)
+	at randoop.reflection.OperationModel.addOperationsFromClasses(OperationModel.java:693)
+	at randoop.reflection.OperationModel.createModel(OperationModel.java:175)
+	at randoop.main.GenTests.handle(GenTests.java:325)
+	at randoop.main.Main.nonStaticMain(Main.java:69)
+	at randoop.main.Main.main(Main.java:31)
+Caused by: randoop.compile.SequenceCompilerException: Compilation failed
+	at randoop.compile.SequenceCompiler.compile(SequenceCompiler.java:147)
+	at randoop.compile.SequenceCompiler.compileAndLoad(SequenceCompiler.java:218)
+	at randoop.condition.ExecutableBooleanExpression.createMethod(ExecutableBooleanExpression.java:222)
+	... 14 more
+
+Removing org.sat4j.tools.AbstractMinimalModel from the classes under test due to problem extracting operations:
+randoop.condition.RandoopSpecificationError: Condition method did not compile:
+5:20: solver has private access in org.sat4j.tools.SolverDecorator
+5:27: cannot find symbol
+  symbol:   method getModel()
+  location: variable solver of type T
+
+Class being compiled:
+package org.sat4j.tools;
+
+public class RandoopExpressionClass3 {
+  public static boolean signature_SolverDecorator(org.sat4j.tools.SolverDecorator receiver) throws Throwable {
+    return receiver.solver.getModel() != null;
+  }
+}
+: Compilation failed
+	at randoop.condition.ExecutableBooleanExpression.createMethod(ExecutableBooleanExpression.java:225)
+	at randoop.condition.ExecutableBooleanExpression.<init>(ExecutableBooleanExpression.java:88)
+	at randoop.condition.SpecificationTranslator.create(SpecificationTranslator.java:381)
+	at randoop.condition.SpecificationTranslator.getGuardExpressions(SpecificationTranslator.java:278)
+	at randoop.condition.SpecificationTranslator.createExecutableSpecification(SpecificationTranslator.java:260)
+	at randoop.condition.SpecificationCollection.getExecutableSpecification(SpecificationCollection.java:388)
+	at randoop.reflection.OperationExtractor.visit(OperationExtractor.java:483)
+	at randoop.reflection.ReflectionManager.applyTo(ReflectionManager.java:314)
+	at randoop.reflection.ReflectionManager.apply(ReflectionManager.java:155)
+	at randoop.reflection.OperationExtractor.operations(OperationExtractor.java:222)
+	at randoop.reflection.OperationModel.addOperationsFromClasses(OperationModel.java:693)
+	at randoop.reflection.OperationModel.createModel(OperationModel.java:175)
+	at randoop.main.GenTests.handle(GenTests.java:325)
+	at randoop.main.Main.nonStaticMain(Main.java:69)
+	at randoop.main.Main.main(Main.java:31)
+Caused by: randoop.compile.SequenceCompilerException: Compilation failed
+	at randoop.compile.SequenceCompiler.compile(SequenceCompiler.java:147)
+	at randoop.compile.SequenceCompiler.compileAndLoad(SequenceCompiler.java:218)
+	at randoop.condition.ExecutableBooleanExpression.createMethod(ExecutableBooleanExpression.java:222)
+	... 14 more
+
+Removing org.sat4j.tools.ClausalCardinalitiesDecorator<T> from the classes under test due to problem extracting operations:
+randoop.condition.RandoopSpecificationError: Condition method did not compile:
+5:20: solver has private access in org.sat4j.tools.SolverDecorator
+5:27: cannot find symbol
+  symbol:   method getModel()
+  location: variable solver of type T
+
+Class being compiled:
+package org.sat4j.tools;
+
+public class RandoopExpressionClass4 {
+  public static boolean signature_SolverDecorator(org.sat4j.tools.SolverDecorator receiver) throws Throwable {
+    return receiver.solver.getModel() != null;
+  }
+}
+: Compilation failed
+	at randoop.condition.ExecutableBooleanExpression.createMethod(ExecutableBooleanExpression.java:225)
+	at randoop.condition.ExecutableBooleanExpression.<init>(ExecutableBooleanExpression.java:88)
+	at randoop.condition.SpecificationTranslator.create(SpecificationTranslator.java:381)
+	at randoop.condition.SpecificationTranslator.getGuardExpressions(SpecificationTranslator.java:278)
+	at randoop.condition.SpecificationTranslator.createExecutableSpecification(SpecificationTranslator.java:260)
+	at randoop.condition.SpecificationCollection.getExecutableSpecification(SpecificationCollection.java:388)
+	at randoop.reflection.OperationExtractor.visit(OperationExtractor.java:483)
+	at randoop.reflection.ReflectionManager.applyTo(ReflectionManager.java:314)
+	at randoop.reflection.ReflectionManager.apply(ReflectionManager.java:155)
+	at randoop.reflection.OperationExtractor.operations(OperationExtractor.java:222)
+	at randoop.reflection.OperationModel.addOperationsFromClasses(OperationModel.java:693)
+	at randoop.reflection.OperationModel.createModel(OperationModel.java:175)
+	at randoop.main.GenTests.handle(GenTests.java:325)
+	at randoop.main.Main.nonStaticMain(Main.java:69)
+	at randoop.main.Main.main(Main.java:31)
+Caused by: randoop.compile.SequenceCompilerException: Compilation failed
+	at randoop.compile.SequenceCompiler.compile(SequenceCompiler.java:147)
+	at randoop.compile.SequenceCompiler.compileAndLoad(SequenceCompiler.java:218)
+	at randoop.condition.ExecutableBooleanExpression.createMethod(ExecutableBooleanExpression.java:222)
+	... 14 more
+
+Removing org.sat4j.tools.FullClauseSelectorSolver<T> from the classes under test due to problem extracting operations:
+randoop.condition.RandoopSpecificationError: Condition method did not compile:
+5:20: solver has private access in org.sat4j.tools.SolverDecorator
+5:27: cannot find symbol
+  symbol:   method getModel()
+  location: variable solver of type T
+
+Class being compiled:
+package org.sat4j.tools;
+
+public class RandoopExpressionClass5 {
+  public static boolean signature_SolverDecorator(org.sat4j.tools.SolverDecorator receiver) throws Throwable {
+    return receiver.solver.getModel() != null;
+  }
+}
+: Compilation failed
+	at randoop.condition.ExecutableBooleanExpression.createMethod(ExecutableBooleanExpression.java:225)
+	at randoop.condition.ExecutableBooleanExpression.<init>(ExecutableBooleanExpression.java:88)
+	at randoop.condition.SpecificationTranslator.create(SpecificationTranslator.java:381)
+	at randoop.condition.SpecificationTranslator.getGuardExpressions(SpecificationTranslator.java:278)
+	at randoop.condition.SpecificationTranslator.createExecutableSpecification(SpecificationTranslator.java:260)
+	at randoop.condition.SpecificationCollection.getExecutableSpecification(SpecificationCollection.java:388)
+	at randoop.reflection.OperationExtractor.visit(OperationExtractor.java:483)
+	at randoop.reflection.ReflectionManager.applyTo(ReflectionManager.java:314)
+	at randoop.reflection.ReflectionManager.apply(ReflectionManager.java:155)
+	at randoop.reflection.OperationExtractor.operations(OperationExtractor.java:222)
+	at randoop.reflection.OperationModel.addOperationsFromClasses(OperationModel.java:693)
+	at randoop.reflection.OperationModel.createModel(OperationModel.java:175)
+	at randoop.main.GenTests.handle(GenTests.java:325)
+	at randoop.main.Main.nonStaticMain(Main.java:69)
+	at randoop.main.Main.main(Main.java:31)
+Caused by: randoop.compile.SequenceCompilerException: Compilation failed
+	at randoop.compile.SequenceCompiler.compile(SequenceCompiler.java:147)
+	at randoop.compile.SequenceCompiler.compileAndLoad(SequenceCompiler.java:218)
+	at randoop.condition.ExecutableBooleanExpression.createMethod(ExecutableBooleanExpression.java:222)
+	... 14 more
+
+Removing org.sat4j.tools.GateTranslator from the classes under test due to problem extracting operations:
+randoop.condition.RandoopSpecificationError: Condition method did not compile:
+5:20: solver has private access in org.sat4j.tools.SolverDecorator
+5:27: cannot find symbol
+  symbol:   method getModel()
+  location: variable solver of type T
+
+Class being compiled:
+package org.sat4j.tools;
+
+public class RandoopExpressionClass6 {
+  public static boolean signature_SolverDecorator(org.sat4j.tools.SolverDecorator receiver) throws Throwable {
+    return receiver.solver.getModel() != null;
+  }
+}
+: Compilation failed
+	at randoop.condition.ExecutableBooleanExpression.createMethod(ExecutableBooleanExpression.java:225)
+	at randoop.condition.ExecutableBooleanExpression.<init>(ExecutableBooleanExpression.java:88)
+	at randoop.condition.SpecificationTranslator.create(SpecificationTranslator.java:381)
+	at randoop.condition.SpecificationTranslator.getGuardExpressions(SpecificationTranslator.java:278)
+	at randoop.condition.SpecificationTranslator.createExecutableSpecification(SpecificationTranslator.java:260)
+	at randoop.condition.SpecificationCollection.getExecutableSpecification(SpecificationCollection.java:388)
+	at randoop.reflection.OperationExtractor.visit(OperationExtractor.java:483)
+	at randoop.reflection.ReflectionManager.applyTo(ReflectionManager.java:314)
+	at randoop.reflection.ReflectionManager.apply(ReflectionManager.java:155)
+	at randoop.reflection.OperationExtractor.operations(OperationExtractor.java:222)
+	at randoop.reflection.OperationModel.addOperationsFromClasses(OperationModel.java:693)
+	at randoop.reflection.OperationModel.createModel(OperationModel.java:175)
+	at randoop.main.GenTests.handle(GenTests.java:325)
+	at randoop.main.Main.nonStaticMain(Main.java:69)
+	at randoop.main.Main.main(Main.java:31)
+Caused by: randoop.compile.SequenceCompilerException: Compilation failed
+	at randoop.compile.SequenceCompiler.compile(SequenceCompiler.java:147)
+	at randoop.compile.SequenceCompiler.compileAndLoad(SequenceCompiler.java:218)
+	at randoop.condition.ExecutableBooleanExpression.createMethod(ExecutableBooleanExpression.java:222)
+	... 14 more
+
+Removing org.sat4j.tools.GroupClauseSelectorSolver<T> from the classes under test due to problem extracting operations:
+randoop.condition.RandoopSpecificationError: Condition method did not compile:
+5:20: solver has private access in org.sat4j.tools.SolverDecorator
+5:27: cannot find symbol
+  symbol:   method getModel()
+  location: variable solver of type T
+
+Class being compiled:
+package org.sat4j.tools;
+
+public class RandoopExpressionClass7 {
+  public static boolean signature_SolverDecorator(org.sat4j.tools.SolverDecorator receiver) throws Throwable {
+    return receiver.solver.getModel() != null;
+  }
+}
+: Compilation failed
+	at randoop.condition.ExecutableBooleanExpression.createMethod(ExecutableBooleanExpression.java:225)
+	at randoop.condition.ExecutableBooleanExpression.<init>(ExecutableBooleanExpression.java:88)
+	at randoop.condition.SpecificationTranslator.create(SpecificationTranslator.java:381)
+	at randoop.condition.SpecificationTranslator.getGuardExpressions(SpecificationTranslator.java:278)
+	at randoop.condition.SpecificationTranslator.createExecutableSpecification(SpecificationTranslator.java:260)
+	at randoop.condition.SpecificationCollection.getExecutableSpecification(SpecificationCollection.java:388)
+	at randoop.reflection.OperationExtractor.visit(OperationExtractor.java:483)
+	at randoop.reflection.ReflectionManager.applyTo(ReflectionManager.java:314)
+	at randoop.reflection.ReflectionManager.apply(ReflectionManager.java:155)
+	at randoop.reflection.OperationExtractor.operations(OperationExtractor.java:222)
+	at randoop.reflection.OperationModel.addOperationsFromClasses(OperationModel.java:693)
+	at randoop.reflection.OperationModel.createModel(OperationModel.java:175)
+	at randoop.main.GenTests.handle(GenTests.java:325)
+	at randoop.main.Main.nonStaticMain(Main.java:69)
+	at randoop.main.Main.main(Main.java:31)
+Caused by: randoop.compile.SequenceCompilerException: Compilation failed
+	at randoop.compile.SequenceCompiler.compile(SequenceCompiler.java:147)
+	at randoop.compile.SequenceCompiler.compileAndLoad(SequenceCompiler.java:218)
+	at randoop.condition.ExecutableBooleanExpression.createMethod(ExecutableBooleanExpression.java:222)
+	... 14 more
+
+Removing org.sat4j.tools.ModelIterator from the classes under test due to problem extracting operations:
+randoop.condition.RandoopSpecificationError: Condition method did not compile:
+5:20: solver has private access in org.sat4j.tools.SolverDecorator
+5:27: cannot find symbol
+  symbol:   method getModel()
+  location: variable solver of type T
+
+Class being compiled:
+package org.sat4j.tools;
+
+public class RandoopExpressionClass8 {
+  public static boolean signature_SolverDecorator(org.sat4j.tools.SolverDecorator receiver) throws Throwable {
+    return receiver.solver.getModel() != null;
+  }
+}
+: Compilation failed
+	at randoop.condition.ExecutableBooleanExpression.createMethod(ExecutableBooleanExpression.java:225)
+	at randoop.condition.ExecutableBooleanExpression.<init>(ExecutableBooleanExpression.java:88)
+	at randoop.condition.SpecificationTranslator.create(SpecificationTranslator.java:381)
+	at randoop.condition.SpecificationTranslator.getGuardExpressions(SpecificationTranslator.java:278)
+	at randoop.condition.SpecificationTranslator.createExecutableSpecification(SpecificationTranslator.java:260)
+	at randoop.condition.SpecificationCollection.getExecutableSpecification(SpecificationCollection.java:388)
+	at randoop.reflection.OperationExtractor.visit(OperationExtractor.java:483)
+	at randoop.reflection.ReflectionManager.applyTo(ReflectionManager.java:314)
+	at randoop.reflection.ReflectionManager.apply(ReflectionManager.java:155)
+	at randoop.reflection.OperationExtractor.operations(OperationExtractor.java:222)
+	at randoop.reflection.OperationModel.addOperationsFromClasses(OperationModel.java:693)
+	at randoop.reflection.OperationModel.createModel(OperationModel.java:175)
+	at randoop.main.GenTests.handle(GenTests.java:325)
+	at randoop.main.Main.nonStaticMain(Main.java:69)
+	at randoop.main.Main.main(Main.java:31)
+Caused by: randoop.compile.SequenceCompilerException: Compilation failed
+	at randoop.compile.SequenceCompiler.compile(SequenceCompiler.java:147)
+	at randoop.compile.SequenceCompiler.compileAndLoad(SequenceCompiler.java:218)
+	at randoop.condition.ExecutableBooleanExpression.createMethod(ExecutableBooleanExpression.java:222)
+	... 14 more
+
+Removing org.sat4j.tools.ModelIteratorToSATAdapter from the classes under test due to problem extracting operations:
+randoop.condition.RandoopSpecificationError: Condition method did not compile:
+5:20: solver has private access in org.sat4j.tools.SolverDecorator
+5:27: cannot find symbol
+  symbol:   method getModel()
+  location: variable solver of type T
+
+Class being compiled:
+package org.sat4j.tools;
+
+public class RandoopExpressionClass9 {
+  public static boolean signature_SolverDecorator(org.sat4j.tools.SolverDecorator receiver) throws Throwable {
+    return receiver.solver.getModel() != null;
+  }
+}
+: Compilation failed
+	at randoop.condition.ExecutableBooleanExpression.createMethod(ExecutableBooleanExpression.java:225)
+	at randoop.condition.ExecutableBooleanExpression.<init>(ExecutableBooleanExpression.java:88)
+	at randoop.condition.SpecificationTranslator.create(SpecificationTranslator.java:381)
+	at randoop.condition.SpecificationTranslator.getGuardExpressions(SpecificationTranslator.java:278)
+	at randoop.condition.SpecificationTranslator.createExecutableSpecification(SpecificationTranslator.java:260)
+	at randoop.condition.SpecificationCollection.getExecutableSpecification(SpecificationCollection.java:388)
+	at randoop.reflection.OperationExtractor.visit(OperationExtractor.java:483)
+	at randoop.reflection.ReflectionManager.applyTo(ReflectionManager.java:314)
+	at randoop.reflection.ReflectionManager.apply(ReflectionManager.java:155)
+	at randoop.reflection.OperationExtractor.operations(OperationExtractor.java:222)
+	at randoop.reflection.OperationModel.addOperationsFromClasses(OperationModel.java:693)
+	at randoop.reflection.OperationModel.createModel(OperationModel.java:175)
+	at randoop.main.GenTests.handle(GenTests.java:325)
+	at randoop.main.Main.nonStaticMain(Main.java:69)
+	at randoop.main.Main.main(Main.java:31)
+Caused by: randoop.compile.SequenceCompilerException: Compilation failed
+	at randoop.compile.SequenceCompiler.compile(SequenceCompiler.java:147)
+	at randoop.compile.SequenceCompiler.compileAndLoad(SequenceCompiler.java:218)
+	at randoop.condition.ExecutableBooleanExpression.createMethod(ExecutableBooleanExpression.java:222)
+	... 14 more
+
+Removing org.sat4j.tools.NegationDecorator<T> from the classes under test due to problem extracting operations:
+randoop.condition.RandoopSpecificationError: Condition method did not compile:
+5:20: solver has private access in org.sat4j.tools.SolverDecorator
+5:27: cannot find symbol
+  symbol:   method getModel()
+  location: variable solver of type T
+
+Class being compiled:
+package org.sat4j.tools;
+
+public class RandoopExpressionClass10 {
+  public static boolean signature_SolverDecorator(org.sat4j.tools.SolverDecorator receiver) throws Throwable {
+    return receiver.solver.getModel() != null;
+  }
+}
+: Compilation failed
+	at randoop.condition.ExecutableBooleanExpression.createMethod(ExecutableBooleanExpression.java:225)
+	at randoop.condition.ExecutableBooleanExpression.<init>(ExecutableBooleanExpression.java:88)
+	at randoop.condition.SpecificationTranslator.create(SpecificationTranslator.java:381)
+	at randoop.condition.SpecificationTranslator.getGuardExpressions(SpecificationTranslator.java:278)
+	at randoop.condition.SpecificationTranslator.createExecutableSpecification(SpecificationTranslator.java:260)
+	at randoop.condition.SpecificationCollection.getExecutableSpecification(SpecificationCollection.java:388)
+	at randoop.reflection.OperationExtractor.visit(OperationExtractor.java:483)
+	at randoop.reflection.ReflectionManager.applyTo(ReflectionManager.java:314)
+	at randoop.reflection.ReflectionManager.apply(ReflectionManager.java:155)
+	at randoop.reflection.OperationExtractor.operations(OperationExtractor.java:222)
+	at randoop.reflection.OperationModel.addOperationsFromClasses(OperationModel.java:693)
+	at randoop.reflection.OperationModel.createModel(OperationModel.java:175)
+	at randoop.main.GenTests.handle(GenTests.java:325)
+	at randoop.main.Main.nonStaticMain(Main.java:69)
+	at randoop.main.Main.main(Main.java:31)
+Caused by: randoop.compile.SequenceCompilerException: Compilation failed
+	at randoop.compile.SequenceCompiler.compile(SequenceCompiler.java:147)
+	at randoop.compile.SequenceCompiler.compileAndLoad(SequenceCompiler.java:218)
+	at randoop.condition.ExecutableBooleanExpression.createMethod(ExecutableBooleanExpression.java:222)
+	... 14 more
+
+Removing org.sat4j.tools.SingleSolutionDetector from the classes under test due to problem extracting operations:
+randoop.condition.RandoopSpecificationError: Condition method did not compile:
+5:20: solver has private access in org.sat4j.tools.SolverDecorator
+5:27: cannot find symbol
+  symbol:   method getModel()
+  location: variable solver of type T
+
+Class being compiled:
+package org.sat4j.tools;
+
+public class RandoopExpressionClass11 {
+  public static boolean signature_SolverDecorator(org.sat4j.tools.SolverDecorator receiver) throws Throwable {
+    return receiver.solver.getModel() != null;
+  }
+}
+: Compilation failed
+	at randoop.condition.ExecutableBooleanExpression.createMethod(ExecutableBooleanExpression.java:225)
+	at randoop.condition.ExecutableBooleanExpression.<init>(ExecutableBooleanExpression.java:88)
+	at randoop.condition.SpecificationTranslator.create(SpecificationTranslator.java:381)
+	at randoop.condition.SpecificationTranslator.getGuardExpressions(SpecificationTranslator.java:278)
+	at randoop.condition.SpecificationTranslator.createExecutableSpecification(SpecificationTranslator.java:260)
+	at randoop.condition.SpecificationCollection.getExecutableSpecification(SpecificationCollection.java:388)
+	at randoop.reflection.OperationExtractor.visit(OperationExtractor.java:483)
+	at randoop.reflection.ReflectionManager.applyTo(ReflectionManager.java:314)
+	at randoop.reflection.ReflectionManager.apply(ReflectionManager.java:155)
+	at randoop.reflection.OperationExtractor.operations(OperationExtractor.java:222)
+	at randoop.reflection.OperationModel.addOperationsFromClasses(OperationModel.java:693)
+	at randoop.reflection.OperationModel.createModel(OperationModel.java:175)
+	at randoop.main.GenTests.handle(GenTests.java:325)
+	at randoop.main.Main.nonStaticMain(Main.java:69)
+	at randoop.main.Main.main(Main.java:31)
+Caused by: randoop.compile.SequenceCompilerException: Compilation failed
+	at randoop.compile.SequenceCompiler.compile(SequenceCompiler.java:147)
+	at randoop.compile.SequenceCompiler.compileAndLoad(SequenceCompiler.java:218)
+	at randoop.condition.ExecutableBooleanExpression.createMethod(ExecutableBooleanExpression.java:222)
+	... 14 more
+
+Removing org.sat4j.tools.SolutionCounter from the classes under test due to problem extracting operations:
+randoop.condition.RandoopSpecificationError: Condition method did not compile:
+5:20: solver has private access in org.sat4j.tools.SolverDecorator
+5:27: cannot find symbol
+  symbol:   method getModel()
+  location: variable solver of type T
+
+Class being compiled:
+package org.sat4j.tools;
+
+public class RandoopExpressionClass12 {
+  public static boolean signature_SolverDecorator(org.sat4j.tools.SolverDecorator receiver) throws Throwable {
+    return receiver.solver.getModel() != null;
+  }
+}
+: Compilation failed
+	at randoop.condition.ExecutableBooleanExpression.createMethod(ExecutableBooleanExpression.java:225)
+	at randoop.condition.ExecutableBooleanExpression.<init>(ExecutableBooleanExpression.java:88)
+	at randoop.condition.SpecificationTranslator.create(SpecificationTranslator.java:381)
+	at randoop.condition.SpecificationTranslator.getGuardExpressions(SpecificationTranslator.java:278)
+	at randoop.condition.SpecificationTranslator.createExecutableSpecification(SpecificationTranslator.java:260)
+	at randoop.condition.SpecificationCollection.getExecutableSpecification(SpecificationCollection.java:388)
+	at randoop.reflection.OperationExtractor.visit(OperationExtractor.java:483)
+	at randoop.reflection.ReflectionManager.applyTo(ReflectionManager.java:314)
+	at randoop.reflection.ReflectionManager.apply(ReflectionManager.java:155)
+	at randoop.reflection.OperationExtractor.operations(OperationExtractor.java:222)
+	at randoop.reflection.OperationModel.addOperationsFromClasses(OperationModel.java:693)
+	at randoop.reflection.OperationModel.createModel(OperationModel.java:175)
+	at randoop.main.GenTests.handle(GenTests.java:325)
+	at randoop.main.Main.nonStaticMain(Main.java:69)
+	at randoop.main.Main.main(Main.java:31)
+Caused by: randoop.compile.SequenceCompilerException: Compilation failed
+	at randoop.compile.SequenceCompiler.compile(SequenceCompiler.java:147)
+	at randoop.compile.SequenceCompiler.compileAndLoad(SequenceCompiler.java:218)
+	at randoop.condition.ExecutableBooleanExpression.createMethod(ExecutableBooleanExpression.java:222)
+	... 14 more
+
+Removing org.sat4j.tools.SolverDecorator<T> from the classes under test due to problem extracting operations:
+randoop.condition.RandoopSpecificationError: Condition method did not compile:
+5:20: solver has private access in org.sat4j.tools.SolverDecorator
+5:27: cannot find symbol
+  symbol:   method getModel()
+  location: variable solver of type T
+
+Class being compiled:
+package org.sat4j.tools;
+
+public class RandoopExpressionClass13 {
+  public static boolean signature_SolverDecorator(org.sat4j.tools.SolverDecorator receiver) throws Throwable {
+    return receiver.solver.getModel() != null;
+  }
+}
+: Compilation failed
+	at randoop.condition.ExecutableBooleanExpression.createMethod(ExecutableBooleanExpression.java:225)
+	at randoop.condition.ExecutableBooleanExpression.<init>(ExecutableBooleanExpression.java:88)
+	at randoop.condition.SpecificationTranslator.create(SpecificationTranslator.java:381)
+	at randoop.condition.SpecificationTranslator.getGuardExpressions(SpecificationTranslator.java:278)
+	at randoop.condition.SpecificationTranslator.createExecutableSpecification(SpecificationTranslator.java:260)
+	at randoop.condition.SpecificationCollection.getExecutableSpecification(SpecificationCollection.java:388)
+	at randoop.reflection.OperationExtractor.visit(OperationExtractor.java:483)
+	at randoop.reflection.ReflectionManager.applyTo(ReflectionManager.java:314)
+	at randoop.reflection.ReflectionManager.apply(ReflectionManager.java:155)
+	at randoop.reflection.OperationExtractor.operations(OperationExtractor.java:222)
+	at randoop.reflection.OperationModel.addOperationsFromClasses(OperationModel.java:693)
+	at randoop.reflection.OperationModel.createModel(OperationModel.java:175)
+	at randoop.main.GenTests.handle(GenTests.java:325)
+	at randoop.main.Main.nonStaticMain(Main.java:69)
+	at randoop.main.Main.main(Main.java:31)
+Caused by: randoop.compile.SequenceCompilerException: Compilation failed
+	at randoop.compile.SequenceCompiler.compile(SequenceCompiler.java:147)
+	at randoop.compile.SequenceCompiler.compileAndLoad(SequenceCompiler.java:218)
+	at randoop.condition.ExecutableBooleanExpression.createMethod(ExecutableBooleanExpression.java:222)
+	... 14 more
+
+Removing org.sat4j.tools.xplain.HighLevelXplain<T> from the classes under test due to problem extracting operations:
+randoop.condition.RandoopSpecificationError: Condition method did not compile:
+5:20: solver has private access in org.sat4j.tools.SolverDecorator
+5:27: cannot find symbol
+  symbol:   method getModel()
+  location: variable solver of type T
+
+Class being compiled:
+package org.sat4j.tools;
+
+public class RandoopExpressionClass14 {
+  public static boolean signature_SolverDecorator(org.sat4j.tools.SolverDecorator receiver) throws Throwable {
+    return receiver.solver.getModel() != null;
+  }
+}
+: Compilation failed
+	at randoop.condition.ExecutableBooleanExpression.createMethod(ExecutableBooleanExpression.java:225)
+	at randoop.condition.ExecutableBooleanExpression.<init>(ExecutableBooleanExpression.java:88)
+	at randoop.condition.SpecificationTranslator.create(SpecificationTranslator.java:381)
+	at randoop.condition.SpecificationTranslator.getGuardExpressions(SpecificationTranslator.java:278)
+	at randoop.condition.SpecificationTranslator.createExecutableSpecification(SpecificationTranslator.java:260)
+	at randoop.condition.SpecificationCollection.getExecutableSpecification(SpecificationCollection.java:388)
+	at randoop.reflection.OperationExtractor.visit(OperationExtractor.java:483)
+	at randoop.reflection.ReflectionManager.applyTo(ReflectionManager.java:314)
+	at randoop.reflection.ReflectionManager.apply(ReflectionManager.java:155)
+	at randoop.reflection.OperationExtractor.operations(OperationExtractor.java:222)
+	at randoop.reflection.OperationModel.addOperationsFromClasses(OperationModel.java:693)
+	at randoop.reflection.OperationModel.createModel(OperationModel.java:175)
+	at randoop.main.GenTests.handle(GenTests.java:325)
+	at randoop.main.Main.nonStaticMain(Main.java:69)
+	at randoop.main.Main.main(Main.java:31)
+Caused by: randoop.compile.SequenceCompilerException: Compilation failed
+	at randoop.compile.SequenceCompiler.compile(SequenceCompiler.java:147)
+	at randoop.compile.SequenceCompiler.compileAndLoad(SequenceCompiler.java:218)
+	at randoop.condition.ExecutableBooleanExpression.createMethod(ExecutableBooleanExpression.java:222)
+	... 14 more
+
+Removing org.sat4j.tools.xplain.Xplain<T> from the classes under test due to problem extracting operations:
+randoop.condition.RandoopSpecificationError: Condition method did not compile:
+5:20: solver has private access in org.sat4j.tools.SolverDecorator
+5:27: cannot find symbol
+  symbol:   method getModel()
+  location: variable solver of type T
+
+Class being compiled:
+package org.sat4j.tools;
+
+public class RandoopExpressionClass15 {
+  public static boolean signature_SolverDecorator(org.sat4j.tools.SolverDecorator receiver) throws Throwable {
+    return receiver.solver.getModel() != null;
+  }
+}
+: Compilation failed
+	at randoop.condition.ExecutableBooleanExpression.createMethod(ExecutableBooleanExpression.java:225)
+	at randoop.condition.ExecutableBooleanExpression.<init>(ExecutableBooleanExpression.java:88)
+	at randoop.condition.SpecificationTranslator.create(SpecificationTranslator.java:381)
+	at randoop.condition.SpecificationTranslator.getGuardExpressions(SpecificationTranslator.java:278)
+	at randoop.condition.SpecificationTranslator.createExecutableSpecification(SpecificationTranslator.java:260)
+	at randoop.condition.SpecificationCollection.getExecutableSpecification(SpecificationCollection.java:388)
+	at randoop.reflection.OperationExtractor.visit(OperationExtractor.java:483)
+	at randoop.reflection.ReflectionManager.applyTo(ReflectionManager.java:314)
+	at randoop.reflection.ReflectionManager.apply(ReflectionManager.java:155)
+	at randoop.reflection.OperationExtractor.operations(OperationExtractor.java:222)
+	at randoop.reflection.OperationModel.addOperationsFromClasses(OperationModel.java:693)
+	at randoop.reflection.OperationModel.createModel(OperationModel.java:175)
+	at randoop.main.GenTests.handle(GenTests.java:325)
+	at randoop.main.Main.nonStaticMain(Main.java:69)
+	at randoop.main.Main.main(Main.java:31)
+Caused by: randoop.compile.SequenceCompilerException: Compilation failed
+	at randoop.compile.SequenceCompiler.compile(SequenceCompiler.java:147)
+	at randoop.compile.SequenceCompiler.compileAndLoad(SequenceCompiler.java:218)
+	at randoop.condition.ExecutableBooleanExpression.createMethod(ExecutableBooleanExpression.java:222)
+	... 14 more
+
+PUBLIC MEMBERS=2024
+Explorer = ForwardGenerator(steps: 0, null steps: 0, num_sequences_generated: 0;
+    allSequences: 0, regresson seqs: 0, error seqs: 0=0=0, invalid seqs: 0, subsumed_sequences: 0, num_failed_output_test: 0;
+    sideEffectFreeMethods: 1115, runtimePrimitivesSeen: 38)
+
+Progress update: steps=1, test inputs generated=0, failing inputs=0      (2025-03-05T04:44:07.396291Z     236M used) 97
+ 97
+ 97
+java.lang.NullPointerException
+	at org.sat4j.minisat.core.Solver.setSimplifier(Solver.java:788)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at randoop.util.MethodReflectionCode.runReflectionCodeRaw(MethodReflectionCode.java:55)
+	at randoop.util.ReflectionCode.runReflectionCode(ReflectionCode.java:64)
+	at randoop.util.ReflectionExecutor.executeReflectionCodeUnThreaded(ReflectionExecutor.java:197)
+	at randoop.util.ReflectionExecutor.executeReflectionCode(ReflectionExecutor.java:128)
+	at randoop.operation.MethodCall.execute(MethodCall.java:185)
+	at randoop.operation.TypedOperation.execute(TypedOperation.java:406)
+	at randoop.sequence.Statement.execute(Statement.java:163)
+	at randoop.sequence.ExecutableSequence.executeStatement(ExecutableSequence.java:416)
+	at randoop.sequence.ExecutableSequence.execute(ExecutableSequence.java:308)
+	at randoop.sequence.ExecutableSequence.execute(ExecutableSequence.java:237)
+	at randoop.generation.ForwardGenerator.step(ForwardGenerator.java:236)
+	at randoop.generation.AbstractGenerator.createAndClassifySequences(AbstractGenerator.java:299)
+	at randoop.main.GenTests.handle(GenTests.java:569)
+	at randoop.main.Main.nonStaticMain(Main.java:69)
+	at randoop.main.Main.main(Main.java:31)
+java.lang.NullPointerException
+	at org.sat4j.minisat.core.Solver.setSimplifier(Solver.java:788)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at randoop.util.MethodReflectionCode.runReflectionCodeRaw(MethodReflectionCode.java:55)
+	at randoop.util.ReflectionCode.runReflectionCode(ReflectionCode.java:64)
+	at randoop.util.ReflectionExecutor.executeReflectionCodeUnThreaded(ReflectionExecutor.java:197)
+	at randoop.util.ReflectionExecutor.executeReflectionCode(ReflectionExecutor.java:128)
+	at randoop.operation.MethodCall.execute(MethodCall.java:185)
+	at randoop.operation.TypedOperation.execute(TypedOperation.java:406)
+	at randoop.sequence.Statement.execute(Statement.java:163)
+	at randoop.sequence.ExecutableSequence.executeStatement(ExecutableSequence.java:416)
+	at randoop.sequence.ExecutableSequence.execute(ExecutableSequence.java:308)
+	at randoop.sequence.ExecutableSequence.execute(ExecutableSequence.java:237)
+	at randoop.generation.ForwardGenerator.step(ForwardGenerator.java:236)
+	at randoop.generation.AbstractGenerator.createAndClassifySequences(AbstractGenerator.java:299)
+	at randoop.main.GenTests.handle(GenTests.java:569)
+	at randoop.main.Main.nonStaticMain(Main.java:69)
+	at randoop.main.Main.main(Main.java:31)
+ 97
+java.lang.NullPointerException
+	at org.sat4j.minisat.core.Solver.setSimplifier(Solver.java:788)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at randoop.util.MethodReflectionCode.runReflectionCodeRaw(MethodReflectionCode.java:55)
+	at randoop.util.ReflectionCode.runReflectionCode(ReflectionCode.java:64)
+	at randoop.util.ReflectionExecutor.executeReflectionCodeUnThreaded(ReflectionExecutor.java:197)
+	at randoop.util.ReflectionExecutor.executeReflectionCode(ReflectionExecutor.java:128)
+	at randoop.operation.MethodCall.execute(MethodCall.java:185)
+	at randoop.operation.TypedOperation.execute(TypedOperation.java:406)
+	at randoop.sequence.Statement.execute(Statement.java:163)
+	at randoop.sequence.ExecutableSequence.executeStatement(ExecutableSequence.java:416)
+	at randoop.sequence.ExecutableSequence.execute(ExecutableSequence.java:308)
+	at randoop.sequence.ExecutableSequence.execute(ExecutableSequence.java:237)
+	at randoop.generation.ForwardGenerator.step(ForwardGenerator.java:236)
+	at randoop.generation.AbstractGenerator.createAndClassifySequences(AbstractGenerator.java:299)
+	at randoop.main.GenTests.handle(GenTests.java:569)
+	at randoop.main.Main.nonStaticMain(Main.java:69)
+	at randoop.main.Main.main(Main.java:31)
+java.lang.NullPointerException
+	at org.sat4j.minisat.core.Solver.setSimplifier(Solver.java:788)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at randoop.util.MethodReflectionCode.runReflectionCodeRaw(MethodReflectionCode.java:55)
+	at randoop.util.ReflectionCode.runReflectionCode(ReflectionCode.java:64)
+	at randoop.util.ReflectionExecutor.executeReflectionCodeUnThreaded(ReflectionExecutor.java:197)
+	at randoop.util.ReflectionExecutor.executeReflectionCode(ReflectionExecutor.java:128)
+	at randoop.operation.MethodCall.execute(MethodCall.java:185)
+	at randoop.operation.TypedOperation.execute(TypedOperation.java:406)
+	at randoop.sequence.Statement.execute(Statement.java:163)
+	at randoop.sequence.ExecutableSequence.executeStatement(ExecutableSequence.java:416)
+	at randoop.sequence.ExecutableSequence.execute(ExecutableSequence.java:308)
+	at randoop.sequence.ExecutableSequence.execute(ExecutableSequence.java:237)
+	at randoop.generation.ForwardGenerator.step(ForwardGenerator.java:236)
+	at randoop.generation.AbstractGenerator.createAndClassifySequences(AbstractGenerator.java:299)
+	at randoop.main.GenTests.handle(GenTests.java:569)
+	at randoop.main.Main.nonStaticMain(Main.java:69)
+	at randoop.main.Main.main(Main.java:31)
+ 97
+ 97
+XXXXXX
+solution found
+XXXXXX
+ 97
+XXXXXX
+java.lang.NullPointerException
+	at org.sat4j.minisat.core.Solver.setSimplifier(Solver.java:788)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at randoop.util.MethodReflectionCode.runReflectionCodeRaw(MethodReflectionCode.java:55)
+	at randoop.util.ReflectionCode.runReflectionCode(ReflectionCode.java:64)
+	at randoop.util.ReflectionExecutor.executeReflectionCodeUnThreaded(ReflectionExecutor.java:197)
+	at randoop.util.ReflectionExecutor.executeReflectionCode(ReflectionExecutor.java:128)
+	at randoop.operation.MethodCall.execute(MethodCall.java:185)
+	at randoop.operation.TypedOperation.execute(TypedOperation.java:406)
+	at randoop.sequence.Statement.execute(Statement.java:163)
+	at randoop.sequence.ExecutableSequence.executeStatement(ExecutableSequence.java:416)
+	at randoop.sequence.ExecutableSequence.execute(ExecutableSequence.java:308)
+	at randoop.sequence.ExecutableSequence.execute(ExecutableSequence.java:237)
+	at randoop.generation.ForwardGenerator.step(ForwardGenerator.java:236)
+	at randoop.generation.AbstractGenerator.createAndClassifySequences(AbstractGenerator.java:299)
+	at randoop.main.GenTests.handle(GenTests.java:569)
+	at randoop.main.Main.nonStaticMain(Main.java:69)
+	at randoop.main.Main.main(Main.java:31)
+XXXXXX
+XXXXXX
+ 97
+XXXXXX
+XXXXXX
+XXXXXX
+XXXXXX
+XXXXXX
+
+Progress update: steps=665, test inputs generated=288, failing inputs=0      (2025-03-05T04:44:17.450320Z     301M used)
+Normal method executions: 18425
+Exceptional method executions: 111
+
+Average method execution time (normal termination):      0.00211
+Average method execution time (exceptional termination): 9.17
+Approximate memory usage 301M
+Explorer = ForwardGenerator(steps: 665, null steps: 377, num_sequences_generated: 288;
+    allSequences: 288, regresson seqs: 274, error seqs: 0=0=0, invalid seqs: 0, subsumed_sequences: 0, num_failed_output_test: 14;
+    sideEffectFreeMethods: 1115, runtimePrimitivesSeen: 53)
+
+About to look for failing assertions in 173 regression sequences.
+
+Regression test output:
+Regression test count: 173
+Writing regression JUnit tests...
+JUnit version 4.13.2
+.................... 97
+. 97
+.......................................................E........... 97
+..................solution found
+.XXXXXX
+.. 97
+......XXXXXX
+.............XXXXXX
+.. 97
+.E...........XXXXXX
+E.XXXXXX
+XXXXXX
+..........XXXXXX
+...........XXXXXX
+..........
+Time: 1.255
+There were 3 failures:
+1) test076(RegressionTest0)
+java.lang.AssertionError
+	at org.sat4j.minisat.core.Solver.enqueue(Solver.java:522)
+	at org.sat4j.minisat.core.Solver.enqueue(Solver.java:512)
+	at org.sat4j.minisat.constraints.cnf.Clauses.propagationCheck(Clauses.java:119)
+	at org.sat4j.minisat.constraints.cnf.Clauses.sanityCheck(Clauses.java:97)
+	at RegressionTest0.test076(RegressionTest0.java:1144)
+2) test130(RegressionTest0)
+java.lang.AssertionError
+	at org.sat4j.minisat.constraints.cnf.Lits.unassign(Lits.java:161)
+	at RegressionTest0.test130(RegressionTest0.java:2118)
+3) test141(RegressionTest0)
+java.lang.AssertionError
+	at org.sat4j.minisat.constraints.cnf.Lits.getFromPool(Lits.java:119)
+	at org.sat4j.minisat.core.Solver.isSatisfiable(Solver.java:1938)
+	at org.sat4j.minisat.core.Solver.isSatisfiable(Solver.java:1555)
+	at org.sat4j.minisat.core.Solver.findModel(Solver.java:2307)
+	at RegressionTest0.test141(RegressionTest0.java:2299)
+
+FAILURES!!!
+Tests run: 173,  Failures: 3
+JUnit version 4.13.2
+.................... 97
+. 97
+.......................................................E........... 97
+..................solution found
+.XXXXXX
+.. 97
+......XXXXXX
+.............XXXXXX
+.. 97
+............XXXXXX
+E.XXXXXX
+XXXXXX
+..........XXXXXX
+...........XXXXXX
+..........
+Time: 1.306
+There were 2 failures:
+1) test076(RegressionTest0)
+java.lang.NullPointerException
+	at RegressionTest0.test076(RegressionTest0.java:1145)
+2) test141(RegressionTest0)
+java.lang.AssertionError
+	at org.junit.Assert.fail(Assert.java:87)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at org.junit.Assert.assertNotNull(Assert.java:713)
+	at org.junit.Assert.assertNotNull(Assert.java:723)
+	at RegressionTest0.test141(RegressionTest0.java:2308)
+
+FAILURES!!!
+Tests run: 173,  Failures: 2
+JUnit version 4.13.2
+.................... 97
+. 97
+.......................................................E........... 97
+..................solution found
+.XXXXXX
+.. 97
+......XXXXXX
+.............XXXXXX
+.. 97
+............XXXXXX
+E.XXXXXX
+XXXXXX
+..........XXXXXX
+...........XXXXXX
+..........
+Time: 1.261
+There were 2 failures:
+1) test076(RegressionTest0)
+java.lang.AssertionError
+	at org.junit.Assert.fail(Assert.java:87)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at org.junit.Assert.assertNotNull(Assert.java:713)
+	at org.junit.Assert.assertNotNull(Assert.java:723)
+	at RegressionTest0.test076(RegressionTest0.java:1152)
+2) test141(RegressionTest0)
+java.lang.AssertionError: expected array was null
+	at org.junit.Assert.fail(Assert.java:89)
+	at org.junit.internal.ComparisonCriteria.arrayEquals(ComparisonCriteria.java:46)
+	at org.junit.internal.ComparisonCriteria.arrayEquals(ComparisonCriteria.java:28)
+	at org.junit.Assert.internalArrayEquals(Assert.java:534)
+	at org.junit.Assert.assertArrayEquals(Assert.java:418)
+	at org.junit.Assert.assertArrayEquals(Assert.java:429)
+	at RegressionTest0.test141(RegressionTest0.java:2309)
+
+FAILURES!!!
+Tests run: 173,  Failures: 2
+Created file /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java
+Created file /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest.java
+Wrote regression JUnit tests.
+About to look for flaky methods.
+
+Flaky tests were generated. This means that your program contains
+methods that are nondeterministic or depend on non-local state.
+The following methods, in decreasing order of likelihood,
+are the most likely to be the problem.
+  Possibly flaky:  org.sat4j.specs.IVecInt.shrink(int)
+  Possibly flaky:  org.sat4j.minisat.core.Solver.findModel(org.sat4j.specs.IVecInt)
+  Possibly flaky:  org.sat4j.minisat.core.ILits.unassign(int)
+  Possibly flaky:  org.sat4j.minisat.constraints.cnf.Lits.realnVars()
+  Possibly flaky:  org.sat4j.minisat.constraints.cnf.Clauses.sanityCheck(org.sat4j.specs.IVecInt,org.sat4j.minisat.core.ILits,org.sat4j.specs.UnitPropagationListener)
+  Possibly flaky:  org.sat4j.minisat.core.Solver.getIthConstr(int)
+  Possibly flaky:  org.sat4j.minisat.constraints.cnf.Lits.setReason(int,org.sat4j.minisat.core.Constr)
+  Possibly flaky:  org.sat4j.minisat.constraints.cnf.Lits.forgets(int)
+  Possibly flaky:  org.sat4j.minisat.core.ICDCL.setSimplifier(org.sat4j.minisat.core.SimplificationType)
+  Possibly flaky:  org.sat4j.minisat.constraints.cnf.Lits.isImplied(int)
+To prevent the generation of flaky tests, see section 'Randoop generated flaky tests'
+ at https://randoop.github.io/randoop/manual/#flaky-tests .
+
+Done looking for flaky methods.
+
+Invalid tests generated: 0
+java version "1.8.0_202"
+Java(TM) SE Runtime Environment (build 1.8.0_202-b08)
+Java HotSpot(TM) 64-Bit Server VM (build 25.202-b08, mixed mode)
+
+Compiling and mutating project...
+command:
+/Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/major/bin/ant -Dmutator=mml:/Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/major/mml/all.mml.bin -Dsrc=/Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/sat4j-core-2.3.5 -lib /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/sat4j-core-2.3.5/lib/ clean compile
+
+Buildfile: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build.xml
+
+clean:
+   [delete] Deleting directory /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/bin
+
+init:
+    [mkdir] Created dir: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/bin
+
+compile:
+     [exec] [INFO] Scanning for projects...
+     [exec] [WARNING] Could not transfer metadata org.apache.maven.wagon:wagon-webdav/maven-metadata.xml from/to maven-default-http-blocker (http://0.0.0.0/): Blocked mirror for repositories: [apache.snapshots (http://repository.apache.org/snapshots/, default, releases+snapshots), ow2-plugin-snapshot (http://repository.ow2.org/nexus/content/repositories/snapshots, default, snapshots)]
+     [exec] [WARNING]
+     [exec] [WARNING] Some problems were encountered while building the effective model for org.ow2.sat4j:org.ow2.sat4j.core:jar:2.3.5
+     [exec] [WARNING] Reporting configuration should be done in <reporting> section, not in maven-site-plugin <configuration> as reportPlugins parameter.
+     [exec] [WARNING]
+     [exec] [WARNING] Some problems were encountered while building the effective model for org.ow2.sat4j:org.ow2.sat4j.pom:pom:2.3.5
+     [exec] [WARNING] Reporting configuration should be done in <reporting> section, not in maven-site-plugin <configuration> as reportPlugins parameter. @ line 285, column 24
+     [exec] [WARNING]
+     [exec] [WARNING] It is highly recommended to fix these problems because they threaten the stability of your build.
+     [exec] [WARNING]
+     [exec] [WARNING] For this reason, future Maven versions might no longer support building such malformed projects.
+     [exec] [WARNING]
+     [exec] [INFO] ------------------------------------------------------------------------
+     [exec] [INFO] Reactor Build Order:
+     [exec] [INFO]
+     [exec] [INFO] SAT4J                                                              [pom]
+     [exec] [INFO] SAT4J core                                                         [jar]
+     [exec] [INFO]
+     [exec] [INFO] ------------------< org.ow2.sat4j:org.ow2.sat4j.pom >-------------------
+     [exec] [INFO] Building SAT4J 2.3.5                                               [1/2]
+     [exec] [INFO]   from pom.xml
+     [exec] [INFO] --------------------------------[ pom ]---------------------------------
+     [exec] [INFO]
+     [exec] [INFO] --- clean:3.2.0:clean (default-clean) @ org.ow2.sat4j.pom ---
+     [exec] [INFO]
+     [exec] [INFO] --- cobertura:2.4:clean (clean) @ org.ow2.sat4j.pom ---
+     [exec] [INFO]
+     [exec] [INFO] --- enforcer:1.0-beta-1:enforce (enforce-maven) @ org.ow2.sat4j.pom ---
+     [exec] [INFO]
+     [exec] [INFO] --- antrun:3.1.0:run (translate-qualifier) @ org.ow2.sat4j.pom ---
+     [exec] [WARNING]  Parameter 'tasks' is deprecated: Use {@link #target} instead. For version 3.0.0, this parameter is only defined to break the build if
+     [exec]             you use it!
+     [exec] [INFO] ------------------------------------------------------------------------
+     [exec] [INFO] Reactor Summary for SAT4J 2.3.5:
+     [exec] [INFO]
+     [exec] [INFO] SAT4J .............................................. FAILURE [  0.862 s]
+     [exec] [INFO] SAT4J core ......................................... SKIPPED
+     [exec] [INFO] ------------------------------------------------------------------------
+     [exec] [INFO] BUILD FAILURE
+     [exec] [INFO] ------------------------------------------------------------------------
+     [exec] [INFO] Total time:  1.218 s
+     [exec] [INFO] Finished at: 2025-03-04T20:44:32-08:00
+     [exec] [INFO] ------------------------------------------------------------------------
+     [exec] [ERROR] Failed to execute goal org.apache.maven.plugins:maven-antrun-plugin:3.1.0:run (translate-qualifier) on project org.ow2.sat4j.pom: You are using 'tasks' which has been removed from the maven-antrun-plugin. Please use 'target' and refer to the >>Major Version Upgrade to version 3.0.0<< on the plugin site. -> [Help 1]
+     [exec] [ERROR]
+     [exec] [ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+     [exec] [ERROR] Re-run Maven using the -X switch to enable full debug logging.
+     [exec] [ERROR]
+     [exec] [ERROR] For more information about the errors and possible solutions, please read the following articles:
+     [exec] [ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
+     [exec] Result: 1
+
+BUILD FAILED
+/Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build.xml:46: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/sat4j-core-2.3.5/org.sat4j.core/target/classes does not exist.
+
+Total time: 4 seconds

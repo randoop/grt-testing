@@ -1,0 +1,460 @@
+Using BASELINE
+
+openjdk version "11.0.13" 2021-10-19
+OpenJDK Runtime Environment Temurin-11.0.13+8 (build 11.0.13+8)
+OpenJDK 64-Bit Server VM Temurin-11.0.13+8 (build 11.0.13+8, mixed mode)
+Randoop for Java version "4.3.3, branch master, commit 27d6ec8, 2025-02-26".
+
+Will try to generate tests for 107 classes.
+PUBLIC MEMBERS=1862
+Explorer = ForwardGenerator(steps: 0, null steps: 0, num_sequences_generated: 0;
+    allSequences: 0, regresson seqs: 0, error seqs: 0=0=0, invalid seqs: 0, subsumed_sequences: 0, num_failed_output_test: 0;
+    sideEffectFreeMethods: 1115, runtimePrimitivesSeen: 38)
+
+Progress update: steps=1, test inputs generated=0, failing inputs=0      (2025-03-05T02:22:23.797766Z     89.3M used)Unexpected exception java.lang.NullPointerException (null) in CallReplacementTransformer.transform(com/sun/source/doctree/DocCommentTree)
+java.lang.NullPointerException
+	at replacecall.org.apache.bcel.generic.ConstantPoolGen.<init>(ConstantPoolGen.java:159)
+	at replacecall.org.apache.bcel.generic.ConstantPoolGen.<init>(ConstantPoolGen.java:216)
+	at replacecall.org.apache.bcel.generic.ClassGen.<init>(ClassGen.java:143)
+	at randoop.instrument.CallReplacementTransformer.transform(CallReplacementTransformer.java:131)
+	at java.instrument/java.lang.instrument.ClassFileTransformer.transform(ClassFileTransformer.java:246)
+	at java.instrument/sun.instrument.TransformerManager.transform(TransformerManager.java:188)
+	at java.instrument/sun.instrument.InstrumentationImpl.transform(InstrumentationImpl.java:563)
+	at java.base/java.lang.ClassLoader.defineClass2(Native Method)
+	at java.base/java.lang.ClassLoader.defineClass(ClassLoader.java:1109)
+	at java.base/java.security.SecureClassLoader.defineClass(SecureClassLoader.java:206)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.defineClass(BuiltinClassLoader.java:759)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.findClassInModuleOrNull(BuiltinClassLoader.java:680)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClassOrNull(BuiltinClassLoader.java:605)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:579)
+	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:178)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:522)
+	at jdk.compiler/com.sun.tools.javac.parser.ParserFactory.<init>(ParserFactory.java:76)
+	at jdk.compiler/com.sun.tools.javac.parser.ParserFactory.instance(ParserFactory.java:56)
+	at jdk.compiler/com.sun.tools.javac.main.JavaCompiler.<init>(JavaCompiler.java:401)
+	at jdk.compiler/com.sun.tools.javac.main.JavaCompiler.instance(JavaCompiler.java:115)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.prepareCompiler(JavacTaskImpl.java:203)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.lambda$doCall$0(JavacTaskImpl.java:101)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.handleExceptions(JavacTaskImpl.java:147)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.doCall(JavacTaskImpl.java:100)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.call(JavacTaskImpl.java:94)
+	at randoop.compile.SequenceCompiler.compile(SequenceCompiler.java:176)
+	at randoop.compile.SequenceCompiler.isCompilable(SequenceCompiler.java:105)
+	at randoop.test.CompilableTestPredicate.testSource(CompilableTestPredicate.java:114)
+	at randoop.test.CompilableTestPredicate.test(CompilableTestPredicate.java:93)
+	at randoop.test.CompilableTestPredicate.test(CompilableTestPredicate.java:25)
+	at java.base/java.util.function.Predicate.lambda$and$0(Predicate.java:69)
+	at randoop.generation.AbstractGenerator.createAndClassifySequences(AbstractGenerator.java:320)
+	at randoop.main.GenTests.handle(GenTests.java:569)
+	at randoop.main.Main.nonStaticMain(Main.java:69)
+	at randoop.main.Main.main(Main.java:31)
+Unexpected exception java.lang.NullPointerException (null) in CallReplacementTransformer.transform(com/sun/source/doctree/DocTreeVisitor)
+java.lang.NullPointerException
+	at replacecall.org.apache.bcel.generic.ConstantPoolGen.<init>(ConstantPoolGen.java:159)
+	at replacecall.org.apache.bcel.generic.ConstantPoolGen.<init>(ConstantPoolGen.java:216)
+	at replacecall.org.apache.bcel.generic.ClassGen.<init>(ClassGen.java:143)
+	at randoop.instrument.CallReplacementTransformer.transform(CallReplacementTransformer.java:131)
+	at java.instrument/java.lang.instrument.ClassFileTransformer.transform(ClassFileTransformer.java:246)
+	at java.instrument/sun.instrument.TransformerManager.transform(TransformerManager.java:188)
+	at java.instrument/sun.instrument.InstrumentationImpl.transform(InstrumentationImpl.java:563)
+	at java.base/java.lang.ClassLoader.defineClass2(Native Method)
+	at java.base/java.lang.ClassLoader.defineClass(ClassLoader.java:1109)
+	at java.base/java.security.SecureClassLoader.defineClass(SecureClassLoader.java:206)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.defineClass(BuiltinClassLoader.java:759)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.findClassInModuleOrNull(BuiltinClassLoader.java:680)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClassOrNull(BuiltinClassLoader.java:605)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:579)
+	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:178)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:522)
+	at jdk.compiler/com.sun.tools.javac.tree.DocTreeMaker.<init>(DocTreeMaker.java:146)
+	at jdk.compiler/com.sun.tools.javac.tree.DocTreeMaker.instance(DocTreeMaker.java:124)
+	at jdk.compiler/com.sun.tools.javac.parser.ParserFactory.<init>(ParserFactory.java:76)
+	at jdk.compiler/com.sun.tools.javac.parser.ParserFactory.instance(ParserFactory.java:56)
+	at jdk.compiler/com.sun.tools.javac.main.JavaCompiler.<init>(JavaCompiler.java:401)
+	at jdk.compiler/com.sun.tools.javac.main.JavaCompiler.instance(JavaCompiler.java:115)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.prepareCompiler(JavacTaskImpl.java:203)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.lambda$doCall$0(JavacTaskImpl.java:101)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.handleExceptions(JavacTaskImpl.java:147)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.doCall(JavacTaskImpl.java:100)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.call(JavacTaskImpl.java:94)
+	at randoop.compile.SequenceCompiler.compile(SequenceCompiler.java:176)
+	at randoop.compile.SequenceCompiler.isCompilable(SequenceCompiler.java:105)
+	at randoop.test.CompilableTestPredicate.testSource(CompilableTestPredicate.java:114)
+	at randoop.test.CompilableTestPredicate.test(CompilableTestPredicate.java:93)
+	at randoop.test.CompilableTestPredicate.test(CompilableTestPredicate.java:25)
+	at java.base/java.util.function.Predicate.lambda$and$0(Predicate.java:69)
+	at randoop.generation.AbstractGenerator.createAndClassifySequences(AbstractGenerator.java:320)
+	at randoop.main.GenTests.handle(GenTests.java:569)
+	at randoop.main.Main.nonStaticMain(Main.java:69)
+	at randoop.main.Main.main(Main.java:31)
+
+Progress update: steps=669, test inputs generated=273, failing inputs=0      (2025-03-05T02:22:33.816631Z     51.1M used)
+Normal method executions: 91889
+Exceptional method executions: 69
+
+Average method execution time (normal termination):      0.000336
+Average method execution time (exceptional termination): 0.106
+Approximate memory usage 51.1M
+Explorer = ForwardGenerator(steps: 669, null steps: 396, num_sequences_generated: 273;
+    allSequences: 273, regresson seqs: 271, error seqs: 0=0=0, invalid seqs: 0, subsumed_sequences: 0, num_failed_output_test: 2;
+    sideEffectFreeMethods: 1115, runtimePrimitivesSeen: 113)
+
+About to look for failing assertions in 206 regression sequences.
+
+Regression test output:
+Regression test count: 206
+Writing regression JUnit tests...
+Created file /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java
+Created file /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest.java
+Wrote regression JUnit tests.
+About to look for flaky methods.
+Done looking for flaky methods.
+
+Invalid tests generated: 0
+java version "1.8.0_202"
+Java(TM) SE Runtime Environment (build 1.8.0_202-b08)
+Java HotSpot(TM) 64-Bit Server VM (build 25.202-b08, mixed mode)
+
+Compiling and mutating project...
+command:
+/Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/major/bin/ant -Dmutator=mml:/Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/major/mml/all.mml.bin -Dsrc=/Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/asm-5.0.1/src/ -lib /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/asm-5.0.1/ clean compile
+
+Buildfile: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build.xml
+
+clean:
+   [delete] Deleting directory /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/bin
+
+init:
+    [mkdir] Created dir: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/bin
+
+compile:
+    [javac] Compiling 118 source files to /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/bin
+    [javac] Generated 20402 mutants (28669 ms)
+    [javac] Note: Some input files use unchecked or unsafe operations.
+    [javac] Note: Recompile with -Xlint:unchecked for details.
+
+BUILD SUCCESSFUL
+Total time: 31 seconds
+
+Compiling tests...
+command:
+/Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/major/bin/ant -Dtest=/Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE -Dsrc=/Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/asm-5.0.1/src/ -lib /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/asm-5.0.1/ compile.tests
+
+Buildfile: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build.xml
+
+init:
+
+compile:
+    [javac] Compiling 118 source files to /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/bin
+    [javac] Generated 24596 mutants (37057 ms)
+    [javac] Note: Some input files use unchecked or unsafe operations.
+    [javac] Note: Recompile with -Xlint:unchecked for details.
+
+compile.tests:
+    [javac] Compiling 2 source files to /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/bin
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:25: error: package org1.objectweb.asm.util does not exist
+    [javac]         int int0 = org1.objectweb.asm.util.Textifier.PARAMETERS_DECLARATION;
+    [javac]                                           ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:33: error: package org1.objectweb.asm does not exist
+    [javac]         int int0 = org1.objectweb.asm.Opcodes.DUP_X2;
+    [javac]                                      ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:41: error: package org1.objectweb.asm does not exist
+    [javac]         int int0 = org1.objectweb.asm.Opcodes.POP2;
+    [javac]                                      ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:49: error: package org1.objectweb.asm does not exist
+    [javac]         int int0 = org1.objectweb.asm.Opcodes.ICONST_3;
+    [javac]                                      ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:57: error: package org1.objectweb.asm does not exist
+    [javac]         int int0 = org1.objectweb.asm.Opcodes.H_GETSTATIC;
+    [javac]                                      ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:65: error: package org1.objectweb.asm.commons does not exist
+    [javac]         int int0 = org1.objectweb.asm.commons.GeneratorAdapter.REM;
+    [javac]                                              ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:73: error: package org1.objectweb.asm does not exist
+    [javac]         int int0 = org1.objectweb.asm.Opcodes.MONITORENTER;
+    [javac]                                      ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:81: error: package org1.objectweb.asm.signature does not exist
+    [javac]         char char0 = org1.objectweb.asm.signature.SignatureVisitor.SUPER;
+    [javac]                                                  ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:89: error: package org1.objectweb.asm does not exist
+    [javac]         int int0 = org1.objectweb.asm.Opcodes.DDIV;
+    [javac]                                      ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:97: error: package org1.objectweb.asm does not exist
+    [javac]         int int0 = org1.objectweb.asm.Opcodes.ACC_ABSTRACT;
+    [javac]                                      ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:105: error: package org1.objectweb.asm.tree does not exist
+    [javac]         int int0 = org1.objectweb.asm.tree.AbstractInsnNode.FRAME;
+    [javac]                                           ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:113: error: package org1.objectweb.asm does not exist
+    [javac]         int int0 = org1.objectweb.asm.Opcodes.IMUL;
+    [javac]                                      ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:121: error: package org1.objectweb.asm does not exist
+    [javac]         int int0 = org1.objectweb.asm.Opcodes.LDIV;
+    [javac]                                      ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:129: error: package org1.objectweb.asm does not exist
+    [javac]         int int0 = org1.objectweb.asm.Opcodes.ILOAD;
+    [javac]                                      ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:137: error: package org1.objectweb.asm does not exist
+    [javac]         int int0 = org1.objectweb.asm.Opcodes.V1_8;
+    [javac]                                      ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:148: error: package org1.objectweb.asm.commons does not exist
+    [javac]             org1.objectweb.asm.commons.Method method1 = org1.objectweb.asm.commons.Method.getMethod(method0);
+    [javac]                                       ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:148: error: package org1.objectweb.asm.commons does not exist
+    [javac]             org1.objectweb.asm.commons.Method method1 = org1.objectweb.asm.commons.Method.getMethod(method0);
+    [javac]                                                                                   ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:159: error: package org1.objectweb.asm.tree.analysis does not exist
+    [javac]         org1.objectweb.asm.tree.analysis.SimpleVerifier simpleVerifier0 = new org1.objectweb.asm.tree.analysis.SimpleVerifier();
+    [javac]                                         ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:159: error: package org1.objectweb.asm.tree.analysis does not exist
+    [javac]         org1.objectweb.asm.tree.analysis.SimpleVerifier simpleVerifier0 = new org1.objectweb.asm.tree.analysis.SimpleVerifier();
+    [javac]                                                                                                               ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:160: error: package org1.objectweb.asm.tree does not exist
+    [javac]         org1.objectweb.asm.tree.AbstractInsnNode abstractInsnNode1 = null;
+    [javac]                                ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:161: error: package org1.objectweb.asm.tree.analysis does not exist
+    [javac]         org1.objectweb.asm.tree.analysis.BasicValue basicValue2 = null;
+    [javac]                                         ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:162: error: package org1.objectweb.asm.tree.analysis does not exist
+    [javac]         org1.objectweb.asm.tree.analysis.BasicValue basicValue3 = null;
+    [javac]                                         ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:165: error: package org1.objectweb.asm.tree.analysis does not exist
+    [javac]             org1.objectweb.asm.tree.analysis.BasicValue basicValue4 = simpleVerifier0.binaryOperation(abstractInsnNode1, basicValue2, basicValue3);
+    [javac]                                             ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:176: error: package org1.objectweb.asm does not exist
+    [javac]         int int0 = org1.objectweb.asm.Opcodes.LNEG;
+    [javac]                                      ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:184: error: package org1.objectweb.asm.tree does not exist
+    [javac]         int int0 = org1.objectweb.asm.tree.AbstractInsnNode.INT_INSN;
+    [javac]                                           ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:192: error: package org1.objectweb.asm does not exist
+    [javac]         int int0 = org1.objectweb.asm.Opcodes.ISHR;
+    [javac]                                      ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:200: error: package org1.objectweb.asm does not exist
+    [javac]         int int0 = org1.objectweb.asm.Opcodes.I2F;
+    [javac]                                      ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:208: error: package org1.objectweb.asm does not exist
+    [javac]         int int0 = org1.objectweb.asm.TypeReference.METHOD_RECEIVER;
+    [javac]                                      ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:216: error: package org1.objectweb.asm does not exist
+    [javac]         int int0 = org1.objectweb.asm.Opcodes.IF_ICMPLE;
+    [javac]                                      ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:224: error: package org1.objectweb.asm does not exist
+    [javac]         org1.objectweb.asm.MethodVisitor methodVisitor3 = null;
+    [javac]                           ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:225: error: package org1.objectweb.asm does not exist
+    [javac]         java.util.Map<org1.objectweb.asm.Label, java.lang.Integer> labelMap4 = null;
+    [javac]                                         ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:226: error: package org1.objectweb.asm.util does not exist
+    [javac]         org1.objectweb.asm.util.CheckMethodAdapter checkMethodAdapter5 = new org1.objectweb.asm.util.CheckMethodAdapter(1, "short", "", methodVisitor3, labelMap4);
+    [javac]                                ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:226: error: package org1.objectweb.asm.util does not exist
+    [javac]         org1.objectweb.asm.util.CheckMethodAdapter checkMethodAdapter5 = new org1.objectweb.asm.util.CheckMethodAdapter(1, "short", "", methodVisitor3, labelMap4);
+    [javac]                                                                                                     ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:227: error: package org1.objectweb.asm does not exist
+    [javac]         org1.objectweb.asm.Label label6 = null;
+    [javac]                           ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:244: error: package org1.objectweb.asm does not exist
+    [javac]             org1.objectweb.asm.ClassReader classReader1 = new org1.objectweb.asm.ClassReader(inputStream0);
+    [javac]                               ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:244: error: package org1.objectweb.asm does not exist
+    [javac]             org1.objectweb.asm.ClassReader classReader1 = new org1.objectweb.asm.ClassReader(inputStream0);
+    [javac]                                                                                 ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:255: error: package org1.objectweb.asm does not exist
+    [javac]         int int0 = org1.objectweb.asm.Opcodes.V1_2;
+    [javac]                                      ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:263: error: package org1.objectweb.asm.commons does not exist
+    [javac]         int int0 = org1.objectweb.asm.commons.GeneratorAdapter.USHR;
+    [javac]                                              ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:271: error: package org1.objectweb.asm.commons does not exist
+    [javac]         int int0 = org1.objectweb.asm.commons.GeneratorAdapter.GT;
+    [javac]                                              ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:279: error: package org1.objectweb.asm does not exist
+    [javac]         int int0 = org1.objectweb.asm.Opcodes.LASTORE;
+    [javac]                                      ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:287: error: package org1.objectweb.asm does not exist
+    [javac]         int int0 = org1.objectweb.asm.Opcodes.FALOAD;
+    [javac]                                      ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:295: error: package org1.objectweb.asm.tree does not exist
+    [javac]         int int0 = org1.objectweb.asm.tree.AbstractInsnNode.INVOKE_DYNAMIC_INSN;
+    [javac]                                           ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:303: error: package org1.objectweb.asm.tree does not exist
+    [javac]         int int0 = org1.objectweb.asm.tree.AbstractInsnNode.TYPE_INSN;
+    [javac]                                           ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:311: error: package org1.objectweb.asm does not exist
+    [javac]         int int0 = org1.objectweb.asm.Opcodes.L2F;
+    [javac]                                      ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:319: error: package org1.objectweb.asm does not exist
+    [javac]         org1.objectweb.asm.MethodVisitor methodVisitor3 = null;
+    [javac]                           ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:320: error: package org1.objectweb.asm does not exist
+    [javac]         java.util.Map<org1.objectweb.asm.Label, java.lang.Integer> labelMap4 = null;
+    [javac]                                         ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:321: error: package org1.objectweb.asm.util does not exist
+    [javac]         org1.objectweb.asm.util.CheckMethodAdapter checkMethodAdapter5 = new org1.objectweb.asm.util.CheckMethodAdapter(1, "short", "", methodVisitor3, labelMap4);
+    [javac]                                ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:321: error: package org1.objectweb.asm.util does not exist
+    [javac]         org1.objectweb.asm.util.CheckMethodAdapter checkMethodAdapter5 = new org1.objectweb.asm.util.CheckMethodAdapter(1, "short", "", methodVisitor3, labelMap4);
+    [javac]                                                                                                     ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:324: error: package org1.objectweb.asm does not exist
+    [javac]             org1.objectweb.asm.AnnotationVisitor annotationVisitor9 = checkMethodAdapter5.visitParameterAnnotation(0, "short", false);
+    [javac]                               ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:335: error: package org1.objectweb.asm does not exist
+    [javac]         int int0 = org1.objectweb.asm.TypeReference.METHOD_REFERENCE;
+    [javac]                                      ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:343: error: package org1.objectweb.asm.commons does not exist
+    [javac]         org1.objectweb.asm.commons.Method method1 = null;
+    [javac]                                   ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:344: error: package org1.objectweb.asm does not exist
+    [javac]         org1.objectweb.asm.MethodVisitor methodVisitor5 = null;
+    [javac]                           ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:345: error: package org1.objectweb.asm does not exist
+    [javac]         java.util.Map<org1.objectweb.asm.Label, java.lang.Integer> labelMap6 = null;
+    [javac]                                         ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:346: error: package org1.objectweb.asm.util does not exist
+    [javac]         org1.objectweb.asm.util.CheckMethodAdapter checkMethodAdapter7 = new org1.objectweb.asm.util.CheckMethodAdapter(1, "short", "", methodVisitor5, labelMap6);
+    [javac]                                ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:346: error: package org1.objectweb.asm.util does not exist
+    [javac]         org1.objectweb.asm.util.CheckMethodAdapter checkMethodAdapter7 = new org1.objectweb.asm.util.CheckMethodAdapter(1, "short", "", methodVisitor5, labelMap6);
+    [javac]                                                                                                     ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:349: error: package org1.objectweb.asm.commons does not exist
+    [javac]             org1.objectweb.asm.commons.GeneratorAdapter generatorAdapter8 = new org1.objectweb.asm.commons.GeneratorAdapter(0, method1, (org1.objectweb.asm.MethodVisitor) checkMethodAdapter7);
+    [javac]                                       ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:349: error: package org1.objectweb.asm.commons does not exist
+    [javac]             org1.objectweb.asm.commons.GeneratorAdapter generatorAdapter8 = new org1.objectweb.asm.commons.GeneratorAdapter(0, method1, (org1.objectweb.asm.MethodVisitor) checkMethodAdapter7);
+    [javac]                                                                                                           ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:349: error: package org1.objectweb.asm does not exist
+    [javac]             org1.objectweb.asm.commons.GeneratorAdapter generatorAdapter8 = new org1.objectweb.asm.commons.GeneratorAdapter(0, method1, (org1.objectweb.asm.MethodVisitor) checkMethodAdapter7);
+    [javac]                                                                                                                                                            ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:360: error: package org1.objectweb.asm does not exist
+    [javac]         int int0 = org1.objectweb.asm.TypePath.INNER_TYPE;
+    [javac]                                      ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:368: error: package org1.objectweb.asm does not exist
+    [javac]         org1.objectweb.asm.MethodVisitor methodVisitor3 = null;
+    [javac]                           ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:369: error: package org1.objectweb.asm does not exist
+    [javac]         java.util.Map<org1.objectweb.asm.Label, java.lang.Integer> labelMap4 = null;
+    [javac]                                         ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:370: error: package org1.objectweb.asm.util does not exist
+    [javac]         org1.objectweb.asm.util.CheckMethodAdapter checkMethodAdapter5 = new org1.objectweb.asm.util.CheckMethodAdapter(1, "short", "", methodVisitor3, labelMap4);
+    [javac]                                ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:370: error: package org1.objectweb.asm.util does not exist
+    [javac]         org1.objectweb.asm.util.CheckMethodAdapter checkMethodAdapter5 = new org1.objectweb.asm.util.CheckMethodAdapter(1, "short", "", methodVisitor3, labelMap4);
+    [javac]                                                                                                     ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:384: error: package org1.objectweb.asm does not exist
+    [javac]         org1.objectweb.asm.MethodVisitor methodVisitor3 = null;
+    [javac]                           ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:385: error: package org1.objectweb.asm does not exist
+    [javac]         java.util.Map<org1.objectweb.asm.Label, java.lang.Integer> labelMap4 = null;
+    [javac]                                         ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:386: error: package org1.objectweb.asm.util does not exist
+    [javac]         org1.objectweb.asm.util.CheckMethodAdapter checkMethodAdapter5 = new org1.objectweb.asm.util.CheckMethodAdapter(1, "short", "", methodVisitor3, labelMap4);
+    [javac]                                ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:386: error: package org1.objectweb.asm.util does not exist
+    [javac]         org1.objectweb.asm.util.CheckMethodAdapter checkMethodAdapter5 = new org1.objectweb.asm.util.CheckMethodAdapter(1, "short", "", methodVisitor3, labelMap4);
+    [javac]                                                                                                     ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:389: error: package org1.objectweb.asm.commons does not exist
+    [javac]             org1.objectweb.asm.commons.GeneratorAdapter generatorAdapter9 = new org1.objectweb.asm.commons.GeneratorAdapter(methodVisitor3, (int) '4', "short", "");
+    [javac]                                       ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:389: error: package org1.objectweb.asm.commons does not exist
+    [javac]             org1.objectweb.asm.commons.GeneratorAdapter generatorAdapter9 = new org1.objectweb.asm.commons.GeneratorAdapter(methodVisitor3, (int) '4', "short", "");
+    [javac]                                                                                                           ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:400: error: package org1.objectweb.asm does not exist
+    [javac]         int int0 = org1.objectweb.asm.Opcodes.NEW;
+    [javac]                                      ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:408: error: package org1.objectweb.asm does not exist
+    [javac]         int int0 = org1.objectweb.asm.Opcodes.ANEWARRAY;
+    [javac]                                      ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:416: error: package org1.objectweb.asm does not exist
+    [javac]         int int0 = org1.objectweb.asm.Opcodes.ACC_DEPRECATED;
+    [javac]                                      ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:424: error: package org1.objectweb.asm does not exist
+    [javac]         int int0 = org1.objectweb.asm.Opcodes.GOTO;
+    [javac]                                      ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:434: error: package org1.objectweb.asm.tree does not exist
+    [javac]             org1.objectweb.asm.tree.AnnotationNode annotationNode2 = new org1.objectweb.asm.tree.AnnotationNode((int) (short) 10, "short");
+    [javac]                                    ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:434: error: package org1.objectweb.asm.tree does not exist
+    [javac]             org1.objectweb.asm.tree.AnnotationNode annotationNode2 = new org1.objectweb.asm.tree.AnnotationNode((int) (short) 10, "short");
+    [javac]                                                                                                 ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:445: error: package org1.objectweb.asm does not exist
+    [javac]         int int0 = org1.objectweb.asm.Opcodes.T_DOUBLE;
+    [javac]                                      ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:453: error: package org1.objectweb.asm.tree.analysis does not exist
+    [javac]         org1.objectweb.asm.tree.analysis.SimpleVerifier simpleVerifier0 = new org1.objectweb.asm.tree.analysis.SimpleVerifier();
+    [javac]                                         ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:453: error: package org1.objectweb.asm.tree.analysis does not exist
+    [javac]         org1.objectweb.asm.tree.analysis.SimpleVerifier simpleVerifier0 = new org1.objectweb.asm.tree.analysis.SimpleVerifier();
+    [javac]                                                                                                               ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:454: error: package org1.objectweb.asm.tree does not exist
+    [javac]         org1.objectweb.asm.tree.LabelNode labelNode1 = new org1.objectweb.asm.tree.LabelNode();
+    [javac]                                ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:454: error: package org1.objectweb.asm.tree does not exist
+    [javac]         org1.objectweb.asm.tree.LabelNode labelNode1 = new org1.objectweb.asm.tree.LabelNode();
+    [javac]                                                                                   ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:456: error: package org1.objectweb.asm.tree.analysis does not exist
+    [javac]         org1.objectweb.asm.tree.analysis.BasicValue basicValue3 = null;
+    [javac]                                         ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:457: error: package org1.objectweb.asm.tree.analysis does not exist
+    [javac]         org1.objectweb.asm.tree.analysis.BasicValue basicValue4 = simpleVerifier0.copyOperation((org1.objectweb.asm.tree.AbstractInsnNode) labelNode1, basicValue3);
+    [javac]                                         ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:457: error: package org1.objectweb.asm.tree does not exist
+    [javac]         org1.objectweb.asm.tree.analysis.BasicValue basicValue4 = simpleVerifier0.copyOperation((org1.objectweb.asm.tree.AbstractInsnNode) labelNode1, basicValue3);
+    [javac]                                                                                                                         ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:458: error: package org1.objectweb.asm.tree.analysis does not exist
+    [javac]         org1.objectweb.asm.tree.analysis.SimpleVerifier simpleVerifier5 = new org1.objectweb.asm.tree.analysis.SimpleVerifier();
+    [javac]                                         ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:458: error: package org1.objectweb.asm.tree.analysis does not exist
+    [javac]         org1.objectweb.asm.tree.analysis.SimpleVerifier simpleVerifier5 = new org1.objectweb.asm.tree.analysis.SimpleVerifier();
+    [javac]                                                                                                               ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:459: error: package org1.objectweb.asm.tree does not exist
+    [javac]         org1.objectweb.asm.tree.LabelNode labelNode6 = new org1.objectweb.asm.tree.LabelNode();
+    [javac]                                ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:459: error: package org1.objectweb.asm.tree does not exist
+    [javac]         org1.objectweb.asm.tree.LabelNode labelNode6 = new org1.objectweb.asm.tree.LabelNode();
+    [javac]                                                                                   ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:461: error: package org1.objectweb.asm.tree.analysis does not exist
+    [javac]         org1.objectweb.asm.tree.analysis.BasicValue basicValue8 = null;
+    [javac]                                         ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:462: error: package org1.objectweb.asm.tree.analysis does not exist
+    [javac]         org1.objectweb.asm.tree.analysis.BasicValue basicValue9 = simpleVerifier5.copyOperation((org1.objectweb.asm.tree.AbstractInsnNode) labelNode6, basicValue8);
+    [javac]                                         ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:462: error: package org1.objectweb.asm.tree does not exist
+    [javac]         org1.objectweb.asm.tree.analysis.BasicValue basicValue9 = simpleVerifier5.copyOperation((org1.objectweb.asm.tree.AbstractInsnNode) labelNode6, basicValue8);
+    [javac]                                                                                                                         ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:463: error: package org1.objectweb.asm.tree.analysis does not exist
+    [javac]         org1.objectweb.asm.tree.analysis.BasicValue basicValue10 = null;
+    [javac]                                         ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:464: error: package org1.objectweb.asm.tree.analysis does not exist
+    [javac]         org1.objectweb.asm.tree.analysis.BasicValue basicValue11 = null;
+    [javac]                                         ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:465: error: package org1.objectweb.asm.tree.analysis does not exist
+    [javac]         org1.objectweb.asm.tree.analysis.BasicValue basicValue12 = null;
+    [javac]                                         ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:468: error: package org1.objectweb.asm.tree.analysis does not exist
+    [javac]             org1.objectweb.asm.tree.analysis.BasicValue basicValue13 = simpleVerifier0.ternaryOperation((org1.objectweb.asm.tree.AbstractInsnNode) labelNode6, basicValue10, basicValue11, basicValue12);
+    [javac]                                             ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:468: error: package org1.objectweb.asm.tree does not exist
+    [javac]             org1.objectweb.asm.tree.analysis.BasicValue basicValue13 = simpleVerifier0.ternaryOperation((org1.objectweb.asm.tree.AbstractInsnNode) labelNode6, basicValue10, basicValue11, basicValue12);
+    [javac]                                                                                                                                 ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:483: error: package org1.objectweb.asm does not exist
+    [javac]         int int0 = org1.objectweb.asm.Opcodes.DMUL;
+    [javac]                                      ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:491: error: package org1.objectweb.asm does not exist
+    [javac]         int int0 = org1.objectweb.asm.Opcodes.FCONST_0;
+    [javac]                                      ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:501: error: package org1.objectweb.asm does not exist
+    [javac]             org1.objectweb.asm.ClassReader classReader1 = new org1.objectweb.asm.ClassReader("");
+    [javac]                               ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:501: error: package org1.objectweb.asm does not exist
+    [javac]             org1.objectweb.asm.ClassReader classReader1 = new org1.objectweb.asm.ClassReader("");
+    [javac]                                                                                 ^
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:512: error: package org1.objectweb.asm does not exist
+    [javac]         int int0 = org1.objectweb.asm.Opcodes.IXOR;
+    [javac]                                      ^
+    [javac] 100 errors
+
+BUILD FAILED
+/Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build.xml:49: Compile failed; see the compiler error output for details.
+
+Total time: 40 seconds

@@ -1,0 +1,354 @@
+Using BASELINE
+
+openjdk version "11.0.13" 2021-10-19
+OpenJDK Runtime Environment Temurin-11.0.13+8 (build 11.0.13+8)
+OpenJDK 64-Bit Server VM Temurin-11.0.13+8 (build 11.0.13+8, mixed mode)
+Randoop for Java version "4.3.3, branch master, commit 27d6ec8, 2025-02-26".
+Ignoring org.apache.commons.compress.archivers.sevenz.Coders$LZMADecoder which was read from /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/commons-compress-1.8.jar but a class could not be loaded: java.lang.NoClassDefFoundError: org/tukaani/xz/LZMAInputStream
+Ignoring org.apache.commons.compress.archivers.sevenz.Coders$1 which was read from /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/commons-compress-1.8.jar but a class could not be loaded: java.lang.NoClassDefFoundError: org/tukaani/xz/FilterOptions
+Ignoring org.apache.commons.compress.archivers.sevenz.DeltaDecoder which was read from /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/commons-compress-1.8.jar but a class could not be loaded: java.lang.NoClassDefFoundError: org/tukaani/xz/UnsupportedOptionsException
+Ignoring org.apache.commons.compress.archivers.sevenz.Coders$BCJDecoder which was read from /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/commons-compress-1.8.jar but a class could not be loaded: java.lang.NoClassDefFoundError: org/tukaani/xz/FinishableOutputStream
+Ignoring org.apache.commons.compress.archivers.sevenz.Coders which was read from /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/commons-compress-1.8.jar but a class could not be loaded: java.lang.NoClassDefFoundError: org/tukaani/xz/FilterOptions
+Ignoring org.apache.commons.compress.archivers.sevenz.LZMA2Decoder which was read from /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/commons-compress-1.8.jar but a class could not be loaded: java.lang.NoClassDefFoundError: org/tukaani/xz/FinishableOutputStream
+Ignoring org.apache.commons.compress.compressors.lzma.LZMACompressorInputStream which was read from /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/commons-compress-1.8.jar but a class could not be loaded: java.lang.NoClassDefFoundError: org/tukaani/xz/LZMAInputStream
+Ignoring org.apache.commons.compress.compressors.xz.XZCompressorInputStream which was read from /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/commons-compress-1.8.jar but a class could not be loaded: java.lang.NoClassDefFoundError: org/tukaani/xz/XZInputStream
+Ignoring org.apache.commons.compress.compressors.xz.XZCompressorOutputStream which was read from /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/commons-compress-1.8.jar but a class could not be loaded: java.lang.NoClassDefFoundError: org/tukaani/xz/FilterOptions
+
+Will try to generate tests for 108 classes.
+PUBLIC MEMBERS=1212
+Explorer = ForwardGenerator(steps: 0, null steps: 0, num_sequences_generated: 0;
+    allSequences: 0, regresson seqs: 0, error seqs: 0=0=0, invalid seqs: 0, subsumed_sequences: 0, num_failed_output_test: 0;
+    sideEffectFreeMethods: 1115, runtimePrimitivesSeen: 38)
+
+Progress update: steps=1, test inputs generated=0, failing inputs=0      (2025-03-05T04:32:00.557302Z     246M used)Unexpected exception java.lang.NullPointerException (null) in CallReplacementTransformer.transform(com/sun/source/doctree/DocCommentTree)
+java.lang.NullPointerException
+	at replacecall.org.apache.bcel.generic.ConstantPoolGen.<init>(ConstantPoolGen.java:159)
+	at replacecall.org.apache.bcel.generic.ConstantPoolGen.<init>(ConstantPoolGen.java:216)
+	at replacecall.org.apache.bcel.generic.ClassGen.<init>(ClassGen.java:143)
+	at randoop.instrument.CallReplacementTransformer.transform(CallReplacementTransformer.java:131)
+	at java.instrument/java.lang.instrument.ClassFileTransformer.transform(ClassFileTransformer.java:246)
+	at java.instrument/sun.instrument.TransformerManager.transform(TransformerManager.java:188)
+	at java.instrument/sun.instrument.InstrumentationImpl.transform(InstrumentationImpl.java:563)
+	at java.base/java.lang.ClassLoader.defineClass2(Native Method)
+	at java.base/java.lang.ClassLoader.defineClass(ClassLoader.java:1109)
+	at java.base/java.security.SecureClassLoader.defineClass(SecureClassLoader.java:206)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.defineClass(BuiltinClassLoader.java:759)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.findClassInModuleOrNull(BuiltinClassLoader.java:680)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClassOrNull(BuiltinClassLoader.java:605)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:579)
+	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:178)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:522)
+	at jdk.compiler/com.sun.tools.javac.parser.ParserFactory.<init>(ParserFactory.java:76)
+	at jdk.compiler/com.sun.tools.javac.parser.ParserFactory.instance(ParserFactory.java:56)
+	at jdk.compiler/com.sun.tools.javac.main.JavaCompiler.<init>(JavaCompiler.java:401)
+	at jdk.compiler/com.sun.tools.javac.main.JavaCompiler.instance(JavaCompiler.java:115)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.prepareCompiler(JavacTaskImpl.java:203)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.lambda$doCall$0(JavacTaskImpl.java:101)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.handleExceptions(JavacTaskImpl.java:147)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.doCall(JavacTaskImpl.java:100)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.call(JavacTaskImpl.java:94)
+	at randoop.compile.SequenceCompiler.compile(SequenceCompiler.java:176)
+	at randoop.compile.SequenceCompiler.isCompilable(SequenceCompiler.java:105)
+	at randoop.test.CompilableTestPredicate.testSource(CompilableTestPredicate.java:114)
+	at randoop.test.CompilableTestPredicate.test(CompilableTestPredicate.java:93)
+	at randoop.test.CompilableTestPredicate.test(CompilableTestPredicate.java:25)
+	at java.base/java.util.function.Predicate.lambda$and$0(Predicate.java:69)
+	at randoop.generation.AbstractGenerator.createAndClassifySequences(AbstractGenerator.java:320)
+	at randoop.main.GenTests.handle(GenTests.java:569)
+	at randoop.main.Main.nonStaticMain(Main.java:69)
+	at randoop.main.Main.main(Main.java:31)
+Unexpected exception java.lang.NullPointerException (null) in CallReplacementTransformer.transform(com/sun/source/doctree/DocTreeVisitor)
+java.lang.NullPointerException
+	at replacecall.org.apache.bcel.generic.ConstantPoolGen.<init>(ConstantPoolGen.java:159)
+	at replacecall.org.apache.bcel.generic.ConstantPoolGen.<init>(ConstantPoolGen.java:216)
+	at replacecall.org.apache.bcel.generic.ClassGen.<init>(ClassGen.java:143)
+	at randoop.instrument.CallReplacementTransformer.transform(CallReplacementTransformer.java:131)
+	at java.instrument/java.lang.instrument.ClassFileTransformer.transform(ClassFileTransformer.java:246)
+	at java.instrument/sun.instrument.TransformerManager.transform(TransformerManager.java:188)
+	at java.instrument/sun.instrument.InstrumentationImpl.transform(InstrumentationImpl.java:563)
+	at java.base/java.lang.ClassLoader.defineClass2(Native Method)
+	at java.base/java.lang.ClassLoader.defineClass(ClassLoader.java:1109)
+	at java.base/java.security.SecureClassLoader.defineClass(SecureClassLoader.java:206)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.defineClass(BuiltinClassLoader.java:759)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.findClassInModuleOrNull(BuiltinClassLoader.java:680)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClassOrNull(BuiltinClassLoader.java:605)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:579)
+	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:178)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:522)
+	at jdk.compiler/com.sun.tools.javac.tree.DocTreeMaker.<init>(DocTreeMaker.java:146)
+	at jdk.compiler/com.sun.tools.javac.tree.DocTreeMaker.instance(DocTreeMaker.java:124)
+	at jdk.compiler/com.sun.tools.javac.parser.ParserFactory.<init>(ParserFactory.java:76)
+	at jdk.compiler/com.sun.tools.javac.parser.ParserFactory.instance(ParserFactory.java:56)
+	at jdk.compiler/com.sun.tools.javac.main.JavaCompiler.<init>(JavaCompiler.java:401)
+	at jdk.compiler/com.sun.tools.javac.main.JavaCompiler.instance(JavaCompiler.java:115)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.prepareCompiler(JavacTaskImpl.java:203)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.lambda$doCall$0(JavacTaskImpl.java:101)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.handleExceptions(JavacTaskImpl.java:147)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.doCall(JavacTaskImpl.java:100)
+	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.call(JavacTaskImpl.java:94)
+	at randoop.compile.SequenceCompiler.compile(SequenceCompiler.java:176)
+	at randoop.compile.SequenceCompiler.isCompilable(SequenceCompiler.java:105)
+	at randoop.test.CompilableTestPredicate.testSource(CompilableTestPredicate.java:114)
+	at randoop.test.CompilableTestPredicate.test(CompilableTestPredicate.java:93)
+	at randoop.test.CompilableTestPredicate.test(CompilableTestPredicate.java:25)
+	at java.base/java.util.function.Predicate.lambda$and$0(Predicate.java:69)
+	at randoop.generation.AbstractGenerator.createAndClassifySequences(AbstractGenerator.java:320)
+	at randoop.main.GenTests.handle(GenTests.java:569)
+	at randoop.main.Main.nonStaticMain(Main.java:69)
+	at randoop.main.Main.main(Main.java:31)
+Mar 04, 2025 8:32:09 PM com.sun.java.util.jar.pack.Utils$Pack200Logger warning
+WARNING: Error on output: java.lang.NullPointerException
+Cleaning up unclosed ZipFile for archive null
+
+Progress update: steps=401, test inputs generated=247, failing inputs=0      (2025-03-05T04:32:10.573779Z     586M used)
+Normal method executions: 3813
+Exceptional method executions: 54
+
+Average method execution time (normal termination):      0.0149
+Average method execution time (exceptional termination): 4.11
+Approximate memory usage 586M
+Explorer = ForwardGenerator(steps: 401, null steps: 154, num_sequences_generated: 247;
+    allSequences: 247, regresson seqs: 246, error seqs: 0=0=0, invalid seqs: 0, subsumed_sequences: 0, num_failed_output_test: 1;
+    sideEffectFreeMethods: 1115, runtimePrimitivesSeen: 77)
+
+About to look for failing assertions in 177 regression sequences.
+
+Regression test output:
+Regression test count: 177
+Writing regression JUnit tests...
+JUnit version 4.13.2
+...........................................................................E........E..............................................................................................
+Time: 0.987
+There were 2 failures:
+1) test075(RegressionTest0)
+org.junit.ComparisonFailure: '4�4� ' != '4�� ' expected:<4�[4]� > but was:<4�[]� >
+	at org.junit.Assert.assertEquals(Assert.java:117)
+	at RegressionTest0.test075(RegressionTest0.java:838)
+2) test083(RegressionTest0)
+array lengths differed, expected.length=5 actual.length=6; arrays first differed at element [3]; expected:<63> but was:<52>
+	at org.junit.internal.ComparisonCriteria.arrayEquals(ComparisonCriteria.java:78)
+	at org.junit.internal.ComparisonCriteria.arrayEquals(ComparisonCriteria.java:28)
+	at org.junit.Assert.internalArrayEquals(Assert.java:534)
+	at org.junit.Assert.assertArrayEquals(Assert.java:343)
+	at org.junit.Assert.assertArrayEquals(Assert.java:354)
+	at RegressionTest0.test083(RegressionTest0.java:924)
+	... 32 trimmed
+Caused by: java.lang.AssertionError: expected:<63> but was:<52>
+	at org.junit.Assert.fail(Assert.java:89)
+	at org.junit.Assert.failNotEquals(Assert.java:835)
+	at org.junit.Assert.assertEquals(Assert.java:120)
+	at org.junit.Assert.assertEquals(Assert.java:146)
+	at org.junit.internal.ExactComparisonCriteria.assertElementsEqual(ExactComparisonCriteria.java:8)
+	at org.junit.internal.ComparisonCriteria.arrayEquals(ComparisonCriteria.java:76)
+	... 38 more
+
+FAILURES!!!
+Tests run: 177,  Failures: 2
+Created file /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java
+Created file /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest.java
+Wrote regression JUnit tests.
+About to look for flaky methods.
+
+Flaky tests were generated. This means that your program contains
+methods that are nondeterministic or depend on non-local state.
+The following methods, in decreasing order of likelihood,
+are the most likely to be the problem.
+  Possibly flaky:  org.apache.commons.compress.utils.ArchiveUtils.toAsciiString(byte[])
+  Possibly flaky:  org.apache.commons.compress.utils.ArchiveUtils.toAsciiBytes(java.lang.String)
+  Possibly flaky:  org.apache.commons.compress.archivers.tar.TarUtils.parseOctal(byte[],int,int)
+  Possibly flaky:  java.lang.String.valueOf(long)
+  Possibly flaky:  java.lang.Long.valueOf(long)
+  Possibly flaky:  java.lang.Long.toString(long)
+  Possibly flaky:  java.lang.Long.toOctalString(long)
+  Possibly flaky:  java.lang.Long.toHexString(long)
+  Possibly flaky:  java.lang.Long.toBinaryString(long)
+To prevent the generation of flaky tests, see section 'Randoop generated flaky tests'
+ at https://randoop.github.io/randoop/manual/#flaky-tests .
+
+Done looking for flaky methods.
+
+Invalid tests generated: 0
+java version "1.8.0_202"
+Java(TM) SE Runtime Environment (build 1.8.0_202-b08)
+Java HotSpot(TM) 64-Bit Server VM (build 25.202-b08, mixed mode)
+
+Compiling and mutating project...
+command:
+/Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/major/bin/ant -Dmutator=mml:/Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/major/mml/all.mml.bin -Dsrc=/Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/commons-compress-1.8  clean compile
+
+Buildfile: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build.xml
+
+clean:
+   [delete] Deleting directory /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/bin
+
+init:
+    [mkdir] Created dir: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/bin
+
+compile:
+     [exec] [INFO] Scanning for projects...
+     [exec] [INFO]
+     [exec] [INFO] ----------------< org.apache.commons:commons-compress >-----------------
+     [exec] [INFO] Building Apache Commons Compress 1.8
+     [exec] [INFO]   from pom.xml
+     [exec] [INFO] --------------------------------[ jar ]---------------------------------
+     [exec] [INFO]
+     [exec] [INFO] --- clean:2.5:clean (default-clean) @ commons-compress ---
+     [exec] [INFO] Deleting /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/commons-compress-1.8/target
+     [exec] [INFO]
+     [exec] [INFO] --- antrun:1.7:run (javadoc.resources) @ commons-compress ---
+     [exec] [INFO] Executing tasks
+     [exec]
+     [exec] main:
+     [exec]      [copy] Copying 2 files to /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/commons-compress-1.8/target/apidocs/META-INF
+     [exec] [INFO] Executed tasks
+     [exec] [INFO]
+     [exec] [INFO] --- remote-resources:1.5:process (default) @ commons-compress ---
+     [exec] [INFO]
+     [exec] [INFO] --- buildnumber:1.2:create (default) @ commons-compress ---
+     [exec] [INFO] Checking for local modifications: skipped.
+     [exec] [INFO] Updating project files from SCM: skipped.
+     [exec] [INFO] Executing: /bin/sh -c cd /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/commons-compress-1.8 && svn --non-interactive info
+     [exec] [INFO] Working directory: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/commons-compress-1.8
+     [exec] [INFO] Storing buildNumber: ?????? at timestamp: 1741149141732
+     [exec] [INFO] Executing: /bin/sh -c cd /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/commons-compress-1.8 && svn --non-interactive info
+     [exec] [INFO] Working directory: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/commons-compress-1.8
+     [exec] [INFO] Storing buildScmBranch: UNKNOWN_BRANCH
+     [exec] [INFO]
+     [exec] [INFO] --- resources:2.6:resources (default-resources) @ commons-compress ---
+     [exec] [INFO] Using 'iso-8859-1' encoding to copy filtered resources.
+     [exec] [INFO] skip non existing resourceDirectory /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/commons-compress-1.8/src/main/resources
+     [exec] [INFO] Copying 2 resources to META-INF
+     [exec] [INFO]
+     [exec] [INFO] --- compiler:3.1:compile (default-compile) @ commons-compress ---
+     [exec] [INFO] Changes detected - recompiling the module!
+     [exec] [INFO] Compiling 141 source files to /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/commons-compress-1.8/target/classes
+     [exec] [INFO]
+     [exec] [INFO] --- bundle:2.4.0:manifest (bundle-manifest) @ commons-compress ---
+     [exec] [INFO]
+     [exec] [INFO] --- resources:2.6:testResources (default-testResources) @ commons-compress ---
+     [exec] [INFO] Using 'iso-8859-1' encoding to copy filtered resources.
+     [exec] [INFO] Copying 128 resources
+     [exec] [INFO] Copying 2 resources to META-INF
+     [exec] [INFO]
+     [exec] [INFO] --- compiler:3.1:testCompile (default-testCompile) @ commons-compress ---
+     [exec] [INFO] Changes detected - recompiling the module!
+     [exec] [INFO] Compiling 81 source files to /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/commons-compress-1.8/target/test-classes
+     [exec] [WARNING] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/commons-compress-1.8/src/test/java/org/apache/commons/compress/archivers/zip/X5455_ExtendedTimestampTest.java: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/commons-compress-1.8/src/test/java/org/apache/commons/compress/archivers/zip/X5455_ExtendedTimestampTest.java uses or overrides a deprecated API.
+     [exec] [WARNING] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/commons-compress-1.8/src/test/java/org/apache/commons/compress/archivers/zip/X5455_ExtendedTimestampTest.java: Recompile with -Xlint:deprecation for details.
+     [exec] [INFO]
+     [exec] [INFO] --- surefire:2.16:test (default-test) @ commons-compress ---
+     [exec] [INFO] Tests are skipped.
+     [exec] [INFO]
+     [exec] [INFO] --- jar:2.4:jar (default-jar) @ commons-compress ---
+     [exec] [INFO] Building jar: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/commons-compress-1.8/target/commons-compress-1.8.jar
+     [exec] [INFO]
+     [exec] [INFO] --- site:3.3:attach-descriptor (attach-descriptor) @ commons-compress ---
+     [exec] [INFO] ------------------------------------------------------------------------
+     [exec] [INFO] BUILD SUCCESS
+     [exec] [INFO] ------------------------------------------------------------------------
+     [exec] [INFO] Total time:  8.832 s
+     [exec] [INFO] Finished at: 2025-03-04T20:32:28-08:00
+     [exec] [INFO] ------------------------------------------------------------------------
+     [copy] Copying 193 files to /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/bin
+     [exec] mv: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/commons-compress-1.8/major.log: No such file or directory
+     [exec] Result: 1
+     [exec] mv: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/commons-compress-1.8/mutants.log: No such file or directory
+     [exec] Result: 1
+
+BUILD SUCCESSFUL
+Total time: 13 seconds
+
+Compiling tests...
+command:
+/Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/major/bin/ant -Dtest=/Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE -Dsrc=/Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/commons-compress-1.8  compile.tests
+
+Buildfile: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build.xml
+
+init:
+
+compile:
+     [exec] [INFO] Scanning for projects...
+     [exec] [INFO]
+     [exec] [INFO] ----------------< org.apache.commons:commons-compress >-----------------
+     [exec] [INFO] Building Apache Commons Compress 1.8
+     [exec] [INFO]   from pom.xml
+     [exec] [INFO] --------------------------------[ jar ]---------------------------------
+     [exec] [INFO]
+     [exec] [INFO] --- clean:2.5:clean (default-clean) @ commons-compress ---
+     [exec] [INFO] Deleting /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/commons-compress-1.8/target
+     [exec] [INFO]
+     [exec] [INFO] --- antrun:1.7:run (javadoc.resources) @ commons-compress ---
+     [exec] [INFO] Executing tasks
+     [exec]
+     [exec] main:
+     [exec]      [copy] Copying 2 files to /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/commons-compress-1.8/target/apidocs/META-INF
+     [exec] [INFO] Executed tasks
+     [exec] [INFO]
+     [exec] [INFO] --- remote-resources:1.5:process (default) @ commons-compress ---
+     [exec] [INFO]
+     [exec] [INFO] --- buildnumber:1.2:create (default) @ commons-compress ---
+     [exec] [INFO] Checking for local modifications: skipped.
+     [exec] [INFO] Updating project files from SCM: skipped.
+     [exec] [INFO] Executing: /bin/sh -c cd /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/commons-compress-1.8 && svn --non-interactive info
+     [exec] [INFO] Working directory: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/commons-compress-1.8
+     [exec] [INFO] Storing buildNumber: ?????? at timestamp: 1741149153972
+     [exec] [INFO] Executing: /bin/sh -c cd /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/commons-compress-1.8 && svn --non-interactive info
+     [exec] [INFO] Working directory: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/commons-compress-1.8
+     [exec] [INFO] Storing buildScmBranch: UNKNOWN_BRANCH
+     [exec] [INFO]
+     [exec] [INFO] --- resources:2.6:resources (default-resources) @ commons-compress ---
+     [exec] [INFO] Using 'iso-8859-1' encoding to copy filtered resources.
+     [exec] [INFO] skip non existing resourceDirectory /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/commons-compress-1.8/src/main/resources
+     [exec] [INFO] Copying 2 resources to META-INF
+     [exec] [INFO]
+     [exec] [INFO] --- compiler:3.1:compile (default-compile) @ commons-compress ---
+     [exec] [INFO] Changes detected - recompiling the module!
+     [exec] [INFO] Compiling 141 source files to /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/commons-compress-1.8/target/classes
+     [exec] [INFO]
+     [exec] [INFO] --- bundle:2.4.0:manifest (bundle-manifest) @ commons-compress ---
+     [exec] [INFO]
+     [exec] [INFO] --- resources:2.6:testResources (default-testResources) @ commons-compress ---
+     [exec] [INFO] Using 'iso-8859-1' encoding to copy filtered resources.
+     [exec] [INFO] Copying 128 resources
+     [exec] [INFO] Copying 2 resources to META-INF
+     [exec] [INFO]
+     [exec] [INFO] --- compiler:3.1:testCompile (default-testCompile) @ commons-compress ---
+     [exec] [INFO] Changes detected - recompiling the module!
+     [exec] [INFO] Compiling 81 source files to /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/commons-compress-1.8/target/test-classes
+     [exec] [WARNING] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/commons-compress-1.8/src/test/java/org/apache/commons/compress/archivers/zip/X5455_ExtendedTimestampTest.java: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/commons-compress-1.8/src/test/java/org/apache/commons/compress/archivers/zip/X5455_ExtendedTimestampTest.java uses or overrides a deprecated API.
+     [exec] [WARNING] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/commons-compress-1.8/src/test/java/org/apache/commons/compress/archivers/zip/X5455_ExtendedTimestampTest.java: Recompile with -Xlint:deprecation for details.
+     [exec] [INFO]
+     [exec] [INFO] --- surefire:2.16:test (default-test) @ commons-compress ---
+     [exec] [INFO] Tests are skipped.
+     [exec] [INFO]
+     [exec] [INFO] --- jar:2.4:jar (default-jar) @ commons-compress ---
+     [exec] [INFO] Building jar: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/commons-compress-1.8/target/commons-compress-1.8.jar
+     [exec] [INFO]
+     [exec] [INFO] --- site:3.3:attach-descriptor (attach-descriptor) @ commons-compress ---
+     [exec] [INFO] ------------------------------------------------------------------------
+     [exec] [INFO] BUILD SUCCESS
+     [exec] [INFO] ------------------------------------------------------------------------
+     [exec] [INFO] Total time:  7.355 s
+     [exec] [INFO] Finished at: 2025-03-04T20:32:39-08:00
+     [exec] [INFO] ------------------------------------------------------------------------
+     [copy] Copying 193 files to /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/bin
+     [exec] mv: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/commons-compress-1.8/major.log: No such file or directory
+     [exec] Result: 1
+     [exec] mv: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/subject-programs/src/commons-compress-1.8/mutants.log: No such file or directory
+     [exec] Result: 1
+
+compile.tests:
+    [javac] Compiling 2 source files to /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/bin
+    [javac] /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java:1219: error: cannot find symbol
+    [javac]         byte[] byteArray14 = tarArchiveInputStream3.readAllBytes();
+    [javac]                                                    ^
+    [javac]   symbol:   method readAllBytes()
+    [javac]   location: variable tarArchiveInputStream3 of type TarArchiveInputStream
+    [javac] Note: /Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build/test/BASELINE/RegressionTest0.java uses or overrides a deprecated API.
+    [javac] Note: Recompile with -Xlint:deprecation for details.
+    [javac] 1 error
+
+BUILD FAILED
+/Users/adityaakhileshwaran/IdeaProjects/grt-testing/scripts/build.xml:64: Compile failed; see the compiler error output for details.
+
+Total time: 11 seconds
