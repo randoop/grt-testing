@@ -16,6 +16,7 @@ Thumbs.db
 
 # subdirectory with source repositories
 tests/src
+subject-programs/src
 
 # subdirectory created by scripts/mutation.sh
 scripts/jarfiles

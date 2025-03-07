@@ -1,32 +1,12 @@
-You may use the script 'get-all-subject-src.sh' in this directory to obtain
-the subject program source files.  They will be created in a subdirectory
-of the current directory named 'src'.  They are slightly different than the
-originals (whose location appears below) because these projects are several
-years old and in some cases we have made modifications to get them to
-compile correctly.
+This file gives instructions about how to build the subject programs from
+source.
+If you don't need to do that, you can ignore this file.
 
-If you wish to only get the source for a single subject program, the name of its
-source repository is test directory name as noted below, prepended with 'grt-'.
-For example, to get the source for bcel-5.2:
-```
-  mkdir -p src
-  cd src
-  git clone git@github.com:randoop/grt-bcel-5.2 bcel-5.2
-  cd bcel-5.2
-```
+First, clone the source by running `../scripts/get-all-subject-src.sh`,
+which leaves them in the `src/` directory.  They are slightly different
+than the originals (whose location appears below) if we made modifications
+to get them to compile.
 
-After cloning the source, follow the build instructions given below.  In
-almost all cases, Java 8 is required to build. Also, the environment
-variable JAVA_HOME should be set; for example:
-  export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
-
-Note: If you want to change the overall build process, you should modify scripts/build-variants/build.xml
-      for the changes to take effect. If you want to create changes for a specific project,
-      modify scripts/build.xml instead, and run:
-      ```
-      diff -u scripts/build-variants/build.xml scripts/build.xml > scripts/build-variants/build.patch
-      ```
-      The patch file will be automatically applied when you run the mutation script.
 
 Maven (mvn) builds
 ------------------

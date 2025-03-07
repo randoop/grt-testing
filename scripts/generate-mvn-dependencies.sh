@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# This script installs JAR files from a specified directory (`libs`) into the local Maven repository,
+# and automatically adds them as dependencies to a `pom.xml` file.
+
 # Set the path to your libs directory
 LIBS_DIR="./libs"
 
@@ -27,13 +30,10 @@ artifactIdMap["junit-4.12.jar"]="junit"
 groupIdMap["hamcrest-core-1.3.jar"]="org.hamcrest"
 artifactIdMap["hamcrest-core-1.3.jar"]="hamcrest-core"
 
-groupIdMap["log4j-1.2.17.jar"]="log4j"
-artifactIdMap["log4j-1.2.17.jar"]="log4j"
-
 groupIdMap["evosuite-standalone-runtime-1.2.0.jar"]="org.evosuite"
 artifactIdMap["evosuite-standalone-runtime-1.2.0.jar"]="evosuite-standalone-runtime"
 
-# You can add more mappings as needed
+# We can add more mappings as needed, though this is not necessary
 
 # Loop through each JAR file in the libs directory
 for jar in "$LIBS_DIR"/*.jar; do
