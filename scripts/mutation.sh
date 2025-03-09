@@ -6,17 +6,16 @@
 
 # For documentation of how to run this script, see file `mutation-repro.md`.
 #
-# This script uses Randoop to:
-#  * generate test suites for subject programs and
-#  * performs mutation testing to determine how Randoop features affect
-#    various coverage metrics including coverage and mutation score
-#    (mutants are generated using Major).
+# This script:
+#  * Generates test suites using Randoop.
+#  * Computes mutation score (mutants are generated using Major via ant).
+#  * Computes code coverage (using Jacoco via Maven).
 #
 # Each experiment can run multiple times, with a configurable time (in
 # seconds per class or total time).
 #
 # Directories and files:
-# - `build/test*`: Randoop-created test suites.
+# - `build/test*`: generated test suites, including their compiled versions.
 # - `build/bin`: Compiled tests and code.
 # - `results/info.csv`: statistics about each iteration.
 # - 'results/`: everything else specific to the most recent iteration.
@@ -90,11 +89,9 @@ while getopts ":hvrt:c:" opt; do
       exit 0
       ;;
     v )
-      # Verbose mode
       VERBOSE=1
       ;;
     r )
-      # Redirect output to a log file
       REDIRECT=1
       ;;
     t )
@@ -128,7 +125,7 @@ done
 
 shift $((OPTIND -1))
 
-# Name of the subject program
+# Name of the subject program.
 SUBJECT_PROGRAM="$1"
 
 # Select the ant executable based on the subject program
@@ -146,10 +143,10 @@ echo
 # Project Paths & Dependencies
 #===============================================================================
 
-# Path to the base directory of the source code
+# Path to the base directory of the source code.
 SRC_BASE_DIR="$(realpath "$SCRIPT_DIR/../subject-programs/src/$SUBJECT_PROGRAM")"
 
-# Path to the jar file of the subject program
+# Path to the jar file of the subject program.
 SRC_JAR=$(realpath "$SCRIPT_DIR/../subject-programs/$SUBJECT_PROGRAM.jar")
 
 # Number of classes in given jar file.
@@ -183,6 +180,7 @@ declare -A project_src=(
     ["shiro-core-1.2.3"]="/core/"
     ["slf4j-api-1.7.12"]="/slf4j-api"
 )
+# Link to src files for mutation generation and analysis
 JAVA_SRC_DIR=$SRC_BASE_DIR${project_src[$SUBJECT_PROGRAM]}
 
 # Map project names to their respective dependencies
@@ -197,6 +195,7 @@ declare -A project_deps=(
 )
 #   ["hamcrest-core-1.3"]="$SRC_BASE_DIR/lib/"  this one needs changes?
 
+# Link to dependencies
 CLASSPATH=${project_deps[$SUBJECT_PROGRAM]}
 
 LIB_ARG=""
@@ -228,7 +227,7 @@ REPLACECALL_COMMAND="$REPLACECALL_JAR${replacement_files[$SUBJECT_PROGRAM]}"
 
 
 #===============================================================================
-# Randoop Command Configuration
+# Test generator command configuration
 #===============================================================================
 RANDOOP_BASE_COMMAND="java \
 -Xbootclasspath/a:$JACOCO_AGENT_JAR:$REPLACECALL_JAR \
@@ -493,7 +492,7 @@ do
 
     echo "Results will be saved in $RESULT_DIR"
     # Move all output files into the results/ directory.
-    # suppression.log may be in one of two locations depending on if using include-major branch
+    # `suppression.log` may be in one of two locations depending on if using include-major branch.
     mv "$JAVA_SRC_DIR"/suppression.log "$RESULT_DIR" 2>/dev/null || true
     mv suppression.log "$RESULT_DIR" 2>/dev/null || true
     mv major.log mutants.log "$RESULT_DIR"

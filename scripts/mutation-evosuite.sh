@@ -6,18 +6,17 @@
 
 # For documentation of how to run this script, see file `mutation-repro.md`.
 #
-# This script uses EvoSuite to:
-#  * generate test suites for subject programs and
-#  * performs mutation testing to determine how EvoSuite affects
-#    mutation score (mutants are generated using Major via ant).
-#  * performs code coverage analysis using Jacoco (via Maven)
+# This script:
+#  * Generates test suites using EvoSuite.
+#  * Computes mutation score (mutants are generated using Major via ant).
+#  * Computes code coverage (using Jacoco via Maven).
 #
 # Each experiment can run multiple times, with a configurable time (in
 # seconds per class or total time).
 #
 # Directories and files:
-# - `evosuite-tests/`: EvoSuite-created test suites, including their compiled versions.
-# - `build/bin`: Compiled code for Major.
+# - `evosuite-tests/`: generated test suites, including their compiled versions.
+# - `build/bin`: Compiled tests and code.
 # - 'libs/': All the dependencies Maven needs for performing code coverage.
 # - 'target/': Compiled subject program code and compiled tests for Jacoco (code coverage).
 # - `results/info.csv`: statistics about each iteration.
@@ -45,7 +44,7 @@ fi
 # Environment Setup
 #===============================================================================
 
-SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 MAJOR_HOME=$(realpath "build/major/")
 CURR_DIR=$(realpath "$(pwd)")
 EVOSUITE_JAR=$(realpath "build/evosuite-1.2.0.jar")
@@ -122,7 +121,7 @@ done
 
 shift $((OPTIND -1))
 
-# Name of test case
+# Name of the subject program.
 SUBJECT_PROGRAM="$1"
 
 # Select the ant executable based on the subject program
@@ -140,11 +139,11 @@ echo
 # Project Paths & Dependencies
 #===============================================================================
 
-# Link to the base directory of the source code
-SRC_BASE_DIR="$(realpath "$SCRIPTDIR/../subject-programs/src/$SUBJECT_PROGRAM")"
+# Path to the base directory of the source code.
+SRC_BASE_DIR="$(realpath "$SCRIPT_DIR/../subject-programs/src/$SUBJECT_PROGRAM")"
 
-# Link to src jar
-SRC_JAR=$(realpath "$SCRIPTDIR/../subject-programs/$SUBJECT_PROGRAM.jar")
+# Path to the jar file of the subject program.
+SRC_JAR=$(realpath "$SCRIPT_DIR/../subject-programs/$SUBJECT_PROGRAM.jar")
 
 # Map test case to their respective source
 declare -A project_src=(
@@ -177,6 +176,8 @@ declare -A project_src=(
     ["slf4j-api-1.7.12"]="/slf4j-api/src/main/java/"
     ["pmd-core-5.2.2"]="/pmd-core/src/main/java/"
 )
+# Link to src files for mutation generation and analysis
+JAVA_SRC_DIR=$SRC_BASE_DIR${project_src[$SUBJECT_PROGRAM]}
 
 # Map project names to their respective dependencies
 declare -A project_deps=(
@@ -188,9 +189,6 @@ declare -A project_deps=(
     ["sat4j-core-2.3.5"]="$SRC_BASE_DIR/lib/"
 )
 #   ["hamcrest-core-1.3"]="$SRC_BASE_DIR/lib/"  this one needs changes?
-
-# Link to src files for mutation generation and analysis
-JAVA_SRC_DIR=$SRC_BASE_DIR${project_src[$SUBJECT_PROGRAM]}
 
 # Link to dependencies
 CLASSPATH=${project_deps[$SUBJECT_PROGRAM]}
@@ -316,8 +314,9 @@ fi
 LIB_ARG="-lib $JAR_PATHS"
 
 if [[ "$VERBOSE" -eq 1 ]]; then
-    echo "Source dir: $JAVA_SRC_DIR"
-    echo "Dependency dir: $JAR_PATHS"
+    echo "JAVA_SRC_DIR: $JAVA_SRC_DIR"
+    echo "CLASSPATH: $CLASSPATH"
+    echo "JAR_PATHS: $JAR_PATHS"
     echo
 fi
 
@@ -337,7 +336,7 @@ echo "TIME_LIMIT: $TIME_LIMIT seconds"
 echo
 
 #===============================================================================
-# EvoSuite Command Configuration and Setup
+# Test generator command configuration
 #===============================================================================
 
 # - Installs Jacoco 0.8.0 runtime for measuring code coverage
@@ -414,9 +413,9 @@ do
         LIB_ARG=$(echo "$LIB_ARG" | sed 's/\([^:]*\)[^:]*$/:/' )
     fi
 
-    #===============================================================================
+        #===============================================================================
         # Coverage & Mutation Analysis
-    #===============================================================================
+        #===============================================================================
 
     RESULT_DIR="results/$(date +%Y%m%d-%H%M%S)-$SUBJECT_PROGRAM-evosuite"
     mkdir -p "$RESULT_DIR"
@@ -504,8 +503,8 @@ do
 
     echo "Results will be saved in $RESULT_DIR"
     set +e
-    # Move all output files into the results directory
-    # suppression.log may be in one of two locations depending on if using include-major branch
+    # Move all output files into the results/ directory.
+    # `suppression.log` may be in one of two locations depending on if using include-major branch.
     mv "$JAVA_SRC_DIR"/suppression.log "$RESULT_DIR" 2>/dev/null
     mv build/suppression.log "$RESULT_DIR" 2>/dev/null
     mv build/major.log build/mutants.log "$RESULT_DIR"
@@ -524,4 +523,4 @@ echo "Restoring build-evosuite.xml"
 
 echo "Restoring $JAVA_SRC_DIR to main branch"
 # switch to main branch (may already be there)
-(cd  $JAVA_SRC_DIR; git checkout main 1>/dev/null)
+(cd "$JAVA_SRC_DIR"; git checkout main 1>/dev/null)
