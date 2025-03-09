@@ -45,7 +45,7 @@ fi
 #===============================================================================
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-MAJOR_HOME=$(realpath "build/major/")
+MAJOR_HOME=$(realpath "build/major/") # Major home directory, for mutation testing
 CURR_DIR=$(realpath "$(pwd)")
 EVOSUITE_JAR=$(realpath "build/evosuite-1.2.0.jar")
 
@@ -53,7 +53,7 @@ EVOSUITE_JAR=$(realpath "build/evosuite-1.2.0.jar")
 # Argument Parsing & Experiment Configuration
 #===============================================================================
 SECONDS_CLASS="2"      # Default seconds per class.
-                       # The paper runs EvoSuite with 4 different time limits:
+                       # The paper runs the test generator with 4 different time limits:
                        # 2 s/class, 10 s/class, 30 s/class, and 60 s/class.
 
 TOTAL_TIME=""          # Total experiment time, mutually exclusive with SECONDS_CLASS

@@ -57,7 +57,7 @@ REPLACECALL_JAR=$(realpath "build/replacecall-4.3.3.jar") # For replacing undesi
 # Argument Parsing & Experiment Configuration
 #===============================================================================
 SECONDS_CLASS="2"      # Default seconds per class.
-                       # The paper runs Randoop with 4 different time limits:
+                       # The paper runs the test generator with 4 different time limits:
                        # 2 s/class, 10 s/class, 30 s/class, and 60 s/class.
 
 TOTAL_TIME=""          # Total experiment time, mutually exclusive with SECONDS_CLASS
