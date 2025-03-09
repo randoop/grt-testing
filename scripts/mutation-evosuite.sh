@@ -16,7 +16,7 @@
 # seconds per class or total time).
 #
 # Directories and files:
-# - `evosuite-tests/`: Evosuite-created test suites, including their compiled versions.
+# - `evosuite-tests/`: EvoSuite-created test suites, including their compiled versions.
 # - `build/bin`: Compiled code for Major.
 # - 'libs/': All the dependencies Maven needs for performing code coverage.
 # - 'target/': Compiled subject program code and compiled tests for Jacoco (code coverage).
@@ -337,7 +337,7 @@ echo "TIME_LIMIT: $TIME_LIMIT seconds"
 echo
 
 #===============================================================================
-# Evosuite Command Configuration and Setup
+# EvoSuite Command Configuration and Setup
 #===============================================================================
 
 # - Installs Jacoco 0.8.0 runtime for measuring code coverage
@@ -401,7 +401,7 @@ do
         exec 1>>"mutation_output.txt" 2>&1
     fi
 
-    echo "Using Evosuite"
+    echo "Using EvoSuite"
     echo
     TEST_DIRECTORY="$CURR_DIR/evosuite-tests/"
 

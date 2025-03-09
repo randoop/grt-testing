@@ -6,7 +6,7 @@
 #   ./apply-build-patch.sh [subject-program]
 #   In this case, only the build.patch file is applied.
 # 
-# Usage for Evosuite (mutation-evosuite.sh):
+# Usage for EvoSuite (mutation-evosuite.sh):
 #   ./apply-build-patch.sh _ [subject-program]
 #   Here, the build-evosuite.patch and pom.patch files are applied.
 # 

@@ -1,12 +1,13 @@
 #!/bin/bash
 
-# This script installs JAR files from a specified directory (`libs`) into the local Maven repository,
-# and automatically adds them as dependencies to a `pom.xml` file.
+# For each .jar file in ./libs/, this script:
+#  * installs the .jar file into the local Maven repository and
+#  * adds it as a dependency to a `pom.xml` file.
 
-# Set the path to your libs directory
+# The path to the libs directory.
 LIBS_DIR="./libs"
 
-# Path to your pom.xml
+# The path to pom.xml.
 POM_FILE="./pom.xml"
 
 # Check if pom.xml exists
@@ -16,7 +17,7 @@ if [ ! -f "$POM_FILE" ]; then
 fi
 
 # Backup the pom.xml before modifying it
-cp "$POM_FILE" "build/$POM_FILE.bak"
+cp -pf "$POM_FILE" "build/$POM_FILE.bak"
 echo "Backup of pom.xml created at build/$POM_FILE.bak"
 
 # Define mappings from jar filenames to groupId and artifactId
@@ -33,9 +34,7 @@ artifactIdMap["hamcrest-core-1.3.jar"]="hamcrest-core"
 groupIdMap["evosuite-standalone-runtime-1.2.0.jar"]="org.evosuite"
 artifactIdMap["evosuite-standalone-runtime-1.2.0.jar"]="evosuite-standalone-runtime"
 
-# We can add more mappings as needed, though this is not necessary
 
-# Loop through each JAR file in the libs directory
 for jar in "$LIBS_DIR"/*.jar; do
     # Get the base filename without path
     filename=$(basename "$jar")
@@ -83,5 +82,4 @@ for jar in "$LIBS_DIR"/*.jar; do
     fi
 done
 
-# Print the final message
 echo "All JARs have been installed and dependencies added to pom.xml."
