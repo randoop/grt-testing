@@ -323,7 +323,7 @@ fi
 # Number of classes in given jar file.
 NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
 
-# Time limit for running EvoSuite.
+# Time limit for running the test generator.
 if [[ -n "$TOTAL_TIME" ]]; then
     TIME_LIMIT=$(( TOTAL_TIME / NUM_CLASSES ))
 elif [[ -n "$SECONDS_CLASS" ]]; then
