@@ -235,6 +235,8 @@ declare -A command_suffix=(
     # Bad inputs generated and caused infinite loops
     ["ClassViewer-5.0.5b"]="--specifications=project-specs/ClassViewer-5.0.5b-specs.json"
     # Bad inputs generated and caused infinite loops
+    ["commons-cli-1.2"]="--specifications=project-specs/commons-cli-1.2-specs.json"
+    # Bad inputs generated and caused infinite loops
     ["commons-lang3-3.0"]="--specifications=project-specs/commons-lang3-3.0-specs.json"
     # Null Image causes setIconImage to hang
     ["fixsuite-r48"]="--specifications=project-specs/fixsuite-r48-specs.json"
