@@ -230,32 +230,28 @@ randoop.main.Main gentests \
 --randomseed=0"
 
 # Add special command suffixes for certain projects.
-# TODO: Add more special cases as needed
 declare -A command_suffix=(
-    # Bad inputs generated and caused infinite loops
+    # Specify valid inputs to prevent infinite loops during test generation/execution
     ["ClassViewer-5.0.5b"]="--specifications=project-specs/ClassViewer-5.0.5b-specs.json"
-    # Bad inputs generated and caused infinite loops
     ["commons-cli-1.2"]="--specifications=project-specs/commons-cli-1.2-specs.json"
-    # Bad inputs generated and caused infinite loops
     ["commons-lang3-3.0"]="--specifications=project-specs/commons-lang3-3.0-specs.json"
-    # Null Image causes setIconImage to hang
     ["fixsuite-r48"]="--specifications=project-specs/fixsuite-r48-specs.json"
-    # An empty BlockingQueue was generated and used but never filled for take(), led to non-termination
     ["guava-16.0.1"]="--specifications=project-specs/guava-16.0.1-specs.json"
-    # Randoop generated bad test sequences for handling webserver lifecycle, don't test them
-    # ["javassist-3.19"]="--specifications=project-specs/javassist-3.19-specs.json"
-    ["javassist-3.19"]="--omit-methods=^javassist\.tools\.web\.Webserver\.run\(\)$ --omit-methods=^javassist\.tools\.rmi\.AppletServer\.run\(\)$"
-    # PrintStream.close() maybe called to close System.out, causing Randoop to fail
-    ["javax.mail-1.5.1"]="--omit-methods=^java\.io\.PrintStream\.close\(\)$|^java\.io\.FilterOutputStream\.close\(\)$|^java\.io\.OutputStream\.close\(\)$|^com\.sun\.mail\.util\.BASE64EncoderStream\.close\(\)$|^com\.sun\.mail\.util\.QEncoderStream\.close\(\)$|^com\.sun\.mail\.util\.QPEncoderStream\.close\(\)$|^com\.sun\.mail\.util\.UUEncoderStream\.close\(\)$"
-    # JDOMAbout cannot be found during test.compile, and the class itself isn't interesting
-    ["jdom-1.0"]="--omit-classes=^JDOMAbout$"
-    # Bad inputs generated and caused infinite loops
     ["jaxen-1.1.6"]="--specifications=project-specs/jaxen-1.1.6-specs.json"
-    # Bad inputs cause exceptions in different threads, directly terminating Randoop
     ["sat4j-core-2.3.5"]="--specifications=project-specs/sat4j-core-2.3.5-specs.json"
-    # Large inputs to perm take too much time
+
+    # Randoop generates bad sequences for handling webserver lifecycle, don't test them
+    ["javassist-3.19"]="--omit-methods=^javassist\.tools\.web\.Webserver\.run\(\)$ --omit-methods=^javassist\.tools\.rmi\.AppletServer\.run\(\)$"
+    # PrintStream.close() is called to close System.out during Randoop test generation.
+    # This will interrupt the test generation process. Omit the close() method.
+    ["javax.mail-1.5.1"]="--omit-methods=^java\.io\.PrintStream\.close\(\)$|^java\.io\.FilterOutputStream\.close\(\)$|^java\.io\.OutputStream\.close\(\)$|^com\.sun\.mail\.util\.BASE64EncoderStream\.close\(\)$|^com\.sun\.mail\.util\.QEncoderStream\.close\(\)$|^com\.sun\.mail\.util\.QPEncoderStream\.close\(\)$|^com\.sun\.mail\.util\.UUEncoderStream\.close\(\)$"
+    # JDOMAbout cannot be found during test.compile.
+    ["jdom-1.0"]="--omit-classes=^JDOMAbout$"
+
+    # Long execution time due to excessive computation for some inputs.
+    # Specify input range to reduce computation and test execution time.
     ["commons-collections4-4.0"]="--specifications=project-specs/commons-collections4-4.0-specs.json"
-    # Bad inputs generated and caused infinite loops
+    # Force termination if a test case takes too long to execute
     ["commons-math3-3.2"]="--usethreads=true"
 )
 
