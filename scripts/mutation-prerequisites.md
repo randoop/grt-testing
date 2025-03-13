@@ -23,6 +23,5 @@
 4. To get all subject programs, run:
    ```
    cd scripts
->>>>>>> main
    ./get-all-subject-src.sh
    ```
