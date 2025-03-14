@@ -395,18 +395,25 @@ do
         #===============================================================================
         echo
         echo "Compiling and mutating subject program..."
-        echo "($MAJOR_HOME/bin/ant -Dmutator=\"mml:$MAJOR_HOME/mml/all.mml.bin\" -Dsrc=\"$JAVA_SRC_DIR\" -lib \"$CLASSPATH\" clean compile)"
+        if [[ "$VERBOSE" -eq 1 ]]; then
+            echo "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" clean compile
+        fi
         echo
         "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" clean compile
 
         echo
         echo "Compiling tests..."
+        if [[ "$VERBOSE" -eq 1 ]]; then
+            echo "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" compile.tests
+        fi
         echo
         "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" compile.tests
 
         echo
         echo "Running tests with coverage..."
-        echo "($MAJOR_HOME/bin/ant -Dmutator=\"mml:$MAJOR_HOME/mml/all.mml.bin\" -Dtest=\"$TEST_DIRECTORY\" -Dsrc=\"$JAVA_SRC_DIR\" -lib \"$CLASSPATH\" test)"
+        if [[ "$VERBOSE" -eq 1 ]]; then
+            echo "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" test
+        fi
         echo
         "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" test
 
@@ -467,7 +474,6 @@ do
 
         # Move output files into the $RESULT_DIR directory.
         FILES_TO_MOVE=(
-            "suppression.log"
             "major.log"
             "mutants.log"
             "results/covMap.csv"
