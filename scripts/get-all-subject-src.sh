@@ -18,6 +18,9 @@ grt_clone() {
   else    
     echo " cloning."
     git clone -q git@github.com:randoop/grt-"$1" "$1"
+    cd "$1" || exit 2
+    git fetch -q origin include-major || true
+    cd ..
   fi
 }
 
