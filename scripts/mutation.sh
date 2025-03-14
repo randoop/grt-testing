@@ -264,9 +264,8 @@ echo "Modifying build.xml for $SUBJECT_PROGRAM..."
 
 (
     cd "$JAVA_SRC_DIR" || exit 1
-    if git rev-parse --verify include-major >/dev/null 2>&1; then
-        echo "Checking out include-major..."
-        git checkout include-major
+    if git checkout include-major >/dev/null 2>&1; then
+        echo "Checked out include-major."
     fi
 )
 
