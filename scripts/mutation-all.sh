@@ -9,33 +9,56 @@ REDIRECT=0
 TOTAL_TIME=""
 SECONDS_CLASS=""
 
+# Check for invalid combinations of command-line arguments
+for arg in "$@"; do
+  if [[ "$arg" =~ ^-[^-].* ]]; then
+    if [[ "$arg" =~ t ]] && [[ "$arg" =~ c ]]; then
+      echo "Options -t and -c cannot be used together in any form (e.g., -tc or -ct)."
+      exit 1
+    fi
+  fi
+done
+
 # Parse command-line arguments
 while getopts ":hvrt:c:" opt; do
   case ${opt} in
     h )
-      echo "Usage: mutation-all.sh [-h] [-v] [-r] [-t total_time] [-c time_per_class]"
+      # Display help message
+      echo "$USAGE_STRING"
       exit 0
       ;;
     v )
+      # Verbose mode
       VERBOSE=1
       ;;
     r )
+      # Redirect output to a log file
       REDIRECT=1
       ;;
     t )
+      # If -c has already been set, error out.
+      if [ -n "$SECONDS_CLASS" ]; then
+        echo "Options -t and -c cannot be used together in any form (e.g., -t a -c b)."
+        exit 1
+      fi
       TOTAL_TIME="$OPTARG"
       ;;
     c )
+      # If -t has already been set, error out.
+      if [ -n "$TOTAL_TIME" ]; then
+        echo "Options -t and -c cannot be used together in any form (e.g., -c a -t b)."
+        exit 1
+      fi
       SECONDS_CLASS="$OPTARG"
       ;;
     \? )
       echo "Invalid option: -$OPTARG" >&2
-      echo "Usage: mutation.sh [-v] [-r] [-t total_time] [-c time_per_class] <test case name>"
+      echo "$USAGE_STRING"
       exit 1
       ;;
     : )
       echo "Option -$OPTARG requires an argument." >&2
-      echo "Usage: mutation.sh [-v] [-r] [-t total_time] [-c time_per_class] <test case name>"
+      echo "$USAGE_STRING"
       exit 1
       ;;
   esac

@@ -38,7 +38,7 @@ JACOCO_AGENT_JAR=$(realpath "${SCRIPT_DIR}/build/jacocoagent.jar") # For Bloodho
 JACOCO_CLI_JAR=$(realpath "${SCRIPT_DIR}/build/jacococli.jar") # For coverage report generation
 REPLACECALL_JAR=$(realpath "build/replacecall-4.3.3.jar") # For replacing undesired method calls
 
-. ${SCRIPT_DIR}/usejdk.sh
+. "${SCRIPT_DIR}/usejdk.sh"
 
 
 #===============================================================================
@@ -49,6 +49,7 @@ SECONDS_CLASS="2"      # Default seconds per class.
                        # 2 s/class, 10 s/class, 30 s/class, and 60 s/class.
 
 TOTAL_TIME=""          # Total experiment time, mutually exclusive with SECONDS_CLASS
+SECONDS_CLASS=""       # Seconds per class, mutually exclusive with TOTAL_TIME
 NUM_LOOP=1             # Number of experiment runs (10 in GRT paper)
 VERBOSE=0              # Verbose option
 REDIRECT=0             # Redirect output to mutation_output.txt
@@ -63,10 +64,6 @@ for arg in "$@"; do
     fi
   fi
 done
-
-# Initialize variables
-TOTAL_TIME=""
-SECONDS_CLASS=""
 
 # Parse command-line arguments
 while getopts ":hvrt:c:" opt; do
@@ -130,7 +127,7 @@ echo "Running mutation test on $1"
 echo
 
 #===============================================================================
-# Project Paths & Dependencies
+# Program Paths & Dependencies
 #===============================================================================
 
 # Path to the base directory of the source code
@@ -152,8 +149,8 @@ fi
 echo "TIME_LIMIT: $TIME_LIMIT seconds"
 echo
 
-# Map test case to their respective source
-declare -A project_src=(
+# Map subject programs to their source directories
+declare -A program_src=(
     ["a4j-1.0b"]="/src/"
     ["asm-5.0.1"]="/src/"
     ["bcel-5.2"]="/src/"
@@ -170,10 +167,10 @@ declare -A project_src=(
     ["shiro-core-1.2.3"]="/core/"
     ["slf4j-api-1.7.12"]="/slf4j-api"
 )
-JAVA_SRC_DIR=$SRC_BASE_DIR${project_src[$SUBJECT_PROGRAM]}
+JAVA_SRC_DIR=$SRC_BASE_DIR${program_src[$SUBJECT_PROGRAM]}
 
-# Map project names to their respective dependencies
-declare -A project_deps=(
+# Map subject programs to their dependencies
+declare -A program_deps=(
     ["a4j-1.0b"]="$SRC_BASE_DIR/jars/"
     ["fixsuite-r48"]="$SRC_BASE_DIR/lib/jdom.jar:$SRC_BASE_DIR/lib/log4j-1.2.15.jar:$SRC_BASE_DIR/lib/slf4j-api-1.5.0.jar:$SRC_BASE_DIR/lib/slf4j-log4j12-1.5.0.jar"
     ["jdom-1.0"]="$MAJOR_HOME/lib/ant:$SRC_BASE_DIR/lib/"
@@ -184,7 +181,7 @@ declare -A project_deps=(
 )
 #   ["hamcrest-core-1.3"]="$SRC_BASE_DIR/lib/"  this one needs changes?
 
-CLASSPATH=${project_deps[$SUBJECT_PROGRAM]}
+CLASSPATH=${program_deps[$SUBJECT_PROGRAM]}
 
 LIB_ARG=""
 if [[ $CLASSPATH ]]; then
@@ -202,11 +199,11 @@ fi
 # Method Call Replacement Setup
 #===============================================================================
 # Path to the replacement file for replacecall
-REPLACEMENT_FILE_PATH="project-config/$SUBJECT_PROGRAM/replacecall-replacements.txt"
+REPLACEMENT_FILE_PATH="program-config/$SUBJECT_PROGRAM/replacecall-replacements.txt"
 
 # Configure method call replacements to avoid undesired behaviors during test
 # generation.
-# Map project names to their respective replacement files.
+# Map subject programs to their respective replacement files.
 declare -A replacement_files=(
      # Do not wait for user input
      ["jcommander-1.35"]="=--replacement_file=$REPLACEMENT_FILE_PATH"
@@ -229,16 +226,16 @@ randoop.main.Main gentests \
 --no-error-revealing-tests=true \
 --randomseed=0"
 
-# Add special command suffixes for certain projects.
+# Add special command suffixes for specific subject programs
 declare -A command_suffix=(
     # Specify valid inputs to prevent infinite loops during test generation/execution
-    ["ClassViewer-5.0.5b"]="--specifications=project-specs/ClassViewer-5.0.5b-specs.json"
-    ["commons-cli-1.2"]="--specifications=project-specs/commons-cli-1.2-specs.json"
-    ["commons-lang3-3.0"]="--specifications=project-specs/commons-lang3-3.0-specs.json"
-    ["fixsuite-r48"]="--specifications=project-specs/fixsuite-r48-specs.json"
-    ["guava-16.0.1"]="--specifications=project-specs/guava-16.0.1-specs.json"
-    ["jaxen-1.1.6"]="--specifications=project-specs/jaxen-1.1.6-specs.json"
-    ["sat4j-core-2.3.5"]="--specifications=project-specs/sat4j-core-2.3.5-specs.json"
+    ["ClassViewer-5.0.5b"]="--specifications=program-specs/ClassViewer-5.0.5b-specs.json"
+    ["commons-cli-1.2"]="--specifications=program-specs/commons-cli-1.2-specs.json"
+    ["commons-lang3-3.0"]="--specifications=program-specs/commons-lang3-3.0-specs.json"
+    ["fixsuite-r48"]="--specifications=program-specs/fixsuite-r48-specs.json"
+    ["guava-16.0.1"]="--specifications=program-specs/guava-16.0.1-specs.json"
+    ["jaxen-1.1.6"]="--specifications=program-specs/jaxen-1.1.6-specs.json"
+    ["sat4j-core-2.3.5"]="--specifications=program-specs/sat4j-core-2.3.5-specs.json"
 
     # Randoop generates bad sequences for handling webserver lifecycle, don't test them
     ["javassist-3.19"]="--omit-methods=^javassist\.tools\.web\.Webserver\.run\(\)$ --omit-methods=^javassist\.tools\.rmi\.AppletServer\.run\(\)$"
@@ -250,7 +247,7 @@ declare -A command_suffix=(
 
     # Long execution time due to excessive computation for some inputs.
     # Specify input range to reduce computation and test execution time.
-    ["commons-collections4-4.0"]="--specifications=project-specs/commons-collections4-4.0-specs.json"
+    ["commons-collections4-4.0"]="--specifications=program-specs/commons-collections4-4.0-specs.json"
     # Force termination if a test case takes too long to execute
     ["commons-math3-3.2"]="--usethreads=true"
 )
@@ -397,7 +394,7 @@ do
         # Coverage & Mutation Analysis
         #===============================================================================
         echo
-        echo "Compiling and mutating project..."
+        echo "Compiling and mutating subject program..."
         echo "($MAJOR_HOME/bin/ant -Dmutator=\"mml:$MAJOR_HOME/mml/all.mml.bin\" -Dsrc=\"$JAVA_SRC_DIR\" -lib \"$CLASSPATH\" clean compile)"
         echo
         "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" clean compile

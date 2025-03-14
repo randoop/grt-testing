@@ -1,17 +1,17 @@
 #!/bin/bash
 # This script restores the original build.xml or applies a build.patch if provided.
-# Usage: ./script.sh [subject-program]
-# If a program name is not supplied, it restores build.xml to its default state.
+# Usage: ./apply-build-patch.sh [subject-program]
+# It restores the original build.xml if no subject-program is provided.
 
 # Restore the original build.xml before looking for a patch
-cp project-config/build.xml build.xml
+cp program-config/build.xml build.xml
 
 # Check if a subject-program is provided
 if [ -n "$1" ]; then
-  # Check if build.patch exists in 'project-config/subject-program'
-  if [ -f "project-config/$1/build.patch" ]; then
-    echo "build.patch found in project-config/$1. Applying patch to build.xml..."
-    patch build.xml < "project-config/$1/build.patch" 1>/dev/null
+  # Check if build.patch exists in 'program-config/subject-program'
+  if [ -f "program-config/$1/build.patch" ]; then
+    echo "build.patch found in program-config/$1. Applying patch to build.xml..."
+    patch build.xml < "program-config/$1/build.patch" 1>/dev/null
     rm -f build.xml.orig
   else
     echo "No build.patch found in build-variants/$1."
