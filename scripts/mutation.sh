@@ -314,6 +314,15 @@ for i in $(seq 1 $NUM_LOOP)
 do
     for RANDOOP_FEATURE in "${RANDOOP_FEATURES[@]}"
     do
+        TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+        # Test directory for each iteration.
+        TEST_DIRECTORY="$SCRIPT_DIR/build/test/$FEATURE_NAME/$TIMESTAMP"
+        mkdir -p "$TEST_DIRECTORY"
+
+        # Result directory for each test generation and execution.
+        RESULT_DIR="$SCRIPT_DIR/results/$1-$FEATURE_NAME-$TIMESTAMP"
+        mkdir -p "$RESULT_DIR"
+
         # Check if output needs to be redirected for this loop.
         # If the REDIRECT flag is set, redirect all output to a log file for this iteration.
         if [[ "$REDIRECT" -eq 1 ]]; then
@@ -332,15 +341,6 @@ do
 
         echo "Using $FEATURE_NAME"
         echo
-
-        TIMESTAMP=$(date +%Y%m%d-%H%M%S)
-        # Test directory for each iteration.
-        TEST_DIRECTORY="$SCRIPT_DIR/build/test/$FEATURE_NAME/$TIMESTAMP"
-        mkdir -p "$TEST_DIRECTORY"
-
-        # Result directory for each test generation and execution.
-        RESULTS_DIR="$SCRIPT_DIR/results/$1-$FEATURE_NAME-$TIMESTAMP"
-        mkdir -p "$RESULTS_DIR"
 
         RANDOOP_COMMAND_2="$RANDOOP_COMMAND --junit-output-dir=$TEST_DIRECTORY"
 
@@ -410,25 +410,24 @@ do
         echo
         "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" test
 
-        mv jacoco.exec "$RESULTS_DIR"
-        java -jar "$JACOCO_CLI_JAR" report "$RESULTS_DIR/jacoco.exec" --classfiles "$SRC_JAR" --sourcefiles "$JAVA_SRC_DIR" --csv "$RESULTS_DIR"/report.csv
+        mv jacoco.exec "$RESULT_DIR"
+
+        java -jar "$JACOCO_CLI_JAR" report "$RESULT_DIR/jacoco.exec" --classfiles "$SRC_JAR" --sourcefiles "$JAVA_SRC_DIR" --csv "$RESULT_DIR"/report.csv
 
         # Calculate Instruction Coverage
-        inst_missed=$(awk -F, 'NR>1 {sum+=$4} END {print sum}' "$RESULTS_DIR"/report.csv)
-        inst_covered=$(awk -F, 'NR>1 {sum+=$5} END {print sum}' "$RESULTS_DIR"/report.csv)
+        inst_missed=$(awk -F, 'NR>1 {sum+=$4} END {print sum}' "$RESULT_DIR"/report.csv)
+        inst_covered=$(awk -F, 'NR>1 {sum+=$5} END {print sum}' "$RESULT_DIR"/report.csv)
         instruction_coverage=$(echo "scale=4; $inst_covered / ($inst_missed + $inst_covered) * 100" | bc)
         instruction_coverage=$(printf "%.2f" "$instruction_coverage")
 
         # Calculate Branch Coverage
-        branch_missed=$(awk -F, 'NR>1 {sum+=$6} END {print sum}' "$RESULTS_DIR"/report.csv)
-        branch_covered=$(awk -F, 'NR>1 {sum+=$7} END {print sum}' "$RESULTS_DIR"/report.csv)
+        branch_missed=$(awk -F, 'NR>1 {sum+=$6} END {print sum}' "$RESULT_DIR"/report.csv)
+        branch_covered=$(awk -F, 'NR>1 {sum+=$7} END {print sum}' "$RESULT_DIR"/report.csv)
         branch_coverage=$(echo "scale=4; $branch_covered / ($branch_missed + $branch_covered) * 100" | bc)
         branch_coverage=$(printf "%.2f" "$branch_coverage")
 
         echo "Instruction Coverage: $instruction_coverage%"
         echo "Branch Coverage: $branch_coverage%"
-
-        mv results/report.csv "$RESULT_DIR"
 
         echo
         echo "Running tests with mutation analysis..."
@@ -439,19 +438,17 @@ do
         echo
         "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
 
-        mv results/summary.csv "$RESULTS_DIR"
+        mv results/summary.csv "$RESULT_DIR"
 
         # Calculate Mutation Score
-        mutants_covered=$(awk -F, 'NR==2 {print $3}' "$RESULTS_DIR"/summary.csv)
-        mutants_killed=$(awk -F, 'NR==2 {print $4}' "$RESULTS_DIR"/summary.csv)
+        mutants_covered=$(awk -F, 'NR==2 {print $3}' "$RESULT_DIR"/summary.csv)
+        mutants_killed=$(awk -F, 'NR==2 {print $4}' "$RESULT_DIR"/summary.csv)
         mutation_score=$(echo "scale=4; $mutants_killed / $mutants_covered * 100" | bc)
         mutation_score=$(printf "%.2f" "$mutation_score")
 
         echo "Instruction Coverage: $instruction_coverage%"
         echo "Branch Coverage: $branch_coverage%"
         echo "Mutation Score: $mutation_score%"
-
-        mv results/summary.csv "$RESULT_DIR"
 
         row="$FEATURE_NAME,$(basename "$SRC_JAR"),$TIME_LIMIT,0,$instruction_coverage%,$branch_coverage%,$mutation_score%"
         # info.csv contains a record of each pass.
@@ -468,7 +465,7 @@ do
             exec 3>&- 4>&-
         fi
 
-        # Move output files into the $RESULTS_DIR directory.
+        # Move output files into the $RESULT_DIR directory.
         FILES_TO_MOVE=(
             "suppression.log"
             "major.log"
@@ -478,7 +475,7 @@ do
             "results/preprocessing.ser"
             "results/testMap.csv"
         )
-        mv "${FILES_TO_MOVE[@]}" "$RESULTS_DIR"
+        mv "${FILES_TO_MOVE[@]}" "$RESULT_DIR"
     done
 done
 
