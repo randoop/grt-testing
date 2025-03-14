@@ -1,7 +1,7 @@
 #!/bin/bash
 # This script restores the original build.xml or applies a build.patch if provided.
-# Usage: ./script.sh [subject-program]
-# If a program name is not supplied, it restores build.xml to its default state.
+# Usage: ./apply-build-patch.sh [subject-program]
+# It restores the original build.xml if no subject-program is provided.
 
 # Restore the original build.xml before looking for a patch
 cp program-config/build.xml build.xml
