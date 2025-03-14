@@ -262,12 +262,10 @@ RANDOOP_COMMAND="$RANDOOP_BASE_COMMAND ${command_suffix[$SUBJECT_PROGRAM]}"
 echo "Modifying build.xml for $SUBJECT_PROGRAM..."
 ./apply-build-patch.sh "$SUBJECT_PROGRAM"
 
-(
-    cd "$JAVA_SRC_DIR" || exit 1
-    if git checkout include-major >/dev/null 2>&1; then
-        echo "Checked out include-major."
-    fi
-)
+cd "$JAVA_SRC_DIR" || exit 1
+if git checkout include-major >/dev/null 2>&1; then
+    echo "Checked out include-major."
+fi
 
 echo
 
