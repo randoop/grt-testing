@@ -78,25 +78,25 @@ METHOD_SELECTION_ARG=""
 me=$(basename "$0")
 echo Running $me
 
-if [[ $me == *"MinCoverageFirst"* || $me == *"GRT"* ]]; then
+if [[ $me != *"GRTMinusMinCoverageFirst"* && ($me == *"MinCoverageFirst"* || $me == *"GRT"*) ]]; then
 BOOT_CLASS_PATH_ARG="$BOOT_CLASS_PATH_ARG:$D4J_DIR_TESTGEN_LIB/jacocoagent.jar"
 EXTRA_JAVA_AGENT_ARG="-javaagent:$D4J_DIR_TESTGEN_LIB/jacocoagent.jar"
 METHOD_SELECTION_ARG="--method-selection=BLOODHOUND"
 fi
 
-if [[ $me == *"MinCostFirst"* || $me == *"GRT"* ]]; then
+if [[ $me != *"GRTMinusMinCostFirst"* && ($me == *"MinCostFirst"* || $me == *"GRT"*) ]]; then
 BOOT_CLASS_PATH_ARG="$BOOT_CLASS_PATH_ARG:$D4J_DIR_TESTGEN_LIB/jacocoagent.jar"
 EXTRA_JAVA_AGENT_ARG="-javaagent:$D4J_DIR_TESTGEN_LIB/jacocoagent.jar"
 INPUT_SELECTION_ARG="--input-selection=ORIENTEERING"
 fi
 
-if [[ $me == *"DynamicTyping"* || $me == *"GRT"* ]]; then
+if [[ $me != *"GRTMinusDynamicTyping"* && ($me == *"DynamicTyping"* || $me == *"GRT"*) ]]; then
 BOOT_CLASS_PATH_ARG="$BOOT_CLASS_PATH_ARG:$D4J_DIR_TESTGEN_LIB/jacocoagent.jar"
 EXTRA_JAVA_AGENT_ARG="-javaagent:$D4J_DIR_TESTGEN_LIB/jacocoagent.jar"
 RUN_TIME_CAST_ARG="--cast_to_run_time_type=true"
 fi
 
-if [[ $me == *"InputConstruction"* || $me == *"GRT"* ]]; then
+if [[ $me != *"GRTMinusInputConstruction"* && ($me == *"InputConstruction"* || $me == *"GRT"*) ]]; then
 BOOT_CLASS_PATH_ARG="$BOOT_CLASS_PATH_ARG:$D4J_DIR_TESTGEN_LIB/jacocoagent.jar"
 EXTRA_JAVA_AGENT_ARG="-javaagent:$D4J_DIR_TESTGEN_LIB/jacocoagent.jar"
 INPUT_CONSTRUCTION_ARG="--demand_driven=true"

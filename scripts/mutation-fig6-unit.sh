@@ -21,6 +21,10 @@
 # - `results/info.csv`: statistics about each iteration.
 # - 'results/`: everything else specific to the most recent iteration.
 
+#     ./mutation-fig6-unit.sh -c "$seconds" -g "$generator" "$program"
+# accept -g arg
+# invoke correct params for randoop or evosuite: use generator/setup.sh file?
+
 
 # Fail this script on errors.
 set -e
@@ -57,6 +61,7 @@ usejdk11() {
 #===============================================================================
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+GENERATOR_DIR="$SCRIPT_DIR/generators"
 MAJOR_HOME=$(realpath "build/major/") # Major home directory, for mutation testing
 CURR_DIR=$(realpath "$(pwd)")
 RANDOOP_JAR=$(realpath "build/randoop-all-4.3.3.jar") # Randoop jar file
@@ -91,9 +96,10 @@ done
 # Initialize variables
 TOTAL_TIME=""
 SECONDS_CLASS=""
+GENERATOR=""
 
 # Parse command-line arguments
-while getopts ":hvrt:c:" opt; do
+while getopts ":hvrt:c:g:" opt; do
   case ${opt} in
     h )
       # Display help message
@@ -124,6 +130,9 @@ while getopts ":hvrt:c:" opt; do
       fi
       SECONDS_CLASS="$OPTARG"
       ;;
+    g )
+      GENERATOR="$OPTARG"
+      ;;
     \? )
       echo "Invalid option: -$OPTARG" >&2
       echo "$USAGE_STRING"
@@ -150,7 +159,7 @@ else
     ANT="ant"
 fi
 
-echo "Running mutation test on $1"
+echo "Running mutation test on $1 on generator $GENERATOR"
 echo
 
 #===============================================================================
