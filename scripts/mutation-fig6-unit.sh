@@ -131,6 +131,10 @@ while getopts ":hvrt:c:g:" opt; do
       SECONDS_CLASS="$OPTARG"
       ;;
     g )
+      if [[ ! -f "$DIR/$FILENAME" ]]; then
+        echo "Invalid generator. See $GENERATOR_DIR/*.sh for valid generators"
+        exit 1
+      fi
       GENERATOR="$OPTARG"
       ;;
     \? )
@@ -248,19 +252,18 @@ REPLACECALL_COMMAND="$REPLACECALL_JAR${replacement_files[$SUBJECT_PROGRAM]}"
 
 
 #===============================================================================
-# Randoop Command Configuration
+# Generator Command Configuration
 #===============================================================================
-RANDOOP_BASE_COMMAND="java \
--Xbootclasspath/a:$JACOCO_AGENT_JAR:$REPLACECALL_JAR \
--javaagent:$JACOCO_AGENT_JAR \
--javaagent:$REPLACECALL_COMMAND \
--classpath $CLASSPATH*:$SRC_JAR:$RANDOOP_JAR \
-randoop.main.Main gentests \
---testjar=$SRC_JAR \
---time-limit=$TIME_LIMIT \
---deterministic=false \
---no-error-revealing-tests=true \
---randomseed=0"
+export JACOCO_AGENT_JAR     
+export REPLACECALL_JAR      
+export REPLACECALL_COMMAND  
+export CLASSPATH           
+export SRC_JAR               
+export RANDOOP_JAR         
+export TIME_LIMIT       
+
+GENERATOR_BASE_COMMAND=$(bash $GENERATOR_DIR/$GENERATOR.sh)
+echo "Java BASE COMMAND = $OUTPUT"
 
 # Add special command suffixes for certain projects.
 # TODO: Add more special cases as needed
@@ -290,7 +293,7 @@ declare -A command_suffix=(
     ["commons-math3-3.2"]="--usethreads=true"
 )
 
-RANDOOP_COMMAND="$RANDOOP_BASE_COMMAND ${command_suffix[$SUBJECT_PROGRAM]}"
+GENERATOR_COMMAND="$GENERATOR_BASE_COMMAND ${command_suffix[$SUBJECT_PROGRAM]}"
 
 
 #===============================================================================
@@ -319,197 +322,122 @@ fi
 
 
 #===============================================================================
-# Randoop Feature Selection
-#===============================================================================
-
-# The feature names must not contain whitespace.
-ALL_RANDOOP_FEATURES=("BASELINE" "BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
-# The different features of Randoop to use. Adjust according to the features you are testing.
-RANDOOP_FEATURES=("BASELINE") #"BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
-
-# ABLATION controls whether to perform feature ablation studies.
-# If false, the script tests the Randoop features specified in the RANDOOP_FEATURES array.
-# If true, each run tests all Randoop features except the one specified in the RANDOOP_FEATURES array.
-ABLATION=false
-
-# Ensure the given features are are recognized and supported by the script.
-for RANDOOP_FEATURE in "${RANDOOP_FEATURES[@]}" ; do
-    if [[ ! " ${ALL_RANDOOP_FEATURES[*]} " =~ [[:space:]]${RANDOOP_FEATURE}[[:space:]] ]]; then
-        echo "$RANDOOP_FEATURE" is not in "${RANDOOP_FEATURES[@]}"
-        exit 2
-    fi
-done
-
-
-#===============================================================================
 # Test Generation & Execution
 #===============================================================================
 
 # shellcheck disable=SC2034 # i counts iterations but is not otherwise used.
 for i in $(seq 1 $NUM_LOOP)
 do
-    for RANDOOP_FEATURE in "${RANDOOP_FEATURES[@]}"
-    do
 
-        # Check if output needs to be redirected for this loop.
-        # If the REDIRECT flag is set, redirect all output to a log file for this iteration.
-        if [[ "$REDIRECT" -eq 1 ]]; then
-            touch mutation_output.txt
-            echo "Redirecting output to $RESULT_DIR/mutation_output.txt..."
-            exec 3>&1 4>&2
-            exec 1>>"mutation_output.txt" 2>&1
-        fi
+    # Check if output needs to be redirected for this loop.
+    # If the REDIRECT flag is set, redirect all output to a log file for this iteration.
+    if [[ "$REDIRECT" -eq 1 ]]; then
+        touch mutation_output.txt
+        echo "Redirecting output to $RESULT_DIR/mutation_output.txt..."
+        exec 3>&1 4>&2
+        exec 1>>"mutation_output.txt" 2>&1
+    fi
 
-        FEATURE_NAME=""
-        if [[ "$ABLATION" == "true" ]]; then
-            FEATURE_NAME="ALL-EXCEPT-$RANDOOP_FEATURE"
-        else
-            FEATURE_NAME="$RANDOOP_FEATURE"
-        fi
+    rm -rf "$CURR_DIR"/build/test*
+    echo "Using $GENERATOR"
+    echo
+    TEST_DIRECTORY="$CURR_DIR/build/test/$GENERATOR"
+    mkdir -p "$TEST_DIRECTORY"
 
-        rm -rf "$CURR_DIR"/build/test*
-        echo "Using $FEATURE_NAME"
-        echo
-        TEST_DIRECTORY="$CURR_DIR/build/test/$FEATURE_NAME"
-        mkdir -p "$TEST_DIRECTORY"
+    GENERATOR_COMMAND_2="$GENERATOR_COMMAND --junit-output-dir=$TEST_DIRECTORY"
 
-        RANDOOP_COMMAND_2="$RANDOOP_COMMAND --junit-output-dir=$TEST_DIRECTORY"
+    usejdk11
+    $GENERATOR_COMMAND_2
+    usejdk8
 
-        # Bloodhound
-        if [[ ( "$RANDOOP_FEATURE" == "BLOODHOUND" && "$ABLATION" != "true" ) || ( "$RANDOOP_FEATURE" != "BLOODHOUND" && "$ABLATION" == "true" ) ]]; then
-            RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2 --method-selection=BLOODHOUND"
-        fi
+    #===============================================================================
+    # Coverage & Mutation Analysis
+    #===============================================================================
 
-        # Baseline
-        if [[ ( "$RANDOOP_FEATURE" == "BASELINE" && "$ABLATION" != "true" ) || ( "$RANDOOP_FEATURE" != "BASELINE" && "$ABLATION" == "true" ) ]]; then
-            ## There is nothing to do in this case.
-            # RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2"
-            true
-        fi
+    RESULT_DIR="results/$(date +%Y%m%d-%H%M%S)-$GENERATOR-$SUBJECT_PROGRAM"
+    mkdir -p "$RESULT_DIR"
 
-        # Orienteering
-        if [[ ( "$RANDOOP_FEATURE" == "ORIENTEERING" && "$ABLATION" != "true" ) || ( "$RANDOOP_FEATURE" != "ORIENTEERING" && "$ABLATION" == "true" ) ]]; then
-            RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2 --input-selection=ORIENTEERING"
-        fi
+    echo
+    echo "Compiling and mutating project..."
+    if [[ "$VERBOSE" -eq 1 ]]; then
+        echo command:
+        echo "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" clean compile
+    fi
+    echo
+    "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" clean compile
 
-        # Bloodhound and Orienteering
-        if [[ ( "$RANDOOP_FEATURE" == "BLOODHOUND_AND_ORIENTEERING" && "$ABLATION" != "true" ) || ( "$RANDOOP_FEATURE" != "BLOODHOUND_AND_ORIENTEERING" && "$ABLATION" == "true" ) ]]; then
-            RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2 --input-selection=ORIENTEERING --method-selection=BLOODHOUND"
-        fi
+    echo
+    echo "Compiling tests..."
+    if [[ "$VERBOSE" -eq 1 ]]; then
+        echo command:
+        echo "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" compile.tests
+    fi
+    echo
+    "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" compile.tests
 
-        # Detective (Demand-Driven)
-        if [[ ( "$RANDOOP_FEATURE" == "DETECTIVE" && "$ABLATION" != "true" ) || ( "$RANDOOP_FEATURE" != "DETECTIVE" && "$ABLATION" == "true" ) ]]; then
-            RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2 --demand-driven=true"
-        fi
+    echo
+    echo "Running tests with coverage..."
+    if [[ "$VERBOSE" -eq 1 ]]; then
+        echo command:
+        echo "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" test
+    fi
+    echo
+    "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" test
+    mv jacoco.exec results
+    java -jar "$JACOCO_CLI_JAR" report "results/jacoco.exec" --classfiles "$SRC_JAR" --sourcefiles "$JAVA_SRC_DIR" --csv results/report.csv
 
-        # GRT Fuzzing
-        if [[ ( "$RANDOOP_FEATURE" == "GRT_FUZZING" && "$ABLATION" != "true" ) || ( "$RANDOOP_FEATURE" != "GRT_FUZZING" && "$ABLATION" == "true" ) ]]; then
-            RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2 --grt-fuzzing=true"
-        fi
+    # Calculate Instruction Coverage
+    inst_missed=$(awk -F, 'NR>1 {sum+=$4} END {print sum}' results/report.csv)
+    inst_covered=$(awk -F, 'NR>1 {sum+=$5} END {print sum}' results/report.csv)
+    instruction_coverage=$(echo "scale=4; $inst_covered / ($inst_missed + $inst_covered) * 100" | bc)
+    instruction_coverage=$(printf "%.2f" "$instruction_coverage")
 
-        # Elephant Brain
-        if [[ ( "$RANDOOP_FEATURE" == "ELEPHANT_BRAIN" && "$ABLATION" != "true" ) || ( "$RANDOOP_FEATURE" != "ELEPHANT_BRAIN" && "$ABLATION" == "true" ) ]]; then
-            RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2 --elephant-brain=true"
-        fi
+    # Calculate Branch Coverage
+    branch_missed=$(awk -F, 'NR>1 {sum+=$6} END {print sum}' results/report.csv)
+    branch_covered=$(awk -F, 'NR>1 {sum+=$7} END {print sum}' results/report.csv)
+    branch_coverage=$(echo "scale=4; $branch_covered / ($branch_missed + $branch_covered) * 100" | bc)
+    branch_coverage=$(printf "%.2f" "$branch_coverage")
 
-        # Constant Mining
-        if [[ ( "$RANDOOP_FEATURE" == "CONSTANT_MINING" && "$ABLATION" != "true" ) || ( "$RANDOOP_FEATURE" != "CONSTANT_MINING" && "$ABLATION" == "true" ) ]]; then
-            RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2 --constant-mining=true"
-        fi
+    echo "Instruction Coverage: $instruction_coverage%"
+    echo "Branch Coverage: $branch_coverage%"
 
-        usejdk11
-        $RANDOOP_COMMAND_2
-        usejdk8
+    mv results/report.csv "$RESULT_DIR"
 
-        #===============================================================================
-        # Coverage & Mutation Analysis
-        #===============================================================================
+    echo
+    echo "Running tests with mutation analysis..."
+    if [[ "$VERBOSE" -eq 1 ]]; then
+        echo command:
+        echo "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
+    fi
+    echo
+    "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
 
-        RESULT_DIR="results/$(date +%Y%m%d-%H%M%S)-$FEATURE_NAME-$SUBJECT_PROGRAM"
-        mkdir -p "$RESULT_DIR"
+    # Calculate Mutation Score
+    mutants_covered=$(awk -F, 'NR==2 {print $3}' results/summary.csv)
+    mutants_killed=$(awk -F, 'NR==2 {print $4}' results/summary.csv)
+    mutation_score=$(echo "scale=4; $mutants_killed / $mutants_covered * 100" | bc)
+    mutation_score=$(printf "%.2f" "$mutation_score")
 
-        echo
-        echo "Compiling and mutating project..."
-        if [[ "$VERBOSE" -eq 1 ]]; then
-            echo command:
-            echo "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" clean compile
-        fi
-        echo
-        "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" clean compile
+    echo "Instruction Coverage: $instruction_coverage%"
+    echo "Branch Coverage: $branch_coverage%"
+    echo "Mutation Score: $mutation_score%"
 
-        echo
-        echo "Compiling tests..."
-        if [[ "$VERBOSE" -eq 1 ]]; then
-            echo command:
-            echo "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" compile.tests
-        fi
-        echo
-        "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" compile.tests
+    mv results/summary.csv "$RESULT_DIR"
 
-        echo
-        echo "Running tests with coverage..."
-        if [[ "$VERBOSE" -eq 1 ]]; then
-            echo command:
-            echo "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" test
-        fi
-        echo
-        "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" test
-        mv jacoco.exec results
-        java -jar "$JACOCO_CLI_JAR" report "results/jacoco.exec" --classfiles "$SRC_JAR" --sourcefiles "$JAVA_SRC_DIR" --csv results/report.csv
+    row="$GENERATOR,$(basename "$SRC_JAR"),$TIME_LIMIT,0,$instruction_coverage%,$branch_coverage%,$mutation_score%"
+    # info.csv contains a record of each pass.
+    echo -e "$row" >> results/info.csv
 
-        # Calculate Instruction Coverage
-        inst_missed=$(awk -F, 'NR>1 {sum+=$4} END {print sum}' results/report.csv)
-        inst_covered=$(awk -F, 'NR>1 {sum+=$5} END {print sum}' results/report.csv)
-        instruction_coverage=$(echo "scale=4; $inst_covered / ($inst_missed + $inst_covered) * 100" | bc)
-        instruction_coverage=$(printf "%.2f" "$instruction_coverage")
+    # Copy the test suites to results directory
+    echo "Copying test suites to results directory..."
+    cp -r "$TEST_DIRECTORY" "$RESULT_DIR"
 
-        # Calculate Branch Coverage
-        branch_missed=$(awk -F, 'NR>1 {sum+=$6} END {print sum}' results/report.csv)
-        branch_covered=$(awk -F, 'NR>1 {sum+=$7} END {print sum}' results/report.csv)
-        branch_coverage=$(echo "scale=4; $branch_covered / ($branch_missed + $branch_covered) * 100" | bc)
-        branch_coverage=$(printf "%.2f" "$branch_coverage")
-
-        echo "Instruction Coverage: $instruction_coverage%"
-        echo "Branch Coverage: $branch_coverage%"
-
-        mv results/report.csv "$RESULT_DIR"
-
-        echo
-        echo "Running tests with mutation analysis..."
-        if [[ "$VERBOSE" -eq 1 ]]; then
-            echo command:
-            echo "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
-        fi
-        echo
-        "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
-
-        # Calculate Mutation Score
-        mutants_covered=$(awk -F, 'NR==2 {print $3}' results/summary.csv)
-        mutants_killed=$(awk -F, 'NR==2 {print $4}' results/summary.csv)
-        mutation_score=$(echo "scale=4; $mutants_killed / $mutants_covered * 100" | bc)
-        mutation_score=$(printf "%.2f" "$mutation_score")
-
-        echo "Instruction Coverage: $instruction_coverage%"
-        echo "Branch Coverage: $branch_coverage%"
-        echo "Mutation Score: $mutation_score%"
-
-        mv results/summary.csv "$RESULT_DIR"
-
-        row="$FEATURE_NAME,$(basename "$SRC_JAR"),$TIME_LIMIT,0,$instruction_coverage%,$branch_coverage%,$mutation_score%"
-        # info.csv contains a record of each pass.
-        echo -e "$row" >> results/info.csv
-
-        # Copy the test suites to results directory
-        echo "Copying test suites to results directory..."
-        cp -r "$TEST_DIRECTORY" "$RESULT_DIR"
-
-        if [[ "$REDIRECT" -eq 1 ]]; then
-            echo "Move mutation_output to results directory..."
-            mv mutation_output.txt "$RESULT_DIR"
-            exec 1>&3 2>&4
-            exec 3>&- 4>&-
-        fi
-    done
+    if [[ "$REDIRECT" -eq 1 ]]; then
+        echo "Move mutation_output to results directory..."
+        mv mutation_output.txt "$RESULT_DIR"
+        exec 1>&3 2>&4
+        exec 3>&- 4>&-
+    fi
 
     echo "Results will be saved in $RESULT_DIR"
     # Move all output files into the results/ directory.
