@@ -3,13 +3,13 @@
 # Wrapper script for Randoop
 #
 # Environment variables: Must be set by caller script
-# * JACOCO_AGENT_JAR    : 
-# * REPLACECALL_JAR     : 
-# * REPLACECALL_COMMAND : 
-# * CLASSPATH           :
-# * SRC_JAR             :  
-# * RANDOOP_JAR         :
-# * TIME_LIMIT          :
+# * JACOCO_AGENT_JAR    : Jacoco agent jar used for MinCoverageFirst
+# * REPLACECALL_JAR     : Jar for replacing undesired method calls
+# * REPLACECALL_COMMAND : Command invoking REPLACECALL_JAR for replacement files
+# * CLASSPATH           : Dependency locations for subject program
+# * SRC_JAR             : Source jar for subject program
+# * GENERATOR_JAR       : Randoop jar
+# * TIME_LIMIT          : Total time limit for test generation
 
 # Check whether the ENVIRONMENT variables are set
 if [ -z "$JACOCO_AGENT_JAR" ]; then
@@ -32,8 +32,8 @@ if [ -z "$SRC_JAR" ]; then
     echo "Expected SRC_JAR environment variable"
     set -e
 fi
-if [ -z "$RANDOOP_JAR" ]; then
-    echo "Expected RANDOOP_JAR environment variable"
+if [ -z "$GENERATOR_JAR" ]; then
+    echo "Expected GENERATOR_JAR environment variable"
     set -e
 fi
 if [ -z "$TIME_LIMIT" ]; then
@@ -86,7 +86,7 @@ cmd="java \
   -Xbootclasspath/a:$JACOCO_AGENT_JAR:$REPLACECALL_JAR \
   -javaagent:$JACOCO_AGENT_JAR \
   -javaagent:$REPLACECALL_COMMAND \
-  -classpath $CLASSPATH*:$SRC_JAR:$RANDOOP_JAR \
+  -classpath $CLASSPATH*:$SRC_JAR:$GENERATOR_JAR \
   randoop.main.Main gentests \
   $METHOD_SELECTION_ARG \
   $INPUT_SELECTION_ARG \

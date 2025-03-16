@@ -68,7 +68,7 @@ cd $WORK_DIR
 if [ ! -d "randoop-grt" ]; then
     git clone git@github.com:edward-qin/randoop-grt.git randoop-grt
 fi
-cd randoop
+cd randoop-grt
 
 usejdk11
 ./gradlew shadowJar
@@ -78,11 +78,48 @@ cd $WORK_DIR/"grt-testing/scripts"
 ./get-all-subject-src.sh
 echo "SUCCESS: Set up grt-testing and randoop-grt"
 
+# Setup evosuite
+
+# Download the remote resource to a local file of the same name.
+# Takes a single argument, a URL.
+# Skips the download if the remote resource is newer.
+# Works around connections that hang.
+download_url() {
+    if [ "$#" -ne 1 ]; then
+        echo "Illegal number of arguments"
+    fi
+    URL=$1
+    echo "Downloading ${URL}"
+    if [ "$(uname)" = "Darwin" ] ; then
+        wget -nv -N "$URL" || print_error_and_exit "Could not download $URL"
+        echo "Downloaded $URL"
+    else
+        BASENAME="$(basename "$URL")"
+        if [ -f "$BASENAME" ]; then
+            ZBASENAME="-z $BASENAME"
+        else
+            ZBASENAME=""
+        fi
+        (timeout 300 curl -s -S -R -L -O "$ZBASENAME" "$URL" || (echo "retrying curl $URL" && rm -f "$BASENAME" && curl -R -L -O "$URL")) && echo "Downloaded $URL"
+    fi
+}
+
+echo "START: Set up evosuite"
+EVOSUITE_VERSION="1.1.0"
+EVOSUITE_URL="https://github.com/EvoSuite/evosuite/releases/download/v${EVOSUITE_VERSION}"
+EVOSUITE_JAR="evosuite-${EVOSUITE_VERSION}.jar"
+
+cd $WORK_DIR/"grt-testing/scripts/build"
+download_url "$EVOSUITE_URL/$EVOSUITE_JAR"
+echo "SUCCESS: Set up evosuite"
+
 # Run grt generation in parallel
 echo "START: Running Coverage and Mutation Score Computation"
 
+cd $WORK_DIR/"grt-testing/scripts"
 rm -rf results
 rm mutation_output.txt
+touch mutation_output.txt
 
 usejdk8
 ./mutation-fig6-parallel.sh

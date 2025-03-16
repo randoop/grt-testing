@@ -64,6 +64,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 GENERATOR_DIR="$SCRIPT_DIR/generators"
 MAJOR_HOME=$(realpath "build/major/") # Major home directory, for mutation testing
 CURR_DIR=$(realpath "$(pwd)")
+EVOSUITE_JAR=$(realpath "build/evosuite-1.1.0.jar")
 RANDOOP_JAR=$(realpath "build/randoop-all-4.3.3.jar") # Randoop jar file
 JACOCO_AGENT_JAR=$(realpath "build/jacocoagent.jar") # For Bloodhound
 JACOCO_CLI_JAR=$(realpath "build/jacococli.jar") # For coverage report generation
@@ -254,16 +255,22 @@ REPLACECALL_COMMAND="$REPLACECALL_JAR${replacement_files[$SUBJECT_PROGRAM]}"
 #===============================================================================
 # Generator Command Configuration
 #===============================================================================
-export JACOCO_AGENT_JAR     
-export REPLACECALL_JAR      
-export REPLACECALL_COMMAND  
-export CLASSPATH           
-export SRC_JAR               
-export RANDOOP_JAR         
-export TIME_LIMIT       
+if [[ "$GENERATOR" == "evosuite" ]]; then
+  GENERATOR_JAR=$EVOSUITE_JAR
+else
+  GENERATOR_JAR=$RANDOOP_JAR
+fi
+
+export JACOCO_AGENT_JAR
+export REPLACECALL_JAR
+export REPLACECALL_COMMAND
+export CLASSPATH
+export SRC_JAR
+export GENERATOR_JAR
+export TIME_LIMIT
 
 GENERATOR_BASE_COMMAND=$(bash $GENERATOR_DIR/$GENERATOR.sh)
-echo "Java BASE COMMAND = $OUTPUT"
+echo "Java BASE GENERATOR COMMAND = $OUTPUT"
 
 # Add special command suffixes for certain projects.
 # TODO: Add more special cases as needed
