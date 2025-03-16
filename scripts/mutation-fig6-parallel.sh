@@ -42,13 +42,10 @@ GENERATORS=(
 NUM_CORES=$(( $(nproc) - 4 ))
 echo "Running on at most $NUM_CORES concurrent processes"
 
-HERE="$(cd "$(dirname "$0")" && pwd)" || { echo "cannot cd to $(dirname "$0")"; exit 2; }
-source "$HERE/test.include" || exit 1
-
 # Create a list of tasks
 TASKS=()
 for seconds in "${SECONDS_PER_CLASS[@]}"; do
-    for program in "$PROGRAMS[@]"; do
+    for program in "${PROGRAMS[@]}"; do
         for generator in "${GENERATORS[@]}"; do
             TASKS+=("$seconds $program $generator")
         done

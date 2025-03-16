@@ -10,19 +10,19 @@
 
 # Check whether the ENVIRONMENT variables are set
 if [ -z "$CLASSPATH" ]; then
-    echo "Expected CLASSPATH environment variable"
+    echo "Expected CLASSPATH environment variable" >&2
     set -e
 fi
 if [ -z "$SRC_JAR" ]; then
-    echo "Expected SRC_JAR environment variable"
+    echo "Expected SRC_JAR environment variable" >&2
     set -e
 fi
 if [ -z "$GENERATOR_JAR" ]; then
-    echo "Expected GENERATOR_JAR environment variable"
+    echo "Expected GENERATOR_JAR environment variable" >&2
     set -e
 fi
 if [ -z "$TIME_LIMIT" ]; then
-    echo "Expected TIME_LIMIT environment variable"
+    echo "Expected TIME_LIMIT environment variable" >&2
     set -e
 fi
 
@@ -47,3 +47,7 @@ cmd="java -cp $GENERATOR_JAR org.evosuite.EvoSuite \
 -Dsearch_budget=$budget \
 -Dassertion_timeout=$budget \
 $add_config"
+
+# Return this command to the caller
+echo "$cmd"
+exit 0

@@ -26,3 +26,9 @@ scripts/results/
 
 # output from runnin jacoco
 jacoco.exec
+
+# python virtual environment
+.venv/
+
+# mutation output
+scripts/mutation_output.txt

@@ -45,15 +45,12 @@ if [ $# -eq 0 ]; then
 fi
 
 usejdk8() {
-  export JAVA_HOME=/usr/lib/jvm/java-8-openjdk
+  export JAVA_HOME=~/java/jdk8u292-b10
   export PATH=$JAVA_HOME/bin:$PATH
-  echo "Switched to JDK 8: $JAVA_HOME"
 }
-
 usejdk11() {
-  export JAVA_HOME=/usr/lib/jvm/java-11-openjdk
+  export JAVA_HOME=~/java/jdk-11.0.9.1+1
   export PATH=$JAVA_HOME/bin:$PATH
-  echo "Switched to JDK 11: $JAVA_HOME"
 }
 
 #===============================================================================
@@ -64,12 +61,11 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 GENERATOR_DIR="$SCRIPT_DIR/generators"
 MAJOR_HOME=$(realpath "build/major/") # Major home directory, for mutation testing
 CURR_DIR=$(realpath "$(pwd)")
-EVOSUITE_JAR=$(realpath "build/evosuite-1.1.0.jar")
+EVOSUITE_JAR=$(realpath "build/evosuite-1.1.0.jar") # Evosuite jar file
 RANDOOP_JAR=$(realpath "build/randoop-all-4.3.3.jar") # Randoop jar file
 JACOCO_AGENT_JAR=$(realpath "build/jacocoagent.jar") # For Bloodhound
 JACOCO_CLI_JAR=$(realpath "build/jacococli.jar") # For coverage report generation
 REPLACECALL_JAR=$(realpath "build/replacecall-4.3.3.jar") # For replacing undesired method calls
-
 
 #===============================================================================
 # Argument Parsing & Experiment Configuration
@@ -132,7 +128,7 @@ while getopts ":hvrt:c:g:" opt; do
       SECONDS_CLASS="$OPTARG"
       ;;
     g )
-      if [[ ! -f "$DIR/$FILENAME" ]]; then
+      if [[ ! -f "$GENERATOR_DIR/$OPTARG.sh" ]]; then
         echo "Invalid generator. See $GENERATOR_DIR/*.sh for valid generators"
         exit 1
       fi
@@ -269,8 +265,8 @@ export SRC_JAR
 export GENERATOR_JAR
 export TIME_LIMIT
 
-GENERATOR_BASE_COMMAND=$(bash $GENERATOR_DIR/$GENERATOR.sh)
-echo "Java BASE GENERATOR COMMAND = $OUTPUT"
+GENERATOR_BASE_COMMAND=$($GENERATOR_DIR/$GENERATOR.sh)
+echo "Java BASE GENERATOR COMMAND = $GENERATOR_BASE_COMMAND"
 
 # Add special command suffixes for certain projects.
 # TODO: Add more special cases as needed
