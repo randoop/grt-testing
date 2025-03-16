@@ -336,10 +336,9 @@ do
         exec 1>>"mutation_output.txt" 2>&1
     fi
 
-    rm -rf "$CURR_DIR"/build/test*
     echo "Using $GENERATOR"
     echo
-    TEST_DIRECTORY="$CURR_DIR/build/test/$GENERATOR"
+    TEST_DIRECTORY="$CURR_DIR/build/test/$(date +%Y%m%d-%H%M%S)-$GENERATOR"
     mkdir -p "$TEST_DIRECTORY"
 
     GENERATOR_COMMAND_2="$GENERATOR_COMMAND --junit-output-dir=$TEST_DIRECTORY"
