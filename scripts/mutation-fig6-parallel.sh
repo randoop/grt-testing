@@ -13,19 +13,19 @@
 # Define parameters
 SECONDS_PER_CLASS=(2 10 30 60)
 PROGRAMS=(
-  "a4j-1.0b"
-  "commons-lang3-3.0"
-  "jvc-1.1"
-  "JSAP-2.1"
-  "dcParseArgs-10.2008"
-  "easymock-3.2"
-  "fixsuite-r48"
-  "javassist-3.19"
-  "jdom-1.0"
-  "commons-collections4-4.0"
-  "jaxen-1.1.6"
-  "joda-time-2.3"
-  "slf4j-api-1.7.12"
+  "a4j-1.0b"                    # 45  classes
+  "commons-lang3-3.0"           # 141 classes
+  "jvc-1.1"                     # 24  classes
+  "JSAP-2.1"                    # 69  classes
+  "dcParseArgs-10.2008"         # 6   classes
+  "easymock-3.2"                # 79  classes
+  "fixsuite-r48"                # 36  classes
+  "javassist-3.19"              # 367 classes
+  "jdom-1.0"                    # 70  classes
+  "commons-collections4-4.0"    # 390 classes
+  "jaxen-1.1.6"                 # 175 classes
+  "joda-time-2.3"               # 208 classes
+  "slf4j-api-1.7.12"            # 18 classes
 )
 GENERATORS=(
   "evosuite"

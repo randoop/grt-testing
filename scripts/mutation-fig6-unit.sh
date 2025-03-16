@@ -4,11 +4,9 @@
 # Overview
 #===============================================================================
 
-# For documentation of how to run this script, see file `mutation-repro.md`.
-#
-# This script uses Randoop to:
+# This script uses the specified generator to:
 #  * generate test suites for subject programs and
-#  * performs mutation testing to determine how Randoop features affect
+#  * performs mutation testing to determine how generator features affect
 #    various coverage metrics including coverage and mutation score
 #    (mutants are generated using Major).
 #
@@ -21,11 +19,6 @@
 # - `results/info.csv`: statistics about each iteration.
 # - 'results/`: everything else specific to the most recent iteration.
 
-#     ./mutation-fig6-unit.sh -c "$seconds" -g "$generator" "$program"
-# accept -g arg
-# invoke correct params for randoop or evosuite: use generator/setup.sh file?
-
-
 # Fail this script on errors.
 set -e
 set -o pipefail
@@ -37,7 +30,7 @@ if [ "$JAVA_VERSION" -ne 8 ]; then
   exit 1
 fi
 
-USAGE_STRING="usage: mutation.sh [-h] [-v] [-r] [-t total_time] [-c time_per_class] <test case name>"
+USAGE_STRING="usage: mutation-fig6-unit.sh [-h] [-v] [-r] [-t total_time] [-c time_per_class] <test case name>"
 
 if [ $# -eq 0 ]; then
     echo "$0: $USAGE_STRING"
@@ -266,7 +259,9 @@ export GENERATOR_JAR
 export TIME_LIMIT
 
 GENERATOR_BASE_COMMAND=$($GENERATOR_DIR/$GENERATOR.sh)
-echo "Java BASE GENERATOR COMMAND = $GENERATOR_BASE_COMMAND"
+if [[ "$VERBOSE" -eq 1 ]]; then
+    echo "Java BASE GENERATOR COMMAND = $GENERATOR_BASE_COMMAND"
+fi
 
 # Add special command suffixes for certain projects.
 # TODO: Add more special cases as needed
