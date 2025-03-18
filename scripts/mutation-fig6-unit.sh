@@ -442,7 +442,25 @@ do
         echo "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
     fi
     echo
-    "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
+    # Handling concurrency: redirect results/*.csv files from mutation score
+    "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test &
+    ANT_PID=$!
+    ANT_UID=$(ps -o uid= -p "$ANT_PID" 2>/dev/null)
+    echo "ANT_PID/UID: $ANT_PID $ANT_UID"
+
+    # Monitor ant's created files and redirect
+    inotifywait -m -r -e close_write,create --format "%w%f" "$SCRIPT_DIR/results" | while read FILE; do
+        if [ -f "$FILE" ]; then
+            FILE_UID=$(stat -c %u "$FILE")  # Get the owner UID
+            echo "Checking file: $FILE (UID: $FILE_UID)"
+            if [ "$FILE_UID" -eq "$ANT_UID" ]; then
+                mv "$FILE" "$RESULT_DIR"/ 2>/dev/null && echo "Moved $FILE to $RESULT_DIR"
+            fi
+        fi
+    done &
+    MONITOR_PID=$!
+    wait "$ANT_PID"
+    kill "$MONITOR_PID"
 
     # Calculate Mutation Score
     mutants_covered=$(awk -F, 'NR==2 {print $3}' $RESULT_DIR/summary.csv)
@@ -475,7 +493,6 @@ do
     # suppression.log may be in one of two locations depending on if using include-major branch
     mv "$JAVA_SRC_DIR"/suppression.log "$RESULT_DIR" 2>/dev/null || true
     mv suppression.log "$RESULT_DIR" 2>/dev/null || true
-    mv major.log mutants.log "$RESULT_DIR"
 done
 
 
