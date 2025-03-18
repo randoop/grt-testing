@@ -439,10 +439,10 @@ do
     # echo "Running tests with mutation analysis..."
     # if [[ "$VERBOSE" -eq 1 ]]; then
     #     echo command:
-    #     echo "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
+    #     echo "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" -DRESULT_DIR="$RESULT_DIR" "$LIB_ARG" mutation.test
     # fi
     # echo
-    # "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
+    # "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" -DRESULT_DIR="$RESULT_DIR" "$LIB_ARG" mutation.test
 
     # # Calculate Mutation Score
     # mutants_covered=$(awk -F, 'NR==2 {print $3}' RESULT_DIR/summary.csv)
@@ -475,7 +475,6 @@ do
     # suppression.log may be in one of two locations depending on if using include-major branch
     mv "$JAVA_SRC_DIR"/suppression.log "$RESULT_DIR" 2>/dev/null || true
     mv suppression.log "$RESULT_DIR" 2>/dev/null || true
-    mv major.log mutants.log "$RESULT_DIR"
 done
 
 
