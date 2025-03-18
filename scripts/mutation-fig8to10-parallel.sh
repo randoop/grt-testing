@@ -40,7 +40,7 @@ done
 
 # Export function for parallel execution
 run_task() {
-    $seconds=$1
+    seconds=$1
     program=$2
     generator=$3
     # Use the same unit script as fig7
