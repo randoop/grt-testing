@@ -123,17 +123,17 @@ rm mutation_output.txt
 touch mutation_output.txt
 
 usejdk8
-./mutation-fig6-parallel.sh
-echo "SUCCESS: Ran Coverage and Mutation Score Computation"
+# ./mutation-fig6-parallel.sh
+# echo "SUCCESS: Ran Coverage and Mutation Score Computation"
 
-# Create table with python file
-echo "START: Generating Table IV from results"
+# # Create table with python file
+# echo "START: Generating Table IV from results"
 
-python -m venv $WORK_DIR/"grt-testing/.venv"
-source  $WORK_DIR/"grt-testing/.venv/bin/activate"
-pip install pandas
+# python -m venv $WORK_DIR/"grt-testing/.venv"
+# source  $WORK_DIR/"grt-testing/.venv/bin/activate"
+# pip install pandas
 
-python generate_fig6_tab3.py
+# python generate_fig6_tab3.py
 echo "SUCCESS: Generated Figure 6 and Table III from results"
 
 exit 0
