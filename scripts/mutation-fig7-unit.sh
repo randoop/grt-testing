@@ -497,6 +497,7 @@ echo "Restoring build.xml"
     # Lock the build.xml file before patching it
     flock -n 200 || exit 1
     ./apply-build-patch.sh > /dev/null
+    rm $BUILD_FILE
 ) 200>"build.xml" # lock on build.xml
 
 
