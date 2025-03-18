@@ -46,8 +46,9 @@ else
 fi
 
 # Compute the budget per target class; evenly split the time for search and assertions
-budget=$(echo "$TIME_LIMIT/2/$NUM_CLASSES" | bc)
-budget=$(( $budget < 1 ? 1 : $budget )) # Set budget to 1 if it's less than 1
+# budget=$(echo "$TIME_LIMIT/2/$NUM_CLASSES" | bc)
+# budget=$(( $budget < 1 ? 1 : $budget )) # Set budget to 1 if it's less than 1
+budget="$TIME_LIMIT"
 
 parse_config() {
     local file=$1
