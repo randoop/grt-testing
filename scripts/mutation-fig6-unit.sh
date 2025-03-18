@@ -38,11 +38,11 @@ if [ $# -eq 0 ]; then
 fi
 
 usejdk8() {
-  export JAVA_HOME=~/java/jdk8u292-b10
+  export JAVA_HOME=/usr/lib/jvm/java-8-openjdk
   export PATH=$JAVA_HOME/bin:$PATH
 }
 usejdk11() {
-  export JAVA_HOME=~/java/jdk-11.0.9.1+1
+  export JAVA_HOME=/usr/lib/jvm/java-11-openjdk
   export PATH=$JAVA_HOME/bin:$PATH
 }
 
@@ -245,7 +245,16 @@ REPLACECALL_COMMAND="$REPLACECALL_JAR${replacement_files[$SUBJECT_PROGRAM]}"
 #===============================================================================
 
 echo "Modifying build.xml for $SUBJECT_PROGRAM..."
-./apply-build-patch.sh "$SUBJECT_PROGRAM"
+BUILD_FILE="build-$(date +%Y%m%d-%H%M%S)-$$.xml"
+(
+    # Lock the build.xml file before patching it
+    flock -n 200 || exit 1
+    ./apply-build-patch.sh "$SUBJECT_PROGRAM"
+    cp "build.xml" "$BUILD_FILE"
+    if [[ "$VERBOSE" -eq 1 ]]; then
+        echo "Copied to $BUILD_FILE"
+    fi
+) 200>"build.xml" # lock on build.xml
 
 (
     cd "$JAVA_SRC_DIR" || exit 1
@@ -395,28 +404,28 @@ do
     echo "Compiling and mutating project..."
     if [[ "$VERBOSE" -eq 1 ]]; then
         echo command:
-        echo "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" clean compile
+        echo "$MAJOR_HOME"/bin/ant -f "$BUILD_FILE" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" clean compile
     fi
     echo
-    "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" clean compile
+    "$MAJOR_HOME"/bin/ant -f "$BUILD_FILE" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" clean compile
 
     echo
     echo "Compiling tests..."
     if [[ "$VERBOSE" -eq 1 ]]; then
         echo command:
-        echo "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" compile.tests
+        echo "$MAJOR_HOME"/bin/ant -f "$BUILD_FILE" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" compile.tests
     fi
     echo
-    "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" compile.tests
+    "$MAJOR_HOME"/bin/ant -f "$BUILD_FILE" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" compile.tests
 
     echo
     echo "Running tests with coverage..."
     if [[ "$VERBOSE" -eq 1 ]]; then
         echo command:
-        echo "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" test
+        echo "$MAJOR_HOME"/bin/ant -f "$BUILD_FILE" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" test
     fi
     echo
-    "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" test
+    "$MAJOR_HOME"/bin/ant -f "$BUILD_FILE" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" test
 
     java -jar "$JACOCO_CLI_JAR" report "$RESULT_DIR/jacoco.exec" --classfiles "$SRC_JAR" --sourcefiles "$JAVA_SRC_DIR" --csv $RESULT_DIR/report.csv
 
@@ -452,7 +461,9 @@ do
     inotifywait -m -r -e close_write,create --format "%w%f" "$SCRIPT_DIR/results" | while read FILE; do
         if [ -f "$FILE" ]; then
             FILE_UID=$(stat -c %u "$FILE")  # Get the owner UID
-            echo "Checking file: $FILE (UID: $FILE_UID)"
+            if [[ "$VERBOSE" -eq 1 ]]; then
+                echo "Checking file: $FILE (UID: $FILE_UID)"
+            fi
             if [ "$FILE_UID" -eq "$ANT_UID" ]; then
                 mv "$FILE" "$RESULT_DIR"/ 2>/dev/null && echo "Moved $FILE to $RESULT_DIR"
             fi
@@ -502,7 +513,11 @@ done
 echo
 echo "Restoring build.xml"
 # restore build.xml
-./apply-build-patch.sh > /dev/null
+(
+    # Lock the build.xml file before patching it
+    flock -n 200 || exit 1
+    ./apply-build-patch.sh > /dev/null
+) 200>"build.xml" # lock on build.xml
 
 echo "Restoring $JAVA_SRC_DIR to main branch"
 # switch to main branch (may already be there)
