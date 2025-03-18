@@ -67,12 +67,13 @@ make
 cd $WORK_DIR
 if [ ! -d "randoop-grt" ]; then
     git clone git@github.com:edward-qin/randoop-grt.git randoop-grt
-fi
-cd randoop-grt
 
-usejdk11
-./gradlew shadowJar
-mv -f build/libs/randoop-all-4.3.3.jar agent/replacecall/build/libs/replacecall-4.3.3.jar $WORK_DIR/"grt-testing/scripts/build"
+    cd randoop-grt
+
+    usejdk11
+    ./gradlew shadowJar
+    cp -f build/libs/randoop-all-4.3.3.jar agent/replacecall/build/libs/replacecall-4.3.3.jar $WORK_DIR/"grt-testing/scripts/build"
+fi
 
 cd $WORK_DIR/"grt-testing/scripts"
 ./get-all-subject-src.sh
