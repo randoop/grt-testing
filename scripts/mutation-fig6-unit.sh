@@ -248,7 +248,7 @@ echo "Modifying build.xml for $SUBJECT_PROGRAM..."
 BUILD_FILE="build-$(date +%Y%m%d-%H%M%S)-$$.xml"
 (
     # Lock the build.xml file before patching it
-    flock -n 200 || exit 1
+    flock 200
     ./apply-build-patch.sh "$SUBJECT_PROGRAM"
     cp "build.xml" "$BUILD_FILE"
     if [[ "$VERBOSE" -eq 1 ]]; then
@@ -371,7 +371,11 @@ do
         ["commons-math3-3.2"]="--usethreads=true"
     )
 
-    GENERATOR_COMMAND="$GENERATOR_BASE_COMMAND ${command_suffix[$SUBJECT_PROGRAM]}"
+    if [[ "$GENERATOR" == "evosuite" ]]; then
+        GENERATOR_COMMAND="$GENERATOR_BASE_COMMAND"
+    else
+        GENERATOR_COMMAND="$GENERATOR_BASE_COMMAND ${command_suffix[$SUBJECT_PROGRAM]}"
+    fi
 
     # Check if output needs to be redirected for this loop.
     # If the REDIRECT flag is set, redirect all output to a log file for this iteration.
@@ -515,7 +519,7 @@ echo "Restoring build.xml"
 # restore build.xml
 (
     # Lock the build.xml file before patching it
-    flock -n 200 || exit 1
+    flock 200
     ./apply-build-patch.sh > /dev/null
     rm $BUILD_FILE
 ) 200>"build.xml" # lock on build.xml
