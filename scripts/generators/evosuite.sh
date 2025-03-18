@@ -3,6 +3,8 @@
 # Wrapper script for Evosuite
 #
 # Environment variables: Must be set by caller script
+# * JACOCO_AGENT_JAR    : Jacoco agent jar used for coverage scores
+# * RESULT_DIR          : Directory to write jacoco.exec to
 # * CLASSPATH           : Dependency locations for subject program
 # * SRC_JAR             : Source jar for subject program
 # * GENERATOR_JAR       : Evosuite jar
@@ -11,6 +13,14 @@
 
 # Check whether the ENVIRONMENT variables are set
 
+if [ -z "$JACOCO_AGENT_JAR" ]; then
+    echo "Expected JACOCO_AGENT_JAR environment variable" >&2
+    set -e
+fi
+if [ -z "$RESULT_DIR" ]; then
+    echo "Expected RESULT_DIR environment variable" >&2
+    set -e
+fi
 # CLASSPATH can be ""
 if [ -z "$SRC_JAR" ]; then
     echo "Expected SRC_JAR environment variable" >&2
@@ -29,6 +39,12 @@ if [ -z "$NUM_CLASSES" ]; then
     set -e
 fi
 
+if [[ -z $CLASSPATH ]]; then 
+    classpath_jars=""
+else
+    classpath_jars="$(echo $CLASSPATH/*.jar | tr ' ' ':'):"
+fi
+
 # Compute the budget per target class; evenly split the time for search and assertions
 budget=$(echo "$TIME_LIMIT/2/$NUM_CLASSES" | bc)
 budget=$(( $budget < 1 ? 1 : $budget )) # Set budget to 1 if it's less than 1
@@ -41,9 +57,10 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 add_config=$(parse_config "$SCRIPT_DIR"/evosuite.config)
 
 # target = SRC_JAR, all classes in file
-cmd="java -cp $GENERATOR_JAR org.evosuite.EvoSuite \
+cmd="java -javaagent:$JACOCO_AGENT_JAR=destfile=$RESULT_DIR/jacoco.exec \
+-cp $GENERATOR_JAR org.evosuite.EvoSuite \
 -target $SRC_JAR \
--projectCP $(echo $CLASSPATH/*.jar | tr ' ' ':'):$SRC_JAR:$GENERATOR_JAR \
+-projectCP $classpath_jars$SRC_JAR:$GENERATOR_JAR \
 -seed 0 \
 -Dsearch_budget=$budget \
 -Dassertion_timeout=$budget \

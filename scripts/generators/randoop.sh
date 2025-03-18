@@ -3,7 +3,8 @@
 # Wrapper script for Randoop
 #
 # Environment variables: Must be set by caller script
-# * JACOCO_AGENT_JAR    : Jacoco agent jar used for MinCoverageFirst
+# * JACOCO_AGENT_JAR    : Jacoco agent jar for coverage scores
+# * RESULT_DIR          : Directory to write jacoco.exec to
 # * REPLACECALL_JAR     : Jar for replacing undesired method calls
 # * REPLACECALL_COMMAND : Command invoking REPLACECALL_JAR for replacement files
 # * CLASSPATH           : Dependency locations for subject program
@@ -14,6 +15,10 @@
 # Check whether the ENVIRONMENT variables are set
 if [ -z "$JACOCO_AGENT_JAR" ]; then
     echo "Expected JACOCO_AGENT_JAR environment variable" >&2
+    set -e
+fi
+if [ -z "$RESULT_DIR" ]; then
+    echo "Expected RESULT_DIR environment variable" >&2
     set -e
 fi
 if [ -z "$REPLACECALL_JAR" ]; then
@@ -69,7 +74,7 @@ fi
 # Build the test-generation command
 cmd="java \
   -Xbootclasspath/a:$JACOCO_AGENT_JAR:$REPLACECALL_JAR \
-  -javaagent:$JACOCO_AGENT_JAR \
+  -javaagent:$JACOCO_AGENT_JAR=destfile=$RESULT_DIR/jacoco.exec \
   -javaagent:$REPLACECALL_COMMAND \
   -classpath $CLASSPATH*:$SRC_JAR:$GENERATOR_JAR \
   randoop.main.Main gentests \

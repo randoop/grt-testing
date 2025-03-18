@@ -240,60 +240,6 @@ declare -A replacement_files=(
 )
 REPLACECALL_COMMAND="$REPLACECALL_JAR${replacement_files[$SUBJECT_PROGRAM]}"
 
-
-#===============================================================================
-# Generator Command Configuration
-#===============================================================================
-if [[ "$GENERATOR" == "evosuite" ]]; then
-  GENERATOR_JAR=$EVOSUITE_JAR
-else
-  GENERATOR_JAR=$RANDOOP_JAR
-fi
-
-export JACOCO_AGENT_JAR
-export REPLACECALL_JAR
-export REPLACECALL_COMMAND
-export CLASSPATH
-export SRC_JAR
-export GENERATOR_JAR
-export TIME_LIMIT
-
-GENERATOR_BASE_COMMAND=$($GENERATOR_DIR/$GENERATOR.sh)
-if [[ "$VERBOSE" -eq 1 ]]; then
-    echo "Java BASE GENERATOR COMMAND = $GENERATOR_BASE_COMMAND"
-fi
-
-# Add special command suffixes for certain projects.
-# TODO: Add more special cases as needed
-declare -A command_suffix=(
-    # Bad inputs generated and caused infinite loops
-    ["ClassViewer-5.0.5b"]="--specifications=project-specs/ClassViewer-5.0.5b-specs.json"
-    # Bad inputs generated and caused infinite loops
-    ["commons-lang3-3.0"]="--specifications=project-specs/commons-lang3-3.0-specs.json"
-    # Null Image causes setIconImage to hang
-    ["fixsuite-r48"]="--specifications=project-specs/fixsuite-r48-specs.json"
-    # An empty BlockingQueue was generated and used but never filled for take(), led to non-termination
-    ["guava-16.0.1"]="--specifications=project-specs/guava-16.0.1-specs.json"
-    # Randoop generated bad test sequences for handling webserver lifecycle, don't test them
-    # ["javassist-3.19"]="--specifications=project-specs/javassist-3.19-specs.json"
-    ["javassist-3.19"]="--omit-methods=^javassist\.tools\.web\.Webserver\.run\(\)$ --omit-methods=^javassist\.tools\.rmi\.AppletServer\.run\(\)$"
-    # PrintStream.close() maybe called to close System.out, causing Randoop to fail
-    ["javax.mail-1.5.1"]="--omit-methods=^java\.io\.PrintStream\.close\(\)$|^java\.io\.FilterOutputStream\.close\(\)$|^java\.io\.OutputStream\.close\(\)$|^com\.sun\.mail\.util\.BASE64EncoderStream\.close\(\)$|^com\.sun\.mail\.util\.QEncoderStream\.close\(\)$|^com\.sun\.mail\.util\.QPEncoderStream\.close\(\)$|^com\.sun\.mail\.util\.UUEncoderStream\.close\(\)$"
-    # JDOMAbout cannot be found during test.compile, and the class itself isn't interesting
-    ["jdom-1.0"]="--omit-classes=^JDOMAbout$"
-    # Bad inputs generated and caused infinite loops
-    ["jaxen-1.1.6"]="--specifications=project-specs/jaxen-1.1.6-specs.json"
-    # Bad inputs cause exceptions in different threads, directly terminating Randoop
-    ["sat4j-core-2.3.5"]="--specifications=project-specs/sat4j-core-2.3.5-specs.json"
-    # Large inputs to perm take too much time
-    ["commons-collections4-4.0"]="--specifications=project-specs/commons-collections4-4.0-specs.json"
-    # Bad inputs generated and caused infinite loops
-    ["commons-math3-3.2"]="--usethreads=true"
-)
-
-GENERATOR_COMMAND="$GENERATOR_BASE_COMMAND ${command_suffix[$SUBJECT_PROGRAM]}"
-
-
 #===============================================================================
 # Build System Preparation
 #===============================================================================
@@ -326,6 +272,97 @@ fi
 # shellcheck disable=SC2034 # i counts iterations but is not otherwise used.
 for i in $(seq 1 $NUM_LOOP)
 do
+    RESULT_DIR="results/$(date +%Y%m%d-%H%M%S)-$GENERATOR-$SUBJECT_PROGRAM"
+    mkdir -p "$RESULT_DIR"
+
+    #===============================================================================
+    # Generator Command Configuration
+    #===============================================================================
+    if [[ "$GENERATOR" == "evosuite" ]]; then
+      GENERATOR_JAR=$EVOSUITE_JAR
+    else
+      GENERATOR_JAR=$RANDOOP_JAR
+    fi
+
+    declare -A num_classes=(
+      ["a4j-1.0b"]=45
+      ["asm-5.0.1"]=176
+      ["bcel-5.2"]=338
+      ["ClassViewer-5.0.5b"]=23
+      ["commons-cli-1.2"]=20
+      ["commons-codec-1.9"]=76
+      ["commons-collections4-4.0"]=390
+      ["commons-compress-1.8"]=181
+      ["commons-lang3-3.0"]=141
+      ["commons-math3-3.2"]=845
+      ["commons-primitives-1.0"]=231
+      ["dcParseArgs-10.2008"]=6
+      ["easymock-3.2"]=79
+      ["fixsuite-r48"]=36
+      ["guava-16.0.1"]=1,546
+      ["hamcrest-core-1.3"]=40
+      ["javassist-3.19"]=367
+      ["javax.mail-1.5.1"]=284
+      ["jaxen-1.1.6"]=175
+      ["jcommander-1.35"]=34
+      ["jdom-1.0"]=70
+      ["joda-time-2.3"]=208
+      ["JSAP-2.1"]=69
+      ["jvc-1.1"]=24
+      ["nekomud-r16"]=8
+      ["pmd-core-5.2.2"]=20
+      ["sat4j-core-2.3.5"]=213
+      ["shiro-core-1.2.3"]=217
+      ["slf4j-api-1.7.12"]=18
+      ["tinySQL-2.26"]=31
+    )
+    NUM_CLASSES=${num_classes[$SUBJECT_PROGRAM]}
+
+    # Get the base command using input args
+    export JACOCO_AGENT_JAR
+    export RESULT_DIR
+    export REPLACECALL_JAR
+    export REPLACECALL_COMMAND
+    export CLASSPATH
+    export SRC_JAR
+    export GENERATOR_JAR
+    export TIME_LIMIT
+    export NUM_CLASSES
+
+    GENERATOR_BASE_COMMAND=$($GENERATOR_DIR/$GENERATOR.sh)
+    if [[ "$VERBOSE" -eq 1 ]]; then
+        echo "GENERATOR_BASE_COMMAND=$GENERATOR_BASE_COMMAND"
+    fi
+
+    # Add special command suffixes for certain projects.
+    # TODO: Add more special cases as needed
+    declare -A command_suffix=(
+        # Bad inputs generated and caused infinite loops
+        ["ClassViewer-5.0.5b"]="--specifications=project-specs/ClassViewer-5.0.5b-specs.json"
+        # Bad inputs generated and caused infinite loops
+        ["commons-lang3-3.0"]="--specifications=project-specs/commons-lang3-3.0-specs.json"
+        # Null Image causes setIconImage to hang
+        ["fixsuite-r48"]="--specifications=project-specs/fixsuite-r48-specs.json"
+        # An empty BlockingQueue was generated and used but never filled for take(), led to non-termination
+        ["guava-16.0.1"]="--specifications=project-specs/guava-16.0.1-specs.json"
+        # Randoop generated bad test sequences for handling webserver lifecycle, don't test them
+        # ["javassist-3.19"]="--specifications=project-specs/javassist-3.19-specs.json"
+        ["javassist-3.19"]="--omit-methods=^javassist\.tools\.web\.Webserver\.run\(\)$ --omit-methods=^javassist\.tools\.rmi\.AppletServer\.run\(\)$"
+        # PrintStream.close() maybe called to close System.out, causing Randoop to fail
+        ["javax.mail-1.5.1"]="--omit-methods=^java\.io\.PrintStream\.close\(\)$|^java\.io\.FilterOutputStream\.close\(\)$|^java\.io\.OutputStream\.close\(\)$|^com\.sun\.mail\.util\.BASE64EncoderStream\.close\(\)$|^com\.sun\.mail\.util\.QEncoderStream\.close\(\)$|^com\.sun\.mail\.util\.QPEncoderStream\.close\(\)$|^com\.sun\.mail\.util\.UUEncoderStream\.close\(\)$"
+        # JDOMAbout cannot be found during test.compile, and the class itself isn't interesting
+        ["jdom-1.0"]="--omit-classes=^JDOMAbout$"
+        # Bad inputs generated and caused infinite loops
+        ["jaxen-1.1.6"]="--specifications=project-specs/jaxen-1.1.6-specs.json"
+        # Bad inputs cause exceptions in different threads, directly terminating Randoop
+        ["sat4j-core-2.3.5"]="--specifications=project-specs/sat4j-core-2.3.5-specs.json"
+        # Large inputs to perm take too much time
+        ["commons-collections4-4.0"]="--specifications=project-specs/commons-collections4-4.0-specs.json"
+        # Bad inputs generated and caused infinite loops
+        ["commons-math3-3.2"]="--usethreads=true"
+    )
+
+    GENERATOR_COMMAND="$GENERATOR_BASE_COMMAND ${command_suffix[$SUBJECT_PROGRAM]}"
 
     # Check if output needs to be redirected for this loop.
     # If the REDIRECT flag is set, redirect all output to a log file for this iteration.
@@ -341,7 +378,11 @@ do
     TEST_DIRECTORY="$CURR_DIR/build/test/$(date +%Y%m%d-%H%M%S)-$GENERATOR"
     mkdir -p "$TEST_DIRECTORY"
 
-    GENERATOR_COMMAND_2="$GENERATOR_COMMAND --junit-output-dir=$TEST_DIRECTORY"
+    if [[ "$GENERATOR" == "evosuite" ]]; then
+        GENERATOR_COMMAND_2="$GENERATOR_COMMAND"
+    else
+        GENERATOR_COMMAND_2="$GENERATOR_COMMAND --junit-output-dir=$TEST_DIRECTORY"
+    fi
 
     usejdk11
     $GENERATOR_COMMAND_2
@@ -350,10 +391,6 @@ do
     #===============================================================================
     # Coverage & Mutation Analysis
     #===============================================================================
-
-    RESULT_DIR="results/$(date +%Y%m%d-%H%M%S)-$GENERATOR-$SUBJECT_PROGRAM"
-    mkdir -p "$RESULT_DIR"
-
     echo
     echo "Compiling and mutating project..."
     if [[ "$VERBOSE" -eq 1 ]]; then
@@ -380,25 +417,23 @@ do
     fi
     echo
     "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" test
-    mv jacoco.exec results
-    java -jar "$JACOCO_CLI_JAR" report "results/jacoco.exec" --classfiles "$SRC_JAR" --sourcefiles "$JAVA_SRC_DIR" --csv results/report.csv
+
+    java -jar "$JACOCO_CLI_JAR" report "$RESULT_DIR/jacoco.exec" --classfiles "$SRC_JAR" --sourcefiles "$JAVA_SRC_DIR" --csv $RESULT_DIR/report.csv
 
     # Calculate Instruction Coverage
-    inst_missed=$(awk -F, 'NR>1 {sum+=$4} END {print sum}' results/report.csv)
-    inst_covered=$(awk -F, 'NR>1 {sum+=$5} END {print sum}' results/report.csv)
+    inst_missed=$(awk -F, 'NR>1 {sum+=$4} END {print sum}' $RESULT_DIR/report.csv)
+    inst_covered=$(awk -F, 'NR>1 {sum+=$5} END {print sum}' $RESULT_DIR/report.csv)
     instruction_coverage=$(echo "scale=4; $inst_covered / ($inst_missed + $inst_covered) * 100" | bc)
     instruction_coverage=$(printf "%.2f" "$instruction_coverage")
 
     # Calculate Branch Coverage
-    branch_missed=$(awk -F, 'NR>1 {sum+=$6} END {print sum}' results/report.csv)
-    branch_covered=$(awk -F, 'NR>1 {sum+=$7} END {print sum}' results/report.csv)
+    branch_missed=$(awk -F, 'NR>1 {sum+=$6} END {print sum}' $RESULT_DIR/report.csv)
+    branch_covered=$(awk -F, 'NR>1 {sum+=$7} END {print sum}' $RESULT_DIR/report.csv)
     branch_coverage=$(echo "scale=4; $branch_covered / ($branch_missed + $branch_covered) * 100" | bc)
     branch_coverage=$(printf "%.2f" "$branch_coverage")
 
     echo "Instruction Coverage: $instruction_coverage%"
     echo "Branch Coverage: $branch_coverage%"
-
-    mv results/report.csv "$RESULT_DIR"
 
     echo
     echo "Running tests with mutation analysis..."
@@ -410,16 +445,14 @@ do
     "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
 
     # Calculate Mutation Score
-    mutants_covered=$(awk -F, 'NR==2 {print $3}' results/summary.csv)
-    mutants_killed=$(awk -F, 'NR==2 {print $4}' results/summary.csv)
+    mutants_covered=$(awk -F, 'NR==2 {print $3}' $RESULT_DIR/summary.csv)
+    mutants_killed=$(awk -F, 'NR==2 {print $4}' $RESULT_DIR/summary.csv)
     mutation_score=$(echo "scale=4; $mutants_killed / $mutants_covered * 100" | bc)
     mutation_score=$(printf "%.2f" "$mutation_score")
 
     echo "Instruction Coverage: $instruction_coverage%"
     echo "Branch Coverage: $branch_coverage%"
     echo "Mutation Score: $mutation_score%"
-
-    mv results/summary.csv "$RESULT_DIR"
 
     row="$GENERATOR,$(basename "$SRC_JAR"),$TIME_LIMIT,0,$instruction_coverage%,$branch_coverage%,$mutation_score%"
     # info.csv contains a record of each pass.
@@ -438,11 +471,11 @@ do
 
     echo "Results will be saved in $RESULT_DIR"
     # Move all output files into the results/ directory.
+    # WARNING: These are subject to race conditions
     # suppression.log may be in one of two locations depending on if using include-major branch
     mv "$JAVA_SRC_DIR"/suppression.log "$RESULT_DIR" 2>/dev/null || true
     mv suppression.log "$RESULT_DIR" 2>/dev/null || true
     mv major.log mutants.log "$RESULT_DIR"
-    (cd results; mv covMap.csv details.csv testMap.csv preprocessing.ser jacoco.exec ../"$RESULT_DIR")
 done
 
 
