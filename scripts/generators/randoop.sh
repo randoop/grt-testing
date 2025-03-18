@@ -24,10 +24,10 @@ if [ -z "$REPLACECALL_COMMAND" ]; then
     echo "Expected REPLACECALL_COMMAND environment variable" >&2
     set -e
 fi
-if [ -z "$CLASSPATH" ]; then
-    echo "Expected CLASSPATH environment variable" >&2
-    set -e
-fi
+# if [ -z "$CLASSPATH" ]; then
+#     echo "Expected CLASSPATH environment variable" >&2
+#     set -e
+# fi
 if [ -z "$SRC_JAR" ]; then
     echo "Expected SRC_JAR environment variable" >&2
     set -e
