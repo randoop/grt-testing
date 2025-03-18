@@ -9,10 +9,10 @@
 # * TIME_LIMIT          : Total time limit for test generation
 
 # Check whether the ENVIRONMENT variables are set
-if [ -z "$CLASSPATH" ]; then
-    echo "Expected CLASSPATH environment variable" >&2
-    set -e
-fi
+# if [ -z "$CLASSPATH" ]; then
+#     echo "Expected CLASSPATH environment variable" >&2
+#     set -e
+# fi
 if [ -z "$SRC_JAR" ]; then
     echo "Expected SRC_JAR environment variable" >&2
     set -e
