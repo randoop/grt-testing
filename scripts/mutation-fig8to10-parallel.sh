@@ -10,17 +10,12 @@
 ################################################################################
 
 # Define parameters
-TIME_LIMIT=(50 100 150 200 250 300 350 400 450 500 550 600)
+TIME_LIMIT=(50)
 PROGRAMS=(
   "tinySQL-2.26"
-  "asm-5.0.1"
 )
 GENERATORS=(
   "randoopGRTMinusDynamicTyping"
-  "randoopGRTMinusInputConstruction"
-  "randoopGRTMinusMinCostFirst"
-  "randoopGRTMinusMinCoverageFirst"
-  "randoopGRT"
 )
 
 # Number of compute cores
@@ -40,7 +35,7 @@ done
 
 # Export function for parallel execution
 run_task() {
-    $seconds=$1
+    seconds=$1
     program=$2
     generator=$3
     # Use the same unit script as fig7
