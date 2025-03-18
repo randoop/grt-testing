@@ -38,11 +38,11 @@ if [ $# -eq 0 ]; then
 fi
 
 usejdk8() {
-  export JAVA_HOME=/usr/lib/jvm/java-8-openjdk
+  export JAVA_HOME=~/java/jdk8u292-b10
   export PATH=$JAVA_HOME/bin:$PATH
 }
 usejdk11() {
-  export JAVA_HOME=/usr/lib/jvm/java-11-openjdk
+  export JAVA_HOME=~/java/jdk-11.0.9.1+1
   export PATH=$JAVA_HOME/bin:$PATH
 }
 
