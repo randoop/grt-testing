@@ -5,6 +5,7 @@
 #===============================================================================
 
 # For documentation of how to run this script, see file `mutation-repro.md`.
+#
 # This script:
 #  * uses Randoop to generate test suites for subject programs and
 #  * performs mutation testing to determine how Randoop features affect
