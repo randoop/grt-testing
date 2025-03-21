@@ -53,7 +53,11 @@ else
 fi
 
 WORK_DIR=$(pwd)
-export randoop=$WORK_DIR/"randoop-grt"
+
+# go to parent directory for randoop-grt set up
+RANDOOP_DIR=$(cd .. && pwd)
+
+export randoop=$RANDOOP_DIR/"randoop-grt"
 
 # Setup randoop-grt
 echo "START: Setting up randoop-grt"
@@ -63,15 +67,20 @@ make
 
 # Setup randoop-grt
 cd $WORK_DIR
-if [ ! -d "randoop-grt" ]; then
-    git clone git@github.com:edward-qin/randoop-grt.git randoop-grt
 
-    cd randoop-grt
+# commented out lmk
+# if [ ! -d "randoop-grt" ]; then
+#    git clone git@github.com:edward-qin/randoop-grt.git randoop-grt
+#
+#    cd randoop-grt
+#
+#    usejdk11
+#    ./gradlew shadowJar
+#    cp -f build/libs/randoop-all-4.3.3.jar agent/replacecall/build/libs/replacecall-4.3.3.jar $WORK_DIR/"scripts/build"
+#fi
 
-    usejdk11
-    ./gradlew shadowJar
-    cp -f build/libs/randoop-all-4.3.3.jar agent/replacecall/build/libs/replacecall-4.3.3.jar $WORK_DIR/"scripts/build"
-fi
+# change here too
+cp -f ../randoop-grt/build/libs/randoop-all-4.3.3.jar ../randoop-grt/agent/replacecall/build/libs/replacecall-4.3.3.jar $WORK_DIR/"scripts/build"
 
 cd $WORK_DIR/"scripts"
 ./get-all-subject-src.sh
