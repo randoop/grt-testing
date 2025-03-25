@@ -1,4 +1,4 @@
-.PHONY: build/replacecall-4.3.3.jar build/major/bin/ant.m
+MAKEFILE_DIR := $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
 
 all: \
     build/jacoco.jar \
@@ -14,43 +14,69 @@ all: \
     build/major/bin/ant.m \
     results
 
-build:
-	mkdir build
-
-build/jacoco.jar: build
+build/jacoco.jar:
+	mkdir -p build
 	cd build && wget -nv -O jacoco-0.8.12.zip https://search.maven.org/remotecontent?filepath=org/jacoco/jacoco/0.8.12/jacoco-0.8.12.zip
 	cd build && unzip -o jacoco-0.8.12.zip lib/jacocoagent.jar lib/jacocoant.jar lib/jacococli.jar && mv lib/jacocoagent.jar lib/jacocoant.jar lib/jacococli.jar . && rmdir lib
 
-build/org.jacoco.agent-0.8.0-runtime.jar: build
+build/org.jacoco.agent-0.8.0-runtime.jar:
+	mkdir -p build
 	cd build && wget -nv -O org.jacoco.agent-0.8.0-runtime.jar https://repo1.maven.org/maven2/org/jacoco/org.jacoco.agent/0.8.0/org.jacoco.agent-0.8.0-runtime.jar
 
-build/randoop-all-4.3.3.jar: build
-	echo "See scripts/mutation-repro.md to obtain randoop-all-4.3.3.jar"
+build/randoop-all-4.3.3.jar:
+	mkdir -p build
+	cd build && wget -nv https://github.com/randoop/randoop/releases/download/v4.3.3/randoop-all-4.3.3.jar
 
-build/replacecall-4.3.3.jar: build
-	cd build && wget https://github.com/776styjsu/randoop/releases/download/replacecall-grt-v1.0.1/replacecall-4.3.3.jar
+build/major:
+	mkdir -p build
+	cd build && wget -nv https://mutation-testing.org/downloads/files/major-2.2.0_jre8.zip
+	cd build && unzip -o major-2.2.0_jre8.zip
 
-build/evosuite-1.2.0.jar: build
+build/randoop:
+	mkdir -p build
+	cd build && git clone git@github.com:randoop/randoop.git
+
+randoop-from-source:
+	cd build/randoop && \
+	git pull && \
+	. "${MAKEFILE_DIR}usejdk.sh" && \
+	. ../../usejdk.sh && \
+	usejdk11 && \
+	./gradlew jar && \
+	mv -f build/libs/randoop-all-4.3.3.jar .. && \
+	usejdk8
+
+build/libs/randoop-all-4.3.3.jar:
+	mv -f build/libs/randoop-all-4.3.3.jar agent/replacecall/build/libs/replacecall-4.3.3.jar ..
+
+build/replacecall-4.3.3.jar:
+	LATEST_RELEASE=$$(curl -s https://api.github.com/repos/randoop/grt-replacecall/releases/latest | grep -o '"tag_name": "[^"]*' | cut -d'"' -f4) && \
+	wget "https://github.com/randoop/grt-replacecall/releases/download/$${LATEST_RELEASE}/replacecall-4.3.3.jar" && \
+	mv replacecall-4.3.3.jar build/
+
+build/evosuite-1.2.0.jar:
+	mkdir -p build
 	cd build && wget https://github.com/EvoSuite/evosuite/releases/download/v1.2.0/evosuite-1.2.0.jar
 
-build/evosuite-standalone-runtime-1.2.0.jar: build
+build/evosuite-standalone-runtime-1.2.0.jar:
+	mkdir -p build
 	cd build && wget https://github.com/EvoSuite/evosuite/releases/download/v1.2.0/evosuite-standalone-runtime-1.2.0.jar
 
-build/junit-4.12.jar: build
+build/junit-4.12.jar:
+	mkdir -p build
 	cd build && wget https://repo1.maven.org/maven2/junit/junit/4.12/junit-4.12.jar
 
-build/junit-4.13.2.jar: build
+build/junit-4.13.2.jar:
+	mkdir -p build
 	cd build && wget https://repo1.maven.org/maven2/junit/junit/4.13.2/junit-4.13.2.jar
 
-build/hamcrest-core-1.3.jar: build
+build/hamcrest-core-1.3.jar:
+	mkdir -p build
 	cp ../subject-programs/hamcrest-core-1.3.jar build/
 
-build/major: build
-	cd build && wget -nv http://mutation-testing.org/downloads/files/major-2.2.0_jre8.zip && unzip -o major-2.2.0_jre8.zip
-
 build/major/bin/ant.m:
-	mkdir -p build/major/bin
-	cd build/major/bin && wget https://github.com/776styjsu/randoop/releases/download/replacecall-grt-v1.0.1/ant.m
+	wget https://github.com/776styjsu/randoop/releases/download/replacecall-grt-v1.0.1/ant.m
+	mv ant.m build/major/bin/
 
 results:
 	mkdir -p results

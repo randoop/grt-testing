@@ -14,7 +14,7 @@ find . -maxdepth 1 -type f ! -name "build.xml" \
     ! -name "apply-build-patch.sh" \
     ! -name "Makefile" \
     ! -name "mutation.sh" \
-    ! -name "project-config-status.csv" \
+    ! -name "program-config-status.csv" \
     ! -name "mutation-repro.md" \
     ! -name "mutation-prerequisites.md" \
     ! -name "mutation-evosuite-repro.md" \

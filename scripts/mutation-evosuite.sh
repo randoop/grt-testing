@@ -11,8 +11,6 @@
 #  * Computes mutation score (mutants are generated using Major via ant).
 #  * Computes code coverage (using Jacoco via Maven).
 #
-# Each experiment can run multiple times, with a configurable time (in
-# seconds per class or total time).
 #
 # Directories and files:
 # - `evosuite-tests/`: generated test suites, including their compiled versions.
@@ -26,15 +24,7 @@
 set -e
 set -o pipefail
 
-# Check for Java 8
-JAVA_VERSION=$(java -version 2>&1 | awk -F'[._"]' 'NR==1{print ($2 == "version" && $3 < 9) ? $4 : $3}')
-if [ "$JAVA_VERSION" -ne 8 ]; then
-    echo "Requires Java 8. Please use Java 8 to proceed."
-    exit 1
-fi
-
 USAGE_STRING="usage: mutation-evosuite.sh [-h] [-v] [-r] [-t total_time] [-c time_per_class] <test case name>"
-
 if [ $# -eq 0 ]; then
     echo "$0: $USAGE_STRING"
     exit 1
@@ -49,6 +39,9 @@ MAJOR_HOME=$(realpath "build/major/") # Major home directory, for mutation testi
 CURR_DIR=$(realpath "$(pwd)")
 EVOSUITE_JAR=$(realpath "build/evosuite-1.2.0.jar")
 
+. "${SCRIPT_DIR}/usejdk.sh"
+usejdk8
+
 #===============================================================================
 # Argument Parsing & Experiment Configuration
 #===============================================================================
@@ -57,6 +50,7 @@ SECONDS_CLASS="2"      # Default seconds per class.
                        # 2 s/class, 10 s/class, 30 s/class, and 60 s/class.
 
 TOTAL_TIME=""          # Total experiment time, mutually exclusive with SECONDS_CLASS
+SECONDS_CLASS=""       # Seconds per class, mutually exclusive with TOTAL_TIME
 NUM_LOOP=1             # Number of experiment runs (10 in GRT paper)
 VERBOSE=0              # Verbose option
 REDIRECT=0             # Redirect output to mutation_output.txt
@@ -71,10 +65,6 @@ for arg in "$@"; do
     fi
   fi
 done
-
-# Initialize variables
-TOTAL_TIME=""
-SECONDS_CLASS=""
 
 # Parse command-line arguments
 while getopts ":hvrt:c:" opt; do
@@ -145,8 +135,23 @@ SRC_BASE_DIR="$(realpath "$SCRIPT_DIR/../subject-programs/src/$SUBJECT_PROGRAM")
 # Path to the jar file of the subject program.
 SRC_JAR=$(realpath "$SCRIPT_DIR/../subject-programs/$SUBJECT_PROGRAM.jar")
 
+# Number of classes in given jar file.
+NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
+
+# Time limit for running the test generator.
+if [[ -n "$TOTAL_TIME" ]]; then
+    TIME_LIMIT=$(( TOTAL_TIME / NUM_CLASSES ))
+elif [[ -n "$SECONDS_CLASS" ]]; then
+    TIME_LIMIT=$SECONDS_CLASS
+else
+    TIME_LIMIT=2
+fi
+
+echo "TIME_LIMIT: $TIME_LIMIT seconds"
+echo
+
 # Map test case to their respective source
-declare -A project_src=(
+declare -A program_src=(
     ["a4j-1.0b"]="/src/"
     ["asm-5.0.1"]="/src/main/java/"
     ["bcel-5.2"]="/src/java/"
@@ -177,7 +182,7 @@ declare -A project_src=(
     ["pmd-core-5.2.2"]="/pmd-core/src/main/java/"
 )
 # Link to src files for mutation generation and analysis
-JAVA_SRC_DIR=$SRC_BASE_DIR${project_src[$SUBJECT_PROGRAM]}
+JAVA_SRC_DIR=$SRC_BASE_DIR${program_src[$SUBJECT_PROGRAM]}
 
 # Map project names to their respective dependencies
 declare -A project_deps=(
@@ -320,21 +325,6 @@ if [[ "$VERBOSE" -eq 1 ]]; then
     echo
 fi
 
-# Number of classes in given jar file.
-NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
-
-# Time limit for running the test generator.
-if [[ -n "$TOTAL_TIME" ]]; then
-    TIME_LIMIT=$(( TOTAL_TIME / NUM_CLASSES ))
-elif [[ -n "$SECONDS_CLASS" ]]; then
-    TIME_LIMIT=$SECONDS_CLASS
-else
-    TIME_LIMIT=2
-fi
-
-echo "TIME_LIMIT: $TIME_LIMIT seconds"
-echo
-
 #===============================================================================
 # Test generator command configuration
 #===============================================================================
@@ -363,18 +353,16 @@ EVOSUITE_COMMAND=(
 #===============================================================================
 
 echo "Modifying build-evosuite.xml and pom.xml for $SUBJECT_PROGRAM..."
-./apply-build-patch.sh _ $SUBJECT_PROGRAM
+./apply-build-patch-evosuite.sh $SUBJECT_PROGRAM
 
 # Installs all of the jarfiles in libs/ to maven (used for measuring code coverage)
 ./generate-mvn-dependencies.sh
 
-(
-    cd "$JAVA_SRC_DIR" || exit 1
-    if git rev-parse --verify include-major >/dev/null 2>&1; then
-        echo "Checking out include-major..."
-        git checkout include-major
-    fi
-)
+cd "$JAVA_SRC_DIR" || exit 1
+if git checkout include-major >/dev/null 2>&1; then
+    echo "Checked out include-major."
+fi
+cd - || exit 1
 
 echo
 
@@ -382,7 +370,7 @@ echo
 mkdir -p results/
 if [ ! -f "results/info.csv" ]; then
     touch results/info.csv
-    echo -e "GenerationType,FileName,TimeLimit,InstructionCoverage,BranchCoverage,MutationScore" > results/info.csv
+    echo -e "Version,FileName,TimeLimit,InstructionCoverage,BranchCoverage,MutationScore" > results/info.csv
 fi
 
 #===============================================================================
@@ -413,9 +401,9 @@ do
         LIB_ARG=$(echo "$LIB_ARG" | sed 's/\([^:]*\)[^:]*$/:/' )
     fi
 
-        #===============================================================================
-        # Coverage & Mutation Analysis
-        #===============================================================================
+    #===============================================================================
+    # Coverage & Mutation Analysis
+    #===============================================================================
 
     RESULT_DIR="results/$(date +%Y%m%d-%H%M%S)-$SUBJECT_PROGRAM-evosuite"
     mkdir -p "$RESULT_DIR"
@@ -501,15 +489,18 @@ do
         exec 3>&- 4>&-
     fi
 
-    echo "Results will be saved in $RESULT_DIR"
-    set +e
-    # Move all output files into the results/ directory.
-    # `suppression.log` may be in one of two locations depending on if using include-major branch.
-    mv "$JAVA_SRC_DIR"/suppression.log "$RESULT_DIR" 2>/dev/null
-    mv build/suppression.log "$RESULT_DIR" 2>/dev/null
-    mv build/major.log build/mutants.log "$RESULT_DIR"
-    (cd results; mv covMap.csv details.csv testMap.csv preprocessing.ser ../"$RESULT_DIR")
-    set -e
+    # Move output files into the $RESULT_DIR directory.
+    FILES_TO_MOVE=(
+        "build/major.log"
+        "build/mutants.log"
+        "build/suppression.log"
+        "build/pom.xml.bak"
+        "results/covMap.csv"
+        "results/details.csv"
+        "results/preprocessing.ser"
+        "results/testMap.csv"
+    )
+    mv "${FILES_TO_MOVE[@]}" "$RESULT_DIR"
 done
 
 #===============================================================================
@@ -517,9 +508,9 @@ done
 #===============================================================================
 
 echo
-echo "Restoring build-evosuite.xml"
-# restore build.xml and build-evosuite.xml
-./apply-build-patch.sh > /dev/null
+echo "Restoring build-evosuite.xml and pom.xml"
+# restore build-evosuite.xml and pom.xml
+./apply-build-patch-evosuite.sh > /dev/null
 
 echo "Restoring $JAVA_SRC_DIR to main branch"
 # switch to main branch (may already be there)
