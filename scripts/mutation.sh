@@ -161,12 +161,13 @@ declare -A program_src=(
     ["commons-math3-3.2"]="/src/main/java/"
     ["commons-primitives-1.0"]="/src/java/"
     ["dcParseArgs-10.2008"]="/src/"
+    ["hamcrest-core-1.3"]="/hamcrest-core/src/main/java/"
     ["javassist-3.19"]="/src/main/"
     ["jdom-1.0"]="/src/"
     ["JSAP-2.1"]="/src/"
     ["nekomud-r16"]="/src/"
     ["shiro-core-1.2.3"]="/core/"
-    ["slf4j-api-1.7.12"]="/slf4j-api"
+    ["slf4j-api-1.7.12"]="/slf4j-api/src/main/java/"
 )
 JAVA_SRC_DIR=$SRC_BASE_DIR${program_src[$SUBJECT_PROGRAM]}
 
@@ -447,9 +448,9 @@ do
         mv results/summary.csv "$RESULT_DIR"
 
         # Calculate Mutation Score
-        mutants_covered=$(awk -F, 'NR==2 {print $3}' "$RESULT_DIR"/summary.csv)
+        mutants_generated=$(awk -F, 'NR==2 {print $1}' "$RESULT_DIR"/summary.csv)
         mutants_killed=$(awk -F, 'NR==2 {print $4}' "$RESULT_DIR"/summary.csv)
-        mutation_score=$(echo "scale=4; $mutants_killed / $mutants_covered * 100" | bc)
+        mutation_score=$(echo "scale=4; $mutants_killed / $mutants_generated * 100" | bc)
         mutation_score=$(printf "%.2f" "$mutation_score")
 
         echo "Instruction Coverage: $instruction_coverage%"
@@ -475,6 +476,7 @@ do
         FILES_TO_MOVE=(
             "major.log"
             "mutants.log"
+            "suppression.log"
             "results/covMap.csv"
             "results/details.csv"
             "results/preprocessing.ser"
