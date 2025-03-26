@@ -183,7 +183,10 @@ declare -A program_deps=(
 )
 #   ["hamcrest-core-1.3"]="$SRC_BASE_DIR/lib/"  this one needs changes?
 
-CLASSPATH=${program_deps[$SUBJECT_PROGRAM]}
+CLASSPATH="$SRC_JAR"
+if [[ -n "${program_deps[$SUBJECT_PROGRAM]}" ]]; then
+    CLASSPATH="$CLASSPATH:${program_deps[$SUBJECT_PROGRAM]}"
+fi
 
 LIB_ARG=""
 if [[ $CLASSPATH ]]; then
