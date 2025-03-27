@@ -126,7 +126,7 @@ echo "Running mutation test on $1"
 echo
 
 #===============================================================================
-# Program Paths & Dependencies
+# Project Paths & Dependencies
 #===============================================================================
 
 # Path to the base directory of the source code.
@@ -166,10 +166,11 @@ declare -A program_src=(
     ["shiro-core-1.2.3"]="/core/"
     ["slf4j-api-1.7.12"]="/slf4j-api"
 )
+# Link to src files for mutation generation and analysis
 JAVA_SRC_DIR=$SRC_BASE_DIR${program_src[$SUBJECT_PROGRAM]}
 
-# Map subject programs to their dependencies
-declare -A program_deps=(
+# Map project names to their respective dependencies
+declare -A project_deps=(
     ["a4j-1.0b"]="$SRC_BASE_DIR/jars/"
     ["fixsuite-r48"]="$SRC_BASE_DIR/lib/"
     ["jdom-1.0"]="$MAJOR_HOME/lib/ant:$SRC_BASE_DIR/lib/"
@@ -180,7 +181,8 @@ declare -A program_deps=(
 )
 #   ["hamcrest-core-1.3"]="$SRC_BASE_DIR/lib/"  this one needs changes?
 
-CLASSPATH=${program_deps[$SUBJECT_PROGRAM]}
+# Link to dependencies
+CLASSPATH=${project_deps[$SUBJECT_PROGRAM]}
 
 LIB_ARG=""
 if [[ $CLASSPATH ]]; then
@@ -486,9 +488,10 @@ done
 #===============================================================================
 # Build System Cleanup
 #===============================================================================
+
 echo
+
 echo "Restoring build.xml"
-# restore build.xml
 ./apply-build-patch-randoop.sh > /dev/null
 
 echo "Restoring $JAVA_SRC_DIR to main branch"

@@ -18,7 +18,7 @@
 # - 'libs/': All the dependencies Maven needs for performing code coverage.
 # - 'target/': Compiled subject program code and compiled tests for Jacoco (code coverage).
 # - `results/info.csv`: statistics about each iteration.
-# - 'results/`: everything else specific to the most recent iteration.
+# - `results/`: everything else specific to the most recent iteration.
 
 # Fail this script on errors.
 set -e
@@ -150,7 +150,7 @@ fi
 echo "TIME_LIMIT: $TIME_LIMIT seconds"
 echo
 
-# Map test case to their respective source
+# Map subject programs to their source directories
 declare -A program_src=(
     ["a4j-1.0b"]="/src/"
     ["asm-5.0.1"]="/src/main/java/"
@@ -353,7 +353,7 @@ EVOSUITE_COMMAND=(
 #===============================================================================
 
 echo "Modifying build-evosuite.xml and pom.xml for $SUBJECT_PROGRAM..."
-./apply-build-patch-evosuite.sh $SUBJECT_PROGRAM
+./apply-build-patch-evosuite.sh "$SUBJECT_PROGRAM"
 
 # Installs all of the jarfiles in libs/ to maven (used for measuring code coverage)
 ./generate-mvn-dependencies.sh
@@ -508,8 +508,8 @@ done
 #===============================================================================
 
 echo
+
 echo "Restoring build-evosuite.xml and pom.xml"
-# restore build-evosuite.xml and pom.xml
 ./apply-build-patch-evosuite.sh > /dev/null
 
 echo "Restoring $JAVA_SRC_DIR to main branch"
