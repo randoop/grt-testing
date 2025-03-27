@@ -1,6 +1,7 @@
-# Reproduction Instructions for Mutation Testing Script
+# Reproduction Instructions for Randoop Mutation Testing Script
 
-This document describes how to run the mutation testing script `mutation.sh`.
+This document describes how to run the
+Randoop mutation testing script (`[mutation.sh]`).
 
 
 ## Prerequisites
@@ -17,15 +18,20 @@ Parameters:
     - `-c`: Specifies the time limit for test generation per class (in seconds, defaults to 2s/c), mutually exclusive with `-t`
     - `[subject project]`: The name of the subject program for which you want to generate tests
     and perform mutation testing. The name is one of the jar files in `../subject-programs/`, without ".jar".
-    For example, to run the script on the `commons-lang3-3.0` project, with verbose output and output directed to a file, you would run:
 
-    ./mutation.sh -vr commons-lang3-3.0
+For example, to run the script on the `commons-lang3-3.0` project, with verbose output and output directed to a file, you would run:
+```sh
+./mutation.sh -vr commons-lang3-3.0
+```
 
 3. **Output**:
-The script will generate Randoop's test suites in a `build/test` subdirectory.
-Compiled tests and code will be stored in `build/bin` subdirectory.
-The `results/` directory contains the results of coverage and mutation analysis.
-See `results/info.csv` for a summary of coverage and mutation scores from previous runs.
+
+ * Test generation and Major output goes to standard output unless `-r` is specified.
+ * The script generates test suites in a
+   `build/test/` directory.
+ * Compiled tests and code for Major will be stored in the `build/bin/` directory.
+ * The `results/` directory contains the results of coverage and mutation analysis.
+ * See `results/info.csv` for a summary of coverage and mutation scores from previous runs.
 
 
 ## Randoop version
