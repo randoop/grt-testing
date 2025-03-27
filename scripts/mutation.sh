@@ -165,7 +165,10 @@ declare -A program_src=(
     ["javassist-3.19"]="/src/main/"
     ["jdom-1.0"]="/src/"
     ["JSAP-2.1"]="/src/"
+    ["jvc-1.1"]="/src"
     ["nekomud-r16"]="/src/"
+    ["pmd-core-5.2.2"]="/pmd-core/src/main/java/"
+    ["sat4j-core-2.3.5"]="/org.sat4j.core/src/main/java/"
     ["shiro-core-1.2.3"]="/core/"
     ["slf4j-api-1.7.12"]="/slf4j-api/src/main/java/"
 )
@@ -179,6 +182,7 @@ declare -A program_deps=(
     ["JSAP-2.1"]="$MAJOR_HOME/lib/ant:$SRC_BASE_DIR/lib/"  # need to override ant.jar in $SRC_BASE_DIR/lib
     ["jvc-1.1"]="$SRC_BASE_DIR/lib/"
     ["nekomud-r16"]="$SRC_BASE_DIR/lib/"
+    ["pmd-core-5.2.2"]="$SRC_BASE_DIR/pmd-core/lib"
     ["sat4j-core-2.3.5"]="$SRC_BASE_DIR/lib/"
 )
 #   ["hamcrest-core-1.3"]="$SRC_BASE_DIR/lib/"  this one needs changes?
@@ -389,7 +393,7 @@ do
             RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2 --constant-mining=true"
         fi
 
-        usejdk11 # Randoop requires Java 11
+        usejdk8 # Randoop requires Java 11
         $RANDOOP_COMMAND_2
         usejdk8 # Subject programs require Java 8
 
