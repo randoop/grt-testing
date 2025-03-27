@@ -177,7 +177,10 @@ JAVA_SRC_DIR=$SRC_BASE_DIR${program_src[$SUBJECT_PROGRAM]}
 # Map subject programs to their dependencies
 declare -A program_deps=(
     ["a4j-1.0b"]="$SRC_BASE_DIR/jars/"
+    ["commons-compress-1.8"]="build/lib/"
+    ["easymock-3.2"]="build/lib/"
     ["fixsuite-r48"]="$SRC_BASE_DIR/lib/"
+    ["jaxen-1.1.6"]="build/lib/"
     ["jdom-1.0"]="$MAJOR_HOME/lib/ant:$SRC_BASE_DIR/lib/"
     ["JSAP-2.1"]="$MAJOR_HOME/lib/ant:$SRC_BASE_DIR/lib/"  # need to override ant.jar in $SRC_BASE_DIR/lib
     ["jvc-1.1"]="$SRC_BASE_DIR/lib/"
@@ -186,6 +189,30 @@ declare -A program_deps=(
     ["sat4j-core-2.3.5"]="$SRC_BASE_DIR/lib/"
 )
 #   ["hamcrest-core-1.3"]="$SRC_BASE_DIR/lib/"  this one needs changes?
+
+if [ "$SUBJECT_PROGRAM" == "commons-compress-1.8" ]; then
+    rm -rf build/lib
+    mkdir -p build/lib
+    wget -P build/lib https://repo1.maven.org/maven2/org/tukaani/xz/1.5/xz-1.5.jar
+    wget -P build/lib https://repo1.maven.org/maven2/junit/junit/4.13.2/junit-4.13.2.jar
+fi
+
+if [ "$SUBJECT_PROGRAM" == "easymock-3.2" ]; then
+    rm -rf build/lib
+    mkdir -p build/lib
+    wget -P build/lib https://repo1.maven.org/maven2/cglib/cglib/3.3.0/cglib-3.3.0.jar
+fi
+
+if [ "$SUBJECT_PROGRAM" == "jaxen-1.1.6" ]; then
+    rm -rf build/lib
+    mkdir -p build/lib
+    wget -P build/lib https://repo1.maven.org/maven2/dom4j/dom4j/1.6.1/dom4j-1.6.1.jar
+    wget -P build/lib https://repo1.maven.org/maven2/jdom/jdom/1.0/jdom-1.0.jar
+    wget -P build/lib https://repo1.maven.org/maven2/xml-apis/xml-apis/1.3.02/xml-apis-1.3.02.jar
+    wget -P build/lib https://repo1.maven.org/maven2/xerces/xercesImpl/2.6.2/xercesImpl-2.6.2.jar
+    wget -P build/lib https://repo1.maven.org/maven2/xom/xom/1.0/xom-1.0.jar
+    wget -P build/lib https://repo1.maven.org/maven2/junit/junit/4.13.2/junit-4.13.2.jar
+fi
 
 CLASSPATH="$SRC_JAR"
 if [[ -n "${program_deps[$SUBJECT_PROGRAM]}" ]]; then
