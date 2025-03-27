@@ -2,7 +2,9 @@
 ## Overview
 
 This repository contains test cases and scripts designed for testing
-[Randoop](https://github.com/randoop/randoop) and [EvoSuite], specifically for comparison with
+[Randoop](https://github.com/randoop/randoop) and
+[EvoSuite](https://www.evosuite.org/),
+specifically for comparison with
 the results presented in the paper "[GRT: Program-Analysis-Guided Random
 Testing](GRT_Program-Analysis-Guided_Random_Testing.pdf)"
 
