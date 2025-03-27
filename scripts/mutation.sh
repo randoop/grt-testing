@@ -7,10 +7,11 @@
 # For documentation of how to run this script, see file `mutation-repro.md`.
 #
 # This script:
-#  * uses Randoop to generate test suites for subject programs and
-#  * performs mutation testing to determine how Randoop features affect
-#    various coverage metrics including coverage and mutation score
-#    (mutants are generated using Major).
+#  * Generates test suites using Randoop.
+#  * Computes mutation score (mutants are generated using Major via ant).
+#  * Computes code coverage (using Jacoco via Maven).
+# The metrics can be used to determine how Randoop features affect performance.
+#
 #
 # Directories and files:
 # - `build/test*`: generated test suites, including their compiled versions.
