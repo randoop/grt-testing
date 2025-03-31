@@ -7,10 +7,11 @@
 # For documentation of how to run this script, see file `mutation-repro.md`.
 #
 # This script:
-#  * uses Randoop to generate test suites for subject programs and
-#  * performs mutation testing to determine how Randoop features affect
+#  * Uses Randoop to generate test suites for subject programs and
+#    Performs mutation testing to determine how Randoop features affect
 #    various coverage metrics including coverage and mutation score
 #    (mutants are generated using Major).
+#  * Randoop can be run several times to mitigate the effects of randomness.
 #
 # Directories and files:
 # - `build/test*`: Randoop-created test suites.
@@ -45,12 +46,11 @@ REPLACECALL_JAR=$(realpath "build/replacecall-4.3.3.jar") # For replacing undesi
 #===============================================================================
 # Argument Parsing & Experiment Configuration
 #===============================================================================
-SECONDS_CLASS="2"      # Default seconds per class.
+TOTAL_TIME=""          # Total experiment time, mutually exclusive with SECONDS_CLASS
+SECONDS_CLASS=""       # Default seconds per class.
                        # The paper runs Randoop with 4 different time limits:
                        # 2 s/class, 10 s/class, 30 s/class, and 60 s/class.
 
-TOTAL_TIME=""          # Total experiment time, mutually exclusive with SECONDS_CLASS
-SECONDS_CLASS=""       # Seconds per class, mutually exclusive with TOTAL_TIME
 NUM_LOOP=1             # Number of experiment runs (10 in GRT paper)
 VERBOSE=0              # Verbose option
 REDIRECT=0             # Redirect output to mutation_output.txt
@@ -83,19 +83,9 @@ while getopts ":hvrt:c:" opt; do
       REDIRECT=1
       ;;
     t )
-      # If -c has already been set, error out.
-      if [ -n "$SECONDS_CLASS" ]; then
-        echo "Options -t and -c cannot be used together in any form (e.g., -t a -c b)."
-        exit 1
-      fi
       TOTAL_TIME="$OPTARG"
       ;;
     c )
-      # If -t has already been set, error out.
-      if [ -n "$TOTAL_TIME" ]; then
-        echo "Options -t and -c cannot be used together in any form (e.g., -c a -t b)."
-        exit 1
-      fi
       SECONDS_CLASS="$OPTARG"
       ;;
     \? )
@@ -112,6 +102,17 @@ while getopts ":hvrt:c:" opt; do
 done
 
 shift $((OPTIND -1))
+
+# Enforce that mutually exclusive options are not bundled together
+if [[ -n "$TOTAL_TIME" ]] && [[ -n "$SECONDS_CLASS" ]]; then
+  echo "Options -t and -c cannot be used together in any form (e.g., -t -c)."
+  exit 1
+fi
+
+# Default to 2 seconds per class if not specified
+if [[ -z "$SECONDS_CLASS" ]] && [[ -z "$TOTAL_TIME" ]]; then
+    SECONDS_CLASS=2
+fi
 
 # Name of the subject program
 SUBJECT_PROGRAM="$1"
