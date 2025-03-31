@@ -6,8 +6,6 @@
 # Initialize default values
 VERBOSE=0
 REDIRECT=0
-TOTAL_TIME=""
-SECONDS_CLASS=""
 
 # Check for invalid combinations of command-line arguments
 for arg in "$@"; do
