@@ -7,8 +7,9 @@ build/jacoco.jar:
 	cd build && wget -nv -O jacoco-0.8.12.zip https://search.maven.org/remotecontent?filepath=org/jacoco/jacoco/0.8.12/jacoco-0.8.12.zip
 	cd build && unzip -o jacoco-0.8.12.zip lib/jacocoagent.jar lib/jacocoant.jar lib/jacococli.jar && mv lib/jacocoagent.jar lib/jacocoant.jar lib/jacococli.jar . && rmdir lib
 
+# Currently, we build randoop from source instead of downloading the jar
 build/randoop-all-4.3.3.jar:
-	mkdir -p build
+	# mkdir -p build
 	# cd build
 	# wget -nv https://github.com/randoop/randoop/releases/download/v4.3.3/randoop-all-4.3.3.jar
 	echo "See scripts/reproinstruction.txt to obtain randoop-all-4.3.3.jar"
@@ -31,9 +32,6 @@ randoop-from-source:
 	./gradlew jar && \
 	mv -f build/libs/randoop-all-4.3.3.jar .. && \
 	usejdk8
-
-build/libs/randoop-all-4.3.3.jar:
-	mv -f build/libs/randoop-all-4.3.3.jar agent/replacecall/build/libs/replacecall-4.3.3.jar ..
 
 build/replacecall-4.3.3.jar:
 	LATEST_RELEASE=$$(curl -s https://api.github.com/repos/randoop/grt-replacecall/releases/latest | grep -o '"tag_name": "[^"]*' | cut -d'"' -f4) && \
