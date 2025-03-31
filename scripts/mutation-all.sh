@@ -34,19 +34,9 @@ while getopts ":hvrt:c:" opt; do
       REDIRECT=1
       ;;
     t )
-      # If -c has already been set, error out.
-      if [ -n "$SECONDS_CLASS" ]; then
-        echo "Options -t and -c cannot be used together in any form (e.g., -t a -c b)."
-        exit 1
-      fi
       TOTAL_TIME="$OPTARG"
       ;;
     c )
-      # If -t has already been set, error out.
-      if [ -n "$TOTAL_TIME" ]; then
-        echo "Options -t and -c cannot be used together in any form (e.g., -c a -t b)."
-        exit 1
-      fi
       SECONDS_CLASS="$OPTARG"
       ;;
     \? )
@@ -66,7 +56,7 @@ shift $((OPTIND -1))
 
 # Enforce that mutually exclusive options are not bundled together
 if [[ -n "$TOTAL_TIME" ]] && [[ -n "$SECONDS_CLASS" ]]; then
-  echo "Do not use -t and -c together."
+  echo "Options -t and -c cannot be used together in any form (e.g., -t -c)."
   exit 1
 fi
 
