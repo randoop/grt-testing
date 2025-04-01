@@ -164,22 +164,36 @@ echo
 
 # Map subject programs to their source directories.
 # Subject programs not listed here default to top-level source directory ($SRC_BASE_DIR).
+# Map subject programs to their source directories
 declare -A program_src=(
     ["a4j-1.0b"]="/src/"
-    ["asm-5.0.1"]="/src/"
-    ["bcel-5.2"]="/src/"
+    ["asm-5.0.1"]="/src/main/java/"
+    ["bcel-5.2"]="/src/java/"
     ["commons-codec-1.9"]="/src/main/java/"
+    ["commons-cli-1.2"]="/src/java/"
     ["commons-collections4-4.0"]="/src/main/java/"
+    ["commons-compress-1.8"]="/src/main/java/"
     ["commons-lang3-3.0"]="/src/main/java/"
     ["commons-math3-3.2"]="/src/main/java/"
     ["commons-primitives-1.0"]="/src/java/"
     ["dcParseArgs-10.2008"]="/src/"
+    ["easymock-3.2"]="/easymock/src/main/java/"
+    ["fixsuite-r48"]="/library/"
+    ["guava-16.0.1"]="/src/"
+    ["hamcrest-core-1.3"]="/hamcrest-core/src/main/java/"
     ["javassist-3.19"]="/src/main/"
+    ["javax.mail-1.5.1"]="/src/main/java/"
+    ["jaxen-1.1.6"]="/src/java/main/"
+    ["jcommander-1.35"]="/src/main/java"
     ["jdom-1.0"]="/src/"
-    ["JSAP-2.1"]="/src/"
+    ["joda-time-2.3"]="/src/main/java/"
+    ["JSAP-2.1"]="/src/java/"
+    ["jvc-1.1"]="/src/"
     ["nekomud-r16"]="/src/"
-    ["shiro-core-1.2.3"]="/core/"
-    ["slf4j-api-1.7.12"]="/slf4j-api"
+    ["sat4j-core-2.3.5"]="/org.sat4j.core/src/main/java/"
+    ["shiro-core-1.2.3"]="/core/src/main/java/"
+    ["slf4j-api-1.7.12"]="/slf4j-api/src/main/java/"
+    ["pmd-core-5.2.2"]="/pmd-core/src/main/java/"
 )
 # Link to src files for mutation generation and analysis
 JAVA_SRC_DIR=$SRC_BASE_DIR${program_src[$SUBJECT_PROGRAM]}
@@ -462,9 +476,9 @@ do
         mv results/summary.csv "$RESULT_DIR"
 
         # Calculate Mutation Score
-        mutants_covered=$(awk -F, 'NR==2 {print $3}' "$RESULT_DIR"/summary.csv)
+        mutants_generated=$(awk -F, 'NR==2 {print $1}' "$RESULT_DIR"/summary.csv)
         mutants_killed=$(awk -F, 'NR==2 {print $4}' "$RESULT_DIR"/summary.csv)
-        mutation_score=$(echo "scale=4; $mutants_killed / $mutants_covered * 100" | bc)
+        mutation_score=$(echo "scale=4; $mutants_killed / $mutants_generated * 100" | bc)
         mutation_score=$(printf "%.2f" "$mutation_score")
 
         echo "Instruction Coverage: $instruction_coverage%"
@@ -490,6 +504,7 @@ do
         FILES_TO_MOVE=(
             "major.log"
             "mutants.log"
+            "suppression.log"
             "results/covMap.csv"
             "results/details.csv"
             "results/preprocessing.ser"

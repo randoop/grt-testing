@@ -376,10 +376,21 @@ fi
 #===============================================================================
 # Test Generation & Execution
 #===============================================================================
+# Remove old test directories.
+rm -rf "$SCRIPT_DIR"/build/evosuite-tests/
 
 # shellcheck disable=SC2034 # i counts iterations but is not otherwise used.
 for i in $(seq 1 $NUM_LOOP)
 do
+    TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+    # Test directory for each iteration.
+    TEST_DIRECTORY="$SCRIPT_DIR/evosuite-tests/"
+    mkdir -p "$TEST_DIRECTORY"
+
+    # Result directory for each test generation and execution.
+    RESULT_DIR="$SCRIPT_DIR/results/$SUBJECT_PROGRAM-evosuite-$TIMESTAMP"
+    mkdir -p "$RESULT_DIR"
+
     # Check if output needs to be redirected for this loop
     if [[ "$REDIRECT" -eq 1 ]]; then
         touch mutation_output.txt
@@ -387,10 +398,6 @@ do
         exec 3>&1 4>&2
         exec 1>>"mutation_output.txt" 2>&1
     fi
-
-    echo "Using EvoSuite"
-    echo
-    TEST_DIRECTORY="$CURR_DIR/evosuite-tests/"
 
     "${EVOSUITE_COMMAND[@]}"
 
@@ -404,12 +411,8 @@ do
     #===============================================================================
     # Coverage & Mutation Analysis
     #===============================================================================
-
-    RESULT_DIR="results/$(date +%Y%m%d-%H%M%S)-$SUBJECT_PROGRAM-evosuite"
-    mkdir -p "$RESULT_DIR"
-
     echo
-    echo "Compiling and mutating project..."
+    echo "Compiling and mutating subject program..."
     if [[ "$VERBOSE" -eq 1 ]]; then
         echo command:
         echo "$MAJOR_HOME"/bin/ant -buildfile build-evosuite.xml -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" clean compile
@@ -426,9 +429,31 @@ do
     echo
     "$MAJOR_HOME"/bin/ant -buildfile build-evosuite.xml -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" compile.tests
 
-    mv major.log build/major.log 
-    mv mutants.log build/mutants.log
-    mv suppression.log build/suppression.log
+    echo
+    echo "Running tests with coverage..."
+    if [[ "$VERBOSE" -eq 1 ]]; then
+        echo command:
+        echo mvn test jacoco:restore-instrumented-classes jacoco:report -Dmain.source.dir="$JAVA_SRC_DIR"
+    fi
+    echo
+    mvn test jacoco:restore-instrumented-classes jacoco:report -Dmain.source.dir="$JAVA_SRC_DIR"
+
+    mv target/jacoco.csv "$RESULT_DIR"/report.csv
+
+    # Calculate Instruction Coverage
+    inst_missed=$(awk -F, 'NR>1 {sum+=$4} END {print sum}' "$RESULT_DIR"/report.csv)
+    inst_covered=$(awk -F, 'NR>1 {sum+=$5} END {print sum}' "$RESULT_DIR"/report.csv)
+    instruction_coverage=$(echo "scale=4; $inst_covered / ($inst_missed + $inst_covered) * 100" | bc)
+    instruction_coverage=$(printf "%.2f" "$instruction_coverage")
+
+    # Calculate Branch Coverage
+    branch_missed=$(awk -F, 'NR>1 {sum+=$6} END {print sum}' "$RESULT_DIR"/report.csv)
+    branch_covered=$(awk -F, 'NR>1 {sum+=$7} END {print sum}' "$RESULT_DIR"/report.csv)
+    branch_coverage=$(echo "scale=4; $branch_covered / ($branch_missed + $branch_covered) * 100" | bc)
+    branch_coverage=$(printf "%.2f" "$branch_coverage")
+
+    echo "Instruction Coverage: $instruction_coverage%"
+    echo "Branch Coverage: $branch_coverage%"
 
     echo
     echo "Running tests with mutation analysis..."
@@ -439,34 +464,13 @@ do
     echo "$MAJOR_HOME"/bin/"$ANT" -buildfile build-evosuite.xml -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
     "$MAJOR_HOME"/bin/ant -buildfile build-evosuite.xml -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
 
+    mv results/summary.csv "$RESULT_DIR"
+
     # Calculate Mutation Score
-    mutants_generated=$(awk -F, 'NR==2 {print $1}' results/summary.csv)
-    mutants_killed=$(awk -F, 'NR==2 {print $4}' results/summary.csv)
+    mutants_generated=$(awk -F, 'NR==2 {print $1}' "$RESULT_DIR"/summary.csv)
+    mutants_killed=$(awk -F, 'NR==2 {print $4}' "$RESULT_DIR"/summary.csv)
     mutation_score=$(echo "scale=4; $mutants_killed / $mutants_generated * 100" | bc)
     mutation_score=$(printf "%.2f" "$mutation_score")
-
-    echo
-    echo "Running tests with coverage..."
-    if [[ "$VERBOSE" -eq 1 ]]; then
-        echo command:
-        echo "mvn clean test -Dmain.source.dir="$JAVA_SRC_DIR""
-    fi
-    echo
-    mvn test jacoco:restore-instrumented-classes jacoco:report -Dmain.source.dir="$JAVA_SRC_DIR"
-
-    # Calculate Instruction Coverage
-    inst_missed=$(awk -F, 'NR>1 {sum+=$4} END {print sum}' target/jacoco.csv)
-    inst_covered=$(awk -F, 'NR>1 {sum+=$5} END {print sum}' target/jacoco.csv)
-    instruction_coverage=$(echo "scale=4; $inst_covered / ($inst_missed + $inst_covered) * 100" | bc)
-    instruction_coverage=$(printf "%.2f" "$instruction_coverage")
-
-    # Calculate Branch Coverage
-    branch_missed=$(awk -F, 'NR>1 {sum+=$6} END {print sum}' target/jacoco.csv)
-    branch_covered=$(awk -F, 'NR>1 {sum+=$7} END {print sum}' target/jacoco.csv)
-    branch_coverage=$(echo "scale=4; $branch_covered / ($branch_missed + $branch_covered) * 100" | bc)
-    branch_coverage=$(printf "%.2f" "$branch_coverage")
-
-    mv target/jacoco.csv "$RESULT_DIR"
 
     echo "Instruction Coverage: $instruction_coverage%"
     echo "Branch Coverage: $branch_coverage%"
@@ -491,9 +495,9 @@ do
 
     # Move output files into the $RESULT_DIR directory.
     FILES_TO_MOVE=(
-        "build/major.log"
-        "build/mutants.log"
-        "build/suppression.log"
+        "major.log"
+        "mutants.log"
+        "suppression.log"
         "build/pom.xml.bak"
         "results/covMap.csv"
         "results/details.csv"
