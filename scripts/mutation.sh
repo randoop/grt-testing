@@ -187,6 +187,7 @@ declare -A program_deps=(
     ["nekomud-r16"]="$SRC_BASE_DIR/lib/"
     ["pmd-core-5.2.2"]="$SRC_BASE_DIR/pmd-core/lib"
     ["sat4j-core-2.3.5"]="$SRC_BASE_DIR/lib/"
+    ["shiro-core-1.2.3"]="build/lib/"
 )
 #   ["hamcrest-core-1.3"]="$SRC_BASE_DIR/lib/"  this one needs changes?
 
@@ -212,6 +213,13 @@ if [ "$SUBJECT_PROGRAM" == "jaxen-1.1.6" ]; then
     wget -P build/lib https://repo1.maven.org/maven2/xerces/xercesImpl/2.6.2/xercesImpl-2.6.2.jar
     wget -P build/lib https://repo1.maven.org/maven2/xom/xom/1.0/xom-1.0.jar
     wget -P build/lib https://repo1.maven.org/maven2/junit/junit/4.13.2/junit-4.13.2.jar
+fi
+
+if [ "$SUBJECT_PROGRAM" == "shiro-core-1.2.3" ]; then
+    rm -rf build/lib
+    mkdir -p build/lib
+    wget -P build/lib https://repo1.maven.org/maven2/commons-beanutils/commons-beanutils/1.8.3/commons-beanutils-1.8.3.jar
+    wget -P build/lib https://repo1.maven.org/maven2/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar
 fi
 
 CLASSPATH="$SRC_JAR"
