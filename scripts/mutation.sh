@@ -71,25 +71,9 @@ REPLACECALL_JAR=$(realpath "build/replacecall-4.3.3.jar") # For replacing undesi
 #===============================================================================
 # Argument Parsing & Experiment Configuration
 #===============================================================================
-TOTAL_TIME=""          # Total experiment time, mutually exclusive with SECONDS_CLASS
-SECONDS_CLASS=""       # Default seconds per class.
-                       # The paper runs Randoop with 4 different time limits:
-                       # 2 s/class, 10 s/class, 30 s/class, and 60 s/class.
-
 NUM_LOOP=1             # Number of experiment runs (10 in GRT paper)
 VERBOSE=0              # Verbose option
 REDIRECT=0             # Redirect output to mutation_output.txt
-
-
-# Check for invalid combinations of command-line arguments
-for arg in "$@"; do
-  if [[ "$arg" =~ ^-[^-].* ]]; then
-    if [[ "$arg" =~ t ]] && [[ "$arg" =~ c ]]; then
-      echo "Options -t and -c cannot be used together in any form (e.g., -tc or -ct)."
-      exit 1
-    fi
-  fi
-done
 
 # Parse command-line arguments
 while getopts ":hvrt:c:" opt; do
@@ -108,9 +92,13 @@ while getopts ":hvrt:c:" opt; do
       REDIRECT=1
       ;;
     t )
+      # Total experiment time, mutually exclusive with SECONDS_CLASS
       TOTAL_TIME="$OPTARG"
       ;;
     c )
+      # Default seconds per class.
+      # The paper runs Randoop with 4 different time limits:
+      # 2 s/class, 10 s/class, 30 s/class, and 60 s/class.
       SECONDS_CLASS="$OPTARG"
       ;;
     \? )
