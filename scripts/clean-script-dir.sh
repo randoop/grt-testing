@@ -17,6 +17,7 @@ find . -maxdepth 1 -type f ! -name "build.xml" \
     ! -name "mutation-evosuite.sh" \
     ! -name "apply-build-patch-evosuite.sh" \
     ! -name "apply-build-patch-randoop.sh" \
+    ! -name "get-all-subject-src.sh" \
     ! -name "Makefile" \
     ! -name "mutation.sh" \
     ! -name "program-config-status.csv" \

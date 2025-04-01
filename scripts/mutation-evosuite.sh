@@ -11,8 +11,26 @@
 #  * Computes mutation score (mutants are generated using Major via ant).
 #  * Computes code coverage (using Jacoco via Maven).
 #
+#------------------------------------------------------------------------------
+# Example usage:
+#------------------------------------------------------------------------------
+#   ./mutation-evosuite.sh -vr commons-lang3-3.0
 #
-# Directories and files:
+#------------------------------------------------------------------------------
+# Options:
+#------------------------------------------------------------------------------
+#   -v    Enables verbose mode.
+#   -r    Redirect EvoSuite and Major output to results/result/mutation_output.txt.
+#   -t N  Total time limit for EvoSuite test generation (in seconds).
+#   -c N  Per-class time limit for EvoSuite (in seconds, default: 2s/class).
+#         Mutually exclusive with -t.
+#
+#   [subject project] is the name of a jar file in ../subject-programs/, without ".jar".
+#   Example: commons-lang3-3.0
+#
+#------------------------------------------------------------------------------
+# Outputs:
+#------------------------------------------------------------------------------
 # - `evosuite-tests/`: generated test suites, including their compiled versions.
 # - `build/bin`: Compiled tests and code.
 # - 'libs/': All the dependencies Maven needs for performing code coverage.
@@ -45,26 +63,9 @@ usejdk8
 #===============================================================================
 # Argument Parsing & Experiment Configuration
 #===============================================================================
-SECONDS_CLASS="2"      # Default seconds per class.
-                       # The paper runs the test generator with 4 different time limits:
-                       # 2 s/class, 10 s/class, 30 s/class, and 60 s/class.
-
-TOTAL_TIME=""          # Total experiment time, mutually exclusive with SECONDS_CLASS
-SECONDS_CLASS=""       # Seconds per class, mutually exclusive with TOTAL_TIME
 NUM_LOOP=1             # Number of experiment runs (10 in GRT paper)
 VERBOSE=0              # Verbose option
 REDIRECT=0             # Redirect output to mutation_output.txt
-
-
-# Check for invalid combinations of command-line arguments
-for arg in "$@"; do
-  if [[ "$arg" =~ ^-[^-].* ]]; then
-    if [[ "$arg" =~ t ]] && [[ "$arg" =~ c ]]; then
-      echo "Options -t and -c cannot be used together in any form (e.g., -tc or -ct)."
-      exit 1
-    fi
-  fi
-done
 
 # Parse command-line arguments
 while getopts ":hvrt:c:" opt; do
@@ -81,19 +82,13 @@ while getopts ":hvrt:c:" opt; do
       REDIRECT=1
       ;;
     t )
-      # If -c has already been set, error out.
-      if [ -n "$SECONDS_CLASS" ]; then
-        echo "Options -t and -c cannot be used together in any form (e.g., -t a -c b)."
-        exit 1
-      fi
+      # Total experiment time, mutually exclusive with SECONDS_CLASS
       TOTAL_TIME="$OPTARG"
       ;;
     c )
-      # If -t has already been set, error out.
-      if [ -n "$TOTAL_TIME" ]; then
-        echo "Options -t and -c cannot be used together in any form (e.g., -c a -t b)."
-        exit 1
-      fi
+      # Default seconds per class.
+      # The paper runs Randoop with 4 different time limits:
+      # 2 s/class, 10 s/class, 30 s/class, and 60 s/class.
       SECONDS_CLASS="$OPTARG"
       ;;
     \? )
@@ -110,6 +105,17 @@ while getopts ":hvrt:c:" opt; do
 done
 
 shift $((OPTIND -1))
+
+# Enforce that mutually exclusive options are not bundled together
+if [[ -n "$TOTAL_TIME" ]] && [[ -n "$SECONDS_CLASS" ]]; then
+  echo "Options -t and -c cannot be used together in any form (e.g., -t -c)."
+  exit 1
+fi
+
+# Default to 2 seconds per class if not specified
+if [[ -z "$SECONDS_CLASS" ]] && [[ -z "$TOTAL_TIME" ]]; then
+    SECONDS_CLASS=2
+fi
 
 # Name of the subject program.
 SUBJECT_PROGRAM="$1"

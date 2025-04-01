@@ -64,7 +64,7 @@
                mutationAnalysis="true"
                testOrder="sort_methods"
                serializedMapsFile="results/preprocessing.ser"
-               mutantsLogFile="build/mutants.log"
+               mutantsLogFile="mutants.log"
                summaryFile="results/summary.csv"
                mutantDetailsFile="results/details.csv"
                covMapFile="results/covMap.csv"
