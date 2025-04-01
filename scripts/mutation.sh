@@ -164,7 +164,8 @@ fi
 echo "TIME_LIMIT: $TIME_LIMIT seconds"
 echo
 
-# Map subject programs to their source directories
+# Map subject programs to their source directories.
+# Subject programs not listed here default to top-level source directory ($SRC_BASE_DIR).
 declare -A program_src=(
     ["a4j-1.0b"]="/src/"
     ["asm-5.0.1"]="/src/"
