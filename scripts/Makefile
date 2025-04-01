@@ -23,9 +23,12 @@ build/org.jacoco.agent-0.8.0-runtime.jar:
 	mkdir -p build
 	cd build && wget -nv -O org.jacoco.agent-0.8.0-runtime.jar https://repo1.maven.org/maven2/org/jacoco/org.jacoco.agent/0.8.0/org.jacoco.agent-0.8.0-runtime.jar
 
+# Currently, we build randoop from source instead of downloading the jar
 build/randoop-all-4.3.3.jar:
-	mkdir -p build
-	cd build && wget -nv https://github.com/randoop/randoop/releases/download/v4.3.3/randoop-all-4.3.3.jar
+	# mkdir -p build
+	# cd build
+	# wget -nv https://github.com/randoop/randoop/releases/download/v4.3.3/randoop-all-4.3.3.jar
+	echo "See scripts/reproinstruction.txt to obtain randoop-all-4.3.3.jar"
 
 build/major:
 	mkdir -p build
@@ -45,9 +48,6 @@ randoop-from-source:
 	./gradlew jar && \
 	mv -f build/libs/randoop-all-4.3.3.jar .. && \
 	usejdk8
-
-build/libs/randoop-all-4.3.3.jar:
-	mv -f build/libs/randoop-all-4.3.3.jar agent/replacecall/build/libs/replacecall-4.3.3.jar ..
 
 build/replacecall-4.3.3.jar:
 	LATEST_RELEASE=$$(curl -s https://api.github.com/repos/randoop/grt-replacecall/releases/latest | grep -o '"tag_name": "[^"]*' | cut -d'"' -f4) && \
@@ -75,7 +75,8 @@ build/hamcrest-core-1.3.jar:
 	cp ../subject-programs/hamcrest-core-1.3.jar build/
 
 build/major/bin/ant.m:
-	wget https://github.com/776styjsu/randoop/releases/download/replacecall-grt-v1.0.1/ant.m
+	LATEST_RELEASE=$$(curl -s https://api.github.com/repos/randoop/grt-replacecall/releases/latest | grep -o '"tag_name": "[^"]*' | cut -d'"' -f4) && \
+	wget "https://github.com/randoop/grt-replacecall/releases/download/$${LATEST_RELEASE}/ant.m" && \
 	mv ant.m build/major/bin/
 
 results:
