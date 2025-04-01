@@ -12,12 +12,37 @@
 #    various coverage metrics including coverage and mutation score
 #    (mutants are generated using Major).
 #  * Randoop can be run several times to mitigate the effects of randomness.
+
+#------------------------------------------------------------------------------
+# Example usage:
+#------------------------------------------------------------------------------
+#   ./mutation.sh -vr commons-lang3-3.0
+
+#------------------------------------------------------------------------------
+# Options:
+#------------------------------------------------------------------------------
+#   -v    Enables verbose mode.
+#   -r    Redirect Randoop and Major output to results/result/mutation_output.txt.
+#   -t N  Total time limit for Randoop test generation (in seconds).
+#   -c N  Per-class time limit for Randoop (in seconds, default: 2s/class).
+#         Mutually exclusive with -t.
 #
-# Directories and files:
-# - `build/test*`: Randoop-created test suites.
-# - `build/bin`: Compiled tests and code.
-# - `results/info.csv`: statistics about each iteration.
-# - `results/`: everything else specific to the most recent iteration.
+#   [subject project] is the name of a jar file in ../subject-programs/, without ".jar".
+#   Example: commons-lang3-3.0
+
+#------------------------------------------------------------------------------
+# Outputs:
+#------------------------------------------------------------------------------
+# - build/test*   : Randoop-created test suites.
+# - build/bin     : Compiled tests and subject code.
+# - results/      : All output from the current run.
+# - results/info.csv : Summary of statistics (coverage, mutation score, etc.).
+
+#------------------------------------------------------------------------------
+# Randoop versions (for GRT features):
+#------------------------------------------------------------------------------
+# For Demand-driven (PR #1260), GRT Fuzzing (PR #1304), and Elephant Brain (PR #1347),
+# checkout the respective pull requests from the Randoop repository and build locally.
 
 # Fail this script on errors.
 set -e
