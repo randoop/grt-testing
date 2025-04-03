@@ -345,7 +345,7 @@ do
             exec 3>&1 4>&2
             exec 1>>"mutation_output.txt" 2>&1
         fi
-
+        
         FEATURE_NAME=""
         if [[ "$ABLATION" == "true" ]]; then
             FEATURE_NAME="ALL-EXCEPT-$RANDOOP_FEATURE"
@@ -432,7 +432,7 @@ do
         "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" test
 
         mv jacoco.exec "$RESULT_DIR"
-
+        
         java -jar "$JACOCO_CLI_JAR" report "$RESULT_DIR/jacoco.exec" --classfiles "$SRC_JAR" --sourcefiles "$JAVA_SRC_DIR" --csv "$RESULT_DIR"/report.csv
 
         # Calculate Instruction Coverage
