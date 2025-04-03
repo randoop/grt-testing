@@ -38,10 +38,10 @@ build/replacecall-4.3.3.jar:
 	wget "https://github.com/randoop/grt-replacecall/releases/download/$${LATEST_RELEASE}/replacecall-4.3.3.jar" && \
 	mv replacecall-4.3.3.jar build/
 
-build/major/bin/ant.m:
+build/major/bin/ant-replacecall:
 	LATEST_RELEASE=$$(curl -s https://api.github.com/repos/randoop/grt-replacecall/releases/latest | grep -o '"tag_name": "[^"]*' | cut -d'"' -f4) && \
-	wget "https://github.com/randoop/grt-replacecall/releases/download/$${LATEST_RELEASE}/ant.m" && \
-	mv ant.m build/major/bin/
+	wget "https://github.com/randoop/grt-replacecall/releases/download/$${LATEST_RELEASE}/ant-replacecall" && \
+	mv ant-replacecall build/major/bin/
 
 results:
 	mkdir -p results
