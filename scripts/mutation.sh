@@ -7,11 +7,10 @@
 # For documentation of how to run this script, see file `mutation-repro.md`.
 #
 # This script:
-#  * Uses Randoop to generate test suites for subject programs and
+#  * Runs Randoop to generate test suites for subject programs and
 #    Performs mutation testing to determine how Randoop features affect
 #    various coverage metrics including coverage and mutation score
 #    (mutants are generated using Major).
-#  * Randoop can be run several times to mitigate the effects of randomness.
 
 #------------------------------------------------------------------------------
 # Example usage:
@@ -21,11 +20,13 @@
 #------------------------------------------------------------------------------
 # Options:
 #------------------------------------------------------------------------------
+#   -h    Displays this help message.
 #   -v    Enables verbose mode.
 #   -r    Redirect Randoop and Major output to results/result/mutation_output.txt.
 #   -t N  Total time limit for Randoop test generation (in seconds).
 #   -c N  Per-class time limit for Randoop (in seconds, default: 2s/class).
 #         Mutually exclusive with -t.
+#   -n N  Number of iterations to run the experiment (default: 1).
 #
 #   [subject project] is the name of a jar file in ../subject-programs/, without ".jar".
 #   Example: commons-lang3-3.0
@@ -76,7 +77,7 @@ VERBOSE=0              # Verbose option
 REDIRECT=0             # Redirect output to mutation_output.txt
 
 # Parse command-line arguments
-while getopts ":hvrt:c:" opt; do
+while getopts ":hvrt:c:n:" opt; do
   case ${opt} in
     h )
       # Display help message
@@ -100,6 +101,10 @@ while getopts ":hvrt:c:" opt; do
       # The paper runs Randoop with 4 different time limits:
       # 2 s/class, 10 s/class, 30 s/class, and 60 s/class.
       SECONDS_CLASS="$OPTARG"
+      ;;
+    n )
+      # Number of iterations to run the experiment
+      NUM_LOOP="$OPTARG"
       ;;
     \? )
       echo "Invalid option: -$OPTARG" >&2
