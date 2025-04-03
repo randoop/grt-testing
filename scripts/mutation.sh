@@ -137,8 +137,8 @@ SUBJECT_PROGRAM="$1"
 
 # Select the ant executable based on the subject program
 if [ "$SUBJECT_PROGRAM" = "ClassViewer-5.0.5b" ] || [ "$SUBJECT_PROGRAM" = "jcommander-1.35" ] || [ "$SUBJECT_PROGRAM" = "fixsuite-r48" ]; then
-    ANT="ant.m"
-    chmod +x "$MAJOR_HOME"/bin/ant.m
+    ANT="ant-replacecall"
+    chmod +x "$MAJOR_HOME"/bin/ant-replacecall
 else
     ANT="ant"
 fi
