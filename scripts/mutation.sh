@@ -7,15 +7,13 @@
 # For documentation of how to run this script, see file `mutation-repro.md`.
 #
 # This script:
-#  * Runs Randoop to generate test suites for subject programs and
-#    Performs mutation testing to determine how Randoop features affect
-#    various coverage metrics including coverage and mutation score
-#    (mutants are generated using Major).
+# * Runs Randoop to generate tests, then uses Major for mutation testing.
+#   Evaluates how different Randoop GRT features affect coverage metrics.
 
 #------------------------------------------------------------------------------
 # Example usage:
 #------------------------------------------------------------------------------
-#   ./mutation.sh -vr commons-lang3-3.0
+#   ./mutation.sh -c 1 commons-lang3-3.0
 
 #------------------------------------------------------------------------------
 # Options:
@@ -49,7 +47,15 @@
 set -e
 set -o pipefail
 
-USAGE_STRING="usage: mutation.sh [-h] [-v] [-r] [-t total_time] [-c time_per_class] <test case name>"
+USAGE_STRING="usage: mutation.sh [-h] [-v] [-r] [-t total_time] [-c time_per_class] [-n num_iterations] <test case name>
+  -h    Displays this help message.
+  -v    Enables verbose mode.
+  -r    Redirect Randoop and Major output to results/result/mutation_output.txt.
+  -t N  Total time limit for Randoop test generation (in seconds).
+  -c N  Per-class time limit for Randoop (in seconds, default: 2s/class).
+        Mutually exclusive with -t.
+  -n N  Number of iterations to run the experiment (default: 1)."
+
 if [ $# -eq 0 ]; then
     echo "$0: $USAGE_STRING"
     exit 1
@@ -333,7 +339,17 @@ for i in $(seq 1 $NUM_LOOP)
 do
     for RANDOOP_FEATURE in "${RANDOOP_FEATURES[@]}"
     do
+        FEATURE_NAME=""
+        if [[ "$ABLATION" == "true" ]]; then
+            FEATURE_NAME="ALL-EXCEPT-$RANDOOP_FEATURE"
+        else
+            FEATURE_NAME="$RANDOOP_FEATURE"
+        fi
         TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+
+        echo "Using $FEATURE_NAME"
+        echo
+
         # Test directory for each iteration.
         TEST_DIRECTORY="$SCRIPT_DIR/build/test/$FEATURE_NAME/$TIMESTAMP"
         mkdir -p "$TEST_DIRECTORY"
@@ -350,16 +366,6 @@ do
             exec 3>&1 4>&2
             exec 1>>"mutation_output.txt" 2>&1
         fi
-        
-        FEATURE_NAME=""
-        if [[ "$ABLATION" == "true" ]]; then
-            FEATURE_NAME="ALL-EXCEPT-$RANDOOP_FEATURE"
-        else
-            FEATURE_NAME="$RANDOOP_FEATURE"
-        fi
-
-        echo "Using $FEATURE_NAME"
-        echo
 
         RANDOOP_COMMAND_2="$RANDOOP_COMMAND --junit-output-dir=$TEST_DIRECTORY"
 
@@ -437,7 +443,7 @@ do
         "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" test
 
         mv jacoco.exec "$RESULT_DIR"
-        
+
         java -jar "$JACOCO_CLI_JAR" report "$RESULT_DIR/jacoco.exec" --classfiles "$SRC_JAR" --sourcefiles "$JAVA_SRC_DIR" --csv "$RESULT_DIR"/report.csv
 
         # Calculate Instruction Coverage
