@@ -46,14 +46,17 @@ JACOCO_CLI_JAR=$(realpath "${SCRIPT_DIR}/build/jacococli.jar") # For coverage re
 # Argument Parsing & Experiment Configuration
 #===============================================================================
 
+NUM_LOOP=1             # Number of experiment runs (10 in GRT paper)
+
 SECONDS_PER_CLASS="2"  # Default seconds per class.
                        # The paper runs Randoop with 4 different time limits:
                        # 2 s/class, 10 s/class, 30 s/class, and 60 s/class.
 
-NUM_LOOP=1             # Number of experiment runs (10 in GRT paper)
-
 # Name of the subject program
 SUBJECT_PROGRAM="$1"
+
+JAR_DIR="$3"
+CLASSPATH="$(echo "$JAR_DIR"/*.jar | tr ' ' ':')"
 
 # Select the ant executable based on the subject program
 if [ "$SUBJECT_PROGRAM" = "ClassViewer-5.0.5b" ] || [ "$SUBJECT_PROGRAM" = "jcommander-1.35" ] || [ "$SUBJECT_PROGRAM" = "fixsuite-r48" ]; then
@@ -65,6 +68,11 @@ fi
 
 echo "Running mutation test on $1"
 echo
+
+LIB_ARG=""
+if [[ $CLASSPATH ]]; then
+    LIB_ARG="-lib $CLASSPATH"
+fi
 
 #===============================================================================
 # Program Paths & Dependencies
@@ -97,9 +105,6 @@ if [ ! -f "results/info.csv" ]; then
     touch results/info.csv
     echo -e "RandoopFeature,FileName,InstructionCoverage,BranchCoverage,MutationScore" > results/info.csv
 fi
-
-JAR_DIR="$3"
-CLASSPATH="$(echo "$JAR_DIR"/*.jar | tr ' ' ':')"
 
 
 #===============================================================================
@@ -137,13 +142,6 @@ do
     for RANDOOP_FEATURE in "${RANDOOP_FEATURES[@]}"
     do
         TIMESTAMP=$(date +%Y%m%d-%H%M%S)
-        # Test directory for each iteration.
-        TEST_DIRECTORY="$SCRIPT_DIR/build/test/$FEATURE_NAME/$TIMESTAMP"
-        mkdir -p "$TEST_DIRECTORY"
-
-        # Result directory for each test generation and execution.
-        RESULT_DIR="$SCRIPT_DIR/results/$1-$FEATURE_NAME-$TIMESTAMP"
-        mkdir -p "$RESULT_DIR"
 
         FEATURE_NAME=""
         if [[ "$ABLATION" == "true" ]]; then
@@ -151,9 +149,16 @@ do
         else
             FEATURE_NAME="$RANDOOP_FEATURE"
         fi
-
         echo "Using $FEATURE_NAME"
         echo
+
+        # Test directory for each iteration.
+        TEST_DIRECTORY="$SCRIPT_DIR/build/test/$FEATURE_NAME/$TIMESTAMP"
+        mkdir -p "$TEST_DIRECTORY"
+
+        # Result directory for each test generation and execution.
+        RESULT_DIR="$SCRIPT_DIR/results/$1-$FEATURE_NAME-$TIMESTAMP"
+        mkdir -p "$RESULT_DIR"
 
         # Bloodhound
         if [[ ( "$RANDOOP_FEATURE" == "BLOODHOUND" && "$ABLATION" != "true" ) \
@@ -205,9 +210,7 @@ do
             FEATURE_FLAG="--constant-mining=true"
         fi
 
-        usejdk11 # Randoop requires Java 11
         $RANDOOP_COMMAND --junit-output-dir=$TEST_DIRECTORY $FEATURE_FLAG
-        usejdk8 # Subject programs require Java 8
 
         #===============================================================================
         # Coverage & Mutation Analysis
@@ -224,7 +227,7 @@ do
         echo
         echo "Compiling tests..."
         if [[ "$VERBOSE" -eq 1 ]]; then
-            echo "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" compile.tests
+            echo "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" $LIB_ARG compile.tests
         fi
         echo
         "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" compile.tests
@@ -259,10 +262,10 @@ do
         echo "Running tests with mutation analysis..."
         if [[ "$VERBOSE" -eq 1 ]]; then
             echo command:
-            echo "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
+            echo "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" $LIB_ARG mutation.test
         fi
         echo
-        "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
+        "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" $LIB_ARG mutation.test
 
         mv results/summary.csv "$RESULT_DIR"
 

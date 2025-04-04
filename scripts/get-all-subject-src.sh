@@ -9,7 +9,6 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" >/dev/null 2>&1 && pwd -P)"
 SUBJECT_SRC_DIR="${SCRIPT_DIR}/../subject-programs/src"
 mkdir -p "${SUBJECT_SRC_DIR}"
 cd "${SUBJECT_SRC_DIR}" || (echo "Directory does not exist: ${SUBJECT_SRC_DIR}" && exit 2)
-# echo "Working in $(pwd)"
 
 grt_clone() {
   printf '%s:' "$1"
