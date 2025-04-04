@@ -34,7 +34,7 @@ randoop-from-source:
 build/libs/randoop-all-4.3.3.jar:
 	mv -f build/libs/randoop-all-4.3.3.jar agent/replacecall/build/libs/replacecall-4.3.3.jar ..
 
-results/:
+results:
 	mkdir -p results
 
 clean:
