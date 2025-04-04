@@ -5,14 +5,11 @@
    make -C scripts
    ```
 
-2. Use the latest version of Randoop. \
-   Use **Java 11** to run the following command:
+2. Use the latest version of Randoop.
 
    ```
    make -C scripts randoop-from-source
    ```
-   Switch back to **Java 8** to run the mutation script.
-
 
 3. To get all subject programs, run:
    ```
