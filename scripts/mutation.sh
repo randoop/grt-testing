@@ -65,14 +65,19 @@ fi
 # Environment Setup
 #===============================================================================
 
+# Requires Java 8
+JAVA_VER=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '{sub("^$", "0", $2); print $1$2}')
+if [[ "$JAVA_VER" -ne 18 ]]; then
+    echo "Error: Java version 8 is required. Please install it and try again."
+    exit 1
+fi
+
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 MAJOR_HOME=$(realpath "${SCRIPT_DIR}/build/major/") # Major home directory, for mutation testing
 RANDOOP_JAR=$(realpath "${SCRIPT_DIR}/build/randoop-all-4.3.3.jar") # Randoop jar file
 JACOCO_AGENT_JAR=$(realpath "${SCRIPT_DIR}/build/jacocoagent.jar") # For Bloodhound
 JACOCO_CLI_JAR=$(realpath "${SCRIPT_DIR}/build/jacococli.jar") # For coverage report generation
 REPLACECALL_JAR=$(realpath "build/replacecall-4.3.3.jar") # For replacing undesired method calls
-
-. "${SCRIPT_DIR}/usejdk.sh"
 
 
 #===============================================================================
@@ -411,9 +416,7 @@ do
             RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2 --constant-mining=true"
         fi
 
-        usejdk11 # Randoop requires Java 11
         $RANDOOP_COMMAND_2
-        usejdk8 # Subject programs require Java 8
 
         #===============================================================================
         # Coverage & Mutation Analysis
@@ -501,6 +504,7 @@ do
         FILES_TO_MOVE=(
             "major.log"
             "mutants.log"
+            "suppression.log"
             "results/covMap.csv"
             "results/details.csv"
             "results/preprocessing.ser"

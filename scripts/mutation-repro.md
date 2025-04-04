@@ -10,12 +10,15 @@ See [mutation-prerequisites.md].
 
 ## Running the mutation test script
 
-Parameters:
-    - `-v`: Enables verbose mode
-    - `-r`: Redirect Randoop and Major output to `results/result/mutation_output.txt`
-    - `-t`: Specifies the total time limit for Randoop to generate tests (in seconds)
-    - `-c`: Specifies the time limit for Randoop to generate tests per class (in seconds, defaults to 2s/c), mutually exclusive with `-t`
-    - `[subject project]`: The name of the subject program for which you want to generate tests
+Parameters: \
+    - `-h`: Displays help information \
+    - `-v`: Enables verbose mode \
+    - `-r`: Redirect Randoop and Major output to `results/result/mutation_output.txt` \
+    - `-t`: Specifies the total time limit for Randoop to generate tests (in seconds) \
+    - `-c`: Specifies the time limit for Randoop to generate tests per class (in seconds, defaults to 2s/c), mutually exclusive with `-t` \
+    - `-n`: Specifies the number of times to run mutation testing (default is 1) \
+    - `[subject project]`: \
+    The name of the subject program for which you want to generate tests
     and perform mutation testing. The name is one of the jar files in `../subject-programs/`, without ".jar".
     For example, to run the script on the `commons-lang3-3.0` project, with verbose output and output directed to a file, you would run:
 
