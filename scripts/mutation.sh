@@ -167,9 +167,6 @@ SRC_BASE_DIR="$(realpath "$SCRIPT_DIR/../subject-programs/src/$SUBJECT_PROGRAM")
 # Path to the jar file of the subject program
 SRC_JAR=$(realpath "$SCRIPT_DIR/../subject-programs/$SUBJECT_PROGRAM.jar")
 
-# Path to the jar file of the subject program.
-SRC_JAR=$(realpath "$SCRIPT_DIR/../subject-programs/$SUBJECT_PROGRAM.jar")
-
 # Number of classes in given jar file.
 NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
 
@@ -343,7 +340,7 @@ done
 rm -rf "$SCRIPT_DIR"/build/test*
 
 # shellcheck disable=SC2034 # i counts iterations but is not otherwise used.
-for i in $(seq 1 $NUM_LOOP)
+for i in $(seq 1 "$NUM_LOOP")
 do
     for RANDOOP_FEATURE in "${RANDOOP_FEATURES[@]}"
     do
@@ -374,8 +371,6 @@ do
             exec 3>&1 4>&2
             exec 1>>"mutation_output.txt" 2>&1
         fi
-
-        RANDOOP_COMMAND_2="$RANDOOP_COMMAND --junit-output-dir=$TEST_DIRECTORY"
 
         # Bloodhound
         if [[ ( "$RANDOOP_FEATURE" == "BLOODHOUND" && "$ABLATION" != "true" ) \
@@ -427,7 +422,8 @@ do
             FEATURE_FLAG="--constant-mining=true"
         fi
 
-        $RANDOOP_COMMAND_2
+        # shellcheck disable=SC2086 # FEATURE_FLAG may contain multiple arguments.
+        $RANDOOP_COMMAND --junit-output-dir=$TEST_DIRECTORY $FEATURE_FLAG
 
         #===============================================================================
         # Coverage & Mutation Analysis
