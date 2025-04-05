@@ -1,15 +1,14 @@
 #!/bin/sh
 
-# This script obtains the source code for each subject program, in
-# /../subject-programs/src/ relative to this script.  The script
-# can be called from any directory.
+# This script clones the repositories for each subject program, in
+# subject-programs/src/. If the repository already exists, it pulls the
+# latest changes.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" >/dev/null 2>&1 && pwd -P)"
 
 SUBJECT_SRC_DIR="${SCRIPT_DIR}/../subject-programs/src"
 mkdir -p "${SUBJECT_SRC_DIR}"
 cd "${SUBJECT_SRC_DIR}" || (echo "Directory does not exist: ${SUBJECT_SRC_DIR}" && exit 2)
-# echo "Working in $(pwd)"
 
 grt_clone() {
   printf '%s:' "$1"
