@@ -340,7 +340,7 @@ done
 rm -rf "$SCRIPT_DIR"/build/test*
 
 # shellcheck disable=SC2034 # i counts iterations but is not otherwise used.
-for i in $(seq 1 $NUM_LOOP)
+for i in $(seq 1 "$NUM_LOOP")
 do
     for RANDOOP_FEATURE in "${RANDOOP_FEATURES[@]}"
     do
@@ -422,6 +422,7 @@ do
             FEATURE_FLAG="--constant-mining=true"
         fi
 
+        # shellcheck disable=SC2086 # FEATURE_FLAG may contain multiple arguments.
         $RANDOOP_COMMAND --junit-output-dir=$TEST_DIRECTORY $FEATURE_FLAG
 
         #===============================================================================
