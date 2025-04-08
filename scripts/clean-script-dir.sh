@@ -15,7 +15,7 @@ mkdir -p temp
 echo "Moving untracked *files* in the top-level to temp/"
 
 # Use Git to list untracked files (null-delimited) and process each.
-git ls-files --others --exclude-standard -z | while IFS= read -r -d '' path; do
+git ls-files --others --exclude-standard -z . | while IFS= read -r -d '' path; do
   if [[ "$path" == *"/"* ]] || [[ "$path" == temp/* ]]; then
     continue
   fi

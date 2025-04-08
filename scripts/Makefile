@@ -5,6 +5,7 @@ all: \
     build/org.jacoco.agent-0.8.0-runtime.jar \
     build/randoop-all-4.3.3.jar \
     build/major \
+    build/randoop \
     build/replacecall-4.3.3.jar \
     build/evosuite-1.2.0.jar \
     build/evosuite-standalone-runtime-1.2.0.jar \
@@ -12,6 +13,7 @@ all: \
     build/junit-4.13.2.jar \
     build/hamcrest-core-1.3.jar \
     build/major/bin/ant.m \
+    build/major/bin/ant-replacecall \
     results
 
 build/jacoco.jar:
@@ -42,12 +44,8 @@ build/randoop:
 randoop-from-source:
 	cd build/randoop && \
 	git pull && \
-	. "${MAKEFILE_DIR}usejdk.sh" && \
-	. ../../usejdk.sh && \
-	usejdk11 && \
 	./gradlew jar && \
-	mv -f build/libs/randoop-all-4.3.3.jar .. && \
-	usejdk8
+	mv -f build/libs/randoop-all-4.3.3.jar ..
 
 build/replacecall-4.3.3.jar:
 	LATEST_RELEASE=$$(curl -s https://api.github.com/repos/randoop/grt-replacecall/releases/latest | grep -o '"tag_name": "[^"]*' | cut -d'"' -f4) && \
@@ -74,10 +72,10 @@ build/hamcrest-core-1.3.jar:
 	mkdir -p build
 	cp ../subject-programs/hamcrest-core-1.3.jar build/
 
-build/major/bin/ant.m:
+build/major/bin/ant-replacecall:
 	LATEST_RELEASE=$$(curl -s https://api.github.com/repos/randoop/grt-replacecall/releases/latest | grep -o '"tag_name": "[^"]*' | cut -d'"' -f4) && \
-	wget "https://github.com/randoop/grt-replacecall/releases/download/$${LATEST_RELEASE}/ant.m" && \
-	mv ant.m build/major/bin/
+	wget "https://github.com/randoop/grt-replacecall/releases/download/$${LATEST_RELEASE}/ant-replacecall" && \
+	mv ant-replacecall build/major/bin/
 
 results:
 	mkdir -p results

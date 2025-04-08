@@ -4,31 +4,21 @@
 # Overview
 #===============================================================================
 
-# For documentation of how to run this script, see file `mutation-repro.md`.
-#
 # This script:
-#  * Uses Randoop to generate test suites for subject programs and
-#    Performs mutation testing to determine how Randoop features affect
+#  * uses Randoop to generate test suites for a subject program and
+#  * performs mutation testing to determine how Randoop features affect
 #    various coverage metrics including coverage and mutation score
 #    (mutants are generated using Major).
-#  * Randoop can be run several times to mitigate the effects of randomness.
 
 #------------------------------------------------------------------------------
 # Example usage:
 #------------------------------------------------------------------------------
-#   ./mutation.sh -vr commons-lang3-3.0
+#   ./mutation.sh -c 1 commons-lang3-3.0
 
 #------------------------------------------------------------------------------
-# Options:
+# Options (command-line arguments):
 #------------------------------------------------------------------------------
-#   -v    Enables verbose mode.
-#   -r    Redirect Randoop and Major output to results/result/mutation_output.txt.
-#   -t N  Total time limit for Randoop test generation (in seconds).
-#   -c N  Per-class time limit for Randoop (in seconds, default: 2s/class).
-#         Mutually exclusive with -t.
-#
-#   [subject project] is the name of a jar file in ../subject-programs/, without ".jar".
-#   Example: commons-lang3-3.0
+# See variable USAGE_STRING below
 
 #------------------------------------------------------------------------------
 # Outputs:
@@ -37,6 +27,11 @@
 # - build/bin     : Compiled tests and subject code.
 # - results/      : All output from the current run.
 # - results/info.csv : Summary of statistics (coverage, mutation score, etc.).
+
+#------------------------------------------------------------------------------
+# Prerequisites:
+#------------------------------------------------------------------------------
+# See file `mutation-prerequisites.md`.
 
 #------------------------------------------------------------------------------
 # Randoop versions (for GRT features):
@@ -48,7 +43,17 @@
 set -e
 set -o pipefail
 
-USAGE_STRING="usage: mutation.sh [-h] [-v] [-r] [-t total_time] [-c time_per_class] <test case name>"
+USAGE_STRING="usage: mutation.sh [-h] [-v] [-r] [-t total_time] [-c time_per_class] [-n num_iterations] TEST-CASE-NAME
+  -h    Displays this help message.
+  -v    Enables verbose mode.
+  -r    Redirect Randoop and Major output to results/result/mutation_output.txt.
+  -t N  Total time limit for Randoop test generation (in seconds).
+  -c N  Per-class time limit for Randoop (in seconds, default: 2s/class).
+        Mutually exclusive with -t.
+  -n N  Number of iterations to run the experiment (default: 1).
+  TEST-CASE-NAME is the name of a jar file in ../subject-programs/, without .jar.
+  Example: commons-lang3-3.0"
+
 if [ $# -eq 0 ]; then
     echo "$0: $USAGE_STRING"
     exit 1
@@ -58,6 +63,13 @@ fi
 # Environment Setup
 #===============================================================================
 
+# Requires Java 8
+JAVA_VER=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '{sub("^$", "0", $2); print $1$2}')
+if [[ "$JAVA_VER" -ne 18 ]]; then
+    echo "Error: Java version 8 is required. Please install it and try again."
+    exit 1
+fi
+
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 MAJOR_HOME=$(realpath "${SCRIPT_DIR}/build/major/") # Major home directory, for mutation testing
 RANDOOP_JAR=$(realpath "${SCRIPT_DIR}/build/randoop-all-4.3.3.jar") # Randoop jar file
@@ -65,18 +77,17 @@ JACOCO_AGENT_JAR=$(realpath "${SCRIPT_DIR}/build/jacocoagent.jar") # For Bloodho
 JACOCO_CLI_JAR=$(realpath "${SCRIPT_DIR}/build/jacococli.jar") # For coverage report generation
 REPLACECALL_JAR=$(realpath "build/replacecall-4.3.3.jar") # For replacing undesired method calls
 
-. "${SCRIPT_DIR}/usejdk.sh"
-
 
 #===============================================================================
 # Argument Parsing & Experiment Configuration
 #===============================================================================
+
 NUM_LOOP=1             # Number of experiment runs (10 in GRT paper)
 VERBOSE=0              # Verbose option
 REDIRECT=0             # Redirect output to mutation_output.txt
 
 # Parse command-line arguments
-while getopts ":hvrt:c:" opt; do
+while getopts ":hvrt:c:n:" opt; do
   case ${opt} in
     h )
       # Display help message
@@ -90,14 +101,18 @@ while getopts ":hvrt:c:" opt; do
       REDIRECT=1
       ;;
     t )
-      # Total experiment time, mutually exclusive with SECONDS_CLASS
+      # Total experiment time, mutually exclusive with SECONDS_PER_CLASS
       TOTAL_TIME="$OPTARG"
       ;;
     c )
       # Default seconds per class.
       # The paper runs Randoop with 4 different time limits:
       # 2 s/class, 10 s/class, 30 s/class, and 60 s/class.
-      SECONDS_CLASS="$OPTARG"
+      SECONDS_PER_CLASS="$OPTARG"
+      ;;
+    n )
+      # Number of iterations to run the experiment
+      NUM_LOOP="$OPTARG"
       ;;
     \? )
       echo "Invalid option: -$OPTARG" >&2
@@ -115,14 +130,14 @@ done
 shift $((OPTIND -1))
 
 # Enforce that mutually exclusive options are not bundled together
-if [[ -n "$TOTAL_TIME" ]] && [[ -n "$SECONDS_CLASS" ]]; then
+if [[ -n "$TOTAL_TIME" ]] && [[ -n "$SECONDS_PER_CLASS" ]]; then
   echo "Options -t and -c cannot be used together in any form (e.g., -t -c)."
   exit 1
 fi
 
 # Default to 2 seconds per class if not specified
-if [[ -z "$SECONDS_CLASS" ]] && [[ -z "$TOTAL_TIME" ]]; then
-    SECONDS_CLASS=2
+if [[ -z "$SECONDS_PER_CLASS" ]] && [[ -z "$TOTAL_TIME" ]]; then
+    SECONDS_PER_CLASS=2
 fi
 
 # Name of the subject program
@@ -130,8 +145,8 @@ SUBJECT_PROGRAM="$1"
 
 # Select the ant executable based on the subject program
 if [ "$SUBJECT_PROGRAM" = "ClassViewer-5.0.5b" ] || [ "$SUBJECT_PROGRAM" = "jcommander-1.35" ] || [ "$SUBJECT_PROGRAM" = "fixsuite-r48" ]; then
-    ANT="ant.m"
-    chmod +x "$MAJOR_HOME"/bin/ant.m
+    ANT="ant-replacecall"
+    chmod +x "$MAJOR_HOME"/bin/ant-replacecall
 else
     ANT="ant"
 fi
@@ -156,7 +171,7 @@ NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
 if [[ -n "$TOTAL_TIME" ]]; then
     TIME_LIMIT="$TOTAL_TIME"
 else
-    TIME_LIMIT=$((NUM_CLASSES * SECONDS_CLASS))
+    TIME_LIMIT=$((NUM_CLASSES * SECONDS_PER_CLASS))
 fi
 
 echo "TIME_LIMIT: $TIME_LIMIT seconds"
@@ -298,6 +313,7 @@ if git checkout include-major >/dev/null 2>&1; then
 fi
 cd - || exit 1
 
+echo "Using Randoop to generate tests"
 echo
 
 # Output file for runtime information
@@ -318,8 +334,8 @@ ALL_RANDOOP_FEATURES=("BASELINE" "BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORI
 RANDOOP_FEATURES=("BASELINE") #"BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
 
 # ABLATION controls whether to perform feature ablation studies.
-# If false, Randoop only uses the features specified in the RANDOOP_FEATURES array.
-# If true, each run uses all Randoop features *except* the one specified in the RANDOOP_FEATURES array.
+# If false, each run of Randoop only uses the features specified in the RANDOOP_FEATURES array.
+# If true, each run of Randoop uses all features *except* the one specified in the RANDOOP_FEATURES array.
 ABLATION=false
 
 # Ensure the given features are are recognized and supported by the script.
@@ -338,11 +354,21 @@ done
 rm -rf "$SCRIPT_DIR"/build/test*
 
 # shellcheck disable=SC2034 # i counts iterations but is not otherwise used.
-for i in $(seq 1 $NUM_LOOP)
+for i in $(seq 1 "$NUM_LOOP")
 do
     for RANDOOP_FEATURE in "${RANDOOP_FEATURES[@]}"
     do
         TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+
+        FEATURE_NAME=""
+        if [[ "$ABLATION" == "true" ]]; then
+            FEATURE_NAME="ALL-EXCEPT-$RANDOOP_FEATURE"
+        else
+            FEATURE_NAME="$RANDOOP_FEATURE"
+        fi
+        echo "Using $FEATURE_NAME"
+        echo
+
         # Test directory for each iteration.
         TEST_DIRECTORY="$SCRIPT_DIR/build/test/$FEATURE_NAME/$TIMESTAMP"
         mkdir -p "$TEST_DIRECTORY"
@@ -360,63 +386,58 @@ do
             exec 1>>"mutation_output.txt" 2>&1
         fi
 
-        FEATURE_NAME=""
-        if [[ "$ABLATION" == "true" ]]; then
-            FEATURE_NAME="ALL-EXCEPT-RANDOOP-$RANDOOP_FEATURE"
-        else
-            FEATURE_NAME="RANDOOP-$RANDOOP_FEATURE"
-        fi
-
-        echo "Using $FEATURE_NAME"
-        echo
-
-        RANDOOP_COMMAND_2="$RANDOOP_COMMAND --junit-output-dir=$TEST_DIRECTORY"
-
         # Bloodhound
-        if [[ ( "$RANDOOP_FEATURE" == "BLOODHOUND" && "$ABLATION" != "true" ) || ( "$RANDOOP_FEATURE" != "BLOODHOUND" && "$ABLATION" == "true" ) ]]; then
-            RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2 --method-selection=BLOODHOUND"
+        if [[ ( "$RANDOOP_FEATURE" == "BLOODHOUND" && "$ABLATION" != "true" ) \
+           || ( "$RANDOOP_FEATURE" != "BLOODHOUND" && "$ABLATION" == "true" ) ]]; then
+            FEATURE_FLAG="--method-selection=BLOODHOUND"
         fi
 
         # Baseline
-        if [[ ( "$RANDOOP_FEATURE" == "BASELINE" && "$ABLATION" != "true" ) || ( "$RANDOOP_FEATURE" != "BASELINE" && "$ABLATION" == "true" ) ]]; then
+        if [[ ( "$RANDOOP_FEATURE" == "BASELINE" && "$ABLATION" != "true" ) \
+           || ( "$RANDOOP_FEATURE" != "BASELINE" && "$ABLATION" == "true" ) ]]; then
             ## There is nothing to do in this case.
-            # RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2"
+            # FEATURE_FLAG=""
             true
         fi
 
         # Orienteering
-        if [[ ( "$RANDOOP_FEATURE" == "ORIENTEERING" && "$ABLATION" != "true" ) || ( "$RANDOOP_FEATURE" != "ORIENTEERING" && "$ABLATION" == "true" ) ]]; then
-            RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2 --input-selection=ORIENTEERING"
+        if [[ ( "$RANDOOP_FEATURE" == "ORIENTEERING" && "$ABLATION" != "true" ) \
+           || ( "$RANDOOP_FEATURE" != "ORIENTEERING" && "$ABLATION" == "true" ) ]]; then
+            FEATURE_FLAG="--input-selection=ORIENTEERING"
         fi
 
         # Bloodhound and Orienteering
-        if [[ ( "$RANDOOP_FEATURE" == "BLOODHOUND_AND_ORIENTEERING" && "$ABLATION" != "true" ) || ( "$RANDOOP_FEATURE" != "BLOODHOUND_AND_ORIENTEERING" && "$ABLATION" == "true" ) ]]; then
-            RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2 --input-selection=ORIENTEERING --method-selection=BLOODHOUND"
+        if [[ ( "$RANDOOP_FEATURE" == "BLOODHOUND_AND_ORIENTEERING" && "$ABLATION" != "true" ) \
+           || ( "$RANDOOP_FEATURE" != "BLOODHOUND_AND_ORIENTEERING" && "$ABLATION" == "true" ) ]]; then
+            FEATURE_FLAG="--input-selection=ORIENTEERING --method-selection=BLOODHOUND"
         fi
 
         # Detective (Demand-Driven)
-        if [[ ( "$RANDOOP_FEATURE" == "DETECTIVE" && "$ABLATION" != "true" ) || ( "$RANDOOP_FEATURE" != "DETECTIVE" && "$ABLATION" == "true" ) ]]; then
-            RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2 --demand-driven=true"
+        if [[ ( "$RANDOOP_FEATURE" == "DETECTIVE" && "$ABLATION" != "true" ) \
+           || ( "$RANDOOP_FEATURE" != "DETECTIVE" && "$ABLATION" == "true" ) ]]; then
+            FEATURE_FLAG="--demand-driven=true"
         fi
 
         # GRT Fuzzing
-        if [[ ( "$RANDOOP_FEATURE" == "GRT_FUZZING" && "$ABLATION" != "true" ) || ( "$RANDOOP_FEATURE" != "GRT_FUZZING" && "$ABLATION" == "true" ) ]]; then
-            RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2 --grt-fuzzing=true"
+        if [[ ( "$RANDOOP_FEATURE" == "GRT_FUZZING" && "$ABLATION" != "true" ) \
+           || ( "$RANDOOP_FEATURE" != "GRT_FUZZING" && "$ABLATION" == "true" ) ]]; then
+            FEATURE_FLAG="--grt-fuzzing=true"
         fi
 
         # Elephant Brain
-        if [[ ( "$RANDOOP_FEATURE" == "ELEPHANT_BRAIN" && "$ABLATION" != "true" ) || ( "$RANDOOP_FEATURE" != "ELEPHANT_BRAIN" && "$ABLATION" == "true" ) ]]; then
-            RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2 --elephant-brain=true"
+        if [[ ( "$RANDOOP_FEATURE" == "ELEPHANT_BRAIN" && "$ABLATION" != "true" ) \
+           || ( "$RANDOOP_FEATURE" != "ELEPHANT_BRAIN" && "$ABLATION" == "true" ) ]]; then
+            FEATURE_FLAG="--elephant-brain=true"
         fi
 
         # Constant Mining
-        if [[ ( "$RANDOOP_FEATURE" == "CONSTANT_MINING" && "$ABLATION" != "true" ) || ( "$RANDOOP_FEATURE" != "CONSTANT_MINING" && "$ABLATION" == "true" ) ]]; then
-            RANDOOP_COMMAND_2="$RANDOOP_COMMAND_2 --constant-mining=true"
+        if [[ ( "$RANDOOP_FEATURE" == "CONSTANT_MINING" && "$ABLATION" != "true" ) \
+           || ( "$RANDOOP_FEATURE" != "CONSTANT_MINING" && "$ABLATION" == "true" ) ]]; then
+            FEATURE_FLAG="--constant-mining=true"
         fi
 
-        usejdk11 # Randoop requires Java 11
-        $RANDOOP_COMMAND_2
-        usejdk8 # Subject programs require Java 8
+        # shellcheck disable=SC2086 # FEATURE_FLAG may contain multiple arguments.
+        $RANDOOP_COMMAND --junit-output-dir=$TEST_DIRECTORY $FEATURE_FLAG
 
         #===============================================================================
         # Coverage & Mutation Analysis
@@ -432,10 +453,10 @@ do
         echo
         echo "Compiling tests..."
         if [[ "$VERBOSE" -eq 1 ]]; then
-            echo "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" compile.tests
+            echo "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" $LIB_ARG compile.tests
         fi
         echo
-        "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" compile.tests
+        "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" $LIB_ARG compile.tests
 
         echo
         echo "Running tests with coverage..."
@@ -468,10 +489,10 @@ do
         echo "Running tests with mutation analysis..."
         if [[ "$VERBOSE" -eq 1 ]]; then
             echo command:
-            echo "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
+            echo "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" $LIB_ARG mutation.test
         fi
         echo
-        "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
+        "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" $LIB_ARG mutation.test
 
         mv results/summary.csv "$RESULT_DIR"
 
