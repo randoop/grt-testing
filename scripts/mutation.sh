@@ -116,13 +116,7 @@ shift $((OPTIND -1))
 # Name of the subject program
 SUBJECT_PROGRAM="$1"
 
-# Select the ant executable based on the subject program
-if [ "$SUBJECT_PROGRAM" = "ClassViewer-5.0.5b" ] || [ "$SUBJECT_PROGRAM" = "jcommander-1.35" ] || [ "$SUBJECT_PROGRAM" = "fixsuite-r48" ]; then
-    ANT="ant.m"
-    chmod +x "$MAJOR_HOME"/bin/ant.m
-else
-    ANT="ant"
-fi
+ANT="ant"
 
 echo "Running mutation test on $1"
 echo
@@ -276,7 +270,6 @@ declare -A command_suffix=(
     ["ClassViewer-5.0.5b"]="--specifications=program-specs/ClassViewer-5.0.5b-specs.json"
     ["commons-cli-1.2"]="--specifications=program-specs/commons-cli-1.2-specs.json"
     ["commons-lang3-3.0"]="--specifications=program-specs/commons-lang3-3.0-specs.json"
-    ["fixsuite-r48"]="--specifications=program-specs/fixsuite-r48-specs.json"
     ["guava-16.0.1"]="--specifications=program-specs/guava-16.0.1-specs.json"
     ["jaxen-1.1.6"]="--specifications=program-specs/jaxen-1.1.6-specs.json"
     ["sat4j-core-2.3.5"]="--specifications=program-specs/sat4j-core-2.3.5-specs.json"
@@ -295,6 +288,14 @@ declare -A command_suffix=(
     # Force termination if a test case takes too long to execute
     ["commons-math3-3.2"]="--usethreads=true"
 )
+
+# Check if the environment is headless
+if [ -z "$DISPLAY" ] && [ "$SUBJECT_PROGRAM" == "fixsuite-r48" ]; then
+    echo "Running in headless mode. Avoiding spec for fixsuite-r48..."
+else
+    # Only add fixsuite-r48 specification if not headless
+    command_suffix["fixsuite-r48"]="--specifications=program-specs/fixsuite-r48-specs.json"
+fi
 
 RANDOOP_COMMAND="$RANDOOP_BASE_COMMAND ${command_suffix[$SUBJECT_PROGRAM]}"
 
@@ -454,10 +455,10 @@ do
         echo
         echo "Running tests with coverage..."
         if [[ "$VERBOSE" -eq 1 ]]; then
-            echo "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" test
+            echo "$MAJOR_HOME"/bin/"$ANT" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" test
         fi
         echo
-        "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" test
+        "$MAJOR_HOME"/bin/"$ANT" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" test
 
         mv jacoco.exec "$RESULT_DIR"
 

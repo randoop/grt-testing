@@ -59,7 +59,7 @@
 +            <jvmarg value="-Xbootclasspath/a:${basedir}/build/replacecall-4.3.3.jar"/>
 +            <jvmarg value="-javaagent:${basedir}/build/replacecall-4.3.3.jar"/>
 +
-+            <batchtest>
++            <batchtest fork="no">
 +                <fileset dir="${test}">
 +                    <include name="**/*Test*.java"/>
 +                </fileset>
