@@ -308,8 +308,11 @@ echo "Modifying build.xml for $SUBJECT_PROGRAM..."
 ./apply-build-patch.sh "$SUBJECT_PROGRAM"
 
 cd "$JAVA_SRC_DIR" || exit 1
-if git checkout include-major >/dev/null 2>&1; then
-    echo "Checked out include-major."
+# For slf4j-api-1.7.12, we need use the main branch for Randoop and the include-major branch for EvoSuite
+if [ "$SUBJECT_PROGRAM" != "slf4j-api-1.7.12" ]; then
+    if git checkout include-major >/dev/null 2>&1; then
+        echo "Checked out include-major."
+    fi
 fi
 cd - || exit 1
 
@@ -439,10 +442,10 @@ do
         echo
         echo "Compiling and mutating subject program..."
         if [[ "$VERBOSE" -eq 1 ]]; then
-            echo "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" clean compile
+            echo "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" clean compile
         fi
         echo
-        "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" clean compile
+        "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" clean compile
 
         echo
         echo "Compiling tests..."

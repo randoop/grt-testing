@@ -55,6 +55,7 @@
         <junit printsummary="false"
                showoutput="false"
                mutationAnalysis="true"
+               excludeFailingTests="false"
                serializedMapsFile="results/preprocessing.ser"
                mutantsLogFile="mutants.log"
                summaryFile="results/summary.csv"
