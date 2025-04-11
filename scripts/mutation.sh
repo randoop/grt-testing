@@ -157,7 +157,8 @@ declare -A program_src=(
     ["dcParseArgs-10.2008"]="/src/"
     ["hamcrest-core-1.3"]="/hamcrest-core/src/main/java/"
     ["javassist-3.19"]="/src/main/"
-    ["jdom-1.0"]="/src/"
+    ["javax.mail-1.5.1"]="/src/main/java/"
+    ["jdom-1.0"]="/src/java/"
     ["JSAP-2.1"]="/src/"
     ["jvc-1.1"]="/src"
     ["nekomud-r16"]="/src/"
@@ -174,8 +175,9 @@ declare -A program_deps=(
     ["commons-compress-1.8"]="build/lib/"
     ["easymock-3.2"]="build/lib/"
     ["fixsuite-r48"]="$SRC_BASE_DIR/lib/"
+    ["javassist-3.19"]="build/lib/"
     ["jaxen-1.1.6"]="build/lib/"
-    ["jdom-1.0"]="$MAJOR_HOME/lib/ant:$SRC_BASE_DIR/lib/"
+    ["jdom-1.0"]="$MAJOR_HOME/lib/ant:$SRC_BASE_DIR/lib/xml-apis.jar:$SRC_BASE_DIR/lib/xerces.jar:$SRC_BASE_DIR/lib/jaxen-core.jar:$SRC_BASE_DIR/lib/jaxen-jdom.jar:$SRC_BASE_DIR/lib/saxpath.jar"
     ["JSAP-2.1"]="$MAJOR_HOME/lib/ant:$SRC_BASE_DIR/lib/"  # need to override ant.jar in $SRC_BASE_DIR/lib
     ["jvc-1.1"]="$SRC_BASE_DIR/lib/"
     ["nekomud-r16"]="$SRC_BASE_DIR/lib/"
@@ -196,6 +198,12 @@ if [ "$SUBJECT_PROGRAM" == "easymock-3.2" ]; then
     rm -rf build/lib
     mkdir -p build/lib
     wget -P build/lib https://repo1.maven.org/maven2/cglib/cglib/3.3.0/cglib-3.3.0.jar
+fi
+
+if [ "$SUBJECT_PROGRAM" == "javassist-3.19" ]; then
+    rm -rf build/lib
+    mkdir -p build/lib
+    cp "$JAVA_HOME/lib/tools.jar" build/lib
 fi
 
 if [ "$SUBJECT_PROGRAM" == "jaxen-1.1.6" ]; then
@@ -278,7 +286,7 @@ declare -A command_suffix=(
     ["javassist-3.19"]="--omit-methods=^javassist\.tools\.web\.Webserver\.run\(\)$ --omit-methods=^javassist\.tools\.rmi\.AppletServer\.run\(\)$"
     # PrintStream.close() is called to close System.out during Randoop test generation.
     # This will interrupt the test generation process. Omit the close() method.
-    ["javax.mail-1.5.1"]="--omit-methods=^java\.io\.PrintStream\.close\(\)$|^java\.io\.FilterOutputStream\.close\(\)$|^java\.io\.OutputStream\.close\(\)$|^com\.sun\.mail\.util\.BASE64EncoderStream\.close\(\)$|^com\.sun\.mail\.util\.QEncoderStream\.close\(\)$|^com\.sun\.mail\.util\.QPEncoderStream\.close\(\)$|^com\.sun\.mail\.util\.UUEncoderStream\.close\(\)$"
+    ["javax.mail-1.5.1"]="--omit-methods=^java\.io\.PrintStream\.close\(\)$|^java\.io\.FilterOutputStream\.close\(\)$|^java\.io\.OutputStream\.close\(\)$|^com\.sun\.mail\.util\.BASE64EncoderStream\.close\(\)$|^com\.sun\.mail\.util\.QEncoderStream\.close\(\)$|^com\.sun\.mail\.util\.QPEncoderStream\.close\(\)$|^com\.sun\.mail\.util\.UUEncoderStream\.close\(\)$ --usethreads=true"
     # JDOMAbout cannot be found during test.compile.
     ["jdom-1.0"]="--omit-classes=^JDOMAbout$"
 
@@ -308,8 +316,8 @@ echo "Modifying build.xml for $SUBJECT_PROGRAM..."
 ./apply-build-patch.sh "$SUBJECT_PROGRAM"
 
 cd "$JAVA_SRC_DIR" || exit 1
-# For slf4j-api-1.7.12, we need use the main branch for Randoop and the include-major branch for EvoSuite
-if [ "$SUBJECT_PROGRAM" != "slf4j-api-1.7.12" ]; then
+# For slf4j-api-1.7.12 and javax.mail, we need use the main branch for Randoop and the include-major branch for EvoSuite
+if [ "$SUBJECT_PROGRAM" != "slf4j-api-1.7.12" ] && [ "$SUBJECT_PROGRAM" != "javax.mail-1.5.1" ]; then
     if git checkout include-major >/dev/null 2>&1; then
         echo "Checked out include-major."
     fi
