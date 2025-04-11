@@ -10,7 +10,8 @@ Testing](GRT_Program-Analysis-Guided_Random_Testing.pdf)"
 
 ## Usage Instructions
 ### Running Scripts
-For instructions on using the scripts, refer to `scripts/mutation-repro.md` and `scripts/mutation-evosuite-repro.md`.
+For prerequisities, refer to `scripts/mutation-prerequisities.md`.
+For instructions on using the scripts, refer to `scripts/mutation.sh` for Randoop and `scripts/mutation-evosuite.sh` for EvoSuite.
 
 ### Subject Programs
 
