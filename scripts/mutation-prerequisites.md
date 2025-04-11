@@ -5,7 +5,7 @@
    make -C scripts
    ```
 
-2. Use the latest version of Randoop.
+2. If using Randoop, use the latest version. Feel free to skip this step if using EvoSuite.
 
    ```
    make -C scripts randoop-from-source

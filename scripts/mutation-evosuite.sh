@@ -4,8 +4,6 @@
 # Overview
 #===============================================================================
 
-# For documentation of how to run this script, see file `mutation-repro.md`.
-#
 # This script:
 #  * Generates test suites using EvoSuite.
 #  * Computes mutation score (mutants are generated using Major via ant).
@@ -14,20 +12,13 @@
 #------------------------------------------------------------------------------
 # Example usage:
 #------------------------------------------------------------------------------
-#   ./mutation-evosuite.sh -vr commons-lang3-3.0
+#   ./mutation-evosuite.sh -c 1 -v commons-lang3-3.0
 #
 #------------------------------------------------------------------------------
 # Options:
 #------------------------------------------------------------------------------
-#   -v    Enables verbose mode.
-#   -r    Redirect EvoSuite and Major output to results/result/mutation_output.txt.
-#   -t N  Total time limit for EvoSuite test generation (in seconds).
-#   -c N  Per-class time limit for EvoSuite (in seconds, default: 2s/class).
-#         Mutually exclusive with -t.
-#
-#   [subject project] is the name of a jar file in ../subject-programs/, without ".jar".
-#   Example: commons-lang3-3.0
-#
+# See variable USAGE_STRING below
+
 #------------------------------------------------------------------------------
 # Outputs:
 #------------------------------------------------------------------------------
@@ -38,11 +29,26 @@
 # - `results/info.csv`: statistics about each iteration.
 # - `results/`: everything else specific to the most recent iteration.
 
+#------------------------------------------------------------------------------
+# Prerequisites:
+#------------------------------------------------------------------------------
+# See file `mutation-prerequisites.md`.
+
 # Fail this script on errors.
 set -e
 set -o pipefail
 
-USAGE_STRING="usage: mutation-evosuite.sh [-h] [-v] [-r] [-t total_time] [-c time_per_class] <test case name>"
+USAGE_STRING="usage: mutation-evosuite.sh [-h] [-v] [-r] [-t total_time] [-c time_per_class] [-n num_iterations] TEST-CASE-NAME
+  -h    Displays this help message.
+  -v    Enables verbose mode.
+  -r    Redirect Randoop and Major output to results/result/mutation_output.txt.
+  -t N  Total time limit for Randoop test generation (in seconds).
+  -c N  Per-class time limit for Randoop (in seconds, default: 2s/class).
+        Mutually exclusive with -t.
+  -n N  Number of iterations to run the experiment (default: 1).
+  TEST-CASE-NAME is the name of a jar file in ../subject-programs/, without .jar.
+  Example: commons-lang3-3.0"
+
 if [ $# -eq 0 ]; then
     echo "$0: $USAGE_STRING"
     exit 1
