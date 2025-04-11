@@ -12,7 +12,6 @@ all: \
     build/junit-4.12.jar \
     build/junit-4.13.2.jar \
     build/hamcrest-core-1.3.jar \
-    build/major/bin/ant.m \
     build/major/bin/ant-replacecall \
     results
 

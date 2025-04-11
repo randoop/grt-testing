@@ -52,13 +52,16 @@ fi
 # Environment Setup
 #===============================================================================
 
+JAVA_VER=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '{sub("^$", "0", $2); print $1$2}')
+if [[ "$JAVA_VER" -ne 18 ]]; then
+    echo "Error: Java version 8 is required. Please install it and try again."
+    exit 1
+fi
+
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 MAJOR_HOME=$(realpath "build/major/") # Major home directory, for mutation testing
 CURR_DIR=$(realpath "$(pwd)")
 EVOSUITE_JAR=$(realpath "build/evosuite-1.2.0.jar")
-
-. "${SCRIPT_DIR}/usejdk.sh"
-usejdk8
 
 #===============================================================================
 # Argument Parsing & Experiment Configuration
@@ -481,8 +484,6 @@ do
     echo "Instruction Coverage: $instruction_coverage%"
     echo "Branch Coverage: $branch_coverage%"
     echo "Mutation Score: $mutation_score%"
-
-    mv results/summary.csv "$RESULT_DIR"
 
     row="EVOSUITE,$(basename "$SRC_JAR"),$TIME_LIMIT,$instruction_coverage%,$branch_coverage%,$mutation_score%"
     # info.csv contains a record of each pass.
