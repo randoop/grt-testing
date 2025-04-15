@@ -296,6 +296,18 @@ REPLACECALL_COMMAND="$REPLACECALL_JAR${replacement_files[$SUBJECT_PROGRAM]}"
 #===============================================================================
 # Randoop Command Configuration
 #===============================================================================
+RANDOOP_CLASSPATH=""
+if [[ -n "$CLASSPATH" ]]; then
+    if [[ "$SUBJECT_PROGRAM" == "jdom-1.0" ]]; then
+        RANDOOP_CLASSPATH="$CLASSPATH:"
+    else
+        RANDOOP_CLASSPATH="${CLASSPATH}*:"
+    fi
+fi
+
+# Add required jars
+RANDOOP_CLASSPATH+="$SRC_JAR:$RANDOOP_JAR"
+
 RANDOOP_BASE_COMMAND="java \
 -Xbootclasspath/a:$JACOCO_AGENT_JAR:$REPLACECALL_JAR \
 -javaagent:$JACOCO_AGENT_JAR \
@@ -330,6 +342,7 @@ declare -A command_suffix=(
     ["commons-collections4-4.0"]="--specifications=program-specs/commons-collections4-4.0-specs.json"
     # Force termination if a test case takes too long to execute
     ["commons-math3-3.2"]="--usethreads=true"
+    ["nekomud-r16"]="--omit-methods=^net\.sourceforge\.nekomud\.service\.NetworkService\.stop\(\)$"
 )
 
 # Check if the environment is headless
