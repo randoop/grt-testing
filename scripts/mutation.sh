@@ -316,7 +316,6 @@ declare -A command_suffix=(
     ["commons-lang3-3.0"]="--specifications=program-specs/commons-lang3-3.0-specs.json"
     ["guava-16.0.1"]="--specifications=program-specs/guava-16.0.1-specs.json"
     ["jaxen-1.1.6"]="--specifications=program-specs/jaxen-1.1.6-specs.json"
-    ["sat4j-core-2.3.5"]="--specifications=program-specs/sat4j-core-2.3.5-specs.json"
 
     # Randoop generates bad sequences for handling webserver lifecycle, don't test them
     ["javassist-3.19"]="--omit-methods=^javassist\.tools\.web\.Webserver\.run\(\)$ --omit-methods=^javassist\.tools\.rmi\.AppletServer\.run\(\)$"
