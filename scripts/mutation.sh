@@ -187,6 +187,7 @@ declare -A program_src=(
     ["bcel-5.2"]="/src/"
     ["commons-codec-1.9"]="/src/main/java/"
     ["commons-collections4-4.0"]="/src/main/java/"
+    ["commons-compress-1.8"]="/src/main/java/"
     ["commons-lang3-3.0"]="/src/main/java/"
     ["commons-math3-3.2"]="/src/main/java/"
     ["commons-primitives-1.0"]="/src/java/"
@@ -211,6 +212,7 @@ declare -A program_deps=(
     ["commons-compress-1.8"]="build/lib/"
     ["easymock-3.2"]="build/lib/"
     ["fixsuite-r48"]="$SRC_BASE_DIR/lib/"
+    ["hamcrest-core-1.3"]="build/lib/"
     ["javassist-3.19"]="build/lib/"
     ["jaxen-1.1.6"]="build/lib/"
     ["jdom-1.0"]="$MAJOR_HOME/lib/ant:$SRC_BASE_DIR/lib/xml-apis.jar:$SRC_BASE_DIR/lib/xerces.jar:$SRC_BASE_DIR/lib/jaxen-core.jar:$SRC_BASE_DIR/lib/jaxen-jdom.jar:$SRC_BASE_DIR/lib/saxpath.jar"
@@ -221,7 +223,6 @@ declare -A program_deps=(
     ["sat4j-core-2.3.5"]="$SRC_BASE_DIR/lib/"
     ["shiro-core-1.2.3"]="build/lib/"
 )
-#   ["hamcrest-core-1.3"]="$SRC_BASE_DIR/lib/"  this one needs changes?
 
 if [ "$SUBJECT_PROGRAM" == "commons-compress-1.8" ]; then
     rm -rf build/lib
@@ -234,6 +235,12 @@ if [ "$SUBJECT_PROGRAM" == "easymock-3.2" ]; then
     rm -rf build/lib
     mkdir -p build/lib
     wget -P build/lib https://repo1.maven.org/maven2/cglib/cglib/3.3.0/cglib-3.3.0.jar
+fi
+
+if [ "$SUBJECT_PROGRAM" == "hamcrest-core-1.3" ]; then
+    rm -rf build/lib
+    mkdir -p build/lib
+    wget -P build/lib https://github.com/EvoSuite/evosuite/releases/download/v1.2.0/evosuite-1.2.0.jar
 fi
 
 if [ "$SUBJECT_PROGRAM" == "javassist-3.19" ]; then
@@ -297,7 +304,7 @@ REPLACECALL_COMMAND="$REPLACECALL_JAR${replacement_files[$SUBJECT_PROGRAM]}"
 # Randoop Command Configuration
 #===============================================================================
 RANDOOP_CLASSPATH=""
-if [[ -n "$CLASSPATH" ]]; then
+if [[ -n "${program_deps[$SUBJECT_PROGRAM]}" ]]; then
     if [[ "$SUBJECT_PROGRAM" == "jdom-1.0" ]]; then
         RANDOOP_CLASSPATH="$CLASSPATH:"
     else
@@ -496,7 +503,7 @@ do
         fi
 
         # shellcheck disable=SC2086 # FEATURE_FLAG may contain multiple arguments.
-        $RANDOOP_COMMAND --junit-output-dir=$TEST_DIRECTORY $FEATURE_FLAG --usethreads=true
+        $RANDOOP_COMMAND --junit-output-dir=$TEST_DIRECTORY $FEATURE_FLAG
 
         #===============================================================================
         # Coverage & Mutation Analysis
@@ -543,6 +550,10 @@ do
 
         echo "Instruction Coverage: $instruction_coverage%"
         echo "Branch Coverage: $branch_coverage%"
+
+        if [ "$SUBJECT_PROGRAM" == "hamcrest-core-1.3" ]; then
+            python update_hamcrest_tests.py $TEST_DIRECTORY
+        fi
 
         echo
         echo "Running tests with mutation analysis..."
