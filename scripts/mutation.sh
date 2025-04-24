@@ -224,6 +224,10 @@ declare -A program_deps=(
     ["shiro-core-1.2.3"]="build/lib/"
 )
 
+#===============================================================================
+# Subject Program Specific Dependencies
+#===============================================================================
+
 if [ "$SUBJECT_PROGRAM" == "commons-compress-1.8" ]; then
     rm -rf build/lib
     mkdir -p build/lib
@@ -551,6 +555,8 @@ do
         echo "Instruction Coverage: $instruction_coverage%"
         echo "Branch Coverage: $branch_coverage%"
 
+        # For hamcrest-core-1.3, we need to run the generated tests with EvoSuite's runner
+        # in order for mutation analysis to properly work
         if [ "$SUBJECT_PROGRAM" == "hamcrest-core-1.3" ]; then
             python update_hamcrest_tests.py $TEST_DIRECTORY
         fi
