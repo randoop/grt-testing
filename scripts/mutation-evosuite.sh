@@ -12,10 +12,10 @@
 #------------------------------------------------------------------------------
 # Example usage:
 #------------------------------------------------------------------------------
-#   ./mutation-evosuite.sh -c 1 -v commons-lang3-3.0
+#   ./mutation-evosuite.sh -c 1 commons-lang3-3.0
 #
 #------------------------------------------------------------------------------
-# Options:
+# Options (command-line arguments):
 #------------------------------------------------------------------------------
 # See variable USAGE_STRING below
 
@@ -33,6 +33,12 @@
 # Prerequisites:
 #------------------------------------------------------------------------------
 # See file `mutation-prerequisites.md`.
+
+#------------------------------------------------------------------------------
+# Randoop versions (for GRT features):
+#------------------------------------------------------------------------------
+# For Demand-driven (PR #1260), GRT Fuzzing (PR #1304), and Elephant Brain (PR #1347),
+# checkout the respective pull requests from the Randoop repository and build locally.
 
 # Fail this script on errors.
 set -e
@@ -58,6 +64,7 @@ fi
 # Environment Setup
 #===============================================================================
 
+# Requires Java 8
 JAVA_VER=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '{sub("^$", "0", $2); print $1$2}')
 if [[ "$JAVA_VER" -ne 18 ]]; then
     echo "Error: Java version 8 is required. Please install it and try again."
@@ -65,9 +72,8 @@ if [[ "$JAVA_VER" -ne 18 ]]; then
 fi
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-MAJOR_HOME=$(realpath "build/major/") # Major home directory, for mutation testing
-CURR_DIR=$(realpath "$(pwd)")
-EVOSUITE_JAR=$(realpath "build/evosuite-1.2.0.jar")
+MAJOR_HOME=$(realpath "${SCRIPT_DIR}/build/major/") # Major home directory, for mutation testing
+EVOSUITE_JAR=$(realpath "${SCRIPT_DIR}/build/evosuite-1.2.0.jar")
 
 #===============================================================================
 # Argument Parsing & Experiment Configuration
@@ -91,14 +97,14 @@ while getopts ":hvrt:c:" opt; do
       REDIRECT=1
       ;;
     t )
-      # Total experiment time, mutually exclusive with SECONDS_CLASS
+      # Total experiment time, mutually exclusive with SECONDS_PER_CLASS
       TOTAL_TIME="$OPTARG"
       ;;
     c )
       # Default seconds per class.
       # The paper runs Randoop with 4 different time limits:
       # 2 s/class, 10 s/class, 30 s/class, and 60 s/class.
-      SECONDS_CLASS="$OPTARG"
+      SECONDS_PER_CLASS="$OPTARG"
       ;;
     \? )
       echo "Invalid option: -$OPTARG" >&2
@@ -116,14 +122,14 @@ done
 shift $((OPTIND -1))
 
 # Enforce that mutually exclusive options are not bundled together
-if [[ -n "$TOTAL_TIME" ]] && [[ -n "$SECONDS_CLASS" ]]; then
+if [[ -n "$TOTAL_TIME" ]] && [[ -n "$SECONDS_PER_CLASS" ]]; then
   echo "Options -t and -c cannot be used together in any form (e.g., -t -c)."
   exit 1
 fi
 
 # Default to 2 seconds per class if not specified
-if [[ -z "$SECONDS_CLASS" ]] && [[ -z "$TOTAL_TIME" ]]; then
-    SECONDS_CLASS=2
+if [[ -z "$SECONDS_PER_CLASS" ]] && [[ -z "$TOTAL_TIME" ]]; then
+    SECONDS_PER_CLASS=2
 fi
 
 # Name of the subject program.
@@ -137,7 +143,7 @@ else
     ANT="ant"
 fi
 
-echo "Running mutation test on $1"
+echo "Running mutation test on $SUBJECT_PROGRAM"
 echo
 
 #===============================================================================
@@ -156,8 +162,8 @@ NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
 # Time limit for running the test generator.
 if [[ -n "$TOTAL_TIME" ]]; then
     TIME_LIMIT=$(( TOTAL_TIME / NUM_CLASSES ))
-elif [[ -n "$SECONDS_CLASS" ]]; then
-    TIME_LIMIT=$SECONDS_CLASS
+elif [[ -n "$SECONDS_PER_CLASS" ]]; then
+    TIME_LIMIT=$SECONDS_PER_CLASS
 else
     TIME_LIMIT=2
 fi
@@ -165,7 +171,8 @@ fi
 echo "TIME_LIMIT: $TIME_LIMIT seconds"
 echo
 
-# Map subject programs to their source directories
+# Map subject programs to their source directories.
+# Subject programs not listed here default to top-level source directory ($SRC_BASE_DIR).
 declare -A program_src=(
     ["a4j-1.0b"]="/src/"
     ["asm-5.0.1"]="/src/main/java/"
@@ -222,7 +229,6 @@ JAR_PATHS="$SRC_JAR"
 
 # Ensure that `hamcrest-core-1.3.jar` is not included multiple times in the dependencies
 # as it is required for running EvoSuite-generated tests.
-# 
 # Note: The subject program's JAR file is always added to the `JAR_PATHS` variable
 # (as mentioned above), so this prevents redundant inclusion of the same dependency.
 if [[ "$SUBJECT_PROGRAM" == "hamcrest-core-1.3" ]]; then
@@ -247,7 +253,7 @@ fi
 # For JSAP-2.1, add 3 external dependencies.
 if [[ "$SUBJECT_PROGRAM" == "JSAP-2.1" ]]; then
     wget -P build/ "https://repo1.maven.org/maven2/com/thoughtworks/xstream/xstream/1.4.21/xstream-1.4.21.jar"
-    SPECIFIC_JAR_DIR="$CURR_DIR/../subject-programs/src/JSAP-2.1/lib"
+    SPECIFIC_JAR_DIR="$SCRIPT_DIR/../subject-programs/src/JSAP-2.1/lib"
     JAR_PATHS="$JAR_PATHS:build/xstream-1.4.21.jar:$SPECIFIC_JAR_DIR/rundoc-0.11.jar:$SPECIFIC_JAR_DIR/snip-0.11.jar:$SPECIFIC_JAR_DIR/ant.jar"
 fi
 
@@ -294,7 +300,7 @@ fi
 # For nekomud-r16 and fixsuite-r48, exclude slf4j-log4j12-1.5.*.jar from the dependency list. Including them
 # causes a static logger binder error when running with Major. Otherwise, include any other dependency defined in 
 # the CLASSPATH variable
-for jar in $CLASSPATH/*.jar; do
+for jar in "$CLASSPATH"/*.jar; do
     if [ -f "$jar" ]; then  # Check if the file exists
         # If the current file is log4j-1.2.15.jar, skip it
         if [[ "$SUBJECT_PROGRAM" == "nekomud-r16" && "$(basename "$jar")" == "slf4j-log4j12-1.5.2.jar" ]]; then
@@ -328,17 +334,9 @@ IFS=$OLDIFS
 # However, it is needed for maven, which is why it was added to the libs directory in the previous code block. 
 if [[ $SUBJECT_PROGRAM == "javassist-3.19" ]]; then
     # Exclude build/tools-1.5.0.jar from JAR_PATHS for javassist-3.19
-    JAR_PATHS=$(echo $JAR_PATHS | sed 's|build/tools-1.5.0.jar:||g' | sed 's|:build/tools-1.5.0.jar||g')
+    JAR_PATHS=$(echo "$JAR_PATHS" | sed 's|build/tools-1.5.0.jar:||g' | sed 's|:build/tools-1.5.0.jar||g')
 fi
 
-LIB_ARG="-lib $JAR_PATHS"
-
-if [[ "$VERBOSE" -eq 1 ]]; then
-    echo "JAVA_SRC_DIR: $JAVA_SRC_DIR"
-    echo "CLASSPATH: $CLASSPATH"
-    echo "JAR_PATHS: $JAR_PATHS"
-    echo
-fi
 
 #===============================================================================
 # Test generator command configuration
@@ -363,6 +361,14 @@ EVOSUITE_COMMAND=(
     "-Drandom_seed=0"
 )
 
+if [[ "$VERBOSE" -eq 1 ]]; then
+    echo "JAVA_SRC_DIR: $JAVA_SRC_DIR"
+    echo "CLASSPATH: $CLASSPATH"
+    echo "JAR_PATHS: $JAR_PATHS"
+    echo
+fi
+
+
 #===============================================================================
 # Build System Preparation
 #===============================================================================
@@ -370,7 +376,7 @@ EVOSUITE_COMMAND=(
 echo "Modifying build-evosuite.xml and pom.xml for $SUBJECT_PROGRAM..."
 ./apply-build-patch-evosuite.sh "$SUBJECT_PROGRAM"
 
-# Installs all of the jarfiles in libs/ to maven (used for measuring code coverage)
+# Installs all of the jarfiles in libs/ to maven (used for measuring code coverage).
 ./generate-mvn-dependencies.sh
 
 cd "$JAVA_SRC_DIR" || exit 1
@@ -379,6 +385,7 @@ if git checkout include-major >/dev/null 2>&1; then
 fi
 cd - || exit 1
 
+echo "Using EvoSuite to generate tests."
 echo
 
 # Output file for runtime information
@@ -394,8 +401,11 @@ fi
 # Remove old test directories.
 rm -rf "$SCRIPT_DIR"/build/evosuite-tests/
 
+# The value for the -lib command-line option; that is, the classpath.
+LIB_ARG="$JAR_PATHS"
+
 # shellcheck disable=SC2034 # i counts iterations but is not otherwise used.
-for i in $(seq 1 $NUM_LOOP)
+for i in $(seq 1 "$NUM_LOOP")
 do
     TIMESTAMP=$(date +%Y%m%d-%H%M%S)
     # Test directory for each iteration.
@@ -406,7 +416,7 @@ do
     RESULT_DIR="$SCRIPT_DIR/results/$SUBJECT_PROGRAM-evosuite-$TIMESTAMP"
     mkdir -p "$RESULT_DIR"
 
-    # Check if output needs to be redirected for this loop
+    # If the REDIRECT flag is set, redirect all output to a log file.
     if [[ "$REDIRECT" -eq 1 ]]; then
         touch mutation_output.txt
         echo "Redirecting output to $RESULT_DIR/mutation_output.txt..."
@@ -420,6 +430,7 @@ do
     # on the classpath for JSAP-2.1 (should be the last dependency in LIB_ARG).
     if [[ "$SUBJECT_PROGRAM" == "JSAP-2.1" ]]; then
         echo "Removing ant.jar from -lib option"
+        # shellcheck disable=SC2001
         LIB_ARG=$(echo "$LIB_ARG" | sed 's/\([^:]*\)[^:]*$/:/' )
     fi
 
@@ -430,19 +441,19 @@ do
     echo "Compiling and mutating subject program..."
     if [[ "$VERBOSE" -eq 1 ]]; then
         echo command:
-        echo "$MAJOR_HOME"/bin/ant -buildfile build-evosuite.xml -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" clean compile
+        echo "$MAJOR_HOME"/bin/ant -buildfile build-evosuite.xml -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" clean compile
     fi
     echo
-    "$MAJOR_HOME"/bin/ant -buildfile build-evosuite.xml -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" clean compile
+    "$MAJOR_HOME"/bin/ant -buildfile build-evosuite.xml -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" clean compile
 
     echo
     echo "Compiling tests..."
     if [[ "$VERBOSE" -eq 1 ]]; then
         echo command:
-        echo "$MAJOR_HOME"/bin/ant -buildfile build-evosuite.xml -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" compile.tests
+        echo "$MAJOR_HOME"/bin/ant -buildfile build-evosuite.xml -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" compile.tests
     fi
     echo
-    "$MAJOR_HOME"/bin/ant -buildfile build-evosuite.xml -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" compile.tests
+    "$MAJOR_HOME"/bin/ant -buildfile build-evosuite.xml -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" compile.tests
 
     echo
     echo "Running tests with coverage..."
@@ -474,10 +485,9 @@ do
     echo "Running tests with mutation analysis..."
     if [[ "$VERBOSE" -eq 1 ]]; then
         echo command:
-        echo "$MAJOR_HOME"/bin/"$ANT" -buildfile build-evosuite.xml -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
+        echo "$MAJOR_HOME"/bin/"$ANT" -buildfile build-evosuite.xml -Dtest="$TEST_DIRECTORY" -lib "$LIB_ARG" mutation.test
     fi
-    echo "$MAJOR_HOME"/bin/"$ANT" -buildfile build-evosuite.xml -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
-    "$MAJOR_HOME"/bin/ant -buildfile build-evosuite.xml -Dtest="$TEST_DIRECTORY" "$LIB_ARG" mutation.test
+    "$MAJOR_HOME"/bin/ant -buildfile build-evosuite.xml -Dtest="$TEST_DIRECTORY" -lib "$LIB_ARG" mutation.test
 
     mv results/summary.csv "$RESULT_DIR"
 
