@@ -5,10 +5,15 @@
 #===============================================================================
 
 # This script:
-#  * uses Randoop to generate test suites for a subject program and
-#  * performs mutation testing to determine how Randoop features affect
-#    various coverage metrics including coverage and mutation score
-#    (mutants are generated using Major).
+#  * Generates test suites using Randoop.
+#  * Computes mutation score (mutants are generated using Major via ant).
+#  * Computes code coverage (using Jacoco via Maven).
+#
+# Directories and files:
+# - `build/test*`: Randoop-created test suites.
+# - `build/bin`: Compiled tests and code.
+# - `results/info.csv`: statistics about each iteration.
+# - `results/`: everything else specific to the most recent iteration.
 
 #------------------------------------------------------------------------------
 # Example usage:
@@ -19,14 +24,6 @@
 # Options (command-line arguments):
 #------------------------------------------------------------------------------
 # See variable USAGE_STRING below
-
-#------------------------------------------------------------------------------
-# Outputs:
-#------------------------------------------------------------------------------
-# - build/test*   : Randoop-created test suites.
-# - build/bin     : Compiled tests and subject code.
-# - results/      : All output from the current run.
-# - results/info.csv : Summary of statistics (coverage, mutation score, etc.).
 
 #------------------------------------------------------------------------------
 # Prerequisites:
@@ -142,7 +139,7 @@ if [[ -z "$SECONDS_PER_CLASS" ]] && [[ -z "$TOTAL_TIME" ]]; then
     SECONDS_PER_CLASS=2
 fi
 
-# Name of the subject program
+# Name of the subject program.
 SUBJECT_PROGRAM="$1"
 
 # Select the ant executable based on the subject program
@@ -153,7 +150,7 @@ else
     ANT="ant"
 fi
 
-echo "Running mutation test on $1"
+echo "Running mutation test on $SUBJECT_PROGRAM"
 echo
 
 #===============================================================================
@@ -299,7 +296,7 @@ if git checkout include-major >/dev/null 2>&1; then
 fi
 cd - || exit 1
 
-echo "Using Randoop to generate tests"
+echo "Using Randoop to generate tests."
 echo
 
 # Output file for runtime information
@@ -339,6 +336,9 @@ done
 # Remove old test directories.
 rm -rf "$SCRIPT_DIR"/build/test*
 
+# The value for the -lib command-line option; that is, the classpath.
+LIB_ARG="$CLASSPATH"
+
 # shellcheck disable=SC2034 # i counts iterations but is not otherwise used.
 for i in $(seq 1 "$NUM_LOOP")
 do
@@ -360,11 +360,10 @@ do
         mkdir -p "$TEST_DIRECTORY"
 
         # Result directory for each test generation and execution.
-        RESULT_DIR="$SCRIPT_DIR/results/$1-$FEATURE_NAME-$TIMESTAMP"
+        RESULT_DIR="$SCRIPT_DIR/results/$SUBJECT_PROGRAM-$FEATURE_NAME-$TIMESTAMP"
         mkdir -p "$RESULT_DIR"
 
-        # Check if output needs to be redirected for this loop.
-        # If the REDIRECT flag is set, redirect all output to a log file for this iteration.
+        # If the REDIRECT flag is set, redirect all output to a log file.
         if [[ "$REDIRECT" -eq 1 ]]; then
             touch mutation_output.txt
             echo "Redirecting output to $RESULT_DIR/mutation_output.txt..."
@@ -431,26 +430,29 @@ do
         echo
         echo "Compiling and mutating subject program..."
         if [[ "$VERBOSE" -eq 1 ]]; then
-            echo "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" clean compile
+            echo command:
+            echo "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" clean compile
         fi
         echo
-        "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" clean compile
+        "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" clean compile
 
         echo
         echo "Compiling tests..."
         if [[ "$VERBOSE" -eq 1 ]]; then
-            echo "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" $LIB_ARG compile.tests
+            echo command:
+            echo "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" compile.tests
         fi
         echo
-        "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" $LIB_ARG compile.tests
+        "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" compile.tests
 
         echo
         echo "Running tests with coverage..."
         if [[ "$VERBOSE" -eq 1 ]]; then
-            echo "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" test
+            echo command:
+            echo "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" test
         fi
         echo
-        "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" test
+        "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" test
 
         mv jacoco.exec "$RESULT_DIR"
 
@@ -475,17 +477,17 @@ do
         echo "Running tests with mutation analysis..."
         if [[ "$VERBOSE" -eq 1 ]]; then
             echo command:
-            echo "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" $LIB_ARG mutation.test
+            echo "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" -lib "$LIB_ARG" mutation.test
         fi
         echo
-        "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" $LIB_ARG mutation.test
+        "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" -lib "$LIB_ARG" mutation.test
 
         mv results/summary.csv "$RESULT_DIR"
 
         # Calculate Mutation Score
-        mutants_covered=$(awk -F, 'NR==2 {print $3}' "$RESULT_DIR"/summary.csv)
+        mutants_generated=$(awk -F, 'NR==2 {print $3}' "$RESULT_DIR"/summary.csv)
         mutants_killed=$(awk -F, 'NR==2 {print $4}' "$RESULT_DIR"/summary.csv)
-        mutation_score=$(echo "scale=4; $mutants_killed / $mutants_covered * 100" | bc)
+        mutation_score=$(echo "scale=4; $mutants_killed / $mutants_generated * 100" | bc)
         mutation_score=$(printf "%.2f" "$mutation_score")
 
         echo "Instruction Coverage: $instruction_coverage%"
