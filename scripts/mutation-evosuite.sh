@@ -207,7 +207,7 @@ declare -A program_src=(
 JAVA_SRC_DIR=$SRC_BASE_DIR${program_src[$SUBJECT_PROGRAM]}
 
 # Map project names to their respective dependencies
-declare -A project_deps=(
+declare -A program_deps=(
     ["a4j-1.0b"]="$SRC_BASE_DIR/jars/"
     ["fixsuite-r48"]="$SRC_BASE_DIR/lib/"
     ["jdom-1.0"]="$MAJOR_HOME/lib/ant:$SRC_BASE_DIR/lib/"
@@ -218,7 +218,7 @@ declare -A project_deps=(
 #   ["hamcrest-core-1.3"]="$SRC_BASE_DIR/lib/"  this one needs changes?
 
 # Link to dependencies
-CLASSPATH=${project_deps[$SUBJECT_PROGRAM]}
+CLASSPATH=${program_deps[$SUBJECT_PROGRAM]}
 
 #===============================================================================
 # Subject Program Specific Dependencies
