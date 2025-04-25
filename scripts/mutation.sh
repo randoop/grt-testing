@@ -9,6 +9,12 @@
 #  * Computes mutation score (mutants are generated using Major via ant).
 #  * Computes code coverage (using Jacoco via Maven).
 #
+# Directories and files:
+# - `build/test*`: Randoop-created test suites.
+# - `build/bin`: Compiled tests and code.
+# - `results/info.csv`: statistics about each iteration.
+# - `results/`: everything else specific to the most recent iteration.
+
 #------------------------------------------------------------------------------
 # Example usage:
 #------------------------------------------------------------------------------
@@ -18,14 +24,6 @@
 # Options (command-line arguments):
 #------------------------------------------------------------------------------
 # See variable USAGE_STRING below
-
-#------------------------------------------------------------------------------
-# Outputs:
-#------------------------------------------------------------------------------
-# - build/test*   : Randoop-created test suites.
-# - build/bin     : Compiled tests and subject code.
-# - results/      : All output from the current run.
-# - results/info.csv : Summary of statistics (coverage, mutation score, etc.).
 
 #------------------------------------------------------------------------------
 # Prerequisites:
