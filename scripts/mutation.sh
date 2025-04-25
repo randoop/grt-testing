@@ -4,13 +4,10 @@
 # Overview
 #===============================================================================
 
-# For documentation of how to run this script, see file `mutation-repro.md`.
-#
 # This script:
-#  * uses Randoop to generate test suites for a subject program and
-#  * performs mutation testing to determine how Randoop features affect
-#    various coverage metrics including coverage and mutation score
-#    (mutants are generated using Major).
+#  * Generates test suites using Randoop.
+#  * Computes mutation score (mutants are generated using Major via ant).
+#  * Computes code coverage (using Jacoco via Maven).
 #
 # Directories and files:
 # - `build/test*`: Randoop-created test suites.
@@ -33,13 +30,18 @@ fi
 # Environment Setup
 #===============================================================================
 
+# Requires Java 8
+JAVA_VER=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '{sub("^$", "0", $2); print $1$2}')
+if [[ "$JAVA_VER" -ne 18 ]]; then
+    echo "Error: Java version 8 is required. Please install it and try again."
+    exit 1
+fi
+
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 MAJOR_HOME=$(realpath "${SCRIPT_DIR}/build/major/") # Major home directory, for mutation testing
 RANDOOP_JAR=$(realpath "${SCRIPT_DIR}/build/randoop-all-4.3.3.jar") # Randoop jar file
 JACOCO_AGENT_JAR=$(realpath "${SCRIPT_DIR}/build/jacocoagent.jar") # For Bloodhound
 JACOCO_CLI_JAR=$(realpath "${SCRIPT_DIR}/build/jacococli.jar") # For coverage report generation
-
-. "${SCRIPT_DIR}/usejdk.sh"
 
 
 #===============================================================================
@@ -47,12 +49,13 @@ JACOCO_CLI_JAR=$(realpath "${SCRIPT_DIR}/build/jacococli.jar") # For coverage re
 #===============================================================================
 
 NUM_LOOP=1             # Number of experiment runs (10 in GRT paper)
+VERBOSE=0              # Verbose option
 
 SECONDS_PER_CLASS="2"  # Default seconds per class.
                        # The paper runs Randoop with 4 different time limits:
                        # 2 s/class, 10 s/class, 30 s/class, and 60 s/class.
 
-# Name of the subject program
+# Name of the subject program.
 SUBJECT_PROGRAM="$1"
 
 JAR_DIR="$3"
@@ -66,16 +69,11 @@ else
     ANT="ant"
 fi
 
-echo "Running mutation test on $1"
+echo "Running mutation test on $SUBJECT_PROGRAM"
 echo
 
-LIB_ARG=""
-if [[ $CLASSPATH ]]; then
-    LIB_ARG="-lib $CLASSPATH"
-fi
-
 #===============================================================================
-# Program Paths & Dependencies
+# Project Paths & Dependencies
 #===============================================================================
 
 # Link to src files for mutation generation and analysis.
@@ -87,7 +85,7 @@ SRC_JAR=$(realpath "$SCRIPT_DIR/../subject-programs/$SUBJECT_PROGRAM.jar")
 # Number of classes in given jar file.
 NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
 
-# Time limit for running Randoop.
+# Time limit for running the test generator.
 TIME_LIMIT=$((NUM_CLASSES * SECONDS_PER_CLASS))
 
 echo "TIME_LIMIT: $TIME_LIMIT seconds"
@@ -96,7 +94,7 @@ echo
 # Command line inputs common among all commands.
 RANDOOP_COMMAND="java -Xbootclasspath/a:$JACOCO_AGENT_JAR -javaagent:$JACOCO_AGENT_JAR -classpath $SRC_JAR:$RANDOOP_JAR randoop.main.Main gentests --testjar=$SRC_JAR --time-limit=$TIME_LIMIT"
 
-echo "Using Randoop to generate tests"
+echo "Using Randoop to generate tests."
 echo
 
 # Output file for runtime information
@@ -136,8 +134,11 @@ done
 # Remove old test directories.
 rm -rf "$SCRIPT_DIR"/build/test*
 
+# The value for the -lib command-line option; that is, the classpath.
+LIB_ARG="$CLASSPATH"
+
 # shellcheck disable=SC2034 # i counts iterations but is not otherwise used.
-for i in $(seq 1 $NUM_LOOP)
+for i in $(seq 1 "$NUM_LOOP")
 do
     for RANDOOP_FEATURE in "${RANDOOP_FEATURES[@]}"
     do
@@ -157,7 +158,7 @@ do
         mkdir -p "$TEST_DIRECTORY"
 
         # Result directory for each test generation and execution.
-        RESULT_DIR="$SCRIPT_DIR/results/$1-$FEATURE_NAME-$TIMESTAMP"
+        RESULT_DIR="$SCRIPT_DIR/results/$SUBJECT_PROGRAM-$FEATURE_NAME-$TIMESTAMP"
         mkdir -p "$RESULT_DIR"
 
         # Bloodhound
@@ -210,6 +211,7 @@ do
             FEATURE_FLAG="--constant-mining=true"
         fi
 
+        # shellcheck disable=SC2086 # FEATURE_FLAG may contain multiple arguments.
         $RANDOOP_COMMAND --junit-output-dir=$TEST_DIRECTORY $FEATURE_FLAG
 
         #===============================================================================
@@ -219,26 +221,29 @@ do
         echo
         echo "Compiling and mutating subject program..."
         if [[ "$VERBOSE" -eq 1 ]]; then
-            echo "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" clean compile
+            echo command:
+            echo "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" clean compile
         fi
         echo
-        "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" clean compile
+        "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" clean compile
 
         echo
         echo "Compiling tests..."
         if [[ "$VERBOSE" -eq 1 ]]; then
-            echo "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" $LIB_ARG compile.tests
+            echo command:
+            echo "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" compile.tests
         fi
         echo
-        "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" compile.tests
+        "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" compile.tests
 
         echo
         echo "Running tests with coverage..."
         if [[ "$VERBOSE" -eq 1 ]]; then
-            echo "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" test
+            echo command:
+            echo "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" test
         fi
         echo
-        "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" test
+        "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" test
 
         mv jacoco.exec "$RESULT_DIR"
         java -jar "$JACOCO_CLI_JAR" report "$RESULT_DIR/jacoco.exec" --classfiles "$SRC_JAR" --sourcefiles "$JAVA_SRC_DIR" --csv "$RESULT_DIR"/report.csv
@@ -262,17 +267,17 @@ do
         echo "Running tests with mutation analysis..."
         if [[ "$VERBOSE" -eq 1 ]]; then
             echo command:
-            echo "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" $LIB_ARG mutation.test
+            echo "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" -lib "$LIB_ARG" mutation.test
         fi
         echo
-        "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" $LIB_ARG mutation.test
+        "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" -lib "$LIB_ARG" mutation.test
 
         mv results/summary.csv "$RESULT_DIR"
 
         # Calculate Mutation Score
-        mutants_covered=$(awk -F, 'NR==2 {print $3}' "$RESULT_DIR"/summary.csv)
+        mutants_generated=$(awk -F, 'NR==2 {print $3}' "$RESULT_DIR"/summary.csv)
         mutants_killed=$(awk -F, 'NR==2 {print $4}' "$RESULT_DIR"/summary.csv)
-        mutation_score=$(echo "scale=4; $mutants_killed / $mutants_covered * 100" | bc)
+        mutation_score=$(echo "scale=4; $mutants_killed / $mutants_generated * 100" | bc)
         mutation_score=$(printf "%.2f" "$mutation_score")
 
         echo "Instruction Coverage: $instruction_coverage%"
@@ -285,9 +290,9 @@ do
 
         # Move output files into the $RESULT_DIR directory.
         FILES_TO_MOVE=(
-            "suppression.log"
             "major.log"
             "mutants.log"
+            "suppression.log"
             "results/covMap.csv"
             "results/details.csv"
             "results/preprocessing.ser"
