@@ -60,13 +60,6 @@ fi
 # Environment Setup
 #===============================================================================
 
-# Requires Java 8
-JAVA_VER=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '{sub("^$", "0", $2); print $1$2}')
-if [[ "$JAVA_VER" -ne 18 ]]; then
-    echo "Error: Java version 8 is required. Please install it and try again."
-    exit 1
-fi
-
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 MAJOR_HOME=$(realpath "${SCRIPT_DIR}/build/major/") # Major home directory, for mutation testing
 RANDOOP_JAR=$(realpath "${SCRIPT_DIR}/build/randoop-all-4.3.3.jar") # Randoop jar file
@@ -154,7 +147,7 @@ echo "Running mutation test on $SUBJECT_PROGRAM"
 echo
 
 #===============================================================================
-# Project Paths & Dependencies
+# Program Paths & Dependencies
 #===============================================================================
 
 # Path to the base directory of the source code.
@@ -466,7 +459,6 @@ do
         "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" test
 
         mv jacoco.exec "$RESULT_DIR"
-
         java -jar "$JACOCO_CLI_JAR" report "$RESULT_DIR/jacoco.exec" --classfiles "$SRC_JAR" --sourcefiles "$JAVA_SRC_DIR" --csv "$RESULT_DIR"/report.csv
 
         # Calculate Instruction Coverage
