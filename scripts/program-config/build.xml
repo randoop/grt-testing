@@ -61,8 +61,7 @@
                mutantDetailsFile="results/details.csv"
                covMapFile="results/covMap.csv"
                testMapFile="results/testMap.csv"
-               killMapFile="results/killMap.csv"
-               testOrder="sort_methods">
+               killMapFile="results/killMap.csv">
             <classpath path="build/bin"/>
             <batchtest fork="false">
                 <fileset dir="${test}">

@@ -1,0 +1,29 @@
+[
+  {
+    "operation": {
+      "classname": "java.awt.Component",
+      "name": "createImage",
+      "parameterTypes": [
+          "java.awt.image.ImageProducer"
+      ]
+    },
+    "identifiers": {
+      "parameters": [
+          "producer"
+      ],
+      "receiverName": "receiver",
+      "returnName": "result"
+    },
+    "pre": [
+      {
+        "description": "producer must be non-null",
+        "guard": {
+          "condition": "producer != null",
+          "description": "producer must be non-null"
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  }
+]

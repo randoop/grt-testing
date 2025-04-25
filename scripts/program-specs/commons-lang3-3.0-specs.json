@@ -1,0 +1,141 @@
+[
+  {
+    "operation": {
+      "classname": "org.apache.commons.lang3.RandomStringUtils",
+      "name": "random",
+      "parameterTypes": [
+        "int",
+        "int",
+        "int",
+        "boolean",
+        "boolean"
+      ]
+    },
+    "identifiers": {
+      "parameters": [
+        "count",
+        "start",
+        "end",
+        "letters",
+        "numbers"
+      ],
+      "receiverName": "receiver",
+      "returnName": "result"
+    },
+    "pre": [
+      {
+        "description": "If letters is true, start and end range must include letters",
+        "guard": {
+          "condition": "letters ? (start <= 90 && end >= 65) || (start <= 122 && end >= 97) : true",
+          "description": "If letters is true, start and end range must include letters"
+        }
+      },
+      {
+        "description": "If numbers is true, start and end range must include numbers",
+        "guard": {
+          "condition": "numbers ? (start <= 57 && end >= 48) : true",
+          "description": "If numbers is true, start and end range must include numbers"
+        }
+      },
+      {
+        "description": "If both letters and numbers are true, start and end range must include letters or numbers",
+        "guard": {
+          "condition": "letters && numbers ? (start <= 90 && end >= 65) || (start <= 122 && end >= 97) || (start <= 57 && end >= 48) : true",
+          "description": "If both letters and numbers are true, start and end range must include letters or numbers"
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  },
+  {
+    "operation": {
+      "classname": "org.apache.commons.lang3.RandomStringUtils",
+      "name": "random",
+      "parameterTypes": [
+        "int",
+        "int",
+        "int",
+        "boolean",
+        "boolean",
+        "[C"
+      ]
+    },
+    "identifiers": {
+      "parameters": [
+        "count",
+        "start",
+        "end",
+        "letters",
+        "numbers",
+        "chars"
+      ],
+      "receiverName": "receiver",
+      "returnName": "result"
+    },
+    "pre": [
+      {
+        "description": "If letters is true and chars is null, start and end range must include letters",
+        "guard": {
+          "condition": "letters && chars == null ? (start <= 90 && end >= 65) || (start <= 122 && end >= 97) : true",
+          "description": "If letters is true and chars is null, start and end range must include letters"
+        }
+      },
+      {
+        "description": "If numbers is true and chars is null, start and end range must include numbers",
+        "guard": {
+          "condition": "numbers && chars == null ? (start <= 57 && end >= 48) : true",
+          "description": "If numbers is true and chars is null, start and end range must include numbers"
+        }
+      },
+      {
+        "description": "If both letters and numbers are true and chars is null, start and end range must include letters or numbers",
+        "guard": {
+          "condition": "letters && numbers && chars == null ? (start <= 90 && end >= 65) || (start <= 122 && end >= 97) || (start <= 57 && end >= 48) : true",
+          "description": "If both letters and numbers are true and chars is null, start and end range must include letters or numbers"
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  },
+  {
+    "operation": {
+      "classname": "org.apache.commons.lang3.text.FormattableUtils",
+      "name": "append",
+      "parameterTypes": [
+        "java.lang.CharSequence",
+        "java.util.Formatter",
+        "int",
+        "int",
+        "int",
+        "char",
+        "java.lang.CharSequence"
+      ]
+    },
+    "identifiers": {
+      "parameters": [
+        "seq",
+        "formatter",
+        "flags",
+        "width",
+        "precision",
+        "padChar",
+        "ellipsis"
+      ],
+      "receiverName": "receiver",
+      "returnName": "result"
+    },
+    "pre": [
+      {
+        "description": "Width must be between 0 and 1000 to prevent long strings",
+        "guard": {
+          "condition": "width >= 0 && width <= 1000",
+          "description": "Width must be between 0 and 1000 to prevent long strings"
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  }
+]

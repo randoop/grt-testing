@@ -1,0 +1,47 @@
+[
+  {
+    "operation": {
+      "classname": "com.jstevh.tools.StringTools",
+      "name": "removeStrings",
+      "parameterTypes": [
+        "java.lang.String",
+        "[Ljava.lang.String;"
+      ]
+    },
+    "identifiers": {
+      "parameters": [
+        "in",
+        "strings"
+      ],
+      "receiverName": "receiver",
+      "returnName": "result"
+    },
+    "pre": [
+      {
+        "description": "Input string 'in' must be non-empty",
+        "guard": {
+          "condition": "in != null && in.length() > 0",
+          "description": "Input string 'in' must be non-empty"
+        }
+      },
+      {
+        "description": "String array 'strings' must not contain any empty strings",
+        "guard": {
+          "condition": "strings != null && !Arrays.asList(strings).contains(\"\")",
+          "description": "String array 'strings' must not contain any empty strings"
+        }
+      }
+    ],
+    "post": [],
+    "throws": [
+      {
+        "exception": "IllegalArgumentException",
+        "description": "Thrown if the string array 'strings' contains any empty strings"
+      },
+      {
+        "exception": "NullPointerException",
+        "description": "Thrown if 'in' or 'strings' is null"
+      }
+    ]
+  }
+]

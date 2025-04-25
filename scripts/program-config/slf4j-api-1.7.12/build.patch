@@ -1,0 +1,41 @@
+--- ./build-variants/build.xml	2024-08-23 13:48:44.031112791 -0700
++++ build.xml	2024-09-03 18:19:10.334940207 -0700
+@@ -31,13 +31,31 @@
+ 
+ <!-- Target to compile the project -->
+     <target name="compile" depends="init" description="Compile">
+-        <javac includeantruntime="true" 
+-               srcdir="${src}"
+-               destdir="build/bin"
+-               debug="yes">
+-            <classpath location="${major.jar}"/>
+-            <compilerarg value="${plugin}"/>
+-        </javac>
++        <exec executable="mvn" dir="${src}">
++            <arg value="-B"/>
++            <arg value="clean"/>
++            <arg value="package"/>
++            <arg value="-Dmaven.test.failure.ignore=true"/>
++            <arg value="-Dmaven.javadoc.skip=true"/>
++            <arg value="-Dgrt-testing.basedir=${basedir}"/>
++            <arg value="-Dgrt-testing.major.jar=${major.jar}"/>
++            <arg value="-Dgrt-testing.plugin=${plugin}"/>
++            <arg value="-DjavaccBuildNotRequired=true"/>
++            <arg value="-DskipTests=true"/>
++        </exec>
++
++        <copy todir="build/bin">
++            <fileset dir="${src}/target/classes"/>
++        </copy>
++
++        <exec executable="mv">
++            <arg value="${src}/major.log"/>
++            <arg value="./"/>
++        </exec>
++        <exec executable="mv">
++            <arg value="${src}/mutants.log"/>
++            <arg value="./"/>
++        </exec>
+     </target>
+ 
+ <!-- Target to compile the test suite -->
