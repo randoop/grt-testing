@@ -5,10 +5,15 @@
 #===============================================================================
 
 # This script:
-#  * uses Randoop to generate test suites for a subject program and
-#  * performs mutation testing to determine how Randoop features affect
-#    various coverage metrics including coverage and mutation score
-#    (mutants are generated using Major).
+#  * Generates test suites using Randoop.
+#  * Computes mutation score (mutants are generated using Major via ant).
+#  * Computes code coverage (using Jacoco via Maven).
+#
+# Directories and files:
+# - `build/test*`: Randoop-created test suites.
+# - `build/bin`: Compiled tests and code.
+# - `results/info.csv`: statistics about each iteration.
+# - `results/`: everything else specific to the most recent iteration.
 
 #------------------------------------------------------------------------------
 # Example usage:
@@ -19,14 +24,6 @@
 # Options (command-line arguments):
 #------------------------------------------------------------------------------
 # See variable USAGE_STRING below
-
-#------------------------------------------------------------------------------
-# Outputs:
-#------------------------------------------------------------------------------
-# - build/test*   : Randoop-created test suites.
-# - build/bin     : Compiled tests and subject code.
-# - results/      : All output from the current run.
-# - results/info.csv : Summary of statistics (coverage, mutation score, etc.).
 
 #------------------------------------------------------------------------------
 # Prerequisites:
@@ -563,7 +560,7 @@ do
         # For hamcrest-core-1.3, we need to run the generated tests with EvoSuite's runner
         # in order for mutation analysis to properly work
         if [ "$SUBJECT_PROGRAM" == "hamcrest-core-1.3" ]; then
-            python update_hamcrest_tests.py $TEST_DIRECTORY
+            python update_hamcrest_tests.py "$TEST_DIRECTORY"
         fi
 
         echo
