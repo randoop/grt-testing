@@ -94,9 +94,11 @@ while getopts ":hvrt:c:n:" opt; do
       exit 0
       ;;
     v )
+      # Verbose mode
       VERBOSE=1
       ;;
     r )
+      # Redirect output to a log file
       REDIRECT=1
       ;;
     t )
