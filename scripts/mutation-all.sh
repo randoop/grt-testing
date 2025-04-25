@@ -1,6 +1,5 @@
 #!/bin/bash
 set -e
-# shellcheck disable=SC2086 # MUTATION_ARGS should not be quoted
 
 # This script runs `mutation.sh` on all the subject programs.
 ./mutation.sh "$@" a4j-1.0b
