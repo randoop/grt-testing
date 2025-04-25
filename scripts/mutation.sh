@@ -154,7 +154,7 @@ echo "Running mutation test on $SUBJECT_PROGRAM"
 echo
 
 #===============================================================================
-# Project Paths & Dependencies
+# Program Paths & Dependencies
 #===============================================================================
 
 # Path to the base directory of the source code.
