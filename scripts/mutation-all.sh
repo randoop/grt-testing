@@ -1,6 +1,5 @@
 #!/bin/bash
 set -e
-# shellcheck disable=SC2086 # MUTATION_ARGS should not be quoted
 
 # This script runs `mutation.sh` on all the subject programs.
 ./mutation.sh "$@" a4j-1.0b
@@ -32,4 +31,4 @@ set -e
 ./mutation.sh "$@" sat4j-core-2.3.5
 ./mutation.sh "$@" shiro-core-1.2.3
 ./mutation.sh "$@" slf4j-api-1.7.12
-./mutation.sh "$@" tinySQL-2.26
+./mutation.sh "$@" tiny-sql-2.26
