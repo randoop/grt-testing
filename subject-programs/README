@@ -36,7 +36,7 @@ pmd-core-5.2.2            Pmd DCD 5.2.2
 sat4j.core-2.3.5          SAT4J Core (2.3.5)
 shiro-core-1.2.6          Apache Shiro-core (1.2.6)
 slf4j-api-1.7.12          Slf4j-api (1.7.12)
-tinySQL-2.26              Tiny SQL (2.26)
+tiny-sql-2.26             Tiny SQL (2.26)
 
 missing
 -----------------------------------------------------

@@ -24,12 +24,8 @@ build/randoop:
 randoop-from-source:
 	cd build/randoop && \
 	git pull && \
-	. "${MAKEFILE_DIR}usejdk.sh" && \
-	. ../../usejdk.sh && \
-	usejdk11 && \
 	./gradlew shadowJar && \
-	mv -f build/libs/randoop-all-4.3.3.jar agent/replacecall/build/libs/replacecall-4.3.3.jar .. && \
-	usejdk8
+	mv -f build/libs/randoop-all-4.3.3.jar agent/replacecall/build/libs/replacecall-4.3.3.jar ..
 
 build/libs/randoop-all-4.3.3.jar:
 	mv -f build/libs/randoop-all-4.3.3.jar agent/replacecall/build/libs/replacecall-4.3.3.jar ..
