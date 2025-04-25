@@ -447,8 +447,7 @@ do
         RESULT_DIR="$SCRIPT_DIR/results/$SUBJECT_PROGRAM-$FEATURE_NAME-$TIMESTAMP"
         mkdir -p "$RESULT_DIR"
 
-        # Check if output needs to be redirected for this loop.
-        # If the REDIRECT flag is set, redirect all output to a log file for this iteration.
+        # If the REDIRECT flag is set, redirect all output to a log file.
         if [[ "$REDIRECT" -eq 1 ]]; then
             touch mutation_output.txt
             echo "Redirecting output to $RESULT_DIR/mutation_output.txt..."
@@ -575,7 +574,7 @@ do
         mv results/summary.csv "$RESULT_DIR"
 
         # Calculate Mutation Score
-        mutants_generated=$(awk -F, 'NR==2 {print $1}' "$RESULT_DIR"/summary.csv)
+        mutants_generated=$(awk -F, 'NR==2 {print $3}' "$RESULT_DIR"/summary.csv)
         mutants_killed=$(awk -F, 'NR==2 {print $4}' "$RESULT_DIR"/summary.csv)
         mutation_score=$(echo "scale=4; $mutants_killed / $mutants_generated * 100" | bc)
         mutation_score=$(printf "%.2f" "$mutation_score")
