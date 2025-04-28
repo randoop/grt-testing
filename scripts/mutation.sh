@@ -300,6 +300,7 @@ do
             "results/preprocessing.ser"
             "results/testMap.csv"
         )
-        mv "${FILES_TO_MOVE[@]}" "$RESULT_DIR"
+        for f in "${FILES_TO_MOVE[@]}"; do
+            [ -e "$f" ] && mv "$f" "$RESULT_DIR"
     done
 done
