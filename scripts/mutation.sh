@@ -166,7 +166,7 @@ SRC_JAR=$(realpath "$SCRIPT_DIR/../subject-programs/$SUBJECT_PROGRAM.jar")
 # Number of classes in given jar file.
 NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
 
-# Time limit for running Randoop.
+# Time limit for running the test generator.
 if [[ -n "$TOTAL_TIME" ]]; then
     TIME_LIMIT="$TOTAL_TIME"
 else
@@ -519,7 +519,8 @@ do
             "results/preprocessing.ser"
             "results/testMap.csv"
         )
-        mv "${FILES_TO_MOVE[@]}" "$RESULT_DIR"
+        for f in "${FILES_TO_MOVE[@]}"; do
+            [ -e "$f" ] && mv "$f" "$RESULT_DIR"
     done
 done
 
