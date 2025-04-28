@@ -427,6 +427,7 @@ do
         #===============================================================================
         # Coverage & Mutation Analysis
         #===============================================================================
+
         echo
         echo "Compiling and mutating subject program..."
         if [[ "$VERBOSE" -eq 1 ]]; then
@@ -521,6 +522,7 @@ do
         )
         for f in "${FILES_TO_MOVE[@]}"; do
             [ -e "$f" ] && mv "$f" "$RESULT_DIR"
+        done
     done
 done
 
