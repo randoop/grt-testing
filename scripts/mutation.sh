@@ -142,6 +142,14 @@ fi
 # Name of the subject program.
 SUBJECT_PROGRAM="$1"
 
+# Select the ant executable based on the subject program
+if [ "$SUBJECT_PROGRAM" = "ClassViewer-5.0.5b" ] || [ "$SUBJECT_PROGRAM" = "jcommander-1.35" ] || [ "$SUBJECT_PROGRAM" = "fixsuite-r48" ]; then
+    ANT="ant-replacecall"
+    chmod +x "$MAJOR_HOME"/bin/ant-replacecall
+else
+    ANT="ant"
+fi
+
 echo "Running mutation test on $SUBJECT_PROGRAM"
 echo
 
@@ -569,10 +577,10 @@ do
         echo "Running tests with coverage..."
         if [[ "$VERBOSE" -eq 1 ]]; then
             echo command:
-            echo "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" test
+            echo "$MAJOR_HOME"/bin/"$ANT" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" test
         fi
         echo
-        "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" test
+        "$MAJOR_HOME"/bin/"$ANT" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" test
 
         mv jacoco.exec "$RESULT_DIR"
         java -jar "$JACOCO_CLI_JAR" report "$RESULT_DIR/jacoco.exec" --classfiles "$SRC_JAR" --sourcefiles "$JAVA_SRC_DIR" --csv "$RESULT_DIR"/report.csv
@@ -605,10 +613,10 @@ do
         echo "Running tests with mutation analysis..."
         if [[ "$VERBOSE" -eq 1 ]]; then
             echo command:
-            echo "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -lib "$CLASSPATH" mutation.test
+            echo "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" -lib "$CLASSPATH" mutation.test
         fi
         echo
-        "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -lib "$CLASSPATH" mutation.test
+        "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" -lib "$CLASSPATH" mutation.test
 
         mv results/summary.csv "$RESULT_DIR"
 
