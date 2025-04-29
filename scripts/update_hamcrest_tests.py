@@ -1,5 +1,7 @@
-# For hamcrest-core-1.3, this python script runs the Randoop-generated tests with the EvoSuite runner.
-# When run regularly, the mutation analysis erroneously reports that 0 mutants are covered.
+# This Python script runs the Randoop-generated tests for hamcrest-core-1.3 using the EvoSuite test runner.
+# Normally, running the Randoop-generated tests directly results in 0 mutants being reported as covered during mutation analysis.
+# However, executing those same tests through the EvoSuite runner correctly reports mutant coverage.
+# This script resolves the 0 mutant coverage issue by running the Randoop tests with the EvoSuite runner.
 
 import os
 import re

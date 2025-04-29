@@ -142,14 +142,6 @@ fi
 # Name of the subject program.
 SUBJECT_PROGRAM="$1"
 
-# Select the ant executable based on the subject program
-if [ "$SUBJECT_PROGRAM" = "ClassViewer-5.0.5b" ] || [ "$SUBJECT_PROGRAM" = "jcommander-1.35" ] || [ "$SUBJECT_PROGRAM" = "fixsuite-r48" ]; then
-    ANT="ant-replacecall"
-    chmod +x "$MAJOR_HOME"/bin/ant-replacecall
-else
-    ANT="ant"
-fi
-
 echo "Running mutation test on $SUBJECT_PROGRAM"
 echo
 
@@ -180,26 +172,33 @@ echo
 # Subject programs not listed here default to top-level source directory ($SRC_BASE_DIR).
 declare -A program_src=(
     ["a4j-1.0b"]="/src/"
-    ["asm-5.0.1"]="/src/"
-    ["bcel-5.2"]="/src/"
+    ["asm-5.0.1"]="/src/main/java/"
+    ["bcel-5.2"]="/src/java/"
     ["commons-codec-1.9"]="/src/main/java/"
+    ["commons-cli-1.2"]="/src/java/"
     ["commons-collections4-4.0"]="/src/main/java/"
     ["commons-compress-1.8"]="/src/main/java/"
     ["commons-lang3-3.0"]="/src/main/java/"
     ["commons-math3-3.2"]="/src/main/java/"
     ["commons-primitives-1.0"]="/src/java/"
     ["dcParseArgs-10.2008"]="/src/"
+    ["easymock-3.2"]="/easymock/src/main/java/"
+    ["fixsuite-r48"]="/library/"
+    ["guava-16.0.1"]="/src/" 
     ["hamcrest-core-1.3"]="/hamcrest-core/src/main/java/"
     ["javassist-3.19"]="/src/main/"
     ["javax.mail-1.5.1"]="/src/main/java/"
+    ["jaxen-1.1.6"]="/src/java/main/"
+    ["jcommander-1.35"]="/src/main/java/"
     ["jdom-1.0"]="/src/java/"
-    ["JSAP-2.1"]="/src/"
+    ["joda-time-2.3"]="/src/main/java/"
+    ["JSAP-2.1"]="/src/java/"
     ["jvc-1.1"]="/src"
     ["nekomud-r16"]="/src/"
-    ["pmd-core-5.2.2"]="/pmd-core/src/main/java/"
     ["sat4j-core-2.3.5"]="/org.sat4j.core/src/main/java/"
-    ["shiro-core-1.2.3"]="/core/"
+    ["shiro-core-1.2.3"]="/core/src/main/java/"
     ["slf4j-api-1.7.12"]="/slf4j-api/src/main/java/"
+    ["pmd-core-5.2.2"]="/pmd-core/src/main/java/"
 )
 JAVA_SRC_DIR=$SRC_BASE_DIR${program_src[$SUBJECT_PROGRAM]}
 
@@ -209,10 +208,12 @@ declare -A program_deps=(
     ["commons-compress-1.8"]="build/lib/"
     ["easymock-3.2"]="build/lib/"
     ["fixsuite-r48"]="$SRC_BASE_DIR/lib/"
+    ["guava-16.0.1"]="build/lib/"
     ["hamcrest-core-1.3"]="build/lib/"
     ["javassist-3.19"]="build/lib/"
     ["jaxen-1.1.6"]="build/lib/"
-    ["jdom-1.0"]="$MAJOR_HOME/lib/ant:$SRC_BASE_DIR/lib/xml-apis.jar:$SRC_BASE_DIR/lib/xerces.jar:$SRC_BASE_DIR/lib/jaxen-core.jar:$SRC_BASE_DIR/lib/jaxen-jdom.jar:$SRC_BASE_DIR/lib/saxpath.jar"
+    ["jdom-1.0"]="build/lib/"
+    ["joda-time-2.3"]="build/lib/"
     ["JSAP-2.1"]="$MAJOR_HOME/lib/ant:$SRC_BASE_DIR/lib/"  # need to override ant.jar in $SRC_BASE_DIR/lib
     ["jvc-1.1"]="$SRC_BASE_DIR/lib/"
     ["nekomud-r16"]="$SRC_BASE_DIR/lib/"
@@ -224,58 +225,93 @@ declare -A program_deps=(
 #===============================================================================
 # Subject Program Specific Dependencies
 #===============================================================================
-
-if [ "$SUBJECT_PROGRAM" == "commons-compress-1.8" ]; then
+setup_build_dir() {
     rm -rf build/lib
     mkdir -p build/lib
-    wget -P build/lib https://repo1.maven.org/maven2/org/tukaani/xz/1.5/xz-1.5.jar
-    wget -P build/lib https://repo1.maven.org/maven2/junit/junit/4.13.2/junit-4.13.2.jar
-fi
+}
 
-if [ "$SUBJECT_PROGRAM" == "easymock-3.2" ]; then
-    rm -rf build/lib
-    mkdir -p build/lib
-    wget -P build/lib https://repo1.maven.org/maven2/cglib/cglib/3.3.0/cglib-3.3.0.jar
-fi
+download_jars() {
+    for url in "$@"; do
+        wget -P build/lib "$url"
+    done
+}
 
-if [ "$SUBJECT_PROGRAM" == "hamcrest-core-1.3" ]; then
-    rm -rf build/lib
-    mkdir -p build/lib
-    wget -P build/lib https://github.com/EvoSuite/evosuite/releases/download/v1.2.0/evosuite-1.2.0.jar
-fi
+copy_jars() {
+    for path in "$@"; do
+        cp "$path" build/lib
+    done
+}
 
-if [ "$SUBJECT_PROGRAM" == "javassist-3.19" ]; then
-    rm -rf build/lib
-    mkdir -p build/lib
-    cp "$JAVA_HOME/lib/tools.jar" build/lib
-fi
+case "$SUBJECT_PROGRAM" in
+    "commons-compress-1.8")
+        setup_build_dir
+        download_jars "https://repo1.maven.org/maven2/org/tukaani/xz/1.5/xz-1.5.jar"
+        ;;
 
-if [ "$SUBJECT_PROGRAM" == "jaxen-1.1.6" ]; then
-    rm -rf build/lib
-    mkdir -p build/lib
-    wget -P build/lib https://repo1.maven.org/maven2/dom4j/dom4j/1.6.1/dom4j-1.6.1.jar
-    wget -P build/lib https://repo1.maven.org/maven2/jdom/jdom/1.0/jdom-1.0.jar
-    wget -P build/lib https://repo1.maven.org/maven2/xml-apis/xml-apis/1.3.02/xml-apis-1.3.02.jar
-    wget -P build/lib https://repo1.maven.org/maven2/xerces/xercesImpl/2.6.2/xercesImpl-2.6.2.jar
-    wget -P build/lib https://repo1.maven.org/maven2/xom/xom/1.0/xom-1.0.jar
-    wget -P build/lib https://repo1.maven.org/maven2/junit/junit/4.13.2/junit-4.13.2.jar
-fi
+    "easymock-3.2")
+        setup_build_dir
+        download_jars \
+            "https://repo1.maven.org/maven2/com/google/dexmaker/dexmaker/1.0/dexmaker-1.0.jar" \
+            "https://repo1.maven.org/maven2/org/objenesis/objenesis/1.3/objenesis-1.3.jar" \
+            "https://repo1.maven.org/maven2/cglib/cglib-nodep/2.2.2/cglib-nodep-2.2.2.jar"
+        ;;
 
-if [ "$SUBJECT_PROGRAM" == "shiro-core-1.2.3" ]; then
-    rm -rf build/lib
-    mkdir -p build/lib
-    wget -P build/lib https://repo1.maven.org/maven2/commons-beanutils/commons-beanutils/1.8.3/commons-beanutils-1.8.3.jar
-    wget -P build/lib https://repo1.maven.org/maven2/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar
-fi
+    "guava-16.0.1")
+        setup_build_dir
+        download_jars "https://repo1.maven.org/maven2/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar"
+        ;;
+
+    "hamcrest-core-1.3")
+        setup_build_dir
+        download_jars "https://github.com/EvoSuite/evosuite/releases/download/v1.2.0/evosuite-1.2.0.jar"
+        ;;
+
+    "javassist-3.19")
+        setup_build_dir
+        copy_jars "$JAVA_HOME/lib/tools.jar"
+        ;;
+
+    "jaxen-1.1.6")
+        setup_build_dir
+        download_jars \
+            "https://repo1.maven.org/maven2/dom4j/dom4j/1.6.1/dom4j-1.6.1.jar" \
+            "https://repo1.maven.org/maven2/jdom/jdom/1.0/jdom-1.0.jar" \
+            "https://repo1.maven.org/maven2/xml-apis/xml-apis/1.3.02/xml-apis-1.3.02.jar" \
+            "https://repo1.maven.org/maven2/xerces/xercesImpl/2.6.2/xercesImpl-2.6.2.jar" \
+            "https://repo1.maven.org/maven2/xom/xom/1.0/xom-1.0.jar" \
+            "https://repo1.maven.org/maven2/junit/junit/4.13.2/junit-4.13.2.jar"
+        ;;
+
+    "jdom-1.0")
+        setup_build_dir
+        copy_jars \
+            "$MAJOR_HOME/lib/ant" \
+            "$SRC_BASE_DIR/lib/xml-apis.jar" \
+            "$SRC_BASE_DIR/lib/xerces.jar" \
+            "$SRC_BASE_DIR/lib/jaxen-core.jar" \
+            "$SRC_BASE_DIR/lib/jaxen-jdom.jar" \
+            "$SRC_BASE_DIR/lib/saxpath.jar"
+        ;;
+
+    "joda-time-2.3")
+        setup_build_dir
+        download_jars "https://repo1.maven.org/maven2/org/joda/joda-convert/1.2/joda-convert-1.2.jar"
+        ;;
+
+    "shiro-core-1.2.3")
+        setup_build_dir
+        download_jars \
+            "https://repo1.maven.org/maven2/commons-beanutils/commons-beanutils/1.8.3/commons-beanutils-1.8.3.jar" \
+            "https://repo1.maven.org/maven2/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar"
+        ;;
+
+    *)
+        ;;
+esac
 
 CLASSPATH="$SRC_JAR"
 if [[ -n "${program_deps[$SUBJECT_PROGRAM]}" ]]; then
     CLASSPATH="$CLASSPATH:${program_deps[$SUBJECT_PROGRAM]}"
-fi
-
-LIB_ARG=""
-if [[ $CLASSPATH ]]; then
-    LIB_ARG="-lib $CLASSPATH"
 fi
 
 if [[ "$VERBOSE" -eq 1 ]]; then
@@ -304,23 +340,16 @@ REPLACECALL_COMMAND="$REPLACECALL_JAR${replacement_files[$SUBJECT_PROGRAM]}"
 #===============================================================================
 # Randoop Command Configuration
 #===============================================================================
-RANDOOP_CLASSPATH=""
+RANDOOP_CLASSPATH="$CLASSPATH"
 if [[ -n "${program_deps[$SUBJECT_PROGRAM]}" ]]; then
-    if [[ "$SUBJECT_PROGRAM" == "jdom-1.0" ]]; then
-        RANDOOP_CLASSPATH="$CLASSPATH:"
-    else
-        RANDOOP_CLASSPATH="${CLASSPATH}*:"
-    fi
+    RANDOOP_CLASSPATH+="*"
 fi
-
-# Add required jars
-RANDOOP_CLASSPATH+="$SRC_JAR:$RANDOOP_JAR"
 
 RANDOOP_BASE_COMMAND="java \
 -Xbootclasspath/a:$JACOCO_AGENT_JAR:$REPLACECALL_JAR \
 -javaagent:$JACOCO_AGENT_JAR \
 -javaagent:$REPLACECALL_COMMAND \
--classpath $CLASSPATH*:$SRC_JAR:$RANDOOP_JAR \
+-classpath $RANDOOP_CLASSPATH:$RANDOOP_JAR \
 randoop.main.Main gentests \
 --testjar=$SRC_JAR \
 --time-limit=$TIME_LIMIT \
@@ -353,7 +382,7 @@ declare -A command_suffix=(
     ["nekomud-r16"]="--omit-methods=^net\.sourceforge\.nekomud\.service\.NetworkService\.stop\(\)$"
 )
 
-# Check if the environment is headless
+# Check if the environment is headless. If it is, we can't use the spec for fixsuite-r48 due to initialization errors.
 if [ -z "$DISPLAY" ] && [ "$SUBJECT_PROGRAM" == "fixsuite-r48" ]; then
     echo "Running in headless mode. Avoiding spec for fixsuite-r48..."
 else
@@ -372,7 +401,16 @@ echo "Modifying build.xml for $SUBJECT_PROGRAM..."
 ./apply-build-patch.sh "$SUBJECT_PROGRAM"
 
 cd "$JAVA_SRC_DIR" || exit 1
-# For slf4j-api-1.7.12 and javax.mail, we need use the main branch for Randoop and the include-major branch for EvoSuite
+
+# For slf4j-api-1.7.12 and javax.mail, this Randoop script uses the main branch, which retains the default namespaces (e.g., org.slf4j, javax.mail),
+# since Randoop does not restrict test generation based on package names.
+#
+# However, EvoSuite contains hardcoded checks that prevent test generation for certain core namespaces like org.slf4j and javax.mail.
+# To work around this, the EvoSuite script (which will eventually be merged) uses the include-major branch,
+# where the packages have been renamed to org1.slf4j and javax1.mail.
+#
+# The EvoSuite script will also temporarily modifies the corresponding source jarfile to reflect this namespace change during test generation,
+# and then restores the original JARs afterward to maintain consistency.
 if [ "$SUBJECT_PROGRAM" != "slf4j-api-1.7.12" ] && [ "$SUBJECT_PROGRAM" != "javax.mail-1.5.1" ]; then
     if git checkout include-major >/dev/null 2>&1; then
         echo "Checked out include-major."
@@ -419,9 +457,6 @@ done
 #===============================================================================
 # Remove old test directories.
 rm -rf "$SCRIPT_DIR"/build/test*
-
-# The value for the -lib command-line option; that is, the classpath.
-LIB_ARG="$CLASSPATH"
 
 # shellcheck disable=SC2034 # i counts iterations but is not otherwise used.
 for i in $(seq 1 "$NUM_LOOP")
@@ -515,28 +550,28 @@ do
         echo "Compiling and mutating subject program..."
         if [[ "$VERBOSE" -eq 1 ]]; then
             echo command:
-            echo "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" clean compile
+            echo "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" clean compile
         fi
         echo
-        "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" clean compile
+        "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" clean compile
 
         echo
         echo "Compiling tests..."
         if [[ "$VERBOSE" -eq 1 ]]; then
             echo command:
-            echo "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" compile.tests
+            echo "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" compile.tests
         fi
         echo
-        "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" compile.tests
+        "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" compile.tests
 
         echo
         echo "Running tests with coverage..."
         if [[ "$VERBOSE" -eq 1 ]]; then
             echo command:
-            echo "$MAJOR_HOME"/bin/"$ANT" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" test
+            echo "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" test
         fi
         echo
-        "$MAJOR_HOME"/bin/"$ANT" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" test
+        "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" test
 
         mv jacoco.exec "$RESULT_DIR"
         java -jar "$JACOCO_CLI_JAR" report "$RESULT_DIR/jacoco.exec" --classfiles "$SRC_JAR" --sourcefiles "$JAVA_SRC_DIR" --csv "$RESULT_DIR"/report.csv
@@ -557,7 +592,10 @@ do
         echo "Branch Coverage: $branch_coverage%"
 
         # For hamcrest-core-1.3, we need to run the generated tests with EvoSuite's runner
-        # in order for mutation analysis to properly work
+        # in order for mutation analysis to properly work. Randoop-generated tests may report 0 mutants covered 
+        # during mutation analysis due to issues with test detection, static state handling, or instrumentation. 
+        # This script modifies the tests to run with the EvoSuite runner, which ensures proper isolation and compatibility 
+        # for accurate mutant coverage.
         if [ "$SUBJECT_PROGRAM" == "hamcrest-core-1.3" ]; then
             python update_hamcrest_tests.py "$TEST_DIRECTORY"
         fi
@@ -566,15 +604,15 @@ do
         echo "Running tests with mutation analysis..."
         if [[ "$VERBOSE" -eq 1 ]]; then
             echo command:
-            echo "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" -lib "$LIB_ARG" mutation.test
+            echo "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -lib "$CLASSPATH" mutation.test
         fi
         echo
-        "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" -lib "$LIB_ARG" mutation.test
+        "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -lib "$CLASSPATH" mutation.test
 
         mv results/summary.csv "$RESULT_DIR"
 
         # Calculate Mutation Score
-        mutants_generated=$(awk -F, 'NR==2 {print $3}' "$RESULT_DIR"/summary.csv)
+        mutants_generated=$(awk -F, 'NR==2 {print $1}' "$RESULT_DIR"/summary.csv)
         mutants_killed=$(awk -F, 'NR==2 {print $4}' "$RESULT_DIR"/summary.csv)
         mutation_score=$(echo "scale=4; $mutants_killed / $mutants_generated * 100" | bc)
         mutation_score=$(printf "%.2f" "$mutation_score")
