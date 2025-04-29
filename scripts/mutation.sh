@@ -302,5 +302,6 @@ do
         )
         for f in "${FILES_TO_MOVE[@]}"; do
             [ -e "$f" ] && mv "$f" "$RESULT_DIR"
+        done
     done
 done
