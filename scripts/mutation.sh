@@ -158,7 +158,7 @@ SRC_JAR=$(realpath "$SCRIPT_DIR/../subject-programs/$SUBJECT_PROGRAM.jar")
 # Number of classes in given jar file.
 NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
 
-# Time limit for running Randoop.
+# Time limit for running the test generator.
 if [[ -n "$TOTAL_TIME" ]]; then
     TIME_LIMIT="$TOTAL_TIME"
 else
@@ -546,6 +546,7 @@ do
         #===============================================================================
         # Coverage & Mutation Analysis
         #===============================================================================
+
         echo
         echo "Compiling and mutating subject program..."
         if [[ "$VERBOSE" -eq 1 ]]; then
