@@ -466,6 +466,9 @@ done
 # Remove old test directories.
 rm -rf "$SCRIPT_DIR"/build/test*
 
+# The value for the -lib command-line option; that is, the classpath.
+LIB_ARG="$CLASSPATH"
+
 # shellcheck disable=SC2034 # i counts iterations but is not otherwise used.
 for i in $(seq 1 "$NUM_LOOP")
 do
@@ -559,28 +562,28 @@ do
         echo "Compiling and mutating subject program..."
         if [[ "$VERBOSE" -eq 1 ]]; then
             echo command:
-            echo "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" clean compile
+            echo "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" clean compile
         fi
         echo
-        "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" clean compile
+        "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" clean compile
 
         echo
         echo "Compiling tests..."
         if [[ "$VERBOSE" -eq 1 ]]; then
             echo command:
-            echo "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" compile.tests
+            echo "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" compile.tests
         fi
         echo
-        "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" compile.tests
+        "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" compile.tests
 
         echo
         echo "Running tests with coverage..."
         if [[ "$VERBOSE" -eq 1 ]]; then
             echo command:
-            echo "$MAJOR_HOME"/bin/"$ANT" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" test
+            echo "$MAJOR_HOME"/bin/"$ANT" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" test
         fi
         echo
-        "$MAJOR_HOME"/bin/"$ANT" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$CLASSPATH" test
+        "$MAJOR_HOME"/bin/"$ANT" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" test
 
         mv jacoco.exec "$RESULT_DIR"
         java -jar "$JACOCO_CLI_JAR" report "$RESULT_DIR/jacoco.exec" --classfiles "$SRC_JAR" --sourcefiles "$JAVA_SRC_DIR" --csv "$RESULT_DIR"/report.csv
@@ -613,10 +616,10 @@ do
         echo "Running tests with mutation analysis..."
         if [[ "$VERBOSE" -eq 1 ]]; then
             echo command:
-            echo "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" -lib "$CLASSPATH" mutation.test
+            echo "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" -lib "$LIB_ARG" mutation.test
         fi
         echo
-        "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" -lib "$CLASSPATH" mutation.test
+        "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" -lib "$LIB_ARG" mutation.test
 
         mv results/summary.csv "$RESULT_DIR"
 
