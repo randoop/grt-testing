@@ -43,7 +43,7 @@ fix_method_order_replacement = (
 # Walk through the directory and process matching files
 for root, dirs, files in os.walk(test_dir):
     for file in files:
-        if test_file_pattern.match(file):
+        if not test_file_pattern.match(file):
             continue
 
         file_path = os.path.join(root, file)
@@ -57,9 +57,12 @@ for root, dirs, files in os.walk(test_dir):
             if stripped.startswith("package") or stripped.startswith("import"):
                 import_end_index = i + 1
 
+        # Collect existing stripped import lines for comparison
+        existing_imports = set(line.strip() for line in lines if line.strip().startswith("import"))
+
         # Insert new imports if they are not already there
         for import_line in reversed(new_imports):
-            if import_line not in lines:
+            if import_line not in existing_imports:
                 lines.insert(import_end_index, import_line + "\n")
 
         # Replace @FixMethodOrder annotation
