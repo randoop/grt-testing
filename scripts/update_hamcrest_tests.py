@@ -1,13 +1,15 @@
-# This Python script runs the Randoop-generated tests for hamcrest-core-1.3 using the EvoSuite test runner.
-# Normally, running the Randoop-generated tests directly results in 0 mutants being reported as covered during mutation analysis.
-# However, executing those same tests through the EvoSuite runner correctly reports mutant coverage.
-# This script resolves the 0 mutant coverage issue by running the Randoop tests with the EvoSuite runner.
+# This Python script runs the Randoop-generated tests for hamcrest-core-1.3
+# using the EvoSuite test runner.  Normally, running the Randoop-generated tests
+# directly results in 0 mutants being reported as covered during mutation
+# analysis.  However, executing those same tests through the EvoSuite runner
+# correctly reports mutant coverage.  This script resolves the 0 mutant coverage
+# issue by running the Randoop tests with the EvoSuite runner.
 
 import os
 import re
 import argparse
 
-# Set up argument parser
+# Parse arguments
 parser = argparse.ArgumentParser(description="Update Java regression test files.")
 parser.add_argument(
     "test_dir",
@@ -18,7 +20,7 @@ args = parser.parse_args()
 test_dir = args.test_dir
 
 # Regex patterns
-file_pattern = re.compile(r"RegressionTest\d+\.java$")
+test_file_pattern = re.compile(r"RegressionTest\d+\.java$")
 fix_method_order_pattern = re.compile(
     r"@FixMethodOrder\s*\(\s*MethodSorters\.NAME_ASCENDING\s*\)"
 )
@@ -30,8 +32,8 @@ new_imports = [
     "import org.junit.runner.RunWith;"
 ]
 
-# The new annotation to replace @FixMethodOrder
-new_annotation = (
+# The new annotations to replace @FixMethodOrder
+fix_method_order_replacement = (
     "@RunWith(EvoRunner.class) "
     "@EvoRunnerParameters(mockJVMNonDeterminism = true, "
     "useVFS = true, useVNET = true, resetStaticState = true, "
@@ -41,30 +43,33 @@ new_annotation = (
 # Walk through the directory and process matching files
 for root, dirs, files in os.walk(test_dir):
     for file in files:
-        if file_pattern.match(file):
-            file_path = os.path.join(root, file)
-            with open(file_path, "r", encoding="utf-8") as f:
-                lines = f.readlines()
+        if test_file_pattern.match(file):
+            continue
 
-            # Find end of import statements
-            import_end_index = 0
-            for i, line in enumerate(lines):
-                if line.strip().startswith("import"):
-                    import_end_index = i + 1
+        file_path = os.path.join(root, file)
+        with open(file_path, "r", encoding="utf-8") as f:
+            lines = f.readlines()
 
-            # Insert new imports if they are not already there
-            for import_line in reversed(new_imports):
-                if import_line not in lines:
-                    lines.insert(import_end_index, import_line + "\n")
+        # Find end of import statements
+        import_end_index = 0
+        for i, line in enumerate(lines):
+            stripped = line.strip()
+            if stripped.startswith("package") or stripped.startswith("import"):
+                import_end_index = i + 1
 
-            # Replace @FixMethodOrder annotation
-            for i, line in enumerate(lines):
-                if fix_method_order_pattern.search(line):
-                    lines[i] = new_annotation + "\n"
-                    break
+        # Insert new imports if they are not already there
+        for import_line in reversed(new_imports):
+            if import_line not in lines:
+                lines.insert(import_end_index, import_line + "\n")
 
-            # Write changes back to the file
-            with open(file_path, "w", encoding="utf-8") as f:
-                f.writelines(lines)
+        # Replace @FixMethodOrder annotation
+        for i, line in enumerate(lines):
+            if fix_method_order_pattern.search(line):
+                lines[i] = fix_method_order_replacement + "\n"
+                break
 
-            print(f"Updated: {file_path}")
+        # Write changes back to the file
+        with open(file_path, "w", encoding="utf-8") as f:
+            f.writelines(lines)
+
+        print(f"Updated: {file_path}")
