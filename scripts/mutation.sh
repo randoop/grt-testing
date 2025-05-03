@@ -40,10 +40,14 @@
 set -e
 set -o pipefail
 
-USAGE_STRING="usage: mutation.sh [-h] [-v] [-r] [-t total_time] [-c time_per_class] [-n num_iterations] TEST-CASE-NAME
+USAGE_STRING="usage: mutation.sh [-h] [-v] [-r] [-f features] [-a] [-t total_time] [-c time_per_class] [-n num_iterations] TEST-CASE-NAME
   -h    Displays this help message.
   -v    Enables verbose mode.
   -r    Redirect Randoop and Major output to results/result/mutation_output.txt.
+  -f    Specify the features to use.
+        Available features: BASELINE, BLOODHOUND, ORIENTEERING, BLOODHOUND_AND_ORIENTEERING, DETECTIVE, GRT_FUZZING, ELEPHANT_BRAIN, CONSTANT_MINING.
+        example usage: -f BASELINE,BLOODHOUND
+  -a    Perform feature ablation studies.
   -t N  Total time limit for Randoop test generation (in seconds).
   -c N  Per-class time limit for Randoop (in seconds, default: 2s/class).
         Mutually exclusive with -t.
@@ -82,9 +86,10 @@ REPLACECALL_JAR=$(realpath "build/replacecall-4.3.3.jar") # For replacing undesi
 NUM_LOOP=1             # Number of experiment runs (10 in GRT paper)
 VERBOSE=0              # Verbose option
 REDIRECT=0             # Redirect output to mutation_output.txt
+ABLATION=false         # Feature ablation option
 
 # Parse command-line arguments
-while getopts ":hvrt:c:n:" opt; do
+while getopts ":hvrf:at:c:n:" opt; do
   case ${opt} in
     h )
       # Display help message
@@ -98,6 +103,12 @@ while getopts ":hvrt:c:n:" opt; do
     r )
       # Redirect output to a log file
       REDIRECT=1
+      ;;
+    f )
+      FEATURES_OPT="$OPTARG"
+      ;;
+    a )
+      ABLATION=true
       ;;
     t )
       # Total experiment time, mutually exclusive with SECONDS_PER_CLASS
@@ -141,6 +152,21 @@ fi
 
 # Name of the subject program.
 SUBJECT_PROGRAM="$1"
+
+ALL_RANDOOP_FEATURES=("BASELINE" "BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
+if [[ -n "$FEATURES_OPT" ]]; then
+  IFS=',' read -r -a RANDOOP_FEATURES <<< "$FEATURES_OPT"
+else
+  RANDOOP_FEATURES=("BASELINE")
+fi
+
+# validate
+for feat in "${RANDOOP_FEATURES[@]}"; do
+  if [[ ! " ${ALL_RANDOOP_FEATURES[*]} " =~ " ${feat} " ]]; then
+    echo "ERROR: unknown feature “$feat”"
+    exit 1
+  fi
+done
 
 # Select the ant executable based on the subject program
 if [ "$SUBJECT_PROGRAM" = "ClassViewer-5.0.5b" ] || [ "$SUBJECT_PROGRAM" = "jcommander-1.35" ] || [ "$SUBJECT_PROGRAM" = "fixsuite-r48" ]; then
@@ -435,30 +461,6 @@ if [ ! -f "results/info.csv" ]; then
     touch results/info.csv
     echo -e "RandoopVersion,FileName,TimeLimit,Seed,InstructionCoverage,BranchCoverage,MutationScore" > results/info.csv
 fi
-
-
-#===============================================================================
-# Randoop Feature Selection
-#===============================================================================
-
-# The feature names must not contain whitespace.
-ALL_RANDOOP_FEATURES=("BASELINE" "BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
-# The different features of Randoop to use. Adjust according to the features you are testing.
-RANDOOP_FEATURES=("BASELINE") #"BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
-
-# ABLATION controls whether to perform feature ablation studies.
-# If false, each run of Randoop only uses the features specified in the RANDOOP_FEATURES array.
-# If true, each run of Randoop uses all features *except* the one specified in the RANDOOP_FEATURES array.
-ABLATION=false
-
-# Ensure the given features are are recognized and supported by the script.
-for RANDOOP_FEATURE in "${RANDOOP_FEATURES[@]}" ; do
-    if [[ ! " ${ALL_RANDOOP_FEATURES[*]} " =~ [[:space:]]${RANDOOP_FEATURE}[[:space:]] ]]; then
-        echo "$RANDOOP_FEATURE" is not in "${RANDOOP_FEATURES[@]}"
-        exit 2
-    fi
-done
-
 
 #===============================================================================
 # Test Generation & Execution
