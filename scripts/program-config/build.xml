@@ -55,17 +55,20 @@
         <junit printsummary="false"
                showoutput="false"
                mutationAnalysis="true"
+               excludeFailingTests="false"
                serializedMapsFile="results/preprocessing.ser"
                mutantsLogFile="mutants.log"
                summaryFile="results/summary.csv"
                mutantDetailsFile="results/details.csv"
                covMapFile="results/covMap.csv"
                testMapFile="results/testMap.csv"
-               killMapFile="results/killMap.csv">
+               killMapFile="results/killMap.csv"
+               testOrder="sort_methods">
             <classpath path="build/bin"/>
             <batchtest fork="false">
                 <fileset dir="${test}">
                     <include name="**/*Test*.java"/>
+                    <exclude name="**/RegressionTest.java"/>
                 </fileset>
             </batchtest>
         </junit>

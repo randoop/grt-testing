@@ -55,6 +55,7 @@
         <junit printsummary="false"
                showoutput="false"
                mutationAnalysis="true"
+               excludeFailingTests="false"
                serializedMapsFile="results/preprocessing.ser"
                mutantsLogFile="mutants.log"
                summaryFile="results/summary.csv"
@@ -67,6 +68,7 @@
             <batchtest fork="false">
                 <fileset dir="${test}">
                     <include name="**/*Test*.java"/>
+                    <exclude name="**/RegressionTest.java"/>
                 </fileset>
             </batchtest>
         </junit>
