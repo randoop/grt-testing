@@ -13,7 +13,7 @@
                 killMapFile="results/killMap.csv"
                 testOrder="sort_methods">
 -            <classpath path="build/bin"/>
-+            <classpath path="build/bin:${major-rt.jar}"/>
++            <classpath path="build/bin"/>
 +            <jvmarg value="-Xbootclasspath/a:${basedir}/build/replacecall-4.3.3.jar"/>
 +            <jvmarg value="-javaagent:${basedir}/build/replacecall-4.3.3.jar"/>
              <batchtest fork="false">
