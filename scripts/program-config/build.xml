@@ -41,7 +41,7 @@
     </target>
 
 <!-- Target to compile the test suite -->
-    <target name="compile.tests" depends="compile" description="Compile all tests">
+    <target name="compile.tests" description="Compile all tests">
         <javac includeantruntime="true"
                srcdir="${test}"
                destdir="build/bin"

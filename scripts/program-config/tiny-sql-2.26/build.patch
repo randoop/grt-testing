@@ -10,7 +10,7 @@
 +               target="1.5">
              <classpath location="${major.jar}"/>
              <compilerarg value="${plugin}"/>
-+            <compilerarg value="-Xbootclasspath/p:../subject-programs/src/tinySQL-2.26/src/com/sqlmagic/tinysql/jdk5.rt.jar"/>
++            <compilerarg value="-Xbootclasspath/p:../subject-programs/src/tiny-sql-2.26/src/com/sqlmagic/tinysql/jdk5.rt.jar"/>
          </javac>
      </target>
  
