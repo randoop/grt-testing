@@ -394,7 +394,7 @@ randoop.main.Main gentests \
 # Add special command suffixes for specific subject programs
 declare -A command_suffix=(
     # Specify valid inputs to prevent infinite loops during test generation/execution
-    ["ClassViewer-5.0.5b"]="--specifications=program-specs/ClassViewer-5.0.5b-specs.json"
+    ["ClassViewer-5.0.5b"]="--specifications=program-specs/ClassViewer-5.0.5b-specs.json --omit-methods=^com\.jstevh\.viewer\.ClassViewer\.callBrowser\(java\.lang\.String\)$"
     ["commons-cli-1.2"]="--specifications=program-specs/commons-cli-1.2-specs.json"
     ["commons-lang3-3.0"]="--specifications=program-specs/commons-lang3-3.0-specs.json"
     ["guava-16.0.1"]="--specifications=program-specs/guava-16.0.1-specs.json"
