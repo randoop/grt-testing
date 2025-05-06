@@ -169,7 +169,7 @@ for feat in "${RANDOOP_FEATURES[@]}"; do
 done
 
 # Select the ant executable based on the subject program
-if [ "$SUBJECT_PROGRAM" = "ClassViewer-5.0.5b" ] || [ "$SUBJECT_PROGRAM" = "jcommander-1.35" ] || [ "$SUBJECT_PROGRAM" = "fixsuite-r48" ]; then
+if [ "$SUBJECT_PROGRAM" == "bcel-5.2" ] || [ "$SUBJECT_PROGRAM" = "ClassViewer-5.0.5b" ] || [ "$SUBJECT_PROGRAM" = "jcommander-1.35" ] || [ "$SUBJECT_PROGRAM" = "fixsuite-r48" ]; then
     ANT="ant-replacecall"
     chmod +x "$MAJOR_HOME"/bin/ant-replacecall
 else
@@ -227,7 +227,7 @@ declare -A program_src=(
     ["jdom-1.0"]="/src/java/"
     ["joda-time-2.3"]="/src/main/java/"
     ["JSAP-2.1"]="/src/java/"
-    ["jvc-1.1"]="/src"
+    ["jvc-1.1"]="/src/"
     ["nekomud-r16"]="/src/"
     ["sat4j-core-2.3.5"]="/org.sat4j.core/src/main/java/"
     ["shiro-core-1.2.3"]="/core/src/main/java/"
