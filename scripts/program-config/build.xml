@@ -41,7 +41,7 @@
     </target>
 
 <!-- Target to compile the test suite -->
-    <target name="compile.tests" depends="compile" description="Compile all tests">
+    <target name="compile.tests" description="Compile all tests">
         <javac includeantruntime="true"
                srcdir="${test}"
                destdir="build/bin"
@@ -55,17 +55,20 @@
         <junit printsummary="false"
                showoutput="false"
                mutationAnalysis="true"
+               excludeFailingTests="false"
                serializedMapsFile="results/preprocessing.ser"
                mutantsLogFile="mutants.log"
                summaryFile="results/summary.csv"
                mutantDetailsFile="results/details.csv"
                covMapFile="results/covMap.csv"
                testMapFile="results/testMap.csv"
-               killMapFile="results/killMap.csv">
+               killMapFile="results/killMap.csv"
+               testOrder="sort_methods">
             <classpath path="build/bin"/>
             <batchtest fork="false">
                 <fileset dir="${test}">
                     <include name="**/*Test*.java"/>
+                    <exclude name="**/RegressionTest.java"/>
                 </fileset>
             </batchtest>
         </junit>

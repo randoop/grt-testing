@@ -40,10 +40,14 @@
 set -e
 set -o pipefail
 
-USAGE_STRING="usage: mutation.sh [-h] [-v] [-r] [-t total_time] [-c time_per_class] [-n num_iterations] TEST-CASE-NAME
+USAGE_STRING="usage: mutation.sh [-h] [-v] [-r] [-f features] [-a] [-t total_time] [-c time_per_class] [-n num_iterations] TEST-CASE-NAME
   -h    Displays this help message.
   -v    Enables verbose mode.
   -r    Redirect Randoop and Major output to results/result/mutation_output.txt.
+  -f    Specify the features to use.
+        Available features: BASELINE, BLOODHOUND, ORIENTEERING, BLOODHOUND_AND_ORIENTEERING, DETECTIVE, GRT_FUZZING, ELEPHANT_BRAIN, CONSTANT_MINING.
+        example usage: -f BASELINE,BLOODHOUND
+  -a    Perform feature ablation studies.
   -t N  Total time limit for Randoop test generation (in seconds).
   -c N  Per-class time limit for Randoop (in seconds, default: 2s/class).
         Mutually exclusive with -t.
@@ -75,9 +79,10 @@ REPLACECALL_JAR=$(realpath "build/replacecall-4.3.3.jar") # For replacing undesi
 NUM_LOOP=1             # Number of experiment runs (10 in GRT paper)
 VERBOSE=0              # Verbose option
 REDIRECT=0             # Redirect output to mutation_output.txt
+ABLATION=false         # Feature ablation option
 
 # Parse command-line arguments
-while getopts ":hvrt:c:n:" opt; do
+while getopts ":hvrf:at:c:n:" opt; do
   case ${opt} in
     h )
       # Display help message
@@ -91,6 +96,12 @@ while getopts ":hvrt:c:n:" opt; do
     r )
       # Redirect output to a log file
       REDIRECT=1
+      ;;
+    f )
+      FEATURES_OPT="$OPTARG"
+      ;;
+    a )
+      ABLATION=true
       ;;
     t )
       # Total experiment time, mutually exclusive with SECONDS_PER_CLASS
@@ -135,8 +146,23 @@ fi
 # Name of the subject program.
 SUBJECT_PROGRAM="$1"
 
+ALL_RANDOOP_FEATURES=("BASELINE" "BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
+if [[ -n "$FEATURES_OPT" ]]; then
+  IFS=',' read -r -a RANDOOP_FEATURES <<< "$FEATURES_OPT"
+else
+  RANDOOP_FEATURES=("BASELINE")
+fi
+
+# validate
+for feat in "${RANDOOP_FEATURES[@]}"; do
+  if [[ ! " ${ALL_RANDOOP_FEATURES[*]} " =~ " ${feat} " ]]; then
+    echo "ERROR: unknown feature “$feat”"
+    exit 1
+  fi
+done
+
 # Select the ant executable based on the subject program
-if [ "$SUBJECT_PROGRAM" = "ClassViewer-5.0.5b" ] || [ "$SUBJECT_PROGRAM" = "jcommander-1.35" ] || [ "$SUBJECT_PROGRAM" = "fixsuite-r48" ]; then
+if [ "$SUBJECT_PROGRAM" == "bcel-5.2" ] || [ "$SUBJECT_PROGRAM" = "ClassViewer-5.0.5b" ] || [ "$SUBJECT_PROGRAM" = "jcommander-1.35" ] || [ "$SUBJECT_PROGRAM" = "fixsuite-r48" ]; then
     ANT="ant-replacecall"
     chmod +x "$MAJOR_HOME"/bin/ant-replacecall
 else
@@ -190,8 +216,8 @@ declare -A program_src=(
     ["javassist-3.19"]="/src/main/"
     ["javax.mail-1.5.1"]="/src/main/java/"
     ["jaxen-1.1.6"]="/src/java/main/"
-    ["jcommander-1.35"]="/src/main/java"
-    ["jdom-1.0"]="/src/"
+    ["jcommander-1.35"]="/src/main/java/"
+    ["jdom-1.0"]="/src/java/"
     ["joda-time-2.3"]="/src/main/java/"
     ["JSAP-2.1"]="/src/java/"
     ["jvc-1.1"]="/src/"
@@ -207,23 +233,129 @@ JAVA_SRC_DIR=$SRC_BASE_DIR${program_src[$SUBJECT_PROGRAM]}
 # Map project names to their respective dependencies
 declare -A project_deps=(
     ["a4j-1.0b"]="$SRC_BASE_DIR/jars/"
+    ["commons-compress-1.8"]="build/lib/"
+    ["easymock-3.2"]="build/lib/"
     ["fixsuite-r48"]="$SRC_BASE_DIR/lib/"
-    ["jdom-1.0"]="$MAJOR_HOME/lib/ant:$SRC_BASE_DIR/lib/"
+    ["guava-16.0.1"]="build/lib/"
+    ["hamcrest-core-1.3"]="build/lib/"
+    ["javassist-3.19"]="build/lib/"
+    ["jaxen-1.1.6"]="build/lib/"
+    ["jdom-1.0"]="build/lib/"
+    ["joda-time-2.3"]="build/lib/"
     ["JSAP-2.1"]="$MAJOR_HOME/lib/ant:$SRC_BASE_DIR/lib/"  # need to override ant.jar in $SRC_BASE_DIR/lib
     ["jvc-1.1"]="$SRC_BASE_DIR/lib/"
     ["nekomud-r16"]="$SRC_BASE_DIR/lib/"
+    ["pmd-core-5.2.2"]="$SRC_BASE_DIR/pmd-core/lib"
     ["sat4j-core-2.3.5"]="$SRC_BASE_DIR/lib/"
+    ["shiro-core-1.2.3"]="build/lib/"
 )
-#   ["hamcrest-core-1.3"]="$SRC_BASE_DIR/lib/"  this one needs changes?
 
 # Link to dependencies
 CLASSPATH=${project_deps[$SUBJECT_PROGRAM]}
+
+#===============================================================================
+# Subject Program Specific Dependencies
+#===============================================================================
+setup_build_dir() {
+    rm -rf build/lib
+    mkdir -p build/lib
+}
+
+download_jars() {
+    for url in "$@"; do
+        wget -P build/lib "$url"
+    done
+}
+
+copy_jars() {
+    for path in "$@"; do
+        cp "$path" build/lib
+    done
+}
+
+case "$SUBJECT_PROGRAM" in
+    "commons-compress-1.8")
+        setup_build_dir
+        download_jars "https://repo1.maven.org/maven2/org/tukaani/xz/1.5/xz-1.5.jar"
+        ;;
+
+    "easymock-3.2")
+        setup_build_dir
+        download_jars \
+            "https://repo1.maven.org/maven2/com/google/dexmaker/dexmaker/1.0/dexmaker-1.0.jar" \
+            "https://repo1.maven.org/maven2/org/objenesis/objenesis/1.3/objenesis-1.3.jar" \
+            "https://repo1.maven.org/maven2/cglib/cglib-nodep/2.2.2/cglib-nodep-2.2.2.jar"
+        ;;
+
+    "guava-16.0.1")
+        setup_build_dir
+        download_jars "https://repo1.maven.org/maven2/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar"
+        ;;
+
+    "hamcrest-core-1.3")
+        setup_build_dir
+        download_jars "https://github.com/EvoSuite/evosuite/releases/download/v1.2.0/evosuite-1.2.0.jar"
+        ;;
+
+    "javassist-3.19")
+        setup_build_dir
+        copy_jars "$JAVA_HOME/lib/tools.jar"
+        ;;
+
+    "jaxen-1.1.6")
+        setup_build_dir
+        download_jars \
+            "https://repo1.maven.org/maven2/dom4j/dom4j/1.6.1/dom4j-1.6.1.jar" \
+            "https://repo1.maven.org/maven2/jdom/jdom/1.0/jdom-1.0.jar" \
+            "https://repo1.maven.org/maven2/xml-apis/xml-apis/1.3.02/xml-apis-1.3.02.jar" \
+            "https://repo1.maven.org/maven2/xerces/xercesImpl/2.6.2/xercesImpl-2.6.2.jar" \
+            "https://repo1.maven.org/maven2/xom/xom/1.0/xom-1.0.jar" \
+            "https://repo1.maven.org/maven2/junit/junit/4.13.2/junit-4.13.2.jar"
+        ;;
+
+    "jdom-1.0")
+        setup_build_dir
+        copy_jars \
+            "$MAJOR_HOME/lib/ant" \
+            "$SRC_BASE_DIR/lib/xml-apis.jar" \
+            "$SRC_BASE_DIR/lib/xerces.jar" \
+            "$SRC_BASE_DIR/lib/jaxen-core.jar" \
+            "$SRC_BASE_DIR/lib/jaxen-jdom.jar" \
+            "$SRC_BASE_DIR/lib/saxpath.jar"
+        ;;
+
+    "joda-time-2.3")
+        setup_build_dir
+        download_jars "https://repo1.maven.org/maven2/org/joda/joda-convert/1.2/joda-convert-1.2.jar"
+        ;;
+
+    "shiro-core-1.2.3")
+        setup_build_dir
+        download_jars \
+            "https://repo1.maven.org/maven2/commons-beanutils/commons-beanutils/1.8.3/commons-beanutils-1.8.3.jar" \
+            "https://repo1.maven.org/maven2/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar"
+        ;;
+
+    *)
+        ;;
+esac
+
+CLASSPATH="$SRC_JAR"
+if [[ -n "${program_deps[$SUBJECT_PROGRAM]}" ]]; then
+    CLASSPATH="$CLASSPATH:${program_deps[$SUBJECT_PROGRAM]}"
+fi
+
+if [[ "$VERBOSE" -eq 1 ]]; then
+    echo "JAVA_SRC_DIR: $JAVA_SRC_DIR"
+    echo "CLASSPATH: $CLASSPATH"
+    echo
+fi
 
 
 #===============================================================================
 # Method Call Replacement Setup
 #===============================================================================
-# Path to the replacement file for replacecall
+# Path to the replacement file for the replacecall agent.
 REPLACEMENT_FILE_PATH="program-config/$SUBJECT_PROGRAM/replacecall-replacements.txt"
 
 # Configure method call replacements to avoid undesired behaviors during test
@@ -240,11 +372,16 @@ REPLACECALL_COMMAND="$REPLACECALL_JAR${replacement_files[$SUBJECT_PROGRAM]}"
 # Test generator command configuration
 #===============================================================================
 
+RANDOOP_CLASSPATH="$CLASSPATH"
+if [[ -n "${program_deps[$SUBJECT_PROGRAM]}" ]]; then
+    RANDOOP_CLASSPATH+="*"
+fi
+
 RANDOOP_BASE_COMMAND="java \
 -Xbootclasspath/a:$JACOCO_AGENT_JAR:$REPLACECALL_JAR \
 -javaagent:$JACOCO_AGENT_JAR \
 -javaagent:$REPLACECALL_COMMAND \
--classpath $CLASSPATH*:$SRC_JAR:$RANDOOP_JAR \
+-classpath $RANDOOP_CLASSPATH:$RANDOOP_JAR \
 randoop.main.Main gentests \
 --testjar=$SRC_JAR \
 --time-limit=$TIME_LIMIT \
@@ -255,19 +392,17 @@ randoop.main.Main gentests \
 # Add special command suffixes for specific subject programs
 declare -A command_suffix=(
     # Specify valid inputs to prevent infinite loops during test generation/execution
-    ["ClassViewer-5.0.5b"]="--specifications=program-specs/ClassViewer-5.0.5b-specs.json"
+    ["ClassViewer-5.0.5b"]="--specifications=program-specs/ClassViewer-5.0.5b-specs.json --omit-methods=^com\.jstevh\.viewer\.ClassViewer\.callBrowser\(java\.lang\.String\)$"
     ["commons-cli-1.2"]="--specifications=program-specs/commons-cli-1.2-specs.json"
     ["commons-lang3-3.0"]="--specifications=program-specs/commons-lang3-3.0-specs.json"
-    ["fixsuite-r48"]="--specifications=program-specs/fixsuite-r48-specs.json"
     ["guava-16.0.1"]="--specifications=program-specs/guava-16.0.1-specs.json"
     ["jaxen-1.1.6"]="--specifications=program-specs/jaxen-1.1.6-specs.json"
-    ["sat4j-core-2.3.5"]="--specifications=program-specs/sat4j-core-2.3.5-specs.json"
 
     # Randoop generates bad sequences for handling webserver lifecycle, don't test them
     ["javassist-3.19"]="--omit-methods=^javassist\.tools\.web\.Webserver\.run\(\)$ --omit-methods=^javassist\.tools\.rmi\.AppletServer\.run\(\)$"
     # PrintStream.close() is called to close System.out during Randoop test generation.
     # This will interrupt the test generation process. Omit the close() method.
-    ["javax.mail-1.5.1"]="--omit-methods=^java\.io\.PrintStream\.close\(\)$|^java\.io\.FilterOutputStream\.close\(\)$|^java\.io\.OutputStream\.close\(\)$|^com\.sun\.mail\.util\.BASE64EncoderStream\.close\(\)$|^com\.sun\.mail\.util\.QEncoderStream\.close\(\)$|^com\.sun\.mail\.util\.QPEncoderStream\.close\(\)$|^com\.sun\.mail\.util\.UUEncoderStream\.close\(\)$"
+    ["javax.mail-1.5.1"]="--omit-methods=^java\.io\.PrintStream\.close\(\)$|^java\.io\.FilterOutputStream\.close\(\)$|^java\.io\.OutputStream\.close\(\)$|^com\.sun\.mail\.util\.BASE64EncoderStream\.close\(\)$|^com\.sun\.mail\.util\.QEncoderStream\.close\(\)$|^com\.sun\.mail\.util\.QPEncoderStream\.close\(\)$|^com\.sun\.mail\.util\.UUEncoderStream\.close\(\)$ --usethreads=true"
     # JDOMAbout cannot be found during test.compile.
     ["jdom-1.0"]="--omit-classes=^JDOMAbout$"
 
@@ -276,7 +411,16 @@ declare -A command_suffix=(
     ["commons-collections4-4.0"]="--specifications=program-specs/commons-collections4-4.0-specs.json"
     # Force termination if a test case takes too long to execute
     ["commons-math3-3.2"]="--usethreads=true"
+    ["nekomud-r16"]="--omit-methods=^net\.sourceforge\.nekomud\.service\.NetworkService\.stop\(\)$"
 )
+
+# Check if the environment is headless. If it is, we can't use the spec for fixsuite-r48 due to initialization errors.
+if [ -z "$DISPLAY" ] && [ "$SUBJECT_PROGRAM" == "fixsuite-r48" ]; then
+    echo "Running in headless mode. Avoiding spec for fixsuite-r48..."
+else
+    # Only add fixsuite-r48 specification if not headless
+    command_suffix["fixsuite-r48"]="--specifications=program-specs/fixsuite-r48-specs.json"
+fi
 
 RANDOOP_COMMAND="$RANDOOP_BASE_COMMAND ${command_suffix[$SUBJECT_PROGRAM]}"
 
@@ -295,8 +439,20 @@ echo "Modifying build.xml for $SUBJECT_PROGRAM..."
 ./apply-build-patch-randoop.sh "$SUBJECT_PROGRAM"
 
 cd "$JAVA_SRC_DIR" || exit 1
-if git checkout include-major >/dev/null 2>&1; then
-    echo "Checked out include-major."
+
+# For slf4j-api-1.7.12 and javax.mail, this Randoop script uses the main branch, which retains the default namespaces (e.g., org.slf4j, javax.mail),
+# since Randoop does not restrict test generation based on package names.
+#
+# However, EvoSuite contains hardcoded checks that prevent test generation for certain core namespaces like org.slf4j and javax.mail.
+# To work around this, the EvoSuite script (which will eventually be merged) uses the include-major branch,
+# where the packages have been renamed to org1.slf4j and javax1.mail.
+#
+# The EvoSuite script will also temporarily modifies the corresponding source jarfile to reflect this namespace change during test generation,
+# and then restores the original JARs afterward to maintain consistency.
+if [ "$SUBJECT_PROGRAM" != "slf4j-api-1.7.12" ] && [ "$SUBJECT_PROGRAM" != "javax.mail-1.5.1" ]; then
+    if git checkout include-major >/dev/null 2>&1; then
+        echo "Checked out include-major."
+    fi
 fi
 cd - || exit 1
 
@@ -309,30 +465,6 @@ if [ ! -f "results/info.csv" ]; then
     touch results/info.csv
     echo -e "Version,FileName,TimeLimit,Seed,InstructionCoverage,BranchCoverage,MutationScore" > results/info.csv
 fi
-
-
-#===============================================================================
-# Randoop Feature Selection
-#===============================================================================
-
-# The feature names must not contain whitespace.
-ALL_RANDOOP_FEATURES=("BASELINE" "BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
-# The different features of Randoop to use. Adjust according to the features you are testing.
-RANDOOP_FEATURES=("BASELINE") #"BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
-
-# ABLATION controls whether to perform feature ablation studies.
-# If false, each run of Randoop only uses the features specified in the RANDOOP_FEATURES array.
-# If true, each run of Randoop uses all features *except* the one specified in the RANDOOP_FEATURES array.
-ABLATION=false
-
-# Ensure the given features are are recognized and supported by the script.
-for RANDOOP_FEATURE in "${RANDOOP_FEATURES[@]}" ; do
-    if [[ ! " ${ALL_RANDOOP_FEATURES[*]} " =~ [[:space:]]${RANDOOP_FEATURE}[[:space:]] ]]; then
-        echo "$RANDOOP_FEATURE" is not in "${RANDOOP_FEATURES[@]}"
-        exit 2
-    fi
-done
-
 
 #===============================================================================
 # Test Generation & Execution
@@ -477,6 +609,15 @@ do
         echo "Instruction Coverage: $instruction_coverage%"
         echo "Branch Coverage: $branch_coverage%"
 
+        # For hamcrest-core-1.3, we need to run the generated tests with EvoSuite's runner
+        # in order for mutation analysis to properly work. Randoop-generated tests may report 0 mutants covered
+        # during mutation analysis due to issues with test detection, static state handling, or instrumentation.
+        # This script modifies the tests to run with the EvoSuite runner, which ensures proper isolation and compatibility
+        # for accurate mutant coverage.
+        if [ "$SUBJECT_PROGRAM" == "hamcrest-core-1.3" ]; then
+            python update_hamcrest_tests.py "$TEST_DIRECTORY"
+        fi
+
         echo
         echo "Running tests with mutation analysis..."
         if [[ "$VERBOSE" -eq 1 ]]; then
@@ -489,7 +630,7 @@ do
         mv results/summary.csv "$RESULT_DIR"
 
         # Calculate Mutation Score
-        mutants_generated=$(awk -F, 'NR==2 {print $3}' "$RESULT_DIR"/summary.csv)
+        mutants_generated=$(awk -F, 'NR==2 {print $1}' "$RESULT_DIR"/summary.csv)
         mutants_killed=$(awk -F, 'NR==2 {print $4}' "$RESULT_DIR"/summary.csv)
         mutation_score=$(echo "scale=4; $mutants_killed / $mutants_generated * 100" | bc)
         mutation_score=$(printf "%.2f" "$mutation_score")

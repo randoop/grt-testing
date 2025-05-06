@@ -1,18 +1,18 @@
 MAKEFILE_DIR := $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
 
 all: \
-    build/jacoco.jar \
-    build/org.jacoco.agent-0.8.0-runtime.jar \
-    build/randoop-all-4.3.3.jar \
-    build/major \
-    build/randoop \
-    build/replacecall-4.3.3.jar \
     build/evosuite-1.2.0.jar \
     build/evosuite-standalone-runtime-1.2.0.jar \
+    build/hamcrest-core-1.3.jar \
+    build/jacoco.jar \
     build/junit-4.12.jar \
     build/junit-4.13.2.jar \
-    build/hamcrest-core-1.3.jar \
+    build/major \
     build/major/bin/ant-replacecall \
+    build/org.jacoco.agent-0.8.0-runtime.jar \
+    build/randoop \
+    build/randoop-all-4.3.3.jar \
+    build/replacecall-4.3.3.jar \
     results
 
 build/jacoco.jar:
@@ -24,7 +24,6 @@ build/org.jacoco.agent-0.8.0-runtime.jar:
 	mkdir -p build
 	cd build && wget -nv -O org.jacoco.agent-0.8.0-runtime.jar https://repo1.maven.org/maven2/org/jacoco/org.jacoco.agent/0.8.0/org.jacoco.agent-0.8.0-runtime.jar
 
-# Currently, we build randoop from source instead of downloading the jar
 build/randoop-all-4.3.3.jar:
 	# mkdir -p build
 	# cd build
