@@ -1,13 +1,12 @@
 MAKEFILE_DIR := $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
 
-all: build/jacoco.jar build/randoop-all-4.3.3.jar build/major build/randoop build/replacecall-4.3.3.jar build/major/bin/ant-replacecall results
+all: build/jacoco.jar build/major build/randoop-all-4.3.3.jar build/randoop build/replacecall-4.3.3.jar build/major/bin/ant-replacecall results
 
 build/jacoco.jar:
 	mkdir -p build
 	cd build && wget -nv -O jacoco-0.8.12.zip https://search.maven.org/remotecontent?filepath=org/jacoco/jacoco/0.8.12/jacoco-0.8.12.zip
 	cd build && unzip -o jacoco-0.8.12.zip lib/jacocoagent.jar lib/jacocoant.jar lib/jacococli.jar && mv lib/jacocoagent.jar lib/jacocoant.jar lib/jacococli.jar . && rmdir lib
 
-# Currently, we build randoop from source instead of downloading the jar
 build/randoop-all-4.3.3.jar:
 	# mkdir -p build
 	# cd build

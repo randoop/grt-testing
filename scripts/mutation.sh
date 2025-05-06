@@ -252,7 +252,7 @@ fi
 #===============================================================================
 # Method Call Replacement Setup
 #===============================================================================
-# Path to the replacement file for replacecall
+# Path to the replacement file for the replacecall agent.
 REPLACEMENT_FILE_PATH="program-config/$SUBJECT_PROGRAM/replacecall-replacements.txt"
 
 # Configure method call replacements to avoid undesired behaviors during test
