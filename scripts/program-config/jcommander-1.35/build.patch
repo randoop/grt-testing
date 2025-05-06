@@ -1,57 +1,29 @@
---- build-variants/build.xml	2024-10-02 01:32:23.888417106 -0700
-+++ build.xml	2024-10-02 19:58:59.073238991 -0700
+--- build.xml	2025-05-05 17:09:41.837270767 -0700
++++ program-config/build.xml	2025-05-05 17:09:45.408290379 -0700
 @@ -6,9 +6,11 @@
        particular (compiled) mml-file.
       ############################################## -->
      <property name="major.jar" value="build/major/lib/major.jar"/>
 +    <property name="major-rt.jar" value="build/major/lib/major-rt.jar"/>
      <property name="mutator" value=""/>
--    <property name="plugin" value="-Xplugin:MajorPlugin ${mutator}"/>
-+    <property name="plugin" value="-Xplugin:MajorPlugin ${mutator}" />
+     <property name="plugin" value="-Xplugin:MajorPlugin ${mutator}"/>
      <property name="jacoco.destfile" value="results/jacoco.exec"/>
-+    <property name="replacement-file" value="build-variants/jcommander-1.35/replacecall-replacements.txt"/>
++    <property name="replacement-file" value="program-config/jcommander-1.35/replacecall-replacements.txt"/>
  
  <!-- Import JaCoCo Ant tasks -->
      <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
-@@ -31,13 +33,30 @@
- 
- <!-- Target to compile the project -->
-     <target name="compile" depends="init" description="Compile">
--        <javac includeantruntime="true" 
--               srcdir="${src}"
--               destdir="build/bin"
--               debug="yes">
--            <classpath location="${major.jar}"/>
--            <compilerarg value="${plugin}"/>
--        </javac>
-+        <exec executable="mvn" dir="${src}">
-+            <arg value="-B"/>
-+            <arg value="clean"/>
-+            <arg value="package"/>
-+            <arg value="-Dmaven.test.failure.ignore=true"/>
-+            <arg value="-Dmaven.javadoc.skip=true"/>
-+            <arg value="-Dgrt-testing.basedir=${basedir}"/>
-+            <arg value="-Dgrt-testing.major.jar=${major.jar}"/>
-+            <arg value="-Dgrt-testing.plugin=${plugin}"/>
-+            <arg value="-DskipTests=true"/>
-+        </exec>
-+
-+        <copy todir="build/bin">
-+            <fileset dir="${src}/target/classes"/>
-+        </copy>
-+
-+        <exec executable="mv">
-+            <arg value="${src}/major.log"/>
-+            <arg value="./"/>
-+        </exec>
-+        <exec executable="mv">
-+            <arg value="${src}/mutants.log"/>
-+            <arg value="./"/>
-+        </exec>
-     </target>
- 
- <!-- Target to compile the test suite -->
-@@ -74,20 +93,21 @@
+@@ -64,7 +66,9 @@
+                testMapFile="results/testMap.csv"
+                killMapFile="results/killMap.csv"
+                testOrder="sort_methods">
+-            <classpath path="build/bin"/>
++            <classpath path="build/bin:${major-rt.jar}"/>
++            <jvmarg value="-Xbootclasspath/a:${basedir}/build/replacecall-4.3.3.jar"/>
++            <jvmarg value="-javaagent:${basedir}/build/replacecall-4.3.3.jar=${basedir}/${replacement-file}"/>
+             <batchtest fork="false">
+                 <fileset dir="${test}">
+                     <include name="**/*Test*.java"/>
+@@ -77,20 +81,21 @@
  <!-- The original test target -->
      <target name="test" depends="compile.tests" description="Run all unit test cases">
          <echo message="Running unit tests ..."/>
@@ -76,11 +48,11 @@
 +                fork="true" forkmode="once">
 +            <formatter type="brief" usefile="false"/>
 +            <classpath path="build/bin:${major-rt.jar}"/>
-+            <jvmarg value="-javaagent:${basedir}/scripts/build/jacocoagent.jar=destfile=${basedir}/${jacoco.destfile}"/>
-+            <jvmarg value="-Xbootclasspath/a:${basedir}/scripts/build/replacecall-4.3.3.jar"/>
-+            <jvmarg value="-javaagent:${basedir}/scripts/build/replacecall-4.3.3.jar=${basedir}/${replacement-file}"/>
++            <jvmarg value="-javaagent:${basedir}/build/jacocoagent.jar=destfile=${basedir}/${jacoco.destfile}"/>
++            <jvmarg value="-Xbootclasspath/a:${basedir}/build/replacecall-4.3.3.jar"/>
++            <jvmarg value="-javaagent:${basedir}/build/replacecall-4.3.3.jar=${basedir}/${replacement-file}"/>
 +
-+            <batchtest>
++            <batchtest fork="no">
 +                <fileset dir="${test}">
 +                    <include name="**/*Test*.java"/>
 +                </fileset>
@@ -88,3 +60,4 @@
 +        </junit>
      </target>
  </project>
+\ No newline at end of file
