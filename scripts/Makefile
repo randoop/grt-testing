@@ -1,6 +1,6 @@
 MAKEFILE_DIR := $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
 
-all: build/jacoco.jar build/major build/randoop-all-4.3.3.jar build/randoop build/replacecall-4.3.3.jar build/major/bin/ant-replacecall results
+all: build/jacoco.jar build/major build/major/bin/ant-replacecall build/randoop-all-4.3.3.jar build/randoop build/replacecall-4.3.3.jar results
 
 build/jacoco.jar:
 	mkdir -p build
