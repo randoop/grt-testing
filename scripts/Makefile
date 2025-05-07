@@ -1,6 +1,6 @@
-.PHONY: build/replacecall-4.3.3.jar build/major/bin/ant.m
+MAKEFILE_DIR := $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
 
-all: build/jacoco.jar build/randoop-all-4.3.3.jar build/major build/replacecall-4.3.3.jar build/major/bin/ant.m results
+all: build/jacoco.jar build/major build/major/bin/ant-replacecall build/randoop-all-4.3.3.jar build/randoop build/replacecall-4.3.3.jar results
 
 build/jacoco.jar:
 	mkdir -p build
@@ -8,21 +8,35 @@ build/jacoco.jar:
 	cd build && unzip -o jacoco-0.8.12.zip lib/jacocoagent.jar lib/jacocoant.jar lib/jacococli.jar && mv lib/jacocoagent.jar lib/jacocoant.jar lib/jacococli.jar . && rmdir lib
 
 build/randoop-all-4.3.3.jar:
-	mkdir -p build
-	echo "See scripts/mutation-repro.md to obtain randoop-all-4.3.3.jar"
+	# mkdir -p build
+	# cd build
+	# wget -nv https://github.com/randoop/randoop/releases/download/v4.3.3/randoop-all-4.3.3.jar
+	echo "See scripts/reproinstruction.txt to obtain randoop-all-4.3.3.jar"
 
 build/major:
 	mkdir -p build
-	cd build && wget -nv http://mutation-testing.org/downloads/files/major-2.2.0_jre8.zip
+	cd build && wget -nv https://mutation-testing.org/downloads/files/major-2.2.0_jre8.zip
 	cd build && unzip -o major-2.2.0_jre8.zip
 
+build/randoop:
+	mkdir -p build
+	cd build && git clone git@github.com:randoop/randoop.git
+
+randoop-from-source:
+	cd build/randoop && \
+	git pull && \
+	./gradlew shadowJar && \
+	mv -f build/libs/randoop-all-4.3.3.jar agent/replacecall/build/libs/replacecall-4.3.3.jar ..
+
 build/replacecall-4.3.3.jar:
-	wget https://github.com/776styjsu/randoop/releases/download/replacecall-grt-v1.0.1/replacecall-4.3.3.jar
+	LATEST_RELEASE=$$(curl -s https://api.github.com/repos/randoop/grt-replacecall/releases/latest | grep -o '"tag_name": "[^"]*' | cut -d'"' -f4) && \
+	wget "https://github.com/randoop/grt-replacecall/releases/download/$${LATEST_RELEASE}/replacecall-4.3.3.jar" && \
 	mv replacecall-4.3.3.jar build/
 
-build/major/bin/ant.m:
-	wget https://github.com/776styjsu/randoop/releases/download/replacecall-grt-v1.0.1/ant.m
-	mv ant.m build/major/bin/
+build/major/bin/ant-replacecall:
+	LATEST_RELEASE=$$(curl -s https://api.github.com/repos/randoop/grt-replacecall/releases/latest | grep -o '"tag_name": "[^"]*' | cut -d'"' -f4) && \
+	wget "https://github.com/randoop/grt-replacecall/releases/download/$${LATEST_RELEASE}/ant-replacecall" && \
+	mv ant-replacecall build/major/bin/
 
 results:
 	mkdir -p results
