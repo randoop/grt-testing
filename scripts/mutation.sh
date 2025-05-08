@@ -272,7 +272,7 @@ download_jars() {
 
 copy_jars() {
     for path in "$@"; do
-        cp "$path" build/lib
+        cp -r "$path" build/lib
     done
 }
 
