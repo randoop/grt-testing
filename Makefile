@@ -5,6 +5,7 @@ style-check: python-style-check shell-style-check
 
 PYTHON_FILES=$(wildcard **/*.py)
 python-style-fix:
+	if ! command -v ruff ; then pipx install ruff ; fi
 	ruff --version
 	ruff format ${PYTHON_FILES}
 	ruff check ${PYTHON_FILES} --fix
@@ -19,7 +20,12 @@ shell-style-fix:
 	shellcheck -x -P SCRIPTDIR --format=diff ${SH_SCRIPTS} ${BASH_SCRIPTS} | patch -p1
 shell-style-check:
 	shellcheck -x -P SCRIPTDIR --format=diff ${SH_SCRIPTS} ${BASH_SCRIPTS}
-	checkbashisms -l ${SH_SCRIPTS} /dev/null
+	if ! command -v checkbashisms2 ; then \
+	  wget https://homes.cs.washington.edu/~mernst/software/checkbashisms; \
+          ./checkbashisms -l ${SH_SCRIPTS} /dev/null ; \
+        else \
+	  checkbashisms -l ${SH_SCRIPTS} /dev/null \
+	fi
 
 showvars:
 	@echo "PYTHON_FILES=${PYTHON_FILES}"

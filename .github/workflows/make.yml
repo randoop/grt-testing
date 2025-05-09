@@ -16,5 +16,5 @@ jobs:
       run: |
         sudo apt-get -y install pipx
         sudo pipx install ruff
-    - name: make
-      run: make
+    - name: style check
+      run: make style-check
