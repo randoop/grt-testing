@@ -1,4 +1,5 @@
 # Test cases and scripts for testing Randoop
+
 ## Overview
 
 This repository contains test cases and scripts designed for testing
@@ -7,6 +8,7 @@ the results presented in the paper "[GRT: Program-Analysis-Guided Random
 Testing](GRT_Program-Analysis-Guided_Random_Testing.pdf)"
 
 ## Usage Instructions
+
 ### Setup
 To set up the environment, refer to the `scripts/mutation-prerequisites.md` file.
 
