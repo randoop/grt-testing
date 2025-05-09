@@ -1,0 +1,143 @@
+[
+  {
+    "operation": {
+      "classname": "org.jaxen.util.FollowingAxisIterator",
+      "name": "FollowingAxisIterator",
+      "parameterTypes": [
+        "java.lang.Object",
+        "org.jaxen.Navigator"
+      ]
+    },
+    "identifiers": {
+      "parameters": [
+        "contextNode",
+        "navigator"
+      ],
+      "receiverName": "receiver",
+      "returnName": "result"
+    },
+    "pre": [
+      {
+          "description": "Context node must be a valid Node",
+          "guard": {
+          "condition": "contextNode instanceof org.w3c.dom.Node",
+          "description": "The context node must be a valid Node"
+          }
+      }
+    ],
+    "post": [],
+    "throws": []
+  },
+  {
+    "operation": {
+      "classname": "org.jaxen.util.DescendantAxisIterator",
+      "name": "DescendantAxisIterator",
+      "parameterTypes": [
+        "java.lang.Object",
+        "org.jaxen.Navigator"
+      ]
+    },
+    "identifiers": {
+      "parameters": [
+        "contextNode",
+        "navigator"
+      ],
+      "receiverName": "receiver",
+      "returnName": "result"
+    },
+    "pre": [
+      {
+        "description": "Context node must be a valid Node",
+        "guard": {
+          "condition": "contextNode instanceof org.w3c.dom.Node",
+          "description": "The context node must be a valid Node"
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  },
+  {
+    "operation": {
+      "classname": "org.jaxen.util.PrecedingAxisIterator",
+      "name": "PrecedingAxisIterator",
+      "parameterTypes": [
+        "java.lang.Object",
+        "org.jaxen.Navigator"
+      ]
+    },
+    "identifiers": {
+      "parameters": [
+        "contextNode",
+        "navigator"
+      ],
+      "receiverName": "receiver",
+      "returnName": "result"
+    },
+    "pre": [
+      {
+        "description": "Context node must be a valid Node",
+        "guard": {
+          "condition": "contextNode instanceof org.w3c.dom.Node",
+          "description": "The context node must be a valid Node"
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  },
+  {
+    "operation": {
+      "classname": "org.jaxen.DefaultNavigator",
+      "name": "getPrecedingAxisIterator",
+      "parameterTypes": [
+        "java.lang.Object"
+      ]
+    },
+    "identifiers": {
+      "parameters": [
+        "contextNode"
+      ],
+      "receiverName": "receiver",
+      "returnName": "result"
+    },
+    "pre": [
+      {
+        "description": "contextNode must be a valid Iterator",
+        "guard": {
+          "condition": "contextNode instanceof java.util.Iterator",
+          "description": "contextNode must be a valid Iterator"
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  },
+  {
+    "operation": {
+      "classname": "org.jaxen.DefaultNavigator",
+      "name": "getFollowingAxisIterator",
+      "parameterTypes": [
+        "java.lang.Object"
+      ]
+    },
+    "identifiers": {
+      "parameters": [
+        "contextNode"
+      ],
+      "receiverName": "receiver",
+      "returnName": "result"
+    },
+    "pre": [
+      {
+        "description": "contextNode must be a valid Iterator",
+        "guard": {
+          "condition": "contextNode instanceof java.util.Iterator",
+          "description": "contextNode must be a valid Iterator"
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  }
+]

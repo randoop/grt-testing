@@ -1,0 +1,1 @@
+com.beust.jcommander.internal.Console.readPassword(boolean) randoop.grt_mock.jcommander_1_35.com.beust.jcommander.internal.DefaultConsole.readPassword(com.beust.jcommander.internal.Console, boolean)

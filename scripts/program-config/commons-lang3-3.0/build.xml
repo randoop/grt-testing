@@ -19,8 +19,8 @@
     <target name="clean" description="Clean">
         <delete dir="build/bin"/>
         <delete>
-            <fileset dir="." includes="*.csv"/>
-            <fileset dir="." includes="*.log"/>
+            <fileset dir="./results" includes="*.csv" excludes="info.csv"/>
+            <fileset dir="./results" includes="*.log"/>
         </delete>
     </target>
 
@@ -31,18 +31,20 @@
 
 <!-- Target to compile the project -->
     <target name="compile" depends="init" description="Compile">
-        <!-- For projects that don't use UTF-8 encoding, add: encoding="iso-8859-1" -->
-        <javac includeantruntime="true"
+        <javac includeantruntime="true" 
                srcdir="${src}"
                destdir="build/bin"
-               debug="yes">
+               debug="yes"
+               source="1.5"
+               target="1.5"
+               encoding="iso-8859-1">
             <classpath location="${major.jar}"/>
             <compilerarg value="${plugin}"/>
         </javac>
     </target>
 
 <!-- Target to compile the test suite -->
-    <target name="compile.tests" depends="compile" description="Compile all tests">
+    <target name="compile.tests" description="Compile all tests">
         <javac includeantruntime="true"
                srcdir="${test}"
                destdir="build/bin"
@@ -56,6 +58,7 @@
         <junit printsummary="false"
                showoutput="false"
                mutationAnalysis="true"
+               excludeFailingTests="false"
                serializedMapsFile="results/preprocessing.ser"
                mutantsLogFile="mutants.log"
                summaryFile="results/summary.csv"
@@ -68,6 +71,7 @@
             <batchtest fork="false">
                 <fileset dir="${test}">
                     <include name="**/*Test*.java"/>
+                    <exclude name="**/RegressionTest.java"/>
                 </fileset>
             </batchtest>
         </junit>

@@ -1,0 +1,25 @@
+[
+  {
+    "operation": {
+      "classname": "javassist.tools.web.Webserver",
+      "name": "run",
+      "parameterTypes": []
+    },
+    "identifiers": {
+      "parameters": [],
+      "receiverName": "receiver",
+      "returnName": "result"
+    },
+    "pre": [
+      {
+        "description": "Socket is not closed",
+        "guard": {
+          "condition": "!receiver.socket.isClosed()",
+          "description": "Socket is not closed"
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  }
+]

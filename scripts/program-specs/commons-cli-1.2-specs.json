@@ -1,0 +1,348 @@
+[
+  {
+    "operation": {
+      "classname": "org.apache.commons.cli.HelpFormatter",
+      "name": "setWidth",
+      "parameterTypes": [
+        "int"
+      ]
+    },
+    "identifiers": {
+      "parameters": [
+        "width"
+      ],
+      "receiverName": "receiver",
+      "returnName": "result"
+    },
+    "pre": [
+      {
+        "description": "The width must be positive",
+        "guard": {
+          "condition": "width > 0",
+          "description": "The width must be positive."
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  },
+  {
+    "operation": {
+      "classname": "org.apache.commons.cli.HelpFormatter",
+      "name": "printHelp",
+      "parameterTypes": [
+        "int",
+        "java.lang.String",
+        "java.lang.String",
+        "org.apache.commons.cli.Options",
+        "java.lang.String"
+      ]
+    },
+    "identifiers": {
+      "parameters": [
+        "width",
+        "cmdLineSyntax",
+        "header",
+        "options",
+        "footer"
+      ],
+      "receiverName": "receiver",
+      "returnName": "result"
+    },
+    "pre": [
+      {
+        "description": "The width must be positive",
+        "guard": {
+          "condition": "width > 0",
+          "description": "The width must be positive."
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  },
+  {
+    "operation": {
+      "classname": "org.apache.commons.cli.HelpFormatter",
+      "name": "printHelp",
+      "parameterTypes": [
+        "int",
+        "java.lang.String",
+        "java.lang.String",
+        "org.apache.commons.cli.Options",
+        "java.lang.String",
+        "boolean"
+      ]
+    },
+    "identifiers": {
+      "parameters": [
+        "width",
+        "cmdLineSyntax",
+        "header",
+        "options",
+        "footer",
+        "autoUsage"
+      ],
+      "receiverName": "receiver",
+      "returnName": "result"
+    },
+    "pre": [
+      {
+        "description": "The width must be positive",
+        "guard": {
+          "condition": "width > 0",
+          "description": "The width must be positive."
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  },
+  {
+    "operation": {
+      "classname": "org.apache.commons.cli.HelpFormatter",
+      "name": "printHelp",
+      "parameterTypes": [
+        "java.io.PrintWriter",
+        "int",
+        "java.lang.String",
+        "java.lang.String",
+        "org.apache.commons.cli.Options",
+        "int",
+        "int",
+        "java.lang.String"
+      ]
+    },
+    "identifiers": {
+      "parameters": [
+        "pw",
+        "width",
+        "cmdLineSyntax",
+        "header",
+        "options",
+        "leftPad",
+        "descPad",
+        "footer"
+      ],
+      "receiverName": "receiver",
+      "returnName": "result"
+    },
+    "pre": [
+      {
+        "description": "The width must be positive",
+        "guard": {
+          "condition": "width > 0",
+          "description": "The width must be positive."
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  },
+  {
+    "operation": {
+      "classname": "org.apache.commons.cli.HelpFormatter",
+      "name": "printHelp",
+      "parameterTypes": [
+        "java.io.PrintWriter",
+        "int",
+        "java.lang.String",
+        "java.lang.String",
+        "org.apache.commons.cli.Options",
+        "int",
+        "int",
+        "java.lang.String",
+        "boolean"
+      ]
+    },
+    "identifiers": {
+      "parameters": [
+        "pw",
+        "width",
+        "cmdLineSyntax",
+        "header",
+        "options",
+        "leftPad",
+        "descPad",
+        "footer",
+        "autoUsage"
+      ],
+      "receiverName": "receiver",
+      "returnName": "result"
+    },
+    "pre": [
+      {
+        "description": "The width must be positive",
+        "guard": {
+          "condition": "width > 0",
+          "description": "The width must be positive."
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  },
+  {
+    "operation": {
+      "classname": "org.apache.commons.cli.HelpFormatter",
+      "name": "printUsage",
+      "parameterTypes": [
+        "java.io.PrintWriter",
+        "int",
+        "java.lang.String",
+        "org.apache.commons.cli.Options"
+      ]
+    },
+    "identifiers": {
+      "parameters": [
+        "pw",
+        "width",
+        "app",
+        "options"
+      ],
+      "receiverName": "receiver",
+      "returnName": "result"
+    },
+    "pre": [
+      {
+        "description": "The width must be positive",
+        "guard": {
+          "condition": "width > 0",
+          "description": "The width must be positive."
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  },
+  {
+    "operation": {
+      "classname": "org.apache.commons.cli.HelpFormatter",
+      "name": "printUsage",
+      "parameterTypes": [
+        "java.io.PrintWriter",
+        "int",
+        "java.lang.String"
+      ]
+    },
+    "identifiers": {
+      "parameters": [
+        "pw",
+        "width",
+        "cmdLineSyntax"
+      ],
+      "receiverName": "receiver",
+      "returnName": "result"
+    },
+    "pre": [
+      {
+        "description": "The width must be positive",
+        "guard": {
+          "condition": "width > 0",
+          "description": "The width must be positive."
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  },
+  {
+    "operation": {
+      "classname": "org.apache.commons.cli.HelpFormatter",
+      "name": "printWrapped",
+      "parameterTypes": [
+        "java.io.PrintWriter",
+        "int",
+        "java.lang.String"
+      ]
+    },
+    "identifiers": {
+      "parameters": [
+        "pw",
+        "width",
+        "text"
+      ],
+      "receiverName": "receiver",
+      "returnName": "result"
+    },
+    "pre": [
+      {
+        "description": "The width must be positive",
+        "guard": {
+          "condition": "width > 0",
+          "description": "The width must be positive."
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  },
+  {
+    "operation": {
+      "classname": "org.apache.commons.cli.HelpFormatter",
+      "name": "printWrapped",
+      "parameterTypes": [
+        "java.io.PrintWriter",
+        "int",
+        "int",
+        "java.lang.String"
+      ]
+    },
+    "identifiers": {
+      "parameters": [
+        "pw",
+        "width",
+        "nextLineTabStop",
+        "text"
+      ],
+      "receiverName": "receiver",
+      "returnName": "result"
+    },
+    "pre": [
+      {
+        "description": "The width must be positive",
+        "guard": {
+          "condition": "width > 0",
+          "description": "The width must be positive."
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  },
+  {
+    "operation": {
+      "classname": "org.apache.commons.cli.HelpFormatter",
+      "name": "printOptions",
+      "parameterTypes": [
+        "java.io.PrintWriter",
+        "int",
+        "org.apache.commons.cli.Options",
+        "int",
+        "int"
+      ]
+    },
+    "identifiers": {
+      "parameters": [
+        "pw",
+        "width",
+        "options",
+        "leftPad",
+        "descPad"
+      ],
+      "receiverName": "receiver",
+      "returnName": "result"
+    },
+    "pre": [
+      {
+        "description": "The width must be positive",
+        "guard": {
+          "condition": "width > 0",
+          "description": "The width must be positive."
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  }
+]

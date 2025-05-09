@@ -1,0 +1,52 @@
+[
+  {
+    "operation": {
+      "classname": "com.google.common.util.concurrent.Uninterruptibles",
+      "name": "takeUninterruptibly",
+      "parameterTypes": [
+        "java.util.concurrent.BlockingQueue"
+      ]
+    },
+    "identifiers": {
+      "parameters": [
+        "objCollectionQueue"
+      ],
+      "receiverName": "receiver",
+      "returnName": "result"
+    },
+    "pre": [
+      {
+        "description": "objCollectionQueue must be non-empty",
+        "guard": {
+          "condition": "!objCollectionQueue.isEmpty()",
+          "description": "objCollectionQueue must be non-empty"
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  },
+  {
+    "operation": {
+      "classname": "com.google.common.util.concurrent.AbstractFuture",
+      "name": "get",
+      "parameterTypes": []
+    },
+    "identifiers": {
+      "parameters": [],
+      "receiverName": "receiver",
+      "returnName": "result"
+    },
+    "pre": [
+      {
+        "description": "receiver must be done or interrupted",
+        "guard": {
+          "condition": "receiver.isDone() || receiver.isCancelled()",
+          "description": "receiver must be done or interrupted"
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  }
+]
