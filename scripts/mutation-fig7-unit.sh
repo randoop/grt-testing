@@ -338,7 +338,7 @@ do
     export TIME_LIMIT
     export NUM_CLASSES
 
-    GENERATOR_BASE_COMMAND=$($GENERATOR_DIR/$GENERATOR.sh)
+    GENERATOR_BASE_COMMAND=$("$GENERATOR_DIR"/"$GENERATOR".sh)
     if [[ "$VERBOSE" -eq 1 ]]; then
         echo "GENERATOR_BASE_COMMAND=$GENERATOR_BASE_COMMAND"
     fi
@@ -431,17 +431,17 @@ do
     echo
     "$MAJOR_HOME"/bin/ant -f "$BUILD_FILE" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" "$LIB_ARG" test
 
-    java -jar "$JACOCO_CLI_JAR" report "$RESULT_DIR/jacoco.exec" --classfiles "$SRC_JAR" --sourcefiles "$JAVA_SRC_DIR" --csv $RESULT_DIR/report.csv
+    java -jar "$JACOCO_CLI_JAR" report "$RESULT_DIR/jacoco.exec" --classfiles "$SRC_JAR" --sourcefiles "$JAVA_SRC_DIR" --csv "$RESULT_DIR"/report.csv
 
     # Calculate Instruction Coverage
-    inst_missed=$(awk -F, 'NR>1 {sum+=$4} END {print sum}' $RESULT_DIR/report.csv)
-    inst_covered=$(awk -F, 'NR>1 {sum+=$5} END {print sum}' $RESULT_DIR/report.csv)
+    inst_missed=$(awk -F, 'NR>1 {sum+=$4} END {print sum}' "$RESULT_DIR"/report.csv)
+    inst_covered=$(awk -F, 'NR>1 {sum+=$5} END {print sum}' "$RESULT_DIR"/report.csv)
     instruction_coverage=$(echo "scale=4; $inst_covered / ($inst_missed + $inst_covered) * 100" | bc)
     instruction_coverage=$(printf "%.2f" "$instruction_coverage")
 
     # Calculate Branch Coverage
-    branch_missed=$(awk -F, 'NR>1 {sum+=$6} END {print sum}' $RESULT_DIR/report.csv)
-    branch_covered=$(awk -F, 'NR>1 {sum+=$7} END {print sum}' $RESULT_DIR/report.csv)
+    branch_missed=$(awk -F, 'NR>1 {sum+=$6} END {print sum}' "$RESULT_DIR"/report.csv)
+    branch_covered=$(awk -F, 'NR>1 {sum+=$7} END {print sum}' "$RESULT_DIR"/report.csv)
     branch_coverage=$(echo "scale=4; $branch_covered / ($branch_missed + $branch_covered) * 100" | bc)
     branch_coverage=$(printf "%.2f" "$branch_coverage")
 
@@ -501,7 +501,7 @@ echo "Restoring build.xml"
     # Lock the build.xml file before patching it
     flock 200
     ./apply-build-patch.sh > /dev/null
-    rm $BUILD_FILE
+    rm "$BUILD_FILE"
 ) 200>"build.xml" # lock on build.xml
 
 

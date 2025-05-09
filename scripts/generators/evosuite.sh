@@ -42,7 +42,7 @@ fi
 if [[ -z $CLASSPATH ]]; then 
     classpath_jars=""
 else
-    classpath_jars="$(echo $CLASSPATH/*.jar | tr ' ' ':'):"
+    classpath_jars="$(echo "$CLASSPATH"/*.jar | tr ' ' ':'):"
 fi
 
 # Compute the budget per target class; evenly split the time for search and assertions

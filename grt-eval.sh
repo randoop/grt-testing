@@ -60,22 +60,22 @@ export randoop=$WORK_DIR/"randoop-grt"
 # Setup grt-testing
 echo "START: Setting up grt-testing and randoop-grt"
 
-cd grt-testing/scripts
+cd grt-testing/scripts || exit
 make
 
 # Setup randoop-grt
-cd $WORK_DIR
+cd "$WORK_DIR" || exit
 if [ ! -d "randoop-grt" ]; then
     git clone git@github.com:edward-qin/randoop-grt.git randoop-grt
 
-    cd randoop-grt
+    cd randoop-grt || exit
 
     usejdk11
     ./gradlew shadowJar
-    cp -f build/libs/randoop-all-4.3.3.jar agent/replacecall/build/libs/replacecall-4.3.3.jar $WORK_DIR/"grt-testing/scripts/build"
+    cp -f build/libs/randoop-all-4.3.3.jar agent/replacecall/build/libs/replacecall-4.3.3.jar "$WORK_DIR"/"grt-testing/scripts/build"
 fi
 
-cd $WORK_DIR/"grt-testing/scripts"
+cd "$WORK_DIR"/"grt-testing/scripts" || exit
 ./get-all-subject-src.sh
 echo "SUCCESS: Set up grt-testing and randoop-grt"
 
@@ -110,14 +110,14 @@ EVOSUITE_VERSION="1.1.0"
 EVOSUITE_URL="https://github.com/EvoSuite/evosuite/releases/download/v${EVOSUITE_VERSION}"
 EVOSUITE_JAR="evosuite-${EVOSUITE_VERSION}.jar"
 
-cd $WORK_DIR/"grt-testing/scripts/build"
+cd "$WORK_DIR"/"grt-testing/scripts/build" || exit
 download_url "$EVOSUITE_URL/$EVOSUITE_JAR"
 echo "SUCCESS: Set up evosuite"
 
 # Run grt generation in parallel
 echo "START: Running Coverage and Mutation Score Computation"
 
-cd $WORK_DIR/"grt-testing/scripts"
+cd "$WORK_DIR"/"grt-testing/scripts" || exit
 rm -rf results
 rm mutation_output.txt
 touch mutation_output.txt

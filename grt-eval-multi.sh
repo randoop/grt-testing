@@ -62,11 +62,11 @@ export randoop=$RANDOOP_DIR/"randoop-grt"
 # Setup randoop-grt
 echo "START: Setting up randoop-grt"
 
-cd scripts
+cd scripts || exit
 make
 
 # Setup randoop-grt
-cd $WORK_DIR
+cd "$WORK_DIR" || exit
 
 # commented out lmk
 # if [ ! -d "randoop-grt" ]; then
@@ -80,9 +80,9 @@ cd $WORK_DIR
 #fi
 
 # change here too
-cp -f ../randoop-grt/build/libs/randoop-all-4.3.3.jar ../randoop-grt/agent/replacecall/build/libs/replacecall-4.3.3.jar $WORK_DIR/"scripts/build"
+cp -f ../randoop-grt/build/libs/randoop-all-4.3.3.jar ../randoop-grt/agent/replacecall/build/libs/replacecall-4.3.3.jar "$WORK_DIR"/"scripts/build"
 
-cd $WORK_DIR/"scripts"
+cd "$WORK_DIR"/"scripts" || exit
 ./get-all-subject-src.sh
 echo "SUCCESS: Set up randoop-grt"
 
@@ -113,14 +113,14 @@ EVOSUITE_VERSION="1.1.0"
 EVOSUITE_URL="https://github.com/EvoSuite/evosuite/releases/download/v${EVOSUITE_VERSION}"
 EVOSUITE_JAR="evosuite-${EVOSUITE_VERSION}.jar"
 
-cd $WORK_DIR/"scripts/build"
+cd "$WORK_DIR"/"scripts/build" || exit
 download_url "$EVOSUITE_URL/$EVOSUITE_JAR"
 echo "SUCCESS: Set up evosuite"
 
 # Run grt generation in parallel
 echo "START: Running Coverage and Mutation Score Computation"
 
-cd $WORK_DIR/"scripts"
+cd "$WORK_DIR"/"scripts" || exit
 rm -rf results
 rm mutation_output.txt
 touch mutation_output.txt
