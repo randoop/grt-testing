@@ -23,6 +23,7 @@ scripts/jarfiles
 
 scripts/build/
 scripts/results/
+checkbashisms
 
 # output from runnin jacoco
 jacoco.exec
