@@ -5,11 +5,12 @@ style-check: python-style-check shell-style-check
 
 PYTHON_FILES=$(wildcard **/*.py)
 python-style-fix:
-	if ! command -v ruff ; then pipx install ruff ; fi
+	@if ! command -v ruff ; then pipx install ruff ; fi
 	ruff --version
 	ruff format ${PYTHON_FILES}
 	ruff check ${PYTHON_FILES} --fix
 python-style-check:
+	@if ! command -v ruff ; then pipx install ruff ; fi
 	ruff --version
 	ruff format --check ${PYTHON_FILES}
 	ruff check ${PYTHON_FILES}
@@ -24,7 +25,7 @@ shell-style-check:
 	  wget https://homes.cs.washington.edu/~mernst/software/checkbashisms; \
           ./checkbashisms -l ${SH_SCRIPTS} /dev/null ; \
         else \
-	  checkbashisms -l ${SH_SCRIPTS} /dev/null \
+	  checkbashisms -l ${SH_SCRIPTS} /dev/null ; \
 	fi
 
 showvars:
