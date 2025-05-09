@@ -9,6 +9,12 @@
 #  * Computes mutation score (mutants are generated using Major via ant).
 #  * Computes code coverage (using Jacoco via Maven).
 #
+# Directories and files:
+# - `build/evosuite-tests*`: EvoSuite-created test suites.
+# - `build/bin`: Compiled tests and code.
+# - `results/info.csv`: statistics about each iteration.
+# - `results/`: everything else specific to the most recent iteration.
+
 #------------------------------------------------------------------------------
 # Example usage:
 #------------------------------------------------------------------------------
@@ -20,25 +26,9 @@
 # See variable USAGE_STRING below
 
 #------------------------------------------------------------------------------
-# Outputs:
-#------------------------------------------------------------------------------
-# - `evosuite-tests/`: generated test suites, including their compiled versions.
-# - `build/bin`: Compiled tests and code.
-# - 'libs/': All the dependencies Maven needs for performing code coverage.
-# - 'target/': Compiled subject program code and compiled tests for Jacoco (code coverage).
-# - `results/info.csv`: statistics about each iteration.
-# - `results/`: everything else specific to the most recent iteration.
-
-#------------------------------------------------------------------------------
 # Prerequisites:
 #------------------------------------------------------------------------------
 # See file `mutation-prerequisites.md`.
-
-#------------------------------------------------------------------------------
-# Randoop versions (for GRT features):
-#------------------------------------------------------------------------------
-# For Demand-driven (PR #1260), GRT Fuzzing (PR #1304), and Elephant Brain (PR #1347),
-# checkout the respective pull requests from the Randoop repository and build locally.
 
 # Fail this script on errors.
 set -e
@@ -64,16 +54,9 @@ fi
 # Environment Setup
 #===============================================================================
 
-# Requires Java 8
-JAVA_VER=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '{sub("^$", "0", $2); print $1$2}')
-if [[ "$JAVA_VER" -ne 18 ]]; then
-    echo "Error: Java version 8 is required. Please install it and try again."
-    exit 1
-fi
-
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 MAJOR_HOME=$(realpath "${SCRIPT_DIR}/build/major/") # Major home directory, for mutation testing
-EVOSUITE_JAR=$(realpath "${SCRIPT_DIR}/build/evosuite-1.2.0.jar")
+EVOSUITE_JAR=$(realpath "${SCRIPT_DIR}/build/evosuite-1.2.0.jar") # EvoSuite jar file
 
 #===============================================================================
 # Argument Parsing & Experiment Configuration
@@ -83,7 +66,7 @@ VERBOSE=0              # Verbose option
 REDIRECT=0             # Redirect output to mutation_output.txt
 
 # Parse command-line arguments
-while getopts ":hvrt:c:" opt; do
+while getopts ":hvrt:c:n:" opt; do
   case ${opt} in
     h )
       # Display help message
@@ -102,9 +85,13 @@ while getopts ":hvrt:c:" opt; do
       ;;
     c )
       # Default seconds per class.
-      # The paper runs Randoop with 4 different time limits:
+      # The paper runs Randoop/EvoSuite with 4 different time limits:
       # 2 s/class, 10 s/class, 30 s/class, and 60 s/class.
       SECONDS_PER_CLASS="$OPTARG"
+      ;;
+    n )
+      # Number of iterations to run the experiment
+      NUM_LOOP="$OPTARG"
       ;;
     \? )
       echo "Invalid option: -$OPTARG" >&2
@@ -135,19 +122,11 @@ fi
 # Name of the subject program.
 SUBJECT_PROGRAM="$1"
 
-# Select the ant executable based on the subject program
-if [ "$SUBJECT_PROGRAM" = "ClassViewer-5.0.5b" ] || [ "$SUBJECT_PROGRAM" = "jcommander-1.35" ] || [ "$SUBJECT_PROGRAM" = "fixsuite-r48" ]; then
-    ANT="ant.m"
-    chmod +x "$MAJOR_HOME"/bin/ant.m
-else
-    ANT="ant"
-fi
-
 echo "Running mutation test on $SUBJECT_PROGRAM"
 echo
 
 #===============================================================================
-# Project Paths & Dependencies
+# Program Paths & Dependencies
 #===============================================================================
 
 # Path to the base directory of the source code.
@@ -161,11 +140,23 @@ NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
 
 # Time limit for running the test generator.
 if [[ -n "$TOTAL_TIME" ]]; then
-    TIME_LIMIT=$(( TOTAL_TIME / NUM_CLASSES ))
-elif [[ -n "$SECONDS_PER_CLASS" ]]; then
-    TIME_LIMIT=$SECONDS_PER_CLASS
+    # If TOTAL_TIME is set, we need to calculate a per-class time budget.
+    # This is because EvoSuite's -Dsearch_budget option applies time limits per class,
+    # so we need to convert the total budget into a per-class value.
+
+    # Use awk to divide TOTAL_TIME by NUM_CLASSES and round up to the nearest integer.
+    # This ensures our per-class number is not less than 1 second.
+    result=$(awk -v t="$TOTAL_TIME" -v n="$NUM_CLASSES" 'BEGIN {
+        r = t / n;
+        # If calculated time per class is less than 1 second, set it to 1
+        if (r < 1) print 1;
+        # Otherwise, round up the result (simulate ceiling function)
+        else print int(r + 0.999)
+    }')
+
+    TIME_LIMIT=$result
 else
-    TIME_LIMIT=2
+    TIME_LIMIT=$SECONDS_PER_CLASS
 fi
 
 echo "TIME_LIMIT: $TIME_LIMIT seconds"
@@ -207,167 +198,205 @@ declare -A program_src=(
 JAVA_SRC_DIR=$SRC_BASE_DIR${program_src[$SUBJECT_PROGRAM]}
 
 # Map project names to their respective dependencies
-declare -A program_deps=(
-    ["a4j-1.0b"]="$SRC_BASE_DIR/jars/"
-    ["fixsuite-r48"]="$SRC_BASE_DIR/lib/"
-    ["jdom-1.0"]="$MAJOR_HOME/lib/ant:$SRC_BASE_DIR/lib/"
-    ["jvc-1.1"]="$SRC_BASE_DIR/lib/"
-    ["nekomud-r16"]="$SRC_BASE_DIR/lib/"
-    ["sat4j-core-2.3.5"]="$SRC_BASE_DIR/lib/"
+declare -A project_deps=(
+    ["a4j-1.0b"]="build/lib/"
+    ["commons-compress-1.8"]="build/lib/"
+    ["easymock-3.2"]="build/lib/"
+    ["fixsuite-r48"]="build/lib/"
+    ["guava-16.0.1"]="build/lib/"
+    ["javassist-3.19"]="build/lib/"
+    ["jaxen-1.1.6"]="build/lib/"
+    ["jdom-1.0"]="build/lib/"
+    ["joda-time-2.3"]="build/lib/"
+    ["JSAP-2.1"]="build/lib/"
+    ["jvc-1.1"]="build/lib/"
+    ["nekomud-r16"]="build/lib/"
+    ["pmd-core-5.2.2"]="build/lib/"
+    ["sat4j-core-2.3.5"]="build/lib/"
+    ["shiro-core-1.2.3"]="build/lib/"
 )
-#   ["hamcrest-core-1.3"]="$SRC_BASE_DIR/lib/"  this one needs changes?
-
-# Link to dependencies
-CLASSPATH=${program_deps[$SUBJECT_PROGRAM]}
 
 #===============================================================================
 # Subject Program Specific Dependencies
 #===============================================================================
+setup_build_dir() {
+    rm -rf build/lib
+    mkdir -p build/lib
+}
 
-# Add the src jarfile to the dependency list.
-JAR_PATHS="$SRC_JAR"
+download_jars() {
+    for url in "$@"; do
+        wget -P build/lib "$url"
+    done
+}
 
-# Ensure that `hamcrest-core-1.3.jar` is not included multiple times in the dependencies
-# as it is required for running EvoSuite-generated tests.
-# Note: The subject program's JAR file is always added to the `JAR_PATHS` variable
-# (as mentioned above), so this prevents redundant inclusion of the same dependency.
+copy_jars() {
+    for path in "$@"; do
+        cp -r "$path" build/lib
+    done
+}
+
+case "$SUBJECT_PROGRAM" in
+    "a4j-1.0b")
+        setup_build_dir
+        copy_jars \
+            "$SRC_BASE_DIR/jars/jox116.jar" \
+            "$SRC_BASE_DIR/jars/log4j-1.2.4.jar" \
+        ;;
+    "commons-compress-1.8")
+        setup_build_dir
+        download_jars "https://repo1.maven.org/maven2/org/tukaani/xz/1.5/xz-1.5.jar"
+        ;;
+
+    "easymock-3.2")
+        setup_build_dir
+        download_jars \
+            "https://repo1.maven.org/maven2/com/google/dexmaker/dexmaker/1.0/dexmaker-1.0.jar" \
+            "https://repo1.maven.org/maven2/org/objenesis/objenesis/1.3/objenesis-1.3.jar" \
+            "https://repo1.maven.org/maven2/cglib/cglib-nodep/2.2.2/cglib-nodep-2.2.2.jar"
+        ;;
+    
+    "fixsuite-r48")
+        setup_build_dir
+        copy_jars \
+            "$SRC_BASE_DIR/lib/jdom.jar" \
+            "$SRC_BASE_DIR/lib/log4j-1.2.15.jar" \
+            "$SRC_BASE_DIR/lib/slf4j-api-1.5.0.jar" \
+        ;;
+
+    "guava-16.0.1")
+        setup_build_dir
+        download_jars "https://repo1.maven.org/maven2/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar"
+        ;;
+
+    "javassist-3.19")
+        setup_build_dir
+        copy_jars "$JAVA_HOME/lib/tools.jar"
+        ;;
+
+    "jaxen-1.1.6")
+        setup_build_dir
+        download_jars \
+            "https://repo1.maven.org/maven2/dom4j/dom4j/1.6.1/dom4j-1.6.1.jar" \
+            "https://repo1.maven.org/maven2/jdom/jdom/1.0/jdom-1.0.jar" \
+            "https://repo1.maven.org/maven2/xml-apis/xml-apis/1.3.02/xml-apis-1.3.02.jar" \
+            "https://repo1.maven.org/maven2/xerces/xercesImpl/2.6.2/xercesImpl-2.6.2.jar" \
+            "https://repo1.maven.org/maven2/xom/xom/1.0/xom-1.0.jar" \
+            "https://repo1.maven.org/maven2/junit/junit/4.13.2/junit-4.13.2.jar"
+        ;;
+
+    "jdom-1.0")
+        setup_build_dir
+        copy_jars \
+            "$MAJOR_HOME/lib/ant" \
+            "$SRC_BASE_DIR/lib/xml-apis.jar" \
+            "$SRC_BASE_DIR/lib/xerces.jar" \
+            "$SRC_BASE_DIR/lib/jaxen-core.jar" \
+            "$SRC_BASE_DIR/lib/jaxen-jdom.jar" \
+            "$SRC_BASE_DIR/lib/saxpath.jar" \
+            "../subject-programs/jaxen-1.1.6.jar" \
+        ;;
+
+    "joda-time-2.3")
+        setup_build_dir
+        download_jars "https://repo1.maven.org/maven2/org/joda/joda-convert/1.2/joda-convert-1.2.jar"
+        ;;
+
+    "JSAP-2.1")
+        setup_build_dir
+        copy_jars \
+            "$MAJOR_HOME/lib/ant" \
+            "$SRC_BASE_DIR/lib/ant.jar" \
+            "$SRC_BASE_DIR/lib/xstream-1.1.2.jar" \
+            "$SRC_BASE_DIR/lib/rundoc-0.11.jar" \
+            "$SRC_BASE_DIR/lib/snip-0.11.jar" \
+        ;;
+    
+    "jvc-1.1")
+        setup_build_dir
+        copy_jars \
+            "$SRC_BASE_DIR/lib/jsp-api-2.1.jar" \
+            "$SRC_BASE_DIR/lib/junit-4.13.jar" \
+            "$SRC_BASE_DIR/lib/log4j-1.2.15.jar" \
+            "$SRC_BASE_DIR/lib/servlet-api-2.5.jar" \
+        ;;
+
+    "nekomud-r16")
+        setup_build_dir
+        copy_jars \
+            "$SRC_BASE_DIR/lib/aspectjweaver.jar" \
+            "$SRC_BASE_DIR/lib/cglib-nodep-2.1_3.jar" \
+            "$SRC_BASE_DIR/lib/freemarker.jar" \
+            "$SRC_BASE_DIR/lib/jcl-over-slf4j-1.5.2.jar" \
+            "$SRC_BASE_DIR/lib/junit-4.12.jar" \
+            "$SRC_BASE_DIR/lib/log4j-1.2.15.jar" \
+            "$SRC_BASE_DIR/lib/slf4j-api-1.5.2.jar" \
+            "$SRC_BASE_DIR/lib/spring-test.jar" \
+            "$SRC_BASE_DIR/lib/spring.jar" \
+        ;;
+
+    "pmd-core-5.2.2")
+        setup_build_dir
+        copy_jars \
+            "$SRC_BASE_DIR/pmd-core/lib/asm-9.7.jar" \
+        ;;
+
+    "sat4j-core-2.3.5")
+        setup_build_dir
+        copy_jars \
+            "$SRC_BASE_DIR/lib/commons-beanutils.jar" \
+            "$SRC_BASE_DIR/lib/commons-cli.jar" \
+            "$SRC_BASE_DIR/lib/commons-logging.jar" \
+            "$SRC_BASE_DIR/lib/jchart2d-3.2.2.jar" \
+            "$SRC_BASE_DIR/lib/mockito-all-1.9.5.jar" \
+        ;;
+
+    "shiro-core-1.2.3")
+        setup_build_dir
+        download_jars \
+            "https://repo1.maven.org/maven2/commons-beanutils/commons-beanutils/1.8.3/commons-beanutils-1.8.3.jar" \
+            "https://repo1.maven.org/maven2/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar"
+        ;; 
+
+    *)
+        setup_build_dir
+        ;;
+esac
+
 if [[ "$SUBJECT_PROGRAM" == "hamcrest-core-1.3" ]]; then
-    JAR_PATHS="$JAR_PATHS:build/evosuite-standalone-runtime-1.2.0.jar:build/junit-4.12.jar"
+    CLASSPATH="$SRC_JAR:build/evosuite-standalone-runtime-1.2.0.jar:build/junit-4.12.jar"
 else
-    JAR_PATHS="$JAR_PATHS:build/evosuite-standalone-runtime-1.2.0.jar:evosuite-tests/:build/junit-4.12.jar:build/hamcrest-core-1.3.jar"
+    CLASSPATH="$SRC_JAR:build/evosuite-standalone-runtime-1.2.0.jar:build/evosuite-tests/:build/junit-4.12.jar:build/hamcrest-core-1.3.jar"
 fi
 
-# For easymock-3.2, we download some additional external dependencies for evosuite test and source code compilation
-if [[ "$SUBJECT_PROGRAM" == "easymock-3.2" ]]; then
-    wget -P build/ https://repo1.maven.org/maven2/com/google/dexmaker/dexmaker/1.0/dexmaker-1.0.jar
-    wget -P build/ https://repo1.maven.org/maven2/org/objenesis/objenesis/1.3/objenesis-1.3.jar
-    wget -P build/ https://repo1.maven.org/maven2/cglib/cglib-nodep/2.2.2/cglib-nodep-2.2.2.jar
-    JAR_PATHS="$JAR_PATHS:build/dexmaker-1.0.jar:build/objenesis-1.3.jar:build/cglib-nodep-2.2.2.jar"
+if [[ -n "${project_deps[$SUBJECT_PROGRAM]}" ]]; then
+    CLASSPATH="$CLASSPATH:${project_deps[$SUBJECT_PROGRAM]}"
 fi
 
-# For pmd-core-5.2.2, add an external dependency.
-if [[ "$SUBJECT_PROGRAM" == "pmd-core-5.2.2" ]]; then
-    JAR_PATHS="$JAR_PATHS:../subject-programs/src/pmd-core-5.2.2/pmd-core/lib/asm-9.7.jar"
+if [[ "$VERBOSE" -eq 1 ]]; then
+    echo "JAVA_SRC_DIR: $JAVA_SRC_DIR"
+    echo "CLASSPATH: $CLASSPATH"
+    echo
 fi
-
-# For JSAP-2.1, add 3 external dependencies.
-if [[ "$SUBJECT_PROGRAM" == "JSAP-2.1" ]]; then
-    wget -P build/ "https://repo1.maven.org/maven2/com/thoughtworks/xstream/xstream/1.4.21/xstream-1.4.21.jar"
-    SPECIFIC_JAR_DIR="$SCRIPT_DIR/../subject-programs/src/JSAP-2.1/lib"
-    JAR_PATHS="$JAR_PATHS:build/xstream-1.4.21.jar:$SPECIFIC_JAR_DIR/rundoc-0.11.jar:$SPECIFIC_JAR_DIR/snip-0.11.jar:$SPECIFIC_JAR_DIR/ant.jar"
-fi
-
-# For commons-compress-1.8, add an external dependency.
-if [[ "$SUBJECT_PROGRAM" == "commons-compress-1.8" ]]; then
-    wget -P build/ "https://repo1.maven.org/maven2/org/tukaani/xz/1.5/xz-1.5.jar"
-    JAR_PATHS="$JAR_PATHS:build/xz-1.5.jar"
-fi
-
-# For guava-16.0.1, add an external dependency.
-if [[ "$SUBJECT_PROGRAM" == "guava-16.0.1" ]]; then
-    wget -P build/ "https://repo1.maven.org/maven2/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar"
-    JAR_PATHS="$JAR_PATHS:build/jsr305-3.0.2.jar"
-fi
-
-# For javassist-3.19, add an external dependency.
-if [[ "$SUBJECT_PROGRAM" == "javassist-3.19" ]]; then
-    wget -P build/ "https://maven.jahia.org/maven2/com/sun/tools/1.5.0/tools-1.5.0.jar"
-    JAR_PATHS="$JAR_PATHS:build/tools-1.5.0.jar"
-fi
-
-# For jaxen-1.1.6, add an external dependency.
-if [[ "$SUBJECT_PROGRAM" == "jaxen-1.1.6" ]]; then
-    wget -P build/ "https://repo1.maven.org/maven2/dom4j/dom4j/1.6.1/dom4j-1.6.1.jar"
-    wget -P build/ "https://repo1.maven.org/maven2/jdom/jdom/1.0/jdom-1.0.jar"
-    wget -P build/ "https://repo1.maven.org/maven2/xml-apis/xml-apis/1.3.02/xml-apis-1.3.02.jar"
-    wget -P build/ "https://repo1.maven.org/maven2/xerces/xercesImpl/2.6.2/xercesImpl-2.6.2.jar"
-    wget -P build/ "https://repo1.maven.org/maven2/xom/xom/1.0/xom-1.0.jar"
-    JAR_PATHS="$JAR_PATHS:build/dom4j-1.6.1.jar:build/jdom-1.0.jar:build/xml-apis-1.3.02.jar:build/xercesImpl-2.6.2.jar:build/xom-1.0.jar"
-fi
-
-# For joda-time-2.3, add an external dependency.
-if [[ "$SUBJECT_PROGRAM" == "joda-time-2.3" ]]; then
-    wget -P build/ "https://repo1.maven.org/maven2/org/joda/joda-convert/1.2/joda-convert-1.2.jar"
-    JAR_PATHS="$JAR_PATHS:build/joda-convert-1.2.jar"
-fi
-
-# For shiro-core-1.2.3, add an external dependency.
-if [[ "$SUBJECT_PROGRAM" == "shiro-core-1.2.3" ]]; then
-    wget -P build/ "https://repo1.maven.org/maven2/commons-beanutils/commons-beanutils/1.8.3/commons-beanutils-1.8.3.jar"
-    JAR_PATHS="$JAR_PATHS:build/commons-beanutils-1.8.3.jar"
-fi
-
-# For nekomud-r16 and fixsuite-r48, exclude slf4j-log4j12-1.5.*.jar from the dependency list. Including them
-# causes a static logger binder error when running with Major. Otherwise, include any other dependency defined in 
-# the CLASSPATH variable
-for jar in "$CLASSPATH"/*.jar; do
-    if [ -f "$jar" ]; then  # Check if the file exists
-        # If the current file is log4j-1.2.15.jar, skip it
-        if [[ "$SUBJECT_PROGRAM" == "nekomud-r16" && "$(basename "$jar")" == "slf4j-log4j12-1.5.2.jar" ]]; then
-            continue  # Skip this JAR
-        fi
-        if [[ "$SUBJECT_PROGRAM" == "fixsuite-r48" && "$(basename "$jar")" == "slf4j-log4j12-1.5.0.jar" ]]; then
-            continue  # Skip this JAR
-        fi
-        # Append the jar to the path
-        JAR_PATHS="$JAR_PATHS:$jar"
-    fi
-done
-
-rm -rf libs && mkdir -p libs
-# Loop through the JAR_PATHS, splitting by colon and handling each path correctly. We add these jarfiles
-# to libs/ because we will eventually install these jarfiles to the local Maven repository.
-OLDIFS=$IFS
-IFS=":" 
-for path in $JAR_PATHS; do
-    if [ -d "$path" ]; then
-        find "$path" -type f -name "*.jar" -exec cp {} libs/ \;
-    elif [ -f "$path" ]; then
-        cp "$path" libs/
-    else
-        echo "Warning: $path is not a valid file or directory"
-    fi
-done
-IFS=$OLDIFS
-
-# For some reason, when tools-1.5.0.jar is included on the classpath for Major, mutation analysis doesn't work.
-# However, it is needed for maven, which is why it was added to the libs directory in the previous code block. 
-if [[ $SUBJECT_PROGRAM == "javassist-3.19" ]]; then
-    # Exclude build/tools-1.5.0.jar from JAR_PATHS for javassist-3.19
-    JAR_PATHS=$(echo "$JAR_PATHS" | sed 's|build/tools-1.5.0.jar:||g' | sed 's|:build/tools-1.5.0.jar||g')
-fi
-
 
 #===============================================================================
 # Test generator command configuration
 #===============================================================================
 
-# - Installs Jacoco 0.8.0 runtime for measuring code coverage
-# - Installs EvoSuite standalone runtime to maven for running tests 
-mvn install:install-file -Dfile="build/org.jacoco.agent-0.8.0-runtime.jar" -DgroupId="org.jacoco" -DartifactId="org.jacoco.agent" -Dversion="0.8.0" -Dclassifier="runtime" -Dpackaging=jar
-mvn install:install-file -Dfile="build/evosuite-standalone-runtime-1.2.0.jar" -DgroupId="org.evosuite" -DartifactId="evosuite-standalone-runtime" -Dversion="1.2.0" -Dpackaging=jar 
-
-rm -rf evosuite-tests && mkdir -p evosuite-tests && rm -rf evosuite-report && mkdir -p evosuite-report
-rm -rf target && mkdir -p target
-mkdir -p target/coverage-reports
-touch target/coverage-reports/jacoco-ut.exec
+EVOSUITE_CLASSPATH="$CLASSPATH"
+if [[ -n "${project_deps[$SUBJECT_PROGRAM]}" ]]; then
+    # Expand .jar files from the directory specified in project_deps[$SUBJECT_PROGRAM]
+    EVOSUITE_CLASSPATH+=":$(echo ${project_deps[$SUBJECT_PROGRAM]}*.jar | tr ' ' ':')"
+fi
 
 EVOSUITE_COMMAND=(
     "java"
     "-jar" "$EVOSUITE_JAR"
     "-target" "$SRC_JAR"
-    "-projectCP" "$JAR_PATHS:$EVOSUITE_JAR"
+    "-projectCP" "$EVOSUITE_CLASSPATH:$EVOSUITE_JAR"
     "-Dsearch_budget=$TIME_LIMIT"
     "-Drandom_seed=0"
 )
-
-if [[ "$VERBOSE" -eq 1 ]]; then
-    echo "JAVA_SRC_DIR: $JAVA_SRC_DIR"
-    echo "CLASSPATH: $CLASSPATH"
-    echo "JAR_PATHS: $JAR_PATHS"
-    echo
-fi
-
 
 #===============================================================================
 # Build System Preparation
@@ -376,7 +405,7 @@ fi
 echo "Modifying build-evosuite.xml and pom.xml for $SUBJECT_PROGRAM..."
 ./apply-build-patch-evosuite.sh "$SUBJECT_PROGRAM"
 
-# Installs all of the jarfiles in libs/ to maven (used for measuring code coverage).
+# Installs all of the jarfiles in build/lib to maven (used for measuring code coverage).
 ./generate-mvn-dependencies.sh
 
 cd "$JAVA_SRC_DIR" || exit 1
@@ -392,28 +421,38 @@ echo
 mkdir -p results/
 if [ ! -f "results/info.csv" ]; then
     touch results/info.csv
-    echo -e "Version,FileName,TimeLimit,InstructionCoverage,BranchCoverage,MutationScore" > results/info.csv
+    echo -e "Version,FileName,TimeLimit,Seed,InstructionCoverage,BranchCoverage,MutationScore" > results/info.csv
 fi
 
 #===============================================================================
 # Test Generation & Execution
 #===============================================================================
 # Remove old test directories.
-rm -rf "$SCRIPT_DIR"/build/evosuite-tests/
+rm -rf "$SCRIPT_DIR"/build/evosuite-tests/ && rm -rf "$SCRIPT_DIR"/build/evosuite-report/ && rm -rf "$SCRIPT_DIR"/build/target/
 
 # The value for the -lib command-line option; that is, the classpath.
-LIB_ARG="$JAR_PATHS"
+LIB_ARG="$CLASSPATH"
 
 # shellcheck disable=SC2034 # i counts iterations but is not otherwise used.
 for i in $(seq 1 "$NUM_LOOP")
 do
     TIMESTAMP=$(date +%Y%m%d-%H%M%S)
-    # Test directory for each iteration.
-    TEST_DIRECTORY="$SCRIPT_DIR/evosuite-tests/"
+    # Evosuite test directory for each iteration.
+    TEST_DIRECTORY="$SCRIPT_DIR/build/evosuite-tests/$TIMESTAMP"
     mkdir -p "$TEST_DIRECTORY"
 
+    # Evosuite report directory for each iteration
+    REPORT_DIRECTORY="$SCRIPT_DIR/build/evosuite-report/$TIMESTAMP"
+    mkdir -p "$REPORT_DIRECTORY"
+
+    # Jacoco directory for each iteration
+    COVERAGE_DIRECTORY="$SCRIPT_DIR/build/target/$TIMESTAMP"
+    mkdir -p "$COVERAGE_DIRECTORY"
+    mkdir -p $COVERAGE_DIRECTORY/coverage-reports
+    touch $COVERAGE_DIRECTORY/coverage-reports/jacoco-ut.exec
+
     # Result directory for each test generation and execution.
-    RESULT_DIR="$SCRIPT_DIR/results/$SUBJECT_PROGRAM-evosuite-$TIMESTAMP"
+    RESULT_DIR="$SCRIPT_DIR/results/$SUBJECT_PROGRAM-EVOSUITE-$TIMESTAMP"
     mkdir -p "$RESULT_DIR"
 
     # If the REDIRECT flag is set, redirect all output to a log file.
@@ -424,14 +463,12 @@ do
         exec 1>>"mutation_output.txt" 2>&1
     fi
 
-    "${EVOSUITE_COMMAND[@]}"
+    echo "${EVOSUITE_COMMAND[@]}" -Dtest_dir=$TEST_DIRECTORY -Dreport_dir=$REPORT_DIRECTORY
+    "${EVOSUITE_COMMAND[@]}" -Dtest_dir=$TEST_DIRECTORY -Dreport_dir=$REPORT_DIRECTORY
 
-    # We can't have two ant.jar's on our classpath when performing mutation analysis. This code gets rid of ant.jar
-    # on the classpath for JSAP-2.1 (should be the last dependency in LIB_ARG).
+    # After Maven installation and EvoSuite execution, we need to remove the ant.jar from the classpath 
     if [[ "$SUBJECT_PROGRAM" == "JSAP-2.1" ]]; then
-        echo "Removing ant.jar from -lib option"
-        # shellcheck disable=SC2001
-        LIB_ARG=$(echo "$LIB_ARG" | sed 's/\([^:]*\)[^:]*$/:/' )
+        rm "build/lib/ant.jar"
     fi
 
     #===============================================================================
@@ -462,9 +499,9 @@ do
         echo mvn test jacoco:restore-instrumented-classes jacoco:report -Dmain.source.dir="$JAVA_SRC_DIR"
     fi
     echo
-    mvn test jacoco:restore-instrumented-classes jacoco:report -Dmain.source.dir="$JAVA_SRC_DIR"
+    mvn test jacoco:restore-instrumented-classes jacoco:report -Dmain.source.dir="$JAVA_SRC_DIR" -Dcoverage.dir="$COVERAGE_DIRECTORY"
 
-    mv target/jacoco.csv "$RESULT_DIR"/report.csv
+    mv $COVERAGE_DIRECTORY/jacoco.csv "$RESULT_DIR"/report.csv
 
     # Calculate Instruction Coverage
     inst_missed=$(awk -F, 'NR>1 {sum+=$4} END {print sum}' "$RESULT_DIR"/report.csv)
@@ -485,7 +522,7 @@ do
     echo "Running tests with mutation analysis..."
     if [[ "$VERBOSE" -eq 1 ]]; then
         echo command:
-        echo "$MAJOR_HOME"/bin/"$ANT" -buildfile build-evosuite.xml -Dtest="$TEST_DIRECTORY" -lib "$LIB_ARG" mutation.test
+        echo "$MAJOR_HOME"/bin/ant -buildfile build-evosuite.xml -Dtest="$TEST_DIRECTORY" -lib "$LIB_ARG" mutation.test
     fi
     "$MAJOR_HOME"/bin/ant -buildfile build-evosuite.xml -Dtest="$TEST_DIRECTORY" -lib "$LIB_ARG" mutation.test
 
@@ -501,7 +538,7 @@ do
     echo "Branch Coverage: $branch_coverage%"
     echo "Mutation Score: $mutation_score%"
 
-    row="EVOSUITE,$(basename "$SRC_JAR"),$TIME_LIMIT,$instruction_coverage%,$branch_coverage%,$mutation_score%"
+    row="EVOSUITE,$(basename "$SRC_JAR"),$TIME_LIMIT,0,$instruction_coverage%,$branch_coverage%,$mutation_score%"
     # info.csv contains a record of each pass.
     echo -e "$row" >> results/info.csv
 

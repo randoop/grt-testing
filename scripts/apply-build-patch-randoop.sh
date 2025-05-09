@@ -12,7 +12,7 @@ if [ -z "$1" ]; then
 else
   # Check if build.patch exists in 'program-config/subject-program'
   if [ ! -f "program-config/$1/build.patch" ]; then
-    echo "No build.patch found in build-variants/$1."
+    echo "No build.patch found in program-config/$1."
     echo "build.xml was restored to its original version..."
   else
     echo "build.patch found in program-config/$1. Applying patch to build.xml..."

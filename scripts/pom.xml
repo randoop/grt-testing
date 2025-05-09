@@ -35,12 +35,20 @@
       <classifier>runtime</classifier>
       <version>0.8.0</version>
       <scope>test</scope>
-    </dependency> 
+    </dependency>
+    <dependency>
+      <groupId>com.example</groupId>
+      <artifactId>hamcrest-core</artifactId>
+      <version>1.3</version>
+    </dependency>
   </dependencies>
   
   <build>
+    <directory>${coverage.dir}</directory>
+    <outputDirectory>${coverage.dir}/classes</outputDirectory>
+    <testOutputDirectory>${coverage.dir}/test-classes</testOutputDirectory>
     <sourceDirectory>${main.source.dir}</sourceDirectory>
-    <testSourceDirectory>evosuite-tests</testSourceDirectory>
+    <testSourceDirectory>build/evosuite-tests</testSourceDirectory>
     <plugins>
       <plugin>
         <groupId>org.jacoco</groupId>
@@ -48,10 +56,10 @@
         <version>0.8.0</version>
         <configuration>
           <!-- Sets the path to the file which contains the execution data. -->
-          <dataFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</dataFile>
-          <destFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</destFile>
+          <dataFile>${coverage.dir}/coverage-reports/jacoco-ut.exec</dataFile>
+          <destFile>${coverage.dir}/coverage-reports/jacoco-ut.exec</destFile>
           <!-- Sets the output directory for the code coverage report. -->
-          <outputDirectory>${project.basedir}/target</outputDirectory>
+          <outputDirectory>${coverage.dir}</outputDirectory>
         </configuration>
         <executions>
           <!--
@@ -83,8 +91,9 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>2.15</version>
         <configuration>
+          <reportsDirectory>${coverage.dir}/surefire-reports</reportsDirectory>
           <systemPropertyVariables>
-            <jacoco-agent.destfile>${project.build.directory}/coverage-reports/jacoco-ut.exec</jacoco-agent.destfile>
+            <jacoco-agent.destfile>${coverage.dir}/coverage-reports/jacoco-ut.exec</jacoco-agent.destfile>
           </systemPropertyVariables>
           <testFailureIgnore>true</testFailureIgnore>
         </configuration>

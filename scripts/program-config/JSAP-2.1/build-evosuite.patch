@@ -1,13 +1,13 @@
---- build-variants/build-evosuite.xml	2025-02-20 23:16:59.120734596 -0800
-+++ build-evosuite.xml	2025-02-22 20:14:01.672665968 -0800
+--- build-evosuite.xml	2025-05-08 13:15:15.592052637 -0700
++++ program-config/build-evosuite.xml	2025-05-08 13:15:43.315205918 -0700
 @@ -36,14 +36,23 @@
          <mkdir dir="build/bin"/>
      </target>
  
 +    <path id="compile.classpath">
-+        <pathelement location="libs/rundoc-0.11.jar"/>
-+        <pathelement location="libs/snip-0.11.jar"/>
-+        <pathelement location="libs/xstream-1.4.21.jar"/>
++        <pathelement location="build/lib/rundoc-0.11.jar"/>
++        <pathelement location="build/lib/snip-0.11.jar"/>
++        <pathelement location="build/lib/xstream-1.1.2.jar"/>
 +    </path>
 +
  <!-- Target to compile the project -->
