@@ -13,8 +13,8 @@ jobs:
         fetch-depth: 1
         show-progress: false
     - name: install ruff
-      run: >
-        sudo apt-get -y install pipx
-        sudo pipx install ruff
+      run: |
+        apt-get -y install pipx
+        pipx install ruff
     - name: make
       run: make
