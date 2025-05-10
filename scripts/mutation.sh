@@ -601,7 +601,12 @@ for i in $(seq 1 "$NUM_LOOP"); do
 		# This script modifies the tests to run with the EvoSuite runner, which ensures proper isolation and compatibility
 		# for accurate mutant coverage.
 		if [ "$SUBJECT_PROGRAM" == "hamcrest-core-1.3" ]; then
-			python update_hamcrest_tests.py "$TEST_DIRECTORY"
+			PYTHON_EXECUTABLE=$(command -v python3 2>/dev/null || command -v python 2>/dev/null)
+			if [ -z "$PYTHON_EXECUTABLE" ]; then
+				echo "Error: Python is not installed." >&2
+				exit 1
+			fi
+			"$PYTHON_EXECUTABLE" update_hamcrest_tests.py "$TEST_DIRECTORY"
 		fi
 
 		echo
