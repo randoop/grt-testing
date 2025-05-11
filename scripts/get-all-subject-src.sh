@@ -12,10 +12,10 @@ cd "${SUBJECT_SRC_DIR}" || (echo "Directory does not exist: ${SUBJECT_SRC_DIR}" 
 
 grt_clone() {
   printf '%s:' "$1"
-  if [ -d "$1" ] ; then
+  if [ -d "$1" ]; then
     echo " updating."
     (cd "$1" && git pull -q)
-  else    
+  else
     echo " cloning."
     git clone -q git@github.com:randoop/grt-"$1" "$1"
   fi
