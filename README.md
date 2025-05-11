@@ -16,7 +16,7 @@ To set up the environment, refer to the `scripts/mutation-prerequisites.md` file
 
 ### Running Scripts
 For prerequisities, refer to `scripts/mutation-prerequisities.md`.
-For instructions on using the scripts, refer to `scripts/mutation.sh` for Randoop and `scripts/mutation-evosuite.sh` for EvoSuite.
+For instructions on using the scripts, refer to `scripts/mutation-randoop.sh` for Randoop and `scripts/mutation-evosuite.sh` for EvoSuite.
 
 ### Subject Programs
 
