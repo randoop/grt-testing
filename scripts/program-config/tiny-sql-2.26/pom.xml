@@ -63,7 +63,7 @@
             </goals>
             <configuration>
               <compilerArgs>
-                <arg>-Xbootclasspath/p:../subject-programs/src/tinySQL-2.26/src/com/sqlmagic/tinysql/jdk5.rt.jar</arg>
+                <arg>-Xbootclasspath/p:../subject-programs/src/tiny-sql-2.26/src/com/sqlmagic/tinysql/jdk5.rt.jar</arg>
               </compilerArgs>
             </configuration>
           </execution>
