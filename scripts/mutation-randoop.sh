@@ -163,7 +163,7 @@ fi
 # validate
 for feat in "${RANDOOP_FEATURES[@]}"; do
   if [[ ! " ${ALL_RANDOOP_FEATURES[*]} " =~ ${feat} ]]; then
-    echo "ERROR: unknown feature "$feat""
+    echo "ERROR: unknown feature $feat"
     exit 1
   fi
 done
