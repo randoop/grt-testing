@@ -14,7 +14,7 @@ parser = argparse.ArgumentParser(description="Update Java regression test files.
 parser.add_argument(
     "test_dir",
     type=str,
-    help="Path to the directory containing RegressionTest Java files"
+    help="Path to the directory containing RegressionTest Java files",
 )
 args = parser.parse_args()
 test_dir = args.test_dir
@@ -29,7 +29,7 @@ fix_method_order_pattern = re.compile(
 new_imports = [
     "import org.evosuite.runtime.EvoRunner;",
     "import org.evosuite.runtime.EvoRunnerParameters;",
-    "import org.junit.runner.RunWith;"
+    "import org.junit.runner.RunWith;",
 ]
 
 # The new annotations to replace @FixMethodOrder
@@ -58,7 +58,9 @@ for root, dirs, files in os.walk(test_dir):
                 import_end_index = i + 1
 
         # Collect existing stripped import lines for comparison
-        existing_imports = set(line.strip() for line in lines if line.strip().startswith("import"))
+        existing_imports = set(
+            line.strip() for line in lines if line.strip().startswith("import")
+        )
 
         # Insert new imports if they are not already there
         for import_line in reversed(new_imports):
