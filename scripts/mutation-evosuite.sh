@@ -19,7 +19,7 @@
 # Example usage:
 #------------------------------------------------------------------------------
 #   ./mutation-evosuite.sh -c 1 commons-lang3-3.0
-#
+
 #------------------------------------------------------------------------------
 # Options (command-line arguments):
 #------------------------------------------------------------------------------
@@ -53,6 +53,13 @@ fi
 #===============================================================================
 # Environment Setup
 #===============================================================================
+
+# Requires Java 8
+JAVA_VER=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '{sub("^$", "0", $2); print $1$2}')
+if [[ "$JAVA_VER" -ne 18 ]]; then
+    echo "Error: Java version 8 is required. Please install it and try again."
+    exit 1
+fi
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 MAJOR_HOME=$(realpath "${SCRIPT_DIR}/build/major/") # Major home directory, for mutation testing
@@ -183,8 +190,8 @@ declare -A program_src=(
     ["javassist-3.19"]="/src/main/"
     ["javax.mail-1.5.1"]="/src/main/java/"
     ["jaxen-1.1.6"]="/src/java/main/"
-    ["jcommander-1.35"]="/src/main/java"
-    ["jdom-1.0"]="/src/"
+    ["jcommander-1.35"]="/src/main/java/"
+    ["jdom-1.0"]="/src/java/"
     ["joda-time-2.3"]="/src/main/java/"
     ["JSAP-2.1"]="/src/java/"
     ["jvc-1.1"]="/src/"
@@ -389,24 +396,18 @@ if [[ -n "${project_deps[$SUBJECT_PROGRAM]}" ]]; then
     EVOSUITE_CLASSPATH+=":$(echo ${project_deps[$SUBJECT_PROGRAM]}*.jar | tr ' ' ':')"
 fi
 
-EVOSUITE_COMMAND=(
-    "java"
-    "-jar" "$EVOSUITE_JAR"
-    "-target" "$SRC_JAR"
-    "-projectCP" "$EVOSUITE_CLASSPATH:$EVOSUITE_JAR"
-    "-Dsearch_budget=$TIME_LIMIT"
-    "-Drandom_seed=0"
-)
+EVOSUITE_COMMAND="java \
+-jar $EVOSUITE_JAR \
+-target $SRC_JAR \
+-projectCP $EVOSUITE_CLASSPATH:$EVOSUITE_JAR \
+-Dsearch_budget=$TIME_LIMIT \
+-Drandom_seed=0"
 
 #===============================================================================
 # Build System Preparation
 #===============================================================================
-
-echo "Modifying build-evosuite.xml and pom.xml for $SUBJECT_PROGRAM..."
-./apply-build-patch-evosuite.sh "$SUBJECT_PROGRAM"
-
 # Installs all of the jarfiles in build/lib to maven (used for measuring code coverage).
-./generate-mvn-dependencies.sh
+./generate-mvn-dependencies.sh $SUBJECT_PROGRAM
 
 cd "$JAVA_SRC_DIR" || exit 1
 if git checkout include-major >/dev/null 2>&1; then
@@ -463,10 +464,9 @@ do
         exec 1>>"mutation_output.txt" 2>&1
     fi
 
-    echo "${EVOSUITE_COMMAND[@]}" -Dtest_dir=$TEST_DIRECTORY -Dreport_dir=$REPORT_DIRECTORY
-    "${EVOSUITE_COMMAND[@]}" -Dtest_dir=$TEST_DIRECTORY -Dreport_dir=$REPORT_DIRECTORY
+    $EVOSUITE_COMMAND -Dtest_dir=$TEST_DIRECTORY -Dreport_dir=$REPORT_DIRECTORY
 
-    # After Maven installation and EvoSuite execution, we need to remove the ant.jar from the classpath 
+    # After test generation, for JSAP-2.1, we need to remove the ant.jar from the classpath
     if [[ "$SUBJECT_PROGRAM" == "JSAP-2.1" ]]; then
         rm "build/lib/ant.jar"
     fi
@@ -478,28 +478,28 @@ do
     echo "Compiling and mutating subject program..."
     if [[ "$VERBOSE" -eq 1 ]]; then
         echo command:
-        echo "$MAJOR_HOME"/bin/ant -buildfile build-evosuite.xml -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" clean compile
+        echo "$MAJOR_HOME"/bin/ant -f program-config/$1/build-evosuite.xml -Dbasedir=./ -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" clean compile
     fi
     echo
-    "$MAJOR_HOME"/bin/ant -buildfile build-evosuite.xml -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" clean compile
+    "$MAJOR_HOME"/bin/ant -f program-config/$1/build-evosuite.xml -Dbasedir=./ -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" clean compile
 
     echo
     echo "Compiling tests..."
     if [[ "$VERBOSE" -eq 1 ]]; then
         echo command:
-        echo "$MAJOR_HOME"/bin/ant -buildfile build-evosuite.xml -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" compile.tests
+        echo "$MAJOR_HOME"/bin/ant -f program-config/$1/build-evosuite.xml -Dbasedir=./ -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" compile.tests
     fi
     echo
-    "$MAJOR_HOME"/bin/ant -buildfile build-evosuite.xml -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" compile.tests
+    "$MAJOR_HOME"/bin/ant -f program-config/$1/build-evosuite.xml -Dbasedir=./ -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" compile.tests
 
     echo
     echo "Running tests with coverage..."
     if [[ "$VERBOSE" -eq 1 ]]; then
         echo command:
-        echo mvn test jacoco:restore-instrumented-classes jacoco:report -Dmain.source.dir="$JAVA_SRC_DIR"
+        echo mvn -f program-config/$1/pom.xml test jacoco:restore-instrumented-classes jacoco:report -Dmain.source.dir="$JAVA_SRC_DIR" -Dcoverage.dir="$COVERAGE_DIRECTORY" -Dtest.dir="$TEST_DIRECTORY"
     fi
     echo
-    mvn test jacoco:restore-instrumented-classes jacoco:report -Dmain.source.dir="$JAVA_SRC_DIR" -Dcoverage.dir="$COVERAGE_DIRECTORY"
+    mvn -f program-config/$1/pom.xml test jacoco:restore-instrumented-classes jacoco:report -Dmain.source.dir="$JAVA_SRC_DIR" -Dcoverage.dir="$COVERAGE_DIRECTORY" -Dtest.dir="$TEST_DIRECTORY"
 
     mv $COVERAGE_DIRECTORY/jacoco.csv "$RESULT_DIR"/report.csv
 
@@ -522,9 +522,9 @@ do
     echo "Running tests with mutation analysis..."
     if [[ "$VERBOSE" -eq 1 ]]; then
         echo command:
-        echo "$MAJOR_HOME"/bin/ant -buildfile build-evosuite.xml -Dtest="$TEST_DIRECTORY" -lib "$LIB_ARG" mutation.test
+        echo "$MAJOR_HOME"/bin/ant -f program-config/$1/build-evosuite.xml -Dbasedir=./ -Dtest="$TEST_DIRECTORY" -lib "$LIB_ARG" mutation.test
     fi
-    "$MAJOR_HOME"/bin/ant -buildfile build-evosuite.xml -Dtest="$TEST_DIRECTORY" -lib "$LIB_ARG" mutation.test
+    "$MAJOR_HOME"/bin/ant -f program-config/$1/build-evosuite.xml -Dbasedir=./ -Dtest="$TEST_DIRECTORY" -lib "$LIB_ARG" mutation.test
 
     mv results/summary.csv "$RESULT_DIR"
 
@@ -558,23 +558,21 @@ do
         "major.log"
         "mutants.log"
         "suppression.log"
-        "build/pom.xml.bak"
         "results/covMap.csv"
         "results/details.csv"
         "results/preprocessing.ser"
         "results/testMap.csv"
     )
-    mv "${FILES_TO_MOVE[@]}" "$RESULT_DIR"
+    for f in "${FILES_TO_MOVE[@]}"; do
+        [ -e "$f" ] && mv "$f" "$RESULT_DIR"
+    done
 done
 
 #===============================================================================
 # Build System Cleanup
 #===============================================================================
-
-echo
-
-echo "Restoring build-evosuite.xml and pom.xml"
-./apply-build-patch-evosuite.sh > /dev/null
+# Restore the original pom.xml
+mv -f "build/pom.xml.bak" "program-config/$1/pom.xml"
 
 echo "Restoring $JAVA_SRC_DIR to main branch"
 # switch to main branch (may already be there)

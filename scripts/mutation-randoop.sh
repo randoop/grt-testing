@@ -64,6 +64,13 @@ fi
 # Environment Setup
 #===============================================================================
 
+# Requires Java 8
+JAVA_VER=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '{sub("^$", "0", $2); print $1$2}')
+if [[ "$JAVA_VER" -ne 18 ]]; then
+    echo "Error: Java version 8 is required. Please install it and try again."
+    exit 1
+fi
+
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 MAJOR_HOME=$(realpath "${SCRIPT_DIR}/build/major/") # Major home directory, for mutation testing
 RANDOOP_JAR=$(realpath "${SCRIPT_DIR}/build/randoop-all-4.3.3.jar") # Randoop jar file
@@ -232,7 +239,7 @@ JAVA_SRC_DIR=$SRC_BASE_DIR${program_src[$SUBJECT_PROGRAM]}
 
 # Map project names to their respective dependencies
 declare -A project_deps=(
-    ["a4j-1.0b"]="$SRC_BASE_DIR/jars/"
+    ["a4j-1.0b"]="build/lib/"
     ["commons-compress-1.8"]="build/lib/"
     ["easymock-3.2"]="build/lib/"
     ["fixsuite-r48"]="build/lib/"
@@ -242,11 +249,11 @@ declare -A project_deps=(
     ["jaxen-1.1.6"]="build/lib/"
     ["jdom-1.0"]="build/lib/"
     ["joda-time-2.3"]="build/lib/"
-    ["JSAP-2.1"]="$MAJOR_HOME/lib/ant:$SRC_BASE_DIR/lib/"  # need to override ant.jar in $SRC_BASE_DIR/lib
-    ["jvc-1.1"]="$SRC_BASE_DIR/lib/"
+    ["JSAP-2.1"]="build/lib/"
+    ["jvc-1.1"]="build/lib/"
     ["nekomud-r16"]="build/lib/"
-    ["pmd-core-5.2.2"]="$SRC_BASE_DIR/pmd-core/lib/"
-    ["sat4j-core-2.3.5"]="$SRC_BASE_DIR/lib/"
+    ["pmd-core-5.2.2"]="build/lib/"
+    ["sat4j-core-2.3.5"]="build/lib/"
     ["shiro-core-1.2.3"]="build/lib/"
 )
 
@@ -266,11 +273,17 @@ download_jars() {
 
 copy_jars() {
     for path in "$@"; do
-        cp "$path" build/lib
+        cp -r "$path" build/lib
     done
 }
 
 case "$SUBJECT_PROGRAM" in
+    "a4j-1.0b")
+        setup_build_dir
+        copy_jars \
+            "$SRC_BASE_DIR/jars/jox116.jar" \
+            "$SRC_BASE_DIR/jars/log4j-1.2.4.jar" \
+        ;;
     "commons-compress-1.8")
         setup_build_dir
         download_jars "https://repo1.maven.org/maven2/org/tukaani/xz/1.5/xz-1.5.jar"
@@ -334,6 +347,25 @@ case "$SUBJECT_PROGRAM" in
         download_jars "https://repo1.maven.org/maven2/org/joda/joda-convert/1.2/joda-convert-1.2.jar"
         ;;
 
+    "JSAP-2.1")
+        setup_build_dir
+        copy_jars \
+            "$MAJOR_HOME/lib/ant" \
+            "$SRC_BASE_DIR/lib/ant.jar" \
+            "$SRC_BASE_DIR/lib/xstream-1.1.2.jar" \
+            "$SRC_BASE_DIR/lib/rundoc-0.11.jar" \
+            "$SRC_BASE_DIR/lib/snip-0.11.jar" \
+        ;;
+
+    "jvc-1.1")
+        setup_build_dir
+        copy_jars \
+            "$SRC_BASE_DIR/lib/jsp-api-2.1.jar" \
+            "$SRC_BASE_DIR/lib/junit-4.13.jar" \
+            "$SRC_BASE_DIR/lib/log4j-1.2.15.jar" \
+            "$SRC_BASE_DIR/lib/servlet-api-2.5.jar" \
+        ;;
+
     "nekomud-r16")
         setup_build_dir
         copy_jars \
@@ -348,6 +380,22 @@ case "$SUBJECT_PROGRAM" in
             "$SRC_BASE_DIR/lib/spring.jar" \
         ;;
 
+    "pmd-core-5.2.2")
+        setup_build_dir
+        copy_jars \
+            "$SRC_BASE_DIR/pmd-core/lib/asm-9.7.jar" \
+        ;;
+
+    "sat4j-core-2.3.5")
+        setup_build_dir
+        copy_jars \
+            "$SRC_BASE_DIR/lib/commons-beanutils.jar" \
+            "$SRC_BASE_DIR/lib/commons-cli.jar" \
+            "$SRC_BASE_DIR/lib/commons-logging.jar" \
+            "$SRC_BASE_DIR/lib/jchart2d-3.2.2.jar" \
+            "$SRC_BASE_DIR/lib/mockito-all-1.9.5.jar" \
+        ;;
+
     "shiro-core-1.2.3")
         setup_build_dir
         download_jars \
@@ -356,6 +404,7 @@ case "$SUBJECT_PROGRAM" in
         ;;
 
     *)
+        setup_build_dir
         ;;
 esac
 
@@ -392,7 +441,8 @@ REPLACECALL_COMMAND="$REPLACECALL_JAR${replacement_files[$SUBJECT_PROGRAM]}"
 
 RANDOOP_CLASSPATH="$CLASSPATH"
 if [[ -n "${project_deps[$SUBJECT_PROGRAM]}" ]]; then
-    RANDOOP_CLASSPATH+="*"
+    # Expand .jar files from the directory specified in project_deps[$SUBJECT_PROGRAM]
+    RANDOOP_CLASSPATH+=":$(echo ${project_deps[$SUBJECT_PROGRAM]}*.jar | tr ' ' ':')"
 fi
 
 RANDOOP_BASE_COMMAND="java \
@@ -442,20 +492,9 @@ fi
 
 RANDOOP_COMMAND="$RANDOOP_BASE_COMMAND ${command_suffix[$SUBJECT_PROGRAM]}"
 
-if [[ "$VERBOSE" -eq 1 ]]; then
-    echo "JAVA_SRC_DIR: $JAVA_SRC_DIR"
-    echo "CLASSPATH: $CLASSPATH"
-    echo
-fi
-
-
 #===============================================================================
 # Build System Preparation
 #===============================================================================
-
-echo "Modifying build.xml for $SUBJECT_PROGRAM..."
-./apply-build-patch-randoop.sh "$SUBJECT_PROGRAM"
-
 cd "$JAVA_SRC_DIR" || exit 1
 
 # For slf4j-api-1.7.12 and javax.mail, this Randoop script uses the main branch, which retains the default namespaces (e.g., org.slf4j, javax.mail),
@@ -578,6 +617,11 @@ do
         # shellcheck disable=SC2086 # FEATURE_FLAG may contain multiple arguments.
         $RANDOOP_COMMAND --junit-output-dir=$TEST_DIRECTORY $FEATURE_FLAG
 
+        # After test generation, for JSAP-2.1, we need to remove the ant.jar from the classpath 
+        if [[ "$SUBJECT_PROGRAM" == "JSAP-2.1" ]]; then
+            rm "build/lib/ant.jar"
+        fi
+
         #===============================================================================
         # Coverage & Mutation Analysis
         #===============================================================================
@@ -586,28 +630,28 @@ do
         echo "Compiling and mutating subject program..."
         if [[ "$VERBOSE" -eq 1 ]]; then
             echo command:
-            echo "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" clean compile
+            echo "$MAJOR_HOME"/bin/ant -f program-config/$1/build.xml -Dbasedir=./ -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" clean compile
         fi
         echo
-        "$MAJOR_HOME"/bin/ant -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" clean compile
+        "$MAJOR_HOME"/bin/ant -f program-config/$1/build.xml -Dbasedir=./ -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" clean compile
 
         echo
         echo "Compiling tests..."
         if [[ "$VERBOSE" -eq 1 ]]; then
             echo command:
-            echo "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" compile.tests
+            echo "$MAJOR_HOME"/bin/ant -f program-config/$1/build.xml -Dbasedir=./ -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" compile.tests
         fi
         echo
-        "$MAJOR_HOME"/bin/ant -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" compile.tests
+        "$MAJOR_HOME"/bin/ant -f program-config/$1/build.xml -Dbasedir=./ -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" compile.tests
 
         echo
         echo "Running tests with coverage..."
         if [[ "$VERBOSE" -eq 1 ]]; then
             echo command:
-            echo "$MAJOR_HOME"/bin/"$ANT" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" test
+            echo "$MAJOR_HOME"/bin/"$ANT" -f program-config/$1/build.xml -Dbasedir=./ -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" test
         fi
         echo
-        "$MAJOR_HOME"/bin/"$ANT" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" test
+        "$MAJOR_HOME"/bin/"$ANT" -f program-config/$1/build.xml -Dbasedir=./ -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" test
 
         mv jacoco.exec "$RESULT_DIR"
         java -jar "$JACOCO_CLI_JAR" report "$RESULT_DIR/jacoco.exec" --classfiles "$SRC_JAR" --sourcefiles "$JAVA_SRC_DIR" --csv "$RESULT_DIR"/report.csv
@@ -640,10 +684,10 @@ do
         echo "Running tests with mutation analysis..."
         if [[ "$VERBOSE" -eq 1 ]]; then
             echo command:
-            echo "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" -lib "$LIB_ARG" mutation.test
+            echo "$MAJOR_HOME"/bin/"$ANT" -f program-config/$1/build.xml -Dbasedir=./ -Dtest="$TEST_DIRECTORY" -lib "$LIB_ARG" mutation.test
         fi
         echo
-        "$MAJOR_HOME"/bin/"$ANT" -Dtest="$TEST_DIRECTORY" -lib "$LIB_ARG" mutation.test
+        "$MAJOR_HOME"/bin/"$ANT" -f program-config/$1/build.xml -Dbasedir=./ -Dtest="$TEST_DIRECTORY" -lib "$LIB_ARG" mutation.test
 
         mv results/summary.csv "$RESULT_DIR"
 
@@ -692,12 +736,6 @@ done
 #===============================================================================
 # Build System Cleanup
 #===============================================================================
-
-echo
-
-echo "Restoring build.xml"
-./apply-build-patch-randoop.sh > /dev/null
-
 echo "Restoring $JAVA_SRC_DIR to main branch"
 # switch to main branch (may already be there)
 (cd "$JAVA_SRC_DIR"; git checkout main 1>/dev/null)

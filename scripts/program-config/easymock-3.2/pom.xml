@@ -7,7 +7,7 @@
   <version>0.0.1-SNAPSHOT</version>
 
   <properties>
-    <junit.version>4.12</junit.version>
+    <junit.version>4.13.2</junit.version>
     <main.source.dir>${env.MAIN_SOURCE_DIR}</main.source.dir>
   </properties>
 
@@ -48,7 +48,7 @@
     <outputDirectory>${coverage.dir}/classes</outputDirectory>
     <testOutputDirectory>${coverage.dir}/test-classes</testOutputDirectory>
     <sourceDirectory>${main.source.dir}</sourceDirectory>
-    <testSourceDirectory>build/evosuite-tests</testSourceDirectory>
+    <testSourceDirectory>${test.dir}</testSourceDirectory>
     <plugins>
       <plugin>
         <groupId>org.jacoco</groupId>
@@ -95,6 +95,7 @@
           <systemPropertyVariables>
             <jacoco-agent.destfile>${coverage.dir}/coverage-reports/jacoco-ut.exec</jacoco-agent.destfile>
           </systemPropertyVariables>
+          <argLine>-ea</argLine>
           <testFailureIgnore>true</testFailureIgnore>
         </configuration>
       </plugin>

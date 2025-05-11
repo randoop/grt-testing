@@ -8,13 +8,7 @@
 LIBS_DIR="build/lib"
 
 # The path to pom.xml.
-POM_FILE="./pom.xml"
-
-# Check if pom.xml exists
-if [ ! -f "$POM_FILE" ]; then
-    echo "pom.xml not found in the current directory. Exiting."
-    exit 1
-fi
+POM_FILE="program-config/$1/pom.xml"
 
 # Installs necessary packages to maven for all subject programs 
 mvn install:install-file -Dfile="build/org.jacoco.agent-0.8.0-runtime.jar" -DgroupId="org.jacoco" -DartifactId="org.jacoco.agent" -Dversion="0.8.0" -Dclassifier="runtime" -Dpackaging=jar
@@ -23,8 +17,8 @@ mvn install:install-file -Dfile="build/junit-4.12.jar" -DgroupId="com.example" -
 mvn install:install-file -Dfile="build/hamcrest-core-1.3.jar" -DgroupId="com.example" -DartifactId="hamcrest-core" -Dversion="1.3" -Dpackaging=jar
  
 # Backup the pom.xml before modifying it
-cp -pf "$POM_FILE" "build/$POM_FILE.bak"
-echo "Backup of pom.xml created at build/$POM_FILE.bak"
+cp -pf "$POM_FILE" "build/pom.xml.bak"
+echo "Backup of pom.xml created at build/pom.xml.bak"
 
 if ! find "$LIBS_DIR" -maxdepth 1 -name '*.jar' | grep -q .; then
     echo "No JAR files found in $LIBS_DIR. Skipping."

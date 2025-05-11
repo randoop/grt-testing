@@ -1,0 +1,83 @@
+<project name="Script" default="compile" basedir="." xmlns:jacoco="antlib:org.jacoco.ant">
+
+<!-- ##############################################
+      Path to major.jar and (optional) mml file
+      Use -Dmutator="mml:<path-to-mml-file>" to set a
+      particular (compiled) mml-file.
+     ############################################## -->
+    <property name="major.jar" value="build/major/lib/major.jar"/>
+    <property name="mutator" value=""/>
+    <property name="plugin" value="-Xplugin:MajorPlugin ${mutator} enable.decl.refactor enable.method.refactor"/>
+
+    <path id="project.classpath">
+        <pathelement location="build/bin"/>
+        <pathelement location="build/evosuite-standalone-runtime-1.2.0.jar"/>
+        <pathelement location="build/junit-4.12.jar"/>
+        <pathelement location="build/hamcrest-core-1.3.jar"/>
+    </path>
+
+<!-- Import JaCoCo Ant tasks -->
+    <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
+        <classpath path="build/jacocoant.jar"/>
+    </taskdef>
+
+<!-- Target to clean up -->
+    <target name="clean" description="Clean">
+        <delete dir="build/bin"/>
+        <delete>
+            <fileset dir="./results" includes="*.csv" excludes="info.csv"/>
+            <fileset dir="./results" includes="*.log"/>
+        </delete>
+    </target>
+
+<!-- Target to initialize build -->
+    <target name="init">
+        <mkdir dir="build/bin"/>
+    </target>
+
+<!-- Target to compile the project -->
+    <target name="compile" depends="init" description="Compile">
+        <javac includeantruntime="true" 
+               srcdir="${src}"
+               destdir="build/bin"
+               debug="yes"
+               source="1.5"
+               target="1.5">
+            <classpath location="${major.jar}"/>
+            <compilerarg value="${plugin}"/>
+        </javac>
+    </target>
+
+<!-- Target to compile the test suite -->
+    <target name="compile.tests" description="Compile all tests">
+        <javac includeantruntime="true"
+               srcdir="${test}"
+               debug="yes">
+               <classpath refid="project.classpath"/>
+        </javac>
+    </target>
+
+<!-- The adapted mutation test target -->
+    <target name="mutation.test" description="Run mutation analysis for all unit test cases">
+        <echo message="Running mutation analysis ..."/>
+        <junit printsummary="false"
+               showoutput="false"
+               mutationAnalysis="true"
+               testOrder="sort_methods"
+               serializedMapsFile="results/preprocessing.ser"
+               mutantsLogFile="mutants.log"
+               summaryFile="results/summary.csv"
+               mutantDetailsFile="results/details.csv"
+               covMapFile="results/covMap.csv"
+               testMapFile="results/testMap.csv"
+               killMapFile="results/killMap.csv">
+            <classpath refid="project.classpath"/>
+            <batchtest fork="false">
+                <fileset dir="${test}">
+                    <include name="**/*Test.java"/>
+                </fileset>
+            </batchtest>
+        </junit>
+    </target>
+    
+</project>

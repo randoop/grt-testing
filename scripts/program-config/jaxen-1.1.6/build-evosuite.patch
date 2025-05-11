@@ -1,10 +1,10 @@
---- build-variants/build-evosuite.xml	2025-02-20 23:16:59.120734596 -0800
-+++ build-evosuite.xml	2025-02-22 20:10:16.964463484 -0800
+--- build-evosuite.xml	2025-05-11 12:57:21.062868038 -0700
++++ program-config/build-evosuite.xml	2025-05-11 12:57:50.920033463 -0700
 @@ -12,7 +12,6 @@
      <path id="project.classpath">
          <pathelement location="build/bin"/>
          <pathelement location="build/evosuite-standalone-runtime-1.2.0.jar"/>
--        <pathelement location="evosuite-tests/"/>
+-        <pathelement location="${test}"/>
          <pathelement location="build/junit-4.12.jar"/>
          <pathelement location="build/hamcrest-core-1.3.jar"/>
      </path>
