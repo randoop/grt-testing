@@ -71,7 +71,7 @@ if [[ "$JAVA_VER" -ne 18 ]]; then
   exit 1
 fi
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null 2>&1 && pwd)"
 MAJOR_HOME=$(realpath "${SCRIPT_DIR}/build/major/")                 # Major home directory, for mutation testing
 RANDOOP_JAR=$(realpath "${SCRIPT_DIR}/build/randoop-all-4.3.3.jar") # Randoop jar file
 JACOCO_AGENT_JAR=$(realpath "${SCRIPT_DIR}/build/jacocoagent.jar")  # For Bloodhound
@@ -154,7 +154,7 @@ SUBJECT_PROGRAM="$1"
 
 ALL_RANDOOP_FEATURES=("BASELINE" "BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
 if [[ -n "$FEATURES_OPT" ]]; then
-  IFS=',' read -r -a RANDOOP_FEATURES <<<"$FEATURES_OPT"
+  IFS=',' read -r -a RANDOOP_FEATURES <<< "$FEATURES_OPT"
 else
   RANDOOP_FEATURES=("BASELINE")
 fi
@@ -438,7 +438,7 @@ cd "$JAVA_SRC_DIR" || exit 1
 # The EvoSuite script will also temporarily modifies the corresponding source jarfile to reflect this namespace change during test generation,
 # and then restores the original JARs afterward to maintain consistency.
 if [ "$SUBJECT_PROGRAM" != "slf4j-api-1.7.12" ] && [ "$SUBJECT_PROGRAM" != "javax.mail-1.5.1" ]; then
-  if git checkout include-major >/dev/null 2>&1; then
+  if git checkout include-major > /dev/null 2>&1; then
     echo "Checked out include-major."
   fi
 fi
@@ -451,7 +451,7 @@ echo
 mkdir -p results/
 if [ ! -f "results/info.csv" ]; then
   touch results/info.csv
-  echo -e "RandoopVersion,FileName,TimeLimit,Seed,InstructionCoverage,BranchCoverage,MutationScore" >results/info.csv
+  echo -e "RandoopVersion,FileName,TimeLimit,Seed,InstructionCoverage,BranchCoverage,MutationScore" > results/info.csv
 fi
 
 #===============================================================================
@@ -490,7 +490,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
       touch mutation_output.txt
       echo "Redirecting output to $RESULT_DIR/mutation_output.txt..."
       exec 3>&1 4>&2
-      exec 1>>"mutation_output.txt" 2>&1
+      exec 1>> "mutation_output.txt" 2>&1
     fi
 
     # Bloodhound
@@ -601,7 +601,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
     # This script modifies the tests to run with the EvoSuite runner, which ensures proper isolation and compatibility
     # for accurate mutant coverage.
     if [ "$SUBJECT_PROGRAM" == "hamcrest-core-1.3" ]; then
-      PYTHON_EXECUTABLE=$(command -v python3 2>/dev/null || command -v python 2>/dev/null)
+      PYTHON_EXECUTABLE=$(command -v python3 2> /dev/null || command -v python 2> /dev/null)
       if [ -z "$PYTHON_EXECUTABLE" ]; then
         echo "Error: Python is not installed." >&2
         exit 1
@@ -632,7 +632,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
 
     row="$FEATURE_NAME,$(basename "$SRC_JAR"),$TIME_LIMIT,0,$instruction_coverage%,$branch_coverage%,$mutation_score%"
     # info.csv contains a record of each pass.
-    echo -e "$row" >>results/info.csv
+    echo -e "$row" >> results/info.csv
 
     # Copy the test suites to results directory
     echo "Copying test suites to results directory..."
@@ -668,5 +668,5 @@ echo "Restoring $JAVA_SRC_DIR to main branch"
 # switch to main branch (may already be there)
 (
   cd "$JAVA_SRC_DIR"
-  git checkout main 1>/dev/null
+  git checkout main 1> /dev/null
 )
