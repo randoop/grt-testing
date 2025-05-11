@@ -162,8 +162,8 @@ fi
 
 # validate
 for feat in "${RANDOOP_FEATURES[@]}"; do
-  if [[ ! " ${ALL_RANDOOP_FEATURES[*]} " =~ " ${feat} " ]]; then
-    echo "ERROR: unknown feature “$feat”"
+  if [[ ! " ${ALL_RANDOOP_FEATURES[*]} " =~ ${feat} ]]; then
+    echo "ERROR: unknown feature "$feat""
     exit 1
   fi
 done
@@ -442,7 +442,7 @@ REPLACECALL_COMMAND="$REPLACECALL_JAR${replacement_files[$SUBJECT_PROGRAM]}"
 RANDOOP_CLASSPATH="$CLASSPATH"
 if [[ -n "${project_deps[$SUBJECT_PROGRAM]}" ]]; then
     # Expand .jar files from the directory specified in project_deps[$SUBJECT_PROGRAM]
-    RANDOOP_CLASSPATH+=":$(echo ${project_deps[$SUBJECT_PROGRAM]}*.jar | tr ' ' ':')"
+    RANDOOP_CLASSPATH+=":$(echo "${project_deps[$SUBJECT_PROGRAM]}"*.jar | tr ' ' ':')"
 fi
 
 RANDOOP_BASE_COMMAND="java \
@@ -630,28 +630,28 @@ do
         echo "Compiling and mutating subject program..."
         if [[ "$VERBOSE" -eq 1 ]]; then
             echo command:
-            echo "$MAJOR_HOME"/bin/ant -f program-config/$1/build.xml -Dbasedir=./ -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" clean compile
+            echo "$MAJOR_HOME"/bin/ant -f program-config/"$1"/build.xml -Dbasedir=./ -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" clean compile
         fi
         echo
-        "$MAJOR_HOME"/bin/ant -f program-config/$1/build.xml -Dbasedir=./ -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" clean compile
+        "$MAJOR_HOME"/bin/ant -f program-config/"$1"/build.xml -Dbasedir=./ -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" clean compile
 
         echo
         echo "Compiling tests..."
         if [[ "$VERBOSE" -eq 1 ]]; then
             echo command:
-            echo "$MAJOR_HOME"/bin/ant -f program-config/$1/build.xml -Dbasedir=./ -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" compile.tests
+            echo "$MAJOR_HOME"/bin/ant -f program-config/"$1"/build.xml -Dbasedir=./ -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" compile.tests
         fi
         echo
-        "$MAJOR_HOME"/bin/ant -f program-config/$1/build.xml -Dbasedir=./ -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" compile.tests
+        "$MAJOR_HOME"/bin/ant -f program-config/"$1"/build.xml -Dbasedir=./ -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" compile.tests
 
         echo
         echo "Running tests with coverage..."
         if [[ "$VERBOSE" -eq 1 ]]; then
             echo command:
-            echo "$MAJOR_HOME"/bin/"$ANT" -f program-config/$1/build.xml -Dbasedir=./ -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" test
+            echo "$MAJOR_HOME"/bin/"$ANT" -f program-config/"$1"/build.xml -Dbasedir=./ -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" test
         fi
         echo
-        "$MAJOR_HOME"/bin/"$ANT" -f program-config/$1/build.xml -Dbasedir=./ -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" test
+        "$MAJOR_HOME"/bin/"$ANT" -f program-config/"$1"/build.xml -Dbasedir=./ -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" test
 
         mv jacoco.exec "$RESULT_DIR"
         java -jar "$JACOCO_CLI_JAR" report "$RESULT_DIR/jacoco.exec" --classfiles "$SRC_JAR" --sourcefiles "$JAVA_SRC_DIR" --csv "$RESULT_DIR"/report.csv
@@ -684,10 +684,10 @@ do
         echo "Running tests with mutation analysis..."
         if [[ "$VERBOSE" -eq 1 ]]; then
             echo command:
-            echo "$MAJOR_HOME"/bin/"$ANT" -f program-config/$1/build.xml -Dbasedir=./ -Dtest="$TEST_DIRECTORY" -lib "$LIB_ARG" mutation.test
+            echo "$MAJOR_HOME"/bin/"$ANT" -f program-config/"$1"/build.xml -Dbasedir=./ -Dtest="$TEST_DIRECTORY" -lib "$LIB_ARG" mutation.test
         fi
         echo
-        "$MAJOR_HOME"/bin/"$ANT" -f program-config/$1/build.xml -Dbasedir=./ -Dtest="$TEST_DIRECTORY" -lib "$LIB_ARG" mutation.test
+        "$MAJOR_HOME"/bin/"$ANT" -f program-config/"$1"/build.xml -Dbasedir=./ -Dtest="$TEST_DIRECTORY" -lib "$LIB_ARG" mutation.test
 
         mv results/summary.csv "$RESULT_DIR"
 

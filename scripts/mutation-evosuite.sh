@@ -393,7 +393,7 @@ fi
 EVOSUITE_CLASSPATH="$CLASSPATH"
 if [[ -n "${project_deps[$SUBJECT_PROGRAM]}" ]]; then
     # Expand .jar files from the directory specified in project_deps[$SUBJECT_PROGRAM]
-    EVOSUITE_CLASSPATH+=":$(echo ${project_deps[$SUBJECT_PROGRAM]}*.jar | tr ' ' ':')"
+    EVOSUITE_CLASSPATH+=":$(echo "${project_deps[$SUBJECT_PROGRAM]}"*.jar | tr ' ' ':')"
 fi
 
 EVOSUITE_COMMAND="java \
@@ -407,7 +407,7 @@ EVOSUITE_COMMAND="java \
 # Build System Preparation
 #===============================================================================
 # Installs all of the jarfiles in build/lib to maven (used for measuring code coverage).
-./generate-mvn-dependencies.sh $SUBJECT_PROGRAM
+./generate-mvn-dependencies.sh "$SUBJECT_PROGRAM"
 
 cd "$JAVA_SRC_DIR" || exit 1
 if git checkout include-major >/dev/null 2>&1; then
@@ -449,8 +449,8 @@ do
     # Jacoco directory for each iteration
     COVERAGE_DIRECTORY="$SCRIPT_DIR/build/target/$TIMESTAMP"
     mkdir -p "$COVERAGE_DIRECTORY"
-    mkdir -p $COVERAGE_DIRECTORY/coverage-reports
-    touch $COVERAGE_DIRECTORY/coverage-reports/jacoco-ut.exec
+    mkdir -p "$COVERAGE_DIRECTORY"/coverage-reports
+    touch "$COVERAGE_DIRECTORY"/coverage-reports/jacoco-ut.exec
 
     # Result directory for each test generation and execution.
     RESULT_DIR="$SCRIPT_DIR/results/$SUBJECT_PROGRAM-EVOSUITE-$TIMESTAMP"
@@ -464,7 +464,7 @@ do
         exec 1>>"mutation_output.txt" 2>&1
     fi
 
-    $EVOSUITE_COMMAND -Dtest_dir=$TEST_DIRECTORY -Dreport_dir=$REPORT_DIRECTORY
+    $EVOSUITE_COMMAND -Dtest_dir="$TEST_DIRECTORY" -Dreport_dir="$REPORT_DIRECTORY"
 
     # After test generation, for JSAP-2.1, we need to remove the ant.jar from the classpath
     if [[ "$SUBJECT_PROGRAM" == "JSAP-2.1" ]]; then
@@ -478,30 +478,30 @@ do
     echo "Compiling and mutating subject program..."
     if [[ "$VERBOSE" -eq 1 ]]; then
         echo command:
-        echo "$MAJOR_HOME"/bin/ant -f program-config/$1/build-evosuite.xml -Dbasedir=./ -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" clean compile
+        echo "$MAJOR_HOME"/bin/ant -f program-config/"$1"/build-evosuite.xml -Dbasedir=./ -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" clean compile
     fi
     echo
-    "$MAJOR_HOME"/bin/ant -f program-config/$1/build-evosuite.xml -Dbasedir=./ -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" clean compile
+    "$MAJOR_HOME"/bin/ant -f program-config/"$1"/build-evosuite.xml -Dbasedir=./ -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" clean compile
 
     echo
     echo "Compiling tests..."
     if [[ "$VERBOSE" -eq 1 ]]; then
         echo command:
-        echo "$MAJOR_HOME"/bin/ant -f program-config/$1/build-evosuite.xml -Dbasedir=./ -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" compile.tests
+        echo "$MAJOR_HOME"/bin/ant -f program-config/"$1"/build-evosuite.xml -Dbasedir=./ -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" compile.tests
     fi
     echo
-    "$MAJOR_HOME"/bin/ant -f program-config/$1/build-evosuite.xml -Dbasedir=./ -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" compile.tests
+    "$MAJOR_HOME"/bin/ant -f program-config/"$1"/build-evosuite.xml -Dbasedir=./ -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" compile.tests
 
     echo
     echo "Running tests with coverage..."
     if [[ "$VERBOSE" -eq 1 ]]; then
         echo command:
-        echo mvn -f program-config/$1/pom.xml test jacoco:restore-instrumented-classes jacoco:report -Dmain.source.dir="$JAVA_SRC_DIR" -Dcoverage.dir="$COVERAGE_DIRECTORY" -Dtest.dir="$TEST_DIRECTORY"
+        echo mvn -f program-config/"$1"/pom.xml test jacoco:restore-instrumented-classes jacoco:report -Dmain.source.dir="$JAVA_SRC_DIR" -Dcoverage.dir="$COVERAGE_DIRECTORY" -Dtest.dir="$TEST_DIRECTORY"
     fi
     echo
-    mvn -f program-config/$1/pom.xml test jacoco:restore-instrumented-classes jacoco:report -Dmain.source.dir="$JAVA_SRC_DIR" -Dcoverage.dir="$COVERAGE_DIRECTORY" -Dtest.dir="$TEST_DIRECTORY"
+    mvn -f program-config/"$1"/pom.xml test jacoco:restore-instrumented-classes jacoco:report -Dmain.source.dir="$JAVA_SRC_DIR" -Dcoverage.dir="$COVERAGE_DIRECTORY" -Dtest.dir="$TEST_DIRECTORY"
 
-    mv $COVERAGE_DIRECTORY/jacoco.csv "$RESULT_DIR"/report.csv
+    mv "$COVERAGE_DIRECTORY"/jacoco.csv "$RESULT_DIR"/report.csv
 
     # Calculate Instruction Coverage
     inst_missed=$(awk -F, 'NR>1 {sum+=$4} END {print sum}' "$RESULT_DIR"/report.csv)
@@ -522,9 +522,9 @@ do
     echo "Running tests with mutation analysis..."
     if [[ "$VERBOSE" -eq 1 ]]; then
         echo command:
-        echo "$MAJOR_HOME"/bin/ant -f program-config/$1/build-evosuite.xml -Dbasedir=./ -Dtest="$TEST_DIRECTORY" -lib "$LIB_ARG" mutation.test
+        echo "$MAJOR_HOME"/bin/ant -f program-config/"$1"/build-evosuite.xml -Dbasedir=./ -Dtest="$TEST_DIRECTORY" -lib "$LIB_ARG" mutation.test
     fi
-    "$MAJOR_HOME"/bin/ant -f program-config/$1/build-evosuite.xml -Dbasedir=./ -Dtest="$TEST_DIRECTORY" -lib "$LIB_ARG" mutation.test
+    "$MAJOR_HOME"/bin/ant -f program-config/"$1"/build-evosuite.xml -Dbasedir=./ -Dtest="$TEST_DIRECTORY" -lib "$LIB_ARG" mutation.test
 
     mv results/summary.csv "$RESULT_DIR"
 
