@@ -26,7 +26,7 @@ randoop-from-source:
 	cd build/randoop && \
 	git pull && \
 	./gradlew shadowJar && \
-	mv -f build/libs/randoop-all-4.3.3.jar agent/replacecall/build/libs/replacecall-4.3.3.jar ..
+	mv -f build/libs/randoop-all-4.3.3.jar ..
 
 build/replacecall-4.3.3.jar:
 	LATEST_RELEASE=$$(curl -s https://api.github.com/repos/randoop/grt-replacecall/releases/latest | grep -o '"tag_name": "[^"]*' | cut -d'"' -f4) && \
