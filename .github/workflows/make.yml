@@ -16,5 +16,7 @@ jobs:
       run: |
         sudo apt-get -y install pipx
         sudo pipx install ruff
+    - name: Install shellcheck and checkbashisms
+      run: sudo apt install shfmt shellcheck devscripts
     - name: style check
       run: make style-check
