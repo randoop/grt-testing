@@ -502,13 +502,25 @@ cd "$JAVA_SRC_DIR" || exit 1
 # To work around this, the EvoSuite script (which will eventually be merged) uses the include-major branch,
 # where the packages have been renamed to org1.slf4j and javax1.mail.
 #
-# The EvoSuite script will also temporarily modifies the corresponding source jarfile to reflect this namespace change during test generation,
-# and then restores the original JARs afterward to maintain consistency.
+# We also update the jarfiles accordingly to reflect this behavior in both scripts.
+
+# Only checkout include-major if the subject program is neither slf4j-api-1.7.12 nor javax.mail-1.5.1
 if [ "$SUBJECT_PROGRAM" != "slf4j-api-1.7.12" ] && [ "$SUBJECT_PROGRAM" != "javax.mail-1.5.1" ]; then
-	if git checkout include-major >/dev/null 2>&1; then
-		echo "Checked out include-major."
-	fi
+    if git checkout include-major >/dev/null 2>&1; then
+        echo "Checked out include-major."
+    fi
 fi
+
+if [ "$SUBJECT_PROGRAM" == "slf4j-api-1.7.12" ]; then
+    # Make sure slf4j-api-1.7.12 jarfile has normal namespace
+    wget -O "$SCRIPT_DIR"/../subject-programs/slf4j-api-1.7.12.jar https://raw.githubusercontent.com/randoop/grt-slf4j-api-1.7.12/main/slf4j-api-1.7.12.jar
+fi
+
+if [ "$SUBJECT_PROGRAM" == "javax.mail-1.5.1" ]; then
+    # Make sure javax.mail has normal namespace
+    wget -O "$SCRIPT_DIR"/../subject-programs/javax.mail-1.5.1.jar https://raw.githubusercontent.com/randoop/grt-javax.mail-1.5.1/main/javax.mail-1.5.1.jar
+fi
+
 cd - || exit 1
 
 echo "Using Randoop to generate tests."
