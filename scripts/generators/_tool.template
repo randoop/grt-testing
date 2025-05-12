@@ -21,8 +21,8 @@
 
 # Check whether the D4J_DIR_TESTGEN_BIN variable is set
 if [ -z "$D4J_DIR_TESTGEN_BIN" ]; then
-    echo "Variable D4J_DIR_TESTGEN_BIN not set!"
-    exit 1
+  echo "Variable D4J_DIR_TESTGEN_BIN not set!"
+  exit 1
 fi
 
 # General helper functions
@@ -32,15 +32,15 @@ source "$D4J_DIR_TESTGEN_BIN"/_tool.source
 project_cp="$(get_project_cp)"
 
 # Read all additional configuration parameters
-add_config=$(parse_config "$D4J_DIR_TESTGEN_BIN"/<generator id>.config)
+add_config=$(parse_config "$D4J_DIR_TESTGEN_BIN"/ id < generator > .config)
 
 # Make sure the provided test mode is supported
 if [ "$D4J_TEST_MODE" = "regression" ]; then
-    : # TODO ...
+  : # TODO ...
 elif [ "$D4J_TEST_MODE" = "error-revealing" ]; then
-    : # TODO ...
+  : # TODO ...
 else
-    die "Unsupported test mode: $D4J_TEST_MODE"
+  die "Unsupported test mode: $D4J_TEST_MODE"
 fi
 
 # The command that invokes the test generator
@@ -48,5 +48,5 @@ cmd="... $add_config ... $project_cp ..."
 
 # Run the test-generation command
 if ! exec_cmd "$cmd"; then
-    exit 1
+  exit 1
 fi

@@ -14,51 +14,51 @@
 
 # Check whether the ENVIRONMENT variables are set
 if [ -z "$JACOCO_AGENT_JAR" ]; then
-    echo "Expected JACOCO_AGENT_JAR environment variable" >&2
-    set -e
+  echo "Expected JACOCO_AGENT_JAR environment variable" >&2
+  set -e
 fi
 if [ -z "$RESULT_DIR" ]; then
-    echo "Expected RESULT_DIR environment variable" >&2
-    set -e
+  echo "Expected RESULT_DIR environment variable" >&2
+  set -e
 fi
 if [ -z "$REPLACECALL_JAR" ]; then
-    echo "Expected REPLACECALL_JAR environment variable" >&2
-    set -e
+  echo "Expected REPLACECALL_JAR environment variable" >&2
+  set -e
 fi
 if [ -z "$REPLACECALL_COMMAND" ]; then
-    echo "Expected REPLACECALL_COMMAND environment variable" >&2
-    set -e
+  echo "Expected REPLACECALL_COMMAND environment variable" >&2
+  set -e
 fi
 # CLASSPATH can be ""
 if [ -z "$SRC_JAR" ]; then
-    echo "Expected SRC_JAR environment variable" >&2
-    set -e
+  echo "Expected SRC_JAR environment variable" >&2
+  set -e
 fi
 if [ -z "$GENERATOR_JAR" ]; then
-    echo "Expected GENERATOR_JAR environment variable" >&2
-    set -e
+  echo "Expected GENERATOR_JAR environment variable" >&2
+  set -e
 fi
 if [ -z "$TIME_LIMIT" ]; then
-    echo "Expected TIME_LIMIT environment variable" >&2
-    set -e
+  echo "Expected TIME_LIMIT environment variable" >&2
+  set -e
 fi
 
 me=$(basename "$0")
 
 if [[ $me != *"GRTMinusMinCoverageFirst"* && ($me == *"MinCoverageFirst"* || $me == *"GRT"*) ]]; then
-    METHOD_SELECTION_ARG="--method-selection=BLOODHOUND"
+  METHOD_SELECTION_ARG="--method-selection=BLOODHOUND"
 fi
 
 if [[ $me != *"GRTMinusMinCostFirst"* && ($me == *"MinCostFirst"* || $me == *"GRT"*) ]]; then
-    INPUT_SELECTION_ARG="--input-selection=ORIENTEERING"
+  INPUT_SELECTION_ARG="--input-selection=ORIENTEERING"
 fi
 
 if [[ $me != *"GRTMinusDynamicTyping"* && ($me == *"DynamicTyping"* || $me == *"GRT"*) ]]; then
-    RUN_TIME_CAST_ARG="--cast_to_run_time_type=true"
+  RUN_TIME_CAST_ARG="--cast_to_run_time_type=true"
 fi
 
 if [[ $me != *"GRTMinusInputConstruction"* && ($me == *"InputConstruction"* || $me == *"GRT"*) ]]; then
-    INPUT_CONSTRUCTION_ARG="--demand_driven=true"
+  INPUT_CONSTRUCTION_ARG="--demand_driven=true"
 fi
 
 # InputFuzzing and ConstantMining are not supported at the moment

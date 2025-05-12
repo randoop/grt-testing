@@ -2,46 +2,46 @@
 
 ################################################################################
 #
-# This script runs Coverage and Mutation Score computation in parallel. It 
-# handles setup (excluding mutations-specific setup), which you should do from 
+# This script runs Coverage and Mutation Score computation in parallel. It
+# handles setup (excluding mutations-specific setup), which you should do from
 # the scripts/mutation-prerequisites.md of this repo).
 # The command should be run from the root directory of `grt-testing`.
-# 
+#
 # Use ./grt-eval.sh --ignore-warning to bypass the user check
 # This can be useful when making this a background process.
-# 
+#
 # If there are java versions missing, see grt-eval-setup.sh
 #
 ################################################################################
 
 # Function to prompt the user for confirmation
 confirm_proceed() {
-    while true; do
-        read -p "Type 'y' to continue: " response
-        case $response in
-            [Yy]* )
-                echo "Proceeding with the action."
-                return 0  # Success, proceed with the action
-                ;;
-            [Nn]* )
-                echo "Action aborted."
-                return 1  # Exit or abort, action canceled
-                ;;
-            * )
-                echo "Invalid input. Please type 'y' to proceed or 'n' to cancel."
-                ;;
-        esac
-    done
+  while true; do
+    read -p "Type 'y' to continue: " response
+    case $response in
+      [Yy]*)
+        echo "Proceeding with the action."
+        return 0 # Success, proceed with the action
+        ;;
+      [Nn]*)
+        echo "Action aborted."
+        return 1 # Exit or abort, action canceled
+        ;;
+      *)
+        echo "Invalid input. Please type 'y' to proceed or 'n' to cancel."
+        ;;
+    esac
+  done
 }
 
 # Functions to switch jdk version
 usejdk8() {
-    export JAVA_HOME=~/java/jdk8u292-b10
-    export PATH=$JAVA_HOME/bin:$PATH
+  export JAVA_HOME=~/java/jdk8u292-b10
+  export PATH=$JAVA_HOME/bin:$PATH
 }
 usejdk11() {
-    export JAVA_HOME=~/java/jdk-11.0.9.1+1
-    export PATH=$JAVA_HOME/bin:$PATH
+  export JAVA_HOME=~/java/jdk-11.0.9.1+1
+  export PATH=$JAVA_HOME/bin:$PATH
 }
 
 echo "Warning: This script will REMOVE all ./scripts/results directories and ./scripts/mutation_output.txt!"
@@ -89,23 +89,23 @@ echo "SUCCESS: Set up randoop-grt"
 # Setup evosuite
 
 download_url() {
-    if [ "$#" -ne 1 ]; then
-        echo "Illegal number of arguments"
-    fi
-    URL=$1
-    echo "Downloading ${URL}"
-    if [ "$(uname)" = "Darwin" ] ; then
-        wget -nv -N "$URL" || print_error_and_exit "Could not download $URL"
-        echo "Downloaded $URL"
+  if [ "$#" -ne 1 ]; then
+    echo "Illegal number of arguments"
+  fi
+  URL=$1
+  echo "Downloading ${URL}"
+  if [ "$(uname)" = "Darwin" ]; then
+    wget -nv -N "$URL" || print_error_and_exit "Could not download $URL"
+    echo "Downloaded $URL"
+  else
+    BASENAME="$(basename "$URL")"
+    if [ -f "$BASENAME" ]; then
+      ZBASENAME="-z $BASENAME"
     else
-        BASENAME="$(basename "$URL")"
-        if [ -f "$BASENAME" ]; then
-            ZBASENAME="-z $BASENAME"
-        else
-            ZBASENAME=""
-        fi
-        (timeout 300 curl -s -S -R -L -O "$ZBASENAME" "$URL" || (echo "retrying curl $URL" && rm -f "$BASENAME" && curl -R -L -O "$URL")) && echo "Downloaded $URL"
+      ZBASENAME=""
     fi
+    (timeout 300 curl -s -S -R -L -O "$ZBASENAME" "$URL" || (echo "retrying curl $URL" && rm -f "$BASENAME" && curl -R -L -O "$URL")) && echo "Downloaded $URL"
+  fi
 }
 
 echo "START: Set up evosuite"

@@ -12,28 +12,28 @@ SECONDS_CLASS=""
 # Parse command-line arguments
 while getopts ":hvrt:c:" opt; do
   case ${opt} in
-    h )
+    h)
       echo "Usage: mutation-all.sh [-h] [-v] [-r] [-t total_time] [-c time_per_class]"
       exit 0
       ;;
-    v )
+    v)
       VERBOSE=1
       ;;
-    r )
+    r)
       REDIRECT=1
       ;;
-    t )
+    t)
       TOTAL_TIME="$OPTARG"
       ;;
-    c )
+    c)
       SECONDS_CLASS="$OPTARG"
       ;;
-    \? )
+    \?)
       echo "Invalid option: -$OPTARG" >&2
       echo "Usage: mutation.sh [-v] [-r] [-t total_time] [-c time_per_class] <test case name>"
       exit 1
       ;;
-    : )
+    :)
       echo "Option -$OPTARG requires an argument." >&2
       echo "Usage: mutation.sh [-v] [-r] [-t total_time] [-c time_per_class] <test case name>"
       exit 1
@@ -41,7 +41,7 @@ while getopts ":hvrt:c:" opt; do
   esac
 done
 
-shift $((OPTIND -1))
+shift $((OPTIND - 1))
 
 # Enforce that mutually exclusive options are not bundled together
 if [[ -n "$TOTAL_TIME" ]] && [[ -n "$SECONDS_CLASS" ]]; then
@@ -68,9 +68,9 @@ fi
 # Run mutation tests with the supplied arguments before the project name
 
 # Works:
- /usr/local/bin/bash ./mutation_fig6.sh $MUTATION_ARGS a4j-1.0b
+/usr/local/bin/bash ./mutation_fig6.sh $MUTATION_ARGS a4j-1.0b
 # /usr/local/bin/bash ./mutation_fig6.sh $MUTATION_ARGS commons-lang3-3.0
- /usr/local/bin/bash ./mutation_fig6.sh $MUTATION_ARGS jvc-1.1
+/usr/local/bin/bash ./mutation_fig6.sh $MUTATION_ARGS jvc-1.1
 # /usr/local/bin/bash ./mutation_fig6.sh $MUTATION_ARGS JSAP-2.1
 # /usr/local/bin/bash ./mutation_fig6.sh $MUTATION_ARGS dcParseArgs-10.2008
 # /usr/local/bin/bash ./mutation_fig6.sh $MUTATION_ARGS easymock-3.2
@@ -81,7 +81,6 @@ fi
 # /usr/local/bin/bash ./mutation_fig6.sh $MUTATION_ARGS jaxen-1.1.6
 # /usr/local/bin/bash ./mutation_fig6.sh $MUTATION_ARGS joda-time-2.3
 # /usr/local/bin/bash ./mutation_fig6.sh $MUTATION_ARGS slf4j-api-1.7.12
-
 
 # Does not work:
 #./mutation_fig6.sh $MUTATION_ARGS asm-5.0.1
@@ -101,11 +100,9 @@ fi
 #/usr/local/bin/bash ./mutation_fig6.sh $MUTATION_ARGS sat4j-core-2.3.5
 #/usr/local/bin/bash ./mutation_fig6.sh $MUTATION_ARGS shiro-core-1.2.3
 
-
 # inf loop
 #./mutation_fig6.sh $MUTATION_ARGS commons-cli-1.2
 #./mutation_fig6.sh $MUTATION_ARGS commons-math3-3.2
-
 
 # not doing
 #./mutation_fig6.sh $MUTATION_ARGS guava-16.0.1

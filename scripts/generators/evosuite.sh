@@ -14,35 +14,35 @@
 # Check whether the ENVIRONMENT variables are set
 
 if [ -z "$JACOCO_AGENT_JAR" ]; then
-    echo "Expected JACOCO_AGENT_JAR environment variable" >&2
-    set -e
+  echo "Expected JACOCO_AGENT_JAR environment variable" >&2
+  set -e
 fi
 if [ -z "$RESULT_DIR" ]; then
-    echo "Expected RESULT_DIR environment variable" >&2
-    set -e
+  echo "Expected RESULT_DIR environment variable" >&2
+  set -e
 fi
 # CLASSPATH can be ""
 if [ -z "$SRC_JAR" ]; then
-    echo "Expected SRC_JAR environment variable" >&2
-    set -e
+  echo "Expected SRC_JAR environment variable" >&2
+  set -e
 fi
 if [ -z "$GENERATOR_JAR" ]; then
-    echo "Expected GENERATOR_JAR environment variable" >&2
-    set -e
+  echo "Expected GENERATOR_JAR environment variable" >&2
+  set -e
 fi
 if [ -z "$TIME_LIMIT" ]; then
-    echo "Expected TIME_LIMIT environment variable" >&2
-    set -e
+  echo "Expected TIME_LIMIT environment variable" >&2
+  set -e
 fi
 if [ -z "$NUM_CLASSES" ]; then
-    echo "Expected NUM_CLASSES environment variable" >&2
-    set -e
+  echo "Expected NUM_CLASSES environment variable" >&2
+  set -e
 fi
 
-if [[ -z $CLASSPATH ]]; then 
-    classpath_jars=""
+if [[ -z $CLASSPATH ]]; then
+  classpath_jars=""
 else
-    classpath_jars="$(echo "$CLASSPATH"/*.jar | tr ' ' ':'):"
+  classpath_jars="$(echo "$CLASSPATH"/*.jar | tr ' ' ':'):"
 fi
 
 # Compute the budget per target class; evenly split the time for search and assertions
@@ -51,10 +51,10 @@ fi
 budget="$TIME_LIMIT"
 
 parse_config() {
-    local file=$1
-    grep -v "\s*#" "$file" | tr '\n' ' '
+  local file=$1
+  grep -v "\s*#" "$file" | tr '\n' ' '
 }
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null 2>&1 && pwd)"
 add_config=$(parse_config "$SCRIPT_DIR"/evosuite.config)
 
 # target = SRC_JAR, all classes in file
