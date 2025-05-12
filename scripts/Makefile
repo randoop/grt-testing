@@ -26,7 +26,7 @@ randoop-from-source:
 	cd build/randoop && \
 	git pull && \
 	./gradlew shadowJar && \
-	mv -f build/libs/randoop-all-4.3.3.jar agent/replacecall/build/libs/replacecall-4.3.3.jar ..
+	mv -f build/libs/randoop-all-4.3.3.jar ..
 
 build/replacecall-4.3.3.jar:
 	LATEST_RELEASE=$$(curl -s https://api.github.com/repos/randoop/grt-replacecall/releases/latest | grep -o '"tag_name": "[^"]*' | cut -d'"' -f4) && \
@@ -46,14 +46,3 @@ clean:
 
 src:
 	get-all-subject-src.sh
-
-SH_SCRIPTS   = $(shell grep -r -l '^\#! \?\(/bin/\|/usr/bin/env \)sh'   * | grep -v /.git/ | grep -v '~$$' | grep -v '\.tar$$' | grep -v addrfilter | grep -v cronic-orig | grep -v gradlew | grep -v mail-stackoverflow.sh | grep -v build/)
-BASH_SCRIPTS = $(shell grep -r -l '^\#! \?\(/bin/\|/usr/bin/env \)bash' * | grep -v /.git/ | grep -v '~$$' | grep -v '\.tar$$' | grep -v addrfilter | grep -v cronic-orig | grep -v gradlew | grep -v mail-stackoverflow.sh | grep -v build/)
-
-shell-script-style:
-	shellcheck -x -P SCRIPTDIR --format=gcc ${SH_SCRIPTS} ${BASH_SCRIPTS}
-	checkbashisms ${SH_SCRIPTS} /dev/null
-
-showvars:
-	@echo "SH_SCRIPTS=${SH_SCRIPTS}"
-	@echo "BASH_SCRIPTS=${BASH_SCRIPTS}"
