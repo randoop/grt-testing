@@ -3,10 +3,9 @@ all: style-fix style-check
 style-fix: python-style-fix shell-style-fix
 style-check: python-style-check shell-style-check
 
+PYTHON_FILES=$(wildcard **/*.py)
 install-ruff:
 	@if ! command -v ruff ; then pipx install ruff ; fi
-
-PYTHON_FILES=$(wildcard **/*.py)
 python-style-fix: install-ruff
 	ruff --version
 	ruff format ${PYTHON_FILES}
@@ -16,8 +15,8 @@ python-style-check: install-ruff
 	ruff format --check ${PYTHON_FILES}
 	ruff check ${PYTHON_FILES}
 
-SH_SCRIPTS   := $(shell grep -r -l '^\#! \?\(/bin/\|/usr/bin/env \)sh'   --exclude-dir=build --exclude-dir=subject-programs * | grep -v /.git/ | grep -v '~$$' | grep -v '\.tar$$' | grep -v addrfilter | grep -v cronic-orig | grep -v gradlew | grep -v mail-stackoverflow.sh)
-BASH_SCRIPTS := $(shell grep -r -l '^\#! \?\(/bin/\|/usr/bin/env \)bash' --exclude-dir=build --exclude-dir=subject-programs * | grep -v /.git/ | grep -v '~$$' | grep -v '\.tar$$' | grep -v addrfilter | grep -v cronic-orig | grep -v gradlew | grep -v mail-stackoverflow.sh)
+SH_SCRIPTS   := $(shell grep -r -l --exclude='*~' --exclude='*.tar' --exclude=gradlew --exclude-dir=.git --exclude-dir=build --exclude-dir=subject-programs '^\#! \?\(/bin/\|/usr/bin/env \)sh'   | grep -v addrfilter | grep -v cronic-orig | grep -v mail-stackoverflow.sh)
+BASH_SCRIPTS := $(shell grep -r -l --exclude='*~' --exclude='*.tar' --exclude=gradlew --exclude-dir=.git --exclude-dir=build --exclude-dir=subject-programs '^\#! \?\(/bin/\|/usr/bin/env \)bash' | grep -v addrfilter | grep -v cronic-orig | grep -v mail-stackoverflow.sh)
 CHECKBASHISMS := $(shell if command -v checkbashisms > /dev/null ; then \
 	  echo "checkbashisms" ; \
 	else \
@@ -29,10 +28,12 @@ CHECKBASHISMS := $(shell if command -v checkbashisms > /dev/null ; then \
 	fi)
 
 shell-style-fix:
+	shfmt -w -i 2 -ci -bn -sr ${SH_SCRIPTS} ${BASH_SCRIPTS}
 	shellcheck -x -P SCRIPTDIR --format=diff ${SH_SCRIPTS} ${BASH_SCRIPTS} | patch -p1
 shell-style-check:
-	shellcheck -x -P SCRIPTDIR ${SH_SCRIPTS} ${BASH_SCRIPTS}
-	${CHECKBASHISMS} -l ${SH_SCRIPTS} /dev/null
+	shfmt -d -i 2 -ci -bn -sr ${SH_SCRIPTS} ${BASH_SCRIPTS}
+	shellcheck -x -P SCRIPTDIR --format=gcc ${SH_SCRIPTS} ${BASH_SCRIPTS}
+	${CHECKBASHISMS} -l ${SH_SCRIPTS}
 
 showvars:
 	@echo "PYTHON_FILES=${PYTHON_FILES}"
