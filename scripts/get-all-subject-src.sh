@@ -4,7 +4,7 @@
 # subject-programs/src/. If the repository already exists, it pulls the
 # latest changes.
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" >/dev/null 2>&1 && pwd -P)"
+SCRIPT_DIR="$(cd "$(dirname "$0")" > /dev/null 2>&1 && pwd -P)"
 
 SUBJECT_SRC_DIR="${SCRIPT_DIR}/../subject-programs/src"
 mkdir -p "${SUBJECT_SRC_DIR}"
@@ -12,10 +12,10 @@ cd "${SUBJECT_SRC_DIR}" || (echo "Directory does not exist: ${SUBJECT_SRC_DIR}" 
 
 grt_clone() {
   printf '%s:' "$1"
-  if [ -d "$1" ] ; then
+  if [ -d "$1" ]; then
     echo " updating."
     (cd "$1" && git pull -q)
-  else    
+  else
     echo " cloning."
     git clone -q git@github.com:randoop/grt-"$1" "$1"
   fi
