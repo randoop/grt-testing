@@ -41,6 +41,26 @@
       <artifactId>hamcrest-core</artifactId>
       <version>1.3</version>
     </dependency>
+    <dependency>
+      <groupId>com.example</groupId>
+      <artifactId>ant</artifactId>
+      <version>ant</version>
+    </dependency>
+    <dependency>
+      <groupId>com.example</groupId>
+      <artifactId>rundoc</artifactId>
+      <version>0.11</version>
+    </dependency>
+    <dependency>
+      <groupId>com.example</groupId>
+      <artifactId>snip</artifactId>
+      <version>0.11</version>
+    </dependency>
+    <dependency>
+      <groupId>com.example</groupId>
+      <artifactId>xstream</artifactId>
+      <version>1.1.2</version>
+    </dependency>
   </dependencies>
   
   <build>

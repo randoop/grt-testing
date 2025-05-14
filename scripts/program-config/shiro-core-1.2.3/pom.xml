@@ -41,6 +41,16 @@
       <artifactId>hamcrest-core</artifactId>
       <version>1.3</version>
     </dependency>
+    <dependency>
+      <groupId>com.example</groupId>
+      <artifactId>commons-beanutils</artifactId>
+      <version>1.8.3</version>
+    </dependency>
+    <dependency>
+      <groupId>com.example</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.7.25</version>
+    </dependency>
   </dependencies>
   
   <build>

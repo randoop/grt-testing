@@ -41,6 +41,35 @@
       <artifactId>hamcrest-core</artifactId>
       <version>1.3</version>
     </dependency>
+    <dependency>
+      <groupId>com.example</groupId>
+      <artifactId>jdom</artifactId>
+      <version>jdom</version>
+    </dependency>
+    <dependency>
+      <groupId>com.example</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.15</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.sun.jmx</groupId>
+          <artifactId>jmxri</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.sun.jdmk</groupId>
+          <artifactId>jmxtools</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.jms</groupId>
+          <artifactId>jms</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.example</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.5.0</version>
+    </dependency>
   </dependencies>
   
   <build>
