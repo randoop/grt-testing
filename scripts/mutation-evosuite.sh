@@ -485,7 +485,6 @@ for i in $(seq 1 "$NUM_LOOP"); do
     exec 1>> "mutation_output.txt" 2>&1
   fi
 
-  echo $EVOSUITE_COMMAND -Dtest_dir="$TEST_DIRECTORY" -Dreport_dir="$REPORT_DIRECTORY"
   $EVOSUITE_COMMAND -Dtest_dir="$TEST_DIRECTORY" -Dreport_dir="$REPORT_DIRECTORY"
 
   # After test generation, for JSAP-2.1, we need to remove the ant.jar from the classpath
