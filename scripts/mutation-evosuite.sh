@@ -401,6 +401,7 @@ EVOSUITE_COMMAND="java \
 -target $SRC_JAR \
 -projectCP $EVOSUITE_CLASSPATH:$EVOSUITE_JAR \
 -Dsearch_budget=$TIME_LIMIT \
+-Dreplace_gui=true \
 -Drandom_seed=0"
 
 #===============================================================================
