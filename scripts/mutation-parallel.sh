@@ -33,7 +33,16 @@ rm -rf results/*
 
 #===============================================================================
 # Parameters (Feel free to change as you wish. This is minimal just for testing purposes)
+# The papers' parameters are as follows:
+# NUM_LOOP = 10
+# SECONDS_PER_CLASS = (2 10 30 60)
+# PROGRAMS = (all 30 subject programs)
+# FEATURES = (BASELINE GRT EVOSUITE)
+
+# Since we haven't implemented all GRT features, for now I just replaced this with individual GRT features
+# like BLOODHOUND. See mutation.sh for a list of different features you can specify.
 #===============================================================================
+NUM_LOOP=3
 SECONDS_PER_CLASS=(2)
 PROGRAMS=(        
   "dcParseArgs-10.2008"
@@ -54,7 +63,7 @@ TASKS=()
 for seconds in "${SECONDS_PER_CLASS[@]}"; do
   for program in "${PROGRAMS[@]}"; do
     for feature in "${FEATURES[@]}"; do
-      TASKS+=("$seconds $program $feature")
+      TASKS+=("$seconds $program $feature $NUM_LOOP")
     done
   done
 done
@@ -64,8 +73,9 @@ run_task() {
   seconds=$1
   program=$2
   feature=$3
-  echo "Running: ./mutation.sh -c $seconds -f $feature $program"
-  ./mutation.sh -c "$seconds" -f "$feature" -r "$program"
+  num_loop=$4
+  echo "Running: ./mutation.sh -c $seconds -f $feature -r -n $num_loop $program"
+  ./mutation.sh -c "$seconds" -f "$feature" -r -n "$num_loop" "$program"
 }
 
 export -f run_task
@@ -74,6 +84,14 @@ export -f run_task
 printf "%s\n" "${TASKS[@]}" | parallel -j $NUM_CORES --colsep ' ' run_task
 
 #===============================================================================
-# Figure Generation
+# Figure Generation (Table III and Fig. 6)
 #===============================================================================
 
+PYTHON_EXECUTABLE=$(command -v python3 2> /dev/null || command -v python 2> /dev/null)
+if [ -z "$PYTHON_EXECUTABLE" ]; then
+  echo "Error: Python is not installed." >&2
+  exit 1
+fi
+
+# Outputs figures to result/report.pdf
+"$PYTHON_EXECUTABLE" generate-figures.py

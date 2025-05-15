@@ -479,10 +479,12 @@ for i in $(seq 1 "$NUM_LOOP"); do
 
     # Test directory for each iteration.
     TEST_DIRECTORY="$SCRIPT_DIR/build/test/$FILE_SUFFIX"
+    rm -rf "$TEST_DIRECTORY"
     mkdir -p "$TEST_DIRECTORY"
 
     # Result directory for each test generation and execution.
     RESULT_DIR="$SCRIPT_DIR/results/$FILE_SUFFIX"
+    rm -rf "$RESULT_DIR"
     mkdir -p "$RESULT_DIR"
 
     # If the REDIRECT flag is set, redirect all output to a log file.
