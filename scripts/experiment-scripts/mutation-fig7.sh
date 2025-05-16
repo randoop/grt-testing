@@ -18,16 +18,16 @@
 #===============================================================================
 # Output
 #===============================================================================
-# `results/info.csv`:   Contains raw data collected from `mutation.sh`. This file is 
+# `results/info.csv`:   Contains raw data collected from `mutation.sh`. This file is
 #                       appended to by each experimental run.
-# `results/report.pdf`: Final report containing Figure 6 and Table 3, generated from 
+# `results/report.pdf`: Final report containing Figure 6 and Table 3, generated from
 #                       `results/info.csv`.
 #
 #===============================================================================
 # Important Notes
 #===============================================================================
 # Running this script will overwrite any existing contents in the `results/`
-# directory, including `report.pdf`. If you wish to preserve a previous report, 
+# directory, including `report.pdf`. If you wish to preserve a previous report,
 # **make sure to download or back it up before running this script again**.
 #
 #------------------------------------------------------------------------------
@@ -60,9 +60,9 @@ MUTATION_DIR="$(realpath ../)"
 # (ORIENTEERING and BLOODHOUND).
 #===============================================================================
 NUM_LOOP=3
-PROGRAMS=(        
+PROGRAMS=(
   "dcParseArgs-10.2008"
-  "slf4j-api-1.7.12"        
+  "slf4j-api-1.7.12"
 )
 FEATURES=(
   "BLOODHOUND"
@@ -77,9 +77,9 @@ echo "Running on at most $NUM_CORES concurrent processes"
 #===============================================================================
 TASKS=()
 for program in "${PROGRAMS[@]}"; do
-    for feature in "${FEATURES[@]}"; do
-        TASKS+=("$program $feature")
-    done
+  for feature in "${FEATURES[@]}"; do
+    TASKS+=("$program $feature")
+  done
 done
 
 # Export function for parallel execution

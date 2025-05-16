@@ -9,7 +9,7 @@
 #   - Subject programs (PROGRAMS)
 #   - Feature variants (FEATURES)
 #   - Total execution time (TOTAL_TIME)
-# 
+#
 # Note: Figure 10 could not be generated because we weren't able to locate
 # the subject program scch-collection-1.0
 #
@@ -22,16 +22,16 @@
 #===============================================================================
 # Output
 #===============================================================================
-# `results/info.csv`:   Contains raw data collected from `mutation.sh`. This file is 
+# `results/info.csv`:   Contains raw data collected from `mutation.sh`. This file is
 #                       appended to by each experimental run.
-# `results/report.pdf`: Final report containing Figure 6 and Table 3, generated from 
+# `results/report.pdf`: Final report containing Figure 6 and Table 3, generated from
 #                       `results/info.csv`.
 #
 #===============================================================================
 # Important Notes
 #===============================================================================
 # Running this script will overwrite any existing contents in the `results/`
-# directory, including `report.pdf`. If you wish to preserve a previous report, 
+# directory, including `report.pdf`. If you wish to preserve a previous report,
 # **make sure to download or back it up before running this script again**.
 #
 #------------------------------------------------------------------------------
@@ -65,9 +65,9 @@ MUTATION_DIR="$(realpath ../)"
 #===============================================================================
 NUM_LOOP=3
 TOTAL_TIME=(100 200 300 400 500 600)
-PROGRAMS=(        
+PROGRAMS=(
   "asm-5.0.1"
-  "tiny-sql-2.26"        
+  "tiny-sql-2.26"
 )
 FEATURES=(
   "BLOODHOUND"
@@ -96,7 +96,7 @@ run_task() {
   program=$2
   feature=$3
   echo "Running: (cd $MUTATION_DIR && ./mutation.sh -t $time -f $feature -r -n $NUM_LOOP $program)"
-  (cd "$MUTATION_DIR" && ./mutation.sh -t $time -f "$feature" -r -n "$NUM_LOOP" "$program")
+  (cd "$MUTATION_DIR" && ./mutation.sh -t "$time" -f "$feature" -r -n "$NUM_LOOP" "$program")
 }
 
 export -f run_task

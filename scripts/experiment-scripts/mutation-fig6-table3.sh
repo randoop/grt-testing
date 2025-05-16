@@ -19,16 +19,16 @@
 #===============================================================================
 # Output
 #===============================================================================
-# `results/info.csv`:   Contains raw data collected from `mutation.sh`. This file is 
+# `results/info.csv`:   Contains raw data collected from `mutation.sh`. This file is
 #                       appended to by each experimental run.
-# `results/report.pdf`: Final report containing Figure 6 and Table 3, generated from 
+# `results/report.pdf`: Final report containing Figure 6 and Table 3, generated from
 #                       `results/info.csv`.
 #
 #===============================================================================
 # Important Notes
 #===============================================================================
 # Running this script will overwrite any existing contents in the `results/`
-# directory, including `report.pdf`. If you wish to preserve a previous report, 
+# directory, including `report.pdf`. If you wish to preserve a previous report,
 # **make sure to download or back it up before running this script again**.
 #
 #------------------------------------------------------------------------------
@@ -63,9 +63,9 @@ MUTATION_DIR="$(realpath ../)"
 #===============================================================================
 NUM_LOOP=1
 SECONDS_PER_CLASS=(2)
-PROGRAMS=(        
+PROGRAMS=(
   "dcParseArgs-10.2008"
-  "slf4j-api-1.7.12"        
+  "slf4j-api-1.7.12"
 )
 FEATURES=(
   "BASELINE"

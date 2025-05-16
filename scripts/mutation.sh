@@ -260,19 +260,19 @@ declare -A program_deps=(
 # Subject Program Specific Dependencies
 #===============================================================================
 setup_build_dir() {
-  rm -rf $SCRIPT_DIR/build/lib/$SEED
-  mkdir -p $SCRIPT_DIR/build/lib/$SEED
+  rm -rf "$SCRIPT_DIR"/build/lib/"$SEED"
+  mkdir -p "$SCRIPT_DIR"/build/lib/"$SEED"
 }
 
 download_jars() {
   for url in "$@"; do
-    wget -P $SCRIPT_DIR/build/lib/$SEED "$url"
+    wget -P "$SCRIPT_DIR"/build/lib/"$SEED" "$url"
   done
 }
 
 copy_jars() {
   for path in "$@"; do
-    cp -r "$path" $SCRIPT_DIR/build/lib/$SEED
+    cp -r "$path" "$SCRIPT_DIR"/build/lib/"$SEED"
   done
 }
 
@@ -545,10 +545,10 @@ for i in $(seq 1 "$NUM_LOOP"); do
       FEATURE_FLAG="--constant-mining=true"
     fi
 
-    # We cd into the result directory because Randoop generates jacoco.exec in the directory which it is run.
-    # This is a concurrency issue since multiple runs will output a jacoco file to the exact same spot.
-    # Each result directory is unique to each instance of this script.
-    cd $RESULT_DIR
+    # We cd into the result directory because Randoop generates jacoco.exec in the directory in
+    # which it is run.  This is a concurrency issue since multiple runs will output a jacoco file to
+    # the exact same spot.  Each result directory is unique to each instance of this script.
+    cd "$RESULT_DIR"
 
     # shellcheck disable=SC2086 # FEATURE_FLAG may contain multiple arguments.
     $RANDOOP_COMMAND --junit-output-dir=$TEST_DIRECTORY $FEATURE_FLAG
@@ -612,7 +612,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
         echo "Error: Python is not installed." >&2
         exit 1
       fi
-      "$PYTHON_EXECUTABLE" $SCRIPT_DIR/update_hamcrest_tests.py "$TEST_DIRECTORY"
+      "$PYTHON_EXECUTABLE" "$SCRIPT_DIR"/update_hamcrest_tests.py "$TEST_DIRECTORY"
     fi
 
     echo
