@@ -3,32 +3,42 @@
 #===============================================================================
 # Overview
 #===============================================================================
-# This script serves as a wrapper for executing the `mutation.sh` script across 
-# a variety of configurations in parallel. Specifically, it runs `mutation.sh` 
-# with different user-configured (see below) combinations of:
+# This script is designed to efficiently generate Figure 6 and Table 3 from the
+# GRT paper by executing multiple configurations of the `mutation.sh` script in
+# parallel. It automates the collection of experimental data by varying:
 #   - Execution time per class (SECONDS_PER_CLASS)
 #   - Subject programs (PROGRAMS)
 #   - Feature variants (FEATURES)
 #
-# These tasks are executed concurrently using GNU Parallel, with the number of 
-# cores limited to (total cores - 4) to avoid system overload.
+# To maximize efficiency, the script leverages GNU Parallel, distributing the
+# workload across available CPU cores.
 #
-# The script assumes the following:
-#   - mutation.sh exists in the same directory and is executable.
-#   - Each run of mutation.sh appends results to results/info.csv.
+# Each invocation of `mutation.sh` appends its results to `results/info.csv`,
+# which serves as the basis for constructing Figure 6 and Table 3.
 #
-# The results collected in results/info.csv are then used to generate:
-#   - Table 3
-#   - Figure 6
-# as described in the GRT paper.
+#===============================================================================
+# Output
+#===============================================================================
+# `results/info.csv`:   Contains raw data collected from `mutation.sh`. This file is 
+#                       appended to by each experimental run.
+# `results/report.pdf`: Final report containing Figure 6 and Table 3, generated from 
+#                       `results/info.csv`.
+#
+#===============================================================================
+# Important Notes
+#===============================================================================
+# Running this script will overwrite any existing contents in the `results/`
+# directory, including `report.pdf`. If you wish to preserve a previous report, 
+# **make sure to download or back it up before running this script again**.
+#
 #------------------------------------------------------------------------------
 # Usage:
 #------------------------------------------------------------------------------
-#   ./mutation-parallel.sh
+#   ./mutation-fig6-table3.sh
 #------------------------------------------------------------------------------
 # Prerequisites:
 #------------------------------------------------------------------------------
-# See file `mutation-prerequisites.md`.
+# See the file `mutation-prerequisites.md` for details on required setup.
 #
 #===============================================================================
 
@@ -38,9 +48,11 @@ rm -rf build/test/*
 rm -rf build/lib/*
 rm -rf results/*
 
+MUTATION_DIR="$(realpath ../)"
+
 #===============================================================================
-# Parameters (Feel free to change as you wish. This is minimal just for testing purposes)
-# The papers' parameters are as follows:
+# Parameters (Feel free to change as you wish. What I have is just for testing purposes)
+# The papers' parameters should be as follows:
 # NUM_LOOP = 10
 # SECONDS_PER_CLASS = (2 10 30 60)
 # PROGRAMS = (all 30 subject programs)
@@ -49,7 +61,7 @@ rm -rf results/*
 # Since we haven't implemented all GRT features, for now I just replaced this with individual GRT features
 # like BLOODHOUND. See mutation.sh for a list of different features you can specify.
 #===============================================================================
-NUM_LOOP=3
+NUM_LOOP=1
 SECONDS_PER_CLASS=(2)
 PROGRAMS=(        
   "dcParseArgs-10.2008"
@@ -70,19 +82,19 @@ TASKS=()
 for seconds in "${SECONDS_PER_CLASS[@]}"; do
   for program in "${PROGRAMS[@]}"; do
     for feature in "${FEATURES[@]}"; do
-      TASKS+=("$seconds $program $feature $NUM_LOOP")
+      TASKS+=("$seconds $program $feature")
     done
   done
 done
 
 # Export function for parallel execution
+# Each run's output is redirected to mutation_output.txt within its respective results directory.
 run_task() {
   seconds=$1
   program=$2
   feature=$3
-  num_loop=$4
-  echo "Running: ./mutation.sh -c $seconds -f $feature -r -n $num_loop $program"
-  ./mutation.sh -c "$seconds" -f "$feature" -r -n "$num_loop" "$program"
+  echo "Running: (cd $MUTATION_DIR && ./mutation.sh -c $seconds -f $feature -r -n $NUM_LOOP $program)"
+  (cd "$MUTATION_DIR" && ./mutation.sh -c "$seconds" -f "$feature" -r -n "$NUM_LOOP" "$program")
 }
 
 export -f run_task
@@ -105,4 +117,4 @@ pip install matplotlib
 pip install seaborn
 
 # Outputs figures to result/report.pdf
-"$PYTHON_EXECUTABLE" generate-figures.py
+"$PYTHON_EXECUTABLE" "$MUTATION_DIR"/experiment-scripts/generate-figures.py fig6-table3

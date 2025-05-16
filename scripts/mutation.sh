@@ -634,7 +634,13 @@ for i in $(seq 1 "$NUM_LOOP"); do
     echo "Branch Coverage: $branch_coverage%"
     echo "Mutation Score: $mutation_score%"
 
-    row="$FEATURE_NAME,$(basename "$SRC_JAR"),$(( TIME_LIMIT / NUM_CLASSES )),0,$instruction_coverage%,$branch_coverage%,$mutation_score%"
+    # Determine time limit to log: use TOTAL_TIME if specified, otherwise use SECONDS_PER_CLASS.
+    if [[ -n "$TOTAL_TIME" ]]; then
+      LOGGED_TIME="$TOTAL_TIME"
+    else
+      LOGGED_TIME="$SECONDS_PER_CLASS"
+    fi
+    row="$FEATURE_NAME,$(basename "$SRC_JAR"),$LOGGED_TIME,0,$instruction_coverage%,$branch_coverage%,$mutation_score%"
     # info.csv contains a record of each pass.
     echo -e "$row" >> "$SCRIPT_DIR/results/info.csv"
 
