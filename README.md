@@ -19,6 +19,9 @@ For instructions on using the scripts, run the following command:
 ./scripts/mutation.sh -h
 ```
 
+### Running Experiments
+For running experiments, refer to the `scripts/mutation-parallel.sh` file.
+
 ### Subject Programs
 
 The compiled subject programs used by the GRT paper appear in the `subject-programs/` directory.

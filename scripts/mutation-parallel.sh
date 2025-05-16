@@ -1,8 +1,11 @@
+#!/bin/bash
+
 #===============================================================================
-# Description:
+# Overview
+#===============================================================================
 # This script serves as a wrapper for executing the `mutation.sh` script across 
 # a variety of configurations in parallel. Specifically, it runs `mutation.sh` 
-# with different combinations of:
+# with different user-configured (see below) combinations of:
 #   - Execution time per class (SECONDS_PER_CLASS)
 #   - Subject programs (PROGRAMS)
 #   - Feature variants (FEATURES)
@@ -14,14 +17,18 @@
 #   - mutation.sh exists in the same directory and is executable.
 #   - Each run of mutation.sh appends results to results/info.csv.
 #
-# Purpose:
-# The primary goal is to efficiently execute multiple mutation analysis tasks 
-# and store their outputs for further evaluation. The results collected in 
-# results/info.csv will be used for generating:
+# The results collected in results/info.csv are then used to generate:
 #   - Table 3
 #   - Figure 6
-#   - Figure 7
 # as described in the GRT paper.
+#------------------------------------------------------------------------------
+# Usage:
+#------------------------------------------------------------------------------
+#   ./mutation-parallel.sh
+#------------------------------------------------------------------------------
+# Prerequisites:
+#------------------------------------------------------------------------------
+# See file `mutation-prerequisites.md`.
 #
 #===============================================================================
 
@@ -92,6 +99,10 @@ if [ -z "$PYTHON_EXECUTABLE" ]; then
   echo "Error: Python is not installed." >&2
   exit 1
 fi
+
+pip install pandas
+pip install matplotlib
+pip install seaborn
 
 # Outputs figures to result/report.pdf
 "$PYTHON_EXECUTABLE" generate-figures.py

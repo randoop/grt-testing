@@ -93,7 +93,7 @@ def save_to_pdf(df):
         pdf.savefig(fig_box_plots)
         plt.close(fig_box_plots)
 
-    print("PDF saved as 'report.pdf'")
+    print("PDF saved as 'result/report.pdf'")
 
 # Call the function to process the data and save to PDF
 save_to_pdf(df)
