@@ -18,7 +18,7 @@ To generate the desired figures or tables from the paper, run the corresponding 
 ./mutation-fig7.sh
 ```
 
-Each script is self-documented. Be sure to check the header comments at the top of each script to understand:
+Each script is documented at the top of the file with:
 - What it generates (figure/table)
 - What input parameters or configuration it expects
 - What output files it will produce and where

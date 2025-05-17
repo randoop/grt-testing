@@ -20,7 +20,7 @@ For instructions on using the scripts, run the following command:
 ```
 
 ### Running Experiments
-For running experiments, refer to the README in `scripts/experiment-scripts/` file.
+See file `scripts/experiment-scripts/README.md`.
 
 ### Subject Programs
 
