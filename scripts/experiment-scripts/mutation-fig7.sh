@@ -3,17 +3,10 @@
 #===============================================================================
 # Overview
 #===============================================================================
-# This script is designed to efficiently generate Figure 7 from the
-# GRT paper by executing multiple configurations of the `mutation.sh` script in
-# parallel. It automates the collection of experimental data by varying:
+# This script generates Figure 7 from the GRT paper.
+# It executes `mutation.sh` multiple times, varying:
 #   - Subject programs (PROGRAMS)
 #   - Feature variants (FEATURES)
-#
-# To maximize efficiency, the script leverages GNU Parallel, distributing the
-# workload across available CPU cores.
-#
-# Each invocation of `mutation.sh` appends its results to `results/info.csv`,
-# which serves as the basis for constructing Figure 7.
 #
 #===============================================================================
 # Output
@@ -37,7 +30,7 @@
 #------------------------------------------------------------------------------
 # Prerequisites:
 #------------------------------------------------------------------------------
-# See the file `mutation-prerequisites.md` for details on required setup.
+# See file `mutation-prerequisites.md`.
 #
 #===============================================================================
 
@@ -50,15 +43,14 @@ rm -rf results/*
 MUTATION_DIR="$(realpath ../)"
 
 #===============================================================================
-# Parameters (Feel free to change as you wish. What I have is just for testing purposes)
-# The papers' parameters should be as follows:
-# NUM_LOOP = 10
-# PROGRAMS = (all 30 subject programs)
-# FEATURES = (CONSTANT_MINING GRT_FUZZING ELEPHANT_BRAIN DETECTIVE ORIENTEERING BLOODHOUND GRT)
+# The GRT paper's parameters are as follows:
+NUM_LOOP=10
+PROGRAMS=(all 30 subject programs)
+FEATURES=(CONSTANT_MINING GRT_FUZZING ELEPHANT_BRAIN DETECTIVE ORIENTEERING BLOODHOUND GRT)
 
-# Since we haven't implemented all GRT features, for now I just replaced this with whatever we currently have
-# (ORIENTEERING and BLOODHOUND).
-#===============================================================================
+# Temporary parameters for testing that override the defaults, since we haven't
+# implemented all GRT features. See mutation.sh for a list of different features
+# you can specify.
 NUM_LOOP=3
 PROGRAMS=(
   "dcParseArgs-10.2008"
@@ -70,7 +62,7 @@ FEATURES=(
 )
 
 NUM_CORES=$(($(nproc) - 4))
-echo "Running on at most $NUM_CORES concurrent processes"
+echo "Running $NUM_CORES concurrent processes"
 
 #===============================================================================
 # Task Generation & Execution

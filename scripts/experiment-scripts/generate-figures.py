@@ -18,7 +18,7 @@ def load_and_clean_data(csv_file='results/info.csv'):
 def average_over_loops(df):
     # Averages the metrics for each unique configuration:
     # (time budget, tool, and subject program).
-    # As described in the paper, each configuration is executed NUM_LOOP times.
+    # Averaging is necessary because each configuration is executed NUM_LOOP times.
     # This step computes the average metric values across those repeated runs.
     df_avg = df.groupby(['RandoopVersion', 'TimeLimit', 'FileName'], as_index=False).agg({
         'InstructionCoverage': 'mean',
