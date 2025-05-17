@@ -86,7 +86,7 @@ NUM_LOOP=1      # Number of experiment runs (10 in GRT paper)
 VERBOSE=0       # Verbose option
 REDIRECT=0      # Redirect output to mutation_output.txt
 ABLATION=false  # Feature ablation option
-SEED=$(uuidgen) # Seed that is unique to each instance of this script
+UID=$(uuidgen) # Seed that is unique to each instance of this script
 
 # Parse command-line arguments
 while getopts ":hvrf:at:c:n:" opt; do
@@ -239,40 +239,40 @@ JAVA_SRC_DIR=$SRC_BASE_DIR${program_src[$SUBJECT_PROGRAM]}
 # Map subject programs to their dependencies
 declare -A program_deps=(
   ["a4j-1.0b"]="$SRC_BASE_DIR/jars/"
-  ["commons-compress-1.8"]="$SCRIPT_DIR/build/lib/$SEED/"
-  ["easymock-3.2"]="$SCRIPT_DIR/build/lib/$SEED/"
+  ["commons-compress-1.8"]="$SCRIPT_DIR/build/lib/$UID/"
+  ["easymock-3.2"]="$SCRIPT_DIR/build/lib/$UID/"
   ["fixsuite-r48"]="$SRC_BASE_DIR/lib/"
-  ["guava-16.0.1"]="$SCRIPT_DIR/build/lib/$SEED/"
-  ["hamcrest-core-1.3"]="$SCRIPT_DIR/build/lib/$SEED/"
-  ["javassist-3.19"]="$SCRIPT_DIR/build/lib/$SEED/"
-  ["jaxen-1.1.6"]="$SCRIPT_DIR/build/lib/$SEED/"
-  ["jdom-1.0"]="$SCRIPT_DIR/build/lib/$SEED/"
-  ["joda-time-2.3"]="$SCRIPT_DIR/build/lib/$SEED/"
+  ["guava-16.0.1"]="$SCRIPT_DIR/build/lib/$UID/"
+  ["hamcrest-core-1.3"]="$SCRIPT_DIR/build/lib/$UID/"
+  ["javassist-3.19"]="$SCRIPT_DIR/build/lib/$UID/"
+  ["jaxen-1.1.6"]="$SCRIPT_DIR/build/lib/$UID/"
+  ["jdom-1.0"]="$SCRIPT_DIR/build/lib/$UID/"
+  ["joda-time-2.3"]="$SCRIPT_DIR/build/lib/$UID/"
   ["JSAP-2.1"]="$MAJOR_HOME/lib/ant:$SRC_BASE_DIR/lib/" # need to override ant.jar in $SRC_BASE_DIR/lib
   ["jvc-1.1"]="$SRC_BASE_DIR/lib/"
   ["nekomud-r16"]="$SRC_BASE_DIR/lib/"
   ["pmd-core-5.2.2"]="$SRC_BASE_DIR/pmd-core/lib"
   ["sat4j-core-2.3.5"]="$SRC_BASE_DIR/lib/"
-  ["shiro-core-1.2.3"]="$SCRIPT_DIR/build/lib/$SEED/"
+  ["shiro-core-1.2.3"]="$SCRIPT_DIR/build/lib/$UID/"
 )
 
 #===============================================================================
 # Subject Program Specific Dependencies
 #===============================================================================
 setup_build_dir() {
-  rm -rf "$SCRIPT_DIR"/build/lib/"$SEED"
-  mkdir -p "$SCRIPT_DIR"/build/lib/"$SEED"
+  rm -rf "$SCRIPT_DIR"/build/lib/"$UID"
+  mkdir -p "$SCRIPT_DIR"/build/lib/"$UID"
 }
 
 download_jars() {
   for url in "$@"; do
-    wget -P "$SCRIPT_DIR"/build/lib/"$SEED" "$url"
+    wget -P "$SCRIPT_DIR"/build/lib/"$UID" "$url"
   done
 }
 
 copy_jars() {
   for path in "$@"; do
-    cp -r "$path" "$SCRIPT_DIR"/build/lib/"$SEED"
+    cp -r "$path" "$SCRIPT_DIR"/build/lib/"$UID"
   done
 }
 
@@ -475,7 +475,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
     echo
 
     # This suffix is unique to each instance of this script. We use it to prevent concurrency issues between processes.
-    FILE_SUFFIX="$SUBJECT_PROGRAM-$FEATURE_NAME-$SEED"
+    FILE_SUFFIX="$SUBJECT_PROGRAM-$FEATURE_NAME-$UID"
 
     # Test directory for each iteration.
     TEST_DIRECTORY="$SCRIPT_DIR/build/test/$FILE_SUFFIX"
@@ -598,9 +598,6 @@ for i in $(seq 1 "$NUM_LOOP"); do
     branch_coverage=$(echo "scale=4; $branch_covered / ($branch_missed + $branch_covered) * 100" | bc)
     branch_coverage=$(printf "%.2f" "$branch_coverage")
 
-    echo "Instruction Coverage: $instruction_coverage%"
-    echo "Branch Coverage: $branch_coverage%"
-
     # For hamcrest-core-1.3, we need to run the generated tests with EvoSuite's runner
     # in order for mutation analysis to properly work. Randoop-generated tests may report 0 mutants covered
     # during mutation analysis due to issues with test detection, static state handling, or instrumentation.
@@ -640,7 +637,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
     else
       LOGGED_TIME="$SECONDS_PER_CLASS"
     fi
-    row="$FEATURE_NAME,$(basename "$SRC_JAR"),$LOGGED_TIME,0,$instruction_coverage%,$branch_coverage%,$mutation_score%"
+    row="$FEATURE_NAME,$(basename "$SRC_JAR"),$LOGGED_TIME,0,$instruction_coverage,$branch_coverage,$mutation_score"
     # info.csv contains a record of each pass.
     echo -e "$row" >> "$SCRIPT_DIR/results/info.csv"
 

@@ -27,6 +27,8 @@
 # directory, including `report.pdf`. If you wish to preserve a previous report,
 # **make sure to download or back it up before running this script again**.
 #
+# Please run this script from the experiment-scripts/ directory.
+#
 #------------------------------------------------------------------------------
 # Usage:
 #------------------------------------------------------------------------------
