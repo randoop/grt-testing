@@ -86,6 +86,7 @@ NUM_LOOP=1     # Number of experiment runs (10 in GRT paper)
 VERBOSE=0      # Verbose option
 REDIRECT=0     # Redirect output to mutation_output.txt
 ABLATION=false # Feature ablation option
+UUID=$(uuidgen) # Generate a unique identifier per instance
 
 # Parse command-line arguments
 while getopts ":hvrf:at:c:n:" opt; do
@@ -238,40 +239,40 @@ JAVA_SRC_DIR=$SRC_BASE_DIR${program_src[$SUBJECT_PROGRAM]}
 # Map subject programs to their dependencies
 declare -A program_deps=(
   ["a4j-1.0b"]="$SRC_BASE_DIR/jars/"
-  ["commons-compress-1.8"]="build/lib/"
-  ["easymock-3.2"]="build/lib/"
+  ["commons-compress-1.8"]="$SCRIPT_DIR/build/lib/"
+  ["easymock-3.2"]="$SCRIPT_DIR/build/lib/"
   ["fixsuite-r48"]="$SRC_BASE_DIR/lib/"
-  ["guava-16.0.1"]="build/lib/"
-  ["hamcrest-core-1.3"]="build/lib/"
-  ["javassist-3.19"]="build/lib/"
-  ["jaxen-1.1.6"]="build/lib/"
-  ["jdom-1.0"]="build/lib/"
-  ["joda-time-2.3"]="build/lib/"
+  ["guava-16.0.1"]="$SCRIPT_DIR/build/lib/"
+  ["hamcrest-core-1.3"]="$SCRIPT_DIR/build/lib/"
+  ["javassist-3.19"]="$SCRIPT_DIR/build/lib/"
+  ["jaxen-1.1.6"]="$SCRIPT_DIR/build/lib/"
+  ["jdom-1.0"]="$SCRIPT_DIR/build/lib/"
+  ["joda-time-2.3"]="$SCRIPT_DIR/build/lib/"
   ["JSAP-2.1"]="$MAJOR_HOME/lib/ant:$SRC_BASE_DIR/lib/" # need to override ant.jar in $SRC_BASE_DIR/lib
   ["jvc-1.1"]="$SRC_BASE_DIR/lib/"
   ["nekomud-r16"]="$SRC_BASE_DIR/lib/"
   ["pmd-core-5.2.2"]="$SRC_BASE_DIR/pmd-core/lib"
   ["sat4j-core-2.3.5"]="$SRC_BASE_DIR/lib/"
-  ["shiro-core-1.2.3"]="build/lib/"
+  ["shiro-core-1.2.3"]="$SCRIPT_DIR/build/lib/"
 )
 
 #===============================================================================
 # Subject Program Specific Dependencies
 #===============================================================================
 setup_build_dir() {
-  rm -rf build/lib
-  mkdir -p build/lib
+  rm -rf $SCRIPT_DIR/build/lib
+  mkdir -p $SCRIPT_DIR/build/lib
 }
 
 download_jars() {
   for url in "$@"; do
-    wget -P build/lib "$url"
+    wget -P $SCRIPT_DIR/build/lib "$url"
   done
 }
 
 copy_jars() {
   for path in "$@"; do
-    cp -r "$path" build/lib
+    cp -r "$path" $SCRIPT_DIR/build/lib
   done
 }
 
@@ -357,7 +358,7 @@ fi
 # Method Call Replacement Setup
 #===============================================================================
 # Path to the replacement file for the replacecall agent.
-REPLACEMENT_FILE_PATH="program-config/$SUBJECT_PROGRAM/replacecall-replacements.txt"
+REPLACEMENT_FILE_PATH="$SCRIPT_DIR/program-config/$SUBJECT_PROGRAM/replacecall-replacements.txt"
 
 # Configure method call replacements to avoid undesired behaviors during test
 # generation.
@@ -391,11 +392,11 @@ randoop.main.Main gentests \
 # Add special command suffixes for specific subject programs
 declare -A command_suffix=(
   # Specify valid inputs to prevent infinite loops during test generation/execution
-  ["ClassViewer-5.0.5b"]="--specifications=program-specs/ClassViewer-5.0.5b-specs.json --omit-methods=^com\.jstevh\.viewer\.ClassViewer\.callBrowser\(java\.lang\.String\)$"
-  ["commons-cli-1.2"]="--specifications=program-specs/commons-cli-1.2-specs.json"
-  ["commons-lang3-3.0"]="--specifications=program-specs/commons-lang3-3.0-specs.json"
-  ["guava-16.0.1"]="--specifications=program-specs/guava-16.0.1-specs.json"
-  ["jaxen-1.1.6"]="--specifications=program-specs/jaxen-1.1.6-specs.json"
+  ["ClassViewer-5.0.5b"]="--specifications=$SCRIPT_DIR/program-specs/ClassViewer-5.0.5b-specs.json --omit-methods=^com\.jstevh\.viewer\.ClassViewer\.callBrowser\(java\.lang\.String\)$"
+  ["commons-cli-1.2"]="--specifications=$SCRIPT_DIR/program-specs/commons-cli-1.2-specs.json"
+  ["commons-lang3-3.0"]="--specifications=$SCRIPT_DIR/program-specs/commons-lang3-3.0-specs.json"
+  ["guava-16.0.1"]="--specifications=$SCRIPT_DIR/program-specs/guava-16.0.1-specs.json"
+  ["jaxen-1.1.6"]="--specifications=$SCRIPT_DIR/program-specs/jaxen-1.1.6-specs.json"
 
   # Randoop generates bad sequences for handling webserver lifecycle, don't test them
   ["javassist-3.19"]="--omit-methods=^javassist\.tools\.web\.Webserver\.run\(\)$ --omit-methods=^javassist\.tools\.rmi\.AppletServer\.run\(\)$"
@@ -407,7 +408,7 @@ declare -A command_suffix=(
 
   # Long execution time due to excessive computation for some inputs.
   # Specify input range to reduce computation and test execution time.
-  ["commons-collections4-4.0"]="--specifications=program-specs/commons-collections4-4.0-specs.json"
+  ["commons-collections4-4.0"]="--specifications=$SCRIPT_DIR/program-specs/commons-collections4-4.0-specs.json"
   # Force termination if a test case takes too long to execute
   ["commons-math3-3.2"]="--usethreads=true"
   ["nekomud-r16"]="--omit-methods=^net\.sourceforge\.nekomud\.service\.NetworkService\.stop\(\)$"
@@ -418,7 +419,7 @@ if [ -z "$DISPLAY" ] && [ "$SUBJECT_PROGRAM" == "fixsuite-r48" ]; then
   echo "Running in headless mode. Avoiding spec for fixsuite-r48..."
 else
   # Only add fixsuite-r48 specification if not headless
-  command_suffix["fixsuite-r48"]="--specifications=program-specs/fixsuite-r48-specs.json"
+  command_suffix["fixsuite-r48"]="--specifications=$SCRIPT_DIR/program-specs/fixsuite-r48-specs.json"
 fi
 
 RANDOOP_COMMAND="$RANDOOP_BASE_COMMAND ${command_suffix[$SUBJECT_PROGRAM]}"
@@ -457,8 +458,6 @@ fi
 #===============================================================================
 # Test Generation & Execution
 #===============================================================================
-# Remove old test directories.
-rm -rf "$SCRIPT_DIR"/build/test*
 
 # The value for the -lib command-line option; that is, the classpath.
 LIB_ARG="$CLASSPATH"
@@ -466,7 +465,6 @@ LIB_ARG="$CLASSPATH"
 # shellcheck disable=SC2034 # i counts iterations but is not otherwise used.
 for i in $(seq 1 "$NUM_LOOP"); do
   for RANDOOP_FEATURE in "${RANDOOP_FEATURES[@]}"; do
-    TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 
     FEATURE_NAME=""
     if [[ "$ABLATION" == "true" ]]; then
@@ -477,20 +475,23 @@ for i in $(seq 1 "$NUM_LOOP"); do
     echo "Using $FEATURE_NAME"
     echo
 
+    # This suffix is unique to each instance of this script. We use it to prevent concurrency issues between processes.
+    FILE_SUFFIX="$SUBJECT_PROGRAM-$FEATURE_NAME-$UUID"
+
     # Test directory for each iteration.
-    TEST_DIRECTORY="$SCRIPT_DIR/build/test/$FEATURE_NAME/$TIMESTAMP"
+    TEST_DIRECTORY="$SCRIPT_DIR/build/test/$FILE_SUFFIX"
     mkdir -p "$TEST_DIRECTORY"
 
     # Result directory for each test generation and execution.
-    RESULT_DIR="$SCRIPT_DIR/results/$SUBJECT_PROGRAM-$FEATURE_NAME-$TIMESTAMP"
+    RESULT_DIR="$SCRIPT_DIR/results/$FILE_SUFFIX"
     mkdir -p "$RESULT_DIR"
 
     # If the REDIRECT flag is set, redirect all output to a log file.
     if [[ "$REDIRECT" -eq 1 ]]; then
-      touch mutation_output.txt
+      touch "$RESULT_DIR"/mutation_output.txt
       echo "Redirecting output to $RESULT_DIR/mutation_output.txt..."
       exec 3>&1 4>&2
-      exec 1>> "mutation_output.txt" 2>&1
+      exec 1>> "$RESULT_DIR"/mutation_output.txt 2>&1
     fi
 
     # Bloodhound
@@ -543,6 +544,11 @@ for i in $(seq 1 "$NUM_LOOP"); do
       FEATURE_FLAG="--constant-mining=true"
     fi
 
+    # We cd into the result directory because Randoop generates jacoco.exec in the directory which it is run.
+    # This is a concurrency issue since multiple runs will output a jacoco file to the exact same spot.
+    # Each result directory is unique to each instance of this script.
+    cd $RESULT_DIR
+
     # shellcheck disable=SC2086 # FEATURE_FLAG may contain multiple arguments.
     $RANDOOP_COMMAND --junit-output-dir=$TEST_DIRECTORY $FEATURE_FLAG
 
@@ -554,30 +560,29 @@ for i in $(seq 1 "$NUM_LOOP"); do
     echo "Compiling and mutating subject program..."
     if [[ "$VERBOSE" -eq 1 ]]; then
       echo command:
-      echo "$MAJOR_HOME"/bin/ant -f program-config/"$1"/build.xml -Dbasedir=./ -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" clean compile
+      echo "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/build.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" clean compile
     fi
     echo
-    "$MAJOR_HOME"/bin/ant -f program-config/"$1"/build.xml -Dbasedir=./ -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" clean compile
+    "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/build.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" clean compile
 
     echo
     echo "Compiling tests..."
     if [[ "$VERBOSE" -eq 1 ]]; then
       echo command:
-      echo "$MAJOR_HOME"/bin/ant -f program-config/"$1"/build.xml -Dbasedir=./ -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" compile.tests
+      echo "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/build.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" compile.tests
     fi
     echo
-    "$MAJOR_HOME"/bin/ant -f program-config/"$1"/build.xml -Dbasedir=./ -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" compile.tests
+    "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/build.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" compile.tests
 
     echo
     echo "Running tests with coverage..."
     if [[ "$VERBOSE" -eq 1 ]]; then
       echo command:
-      echo "$MAJOR_HOME"/bin/"$ANT" -f program-config/"$1"/build.xml -Dbasedir=./ -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" test
+      echo "$MAJOR_HOME"/bin/"$ANT" -f "$SCRIPT_DIR"/program-config/"$1"/build.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" test
     fi
     echo
-    "$MAJOR_HOME"/bin/"$ANT" -f program-config/"$1"/build.xml -Dbasedir=./ -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" test
+    "$MAJOR_HOME"/bin/"$ANT" -f "$SCRIPT_DIR"/program-config/"$1"/build.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" test
 
-    mv jacoco.exec "$RESULT_DIR"
     java -jar "$JACOCO_CLI_JAR" report "$RESULT_DIR/jacoco.exec" --classfiles "$SRC_JAR" --sourcefiles "$JAVA_SRC_DIR" --csv "$RESULT_DIR"/report.csv
 
     # Calculate Instruction Coverage
@@ -592,9 +597,6 @@ for i in $(seq 1 "$NUM_LOOP"); do
     branch_coverage=$(echo "scale=4; $branch_covered / ($branch_missed + $branch_covered) * 100" | bc)
     branch_coverage=$(printf "%.2f" "$branch_coverage")
 
-    echo "Instruction Coverage: $instruction_coverage%"
-    echo "Branch Coverage: $branch_coverage%"
-
     # For hamcrest-core-1.3, we need to run the generated tests with EvoSuite's runner
     # in order for mutation analysis to properly work. Randoop-generated tests may report 0 mutants covered
     # during mutation analysis due to issues with test detection, static state handling, or instrumentation.
@@ -606,19 +608,17 @@ for i in $(seq 1 "$NUM_LOOP"); do
         echo "Error: Python is not installed." >&2
         exit 1
       fi
-      "$PYTHON_EXECUTABLE" update_hamcrest_tests.py "$TEST_DIRECTORY"
+      "$PYTHON_EXECUTABLE" "$SCRIPT_DIR"/update_hamcrest_tests.py "$TEST_DIRECTORY"
     fi
 
     echo
     echo "Running tests with mutation analysis..."
     if [[ "$VERBOSE" -eq 1 ]]; then
       echo command:
-      echo "$MAJOR_HOME"/bin/"$ANT" -f program-config/"$1"/build.xml -Dbasedir=./ -Dtest="$TEST_DIRECTORY" -lib "$LIB_ARG" mutation.test
+      echo "$MAJOR_HOME"/bin/"$ANT" -f "$SCRIPT_DIR"/program-config/"$1"/build.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -lib "$LIB_ARG" mutation.test
     fi
     echo
-    "$MAJOR_HOME"/bin/"$ANT" -f program-config/"$1"/build.xml -Dbasedir=./ -Dtest="$TEST_DIRECTORY" -lib "$LIB_ARG" mutation.test
-
-    mv results/summary.csv "$RESULT_DIR"
+    "$MAJOR_HOME"/bin/"$ANT" -f "$SCRIPT_DIR"/program-config/"$1"/build.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -lib "$LIB_ARG" mutation.test
 
     # Calculate Mutation Score
     mutants_generated=$(awk -F, 'NR==2 {print $1}' "$RESULT_DIR"/summary.csv)
@@ -630,34 +630,26 @@ for i in $(seq 1 "$NUM_LOOP"); do
     echo "Branch Coverage: $branch_coverage%"
     echo "Mutation Score: $mutation_score%"
 
-    row="$FEATURE_NAME,$(basename "$SRC_JAR"),$TIME_LIMIT,0,$instruction_coverage%,$branch_coverage%,$mutation_score%"
+    # Determine time limit to log: use TOTAL_TIME if specified, otherwise use SECONDS_PER_CLASS.
+    if [[ -n "$TOTAL_TIME" ]]; then
+      LOGGED_TIME="$TOTAL_TIME"
+    else
+      LOGGED_TIME="$SECONDS_PER_CLASS"
+    fi
+    row="$FEATURE_NAME,$(basename "$SRC_JAR"),$LOGGED_TIME,0,$instruction_coverage,$branch_coverage,$mutation_score"
     # info.csv contains a record of each pass.
-    echo -e "$row" >> results/info.csv
+    echo -e "$row" >> "$SCRIPT_DIR"/results/info.csv
 
     # Copy the test suites to results directory
     echo "Copying test suites to results directory..."
     cp -r "$TEST_DIRECTORY" "$RESULT_DIR"
 
     if [[ "$REDIRECT" -eq 1 ]]; then
-      echo "Move mutation_output to results directory..."
-      mv mutation_output.txt "$RESULT_DIR"
       exec 1>&3 2>&4
       exec 3>&- 4>&-
     fi
 
-    # Move output files into the $RESULT_DIR directory.
-    FILES_TO_MOVE=(
-      "major.log"
-      "mutants.log"
-      "suppression.log"
-      "results/covMap.csv"
-      "results/details.csv"
-      "results/preprocessing.ser"
-      "results/testMap.csv"
-    )
-    for f in "${FILES_TO_MOVE[@]}"; do
-      [ -e "$f" ] && mv "$f" "$RESULT_DIR"
-    done
+    cd "$SCRIPT_DIR"
   done
 done
 
