@@ -24,8 +24,6 @@
 # directory, including `report.pdf`. If you wish to preserve a previous report,
 # **make sure to download or back it up before running this script again**.
 #
-# Please run this script from the experiment-scripts/ directory.
-#
 #------------------------------------------------------------------------------
 # Usage:
 #------------------------------------------------------------------------------
@@ -37,13 +35,15 @@
 #
 #===============================================================================
 
+SCRIPTDIR="$(cd "$(dirname "$0")" > /dev/null 2>&1 && pwd -P)"
+cd "$SCRIPTDIR" || exit 2
+MUTATION_DIR="$(realpath ../)"
+
 # Clean up previous run artifacts
 rm -rf build/bin/*
 rm -rf build/test/*
 rm -rf build/lib/*
 rm -rf results/*
-
-MUTATION_DIR="$(realpath ../)"
 
 #===============================================================================
 # The GRT paper's parameters are as follows:

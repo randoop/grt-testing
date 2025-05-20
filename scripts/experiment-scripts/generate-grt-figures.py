@@ -8,28 +8,22 @@ import argparse
 import sys
 
 """
-This script defines utilities to generate plots and tables based on coverage and mutation score data
-produced by automated testing tools. It supports generation of the following figures:
-
-- Table III: Shows average metric values per (time budget, tool), aggregated over all subject programs.
-- Figure 6: Box-and-whisker plots showing the distribution of metric values across subject programs.
-- Figure 7: Branch coverage distribution by GRT component.
-- Figures 8-9: Line plots showing the progression of branch coverage over time for each GRT component 
-  on two hand-picked subject programs.
-
-NOTE: This script is **not intended to be run directly**.
-Instead, use one of the wrapper scripts provided in the project root, such as:
-
+This script defines utilities to generate plots and tables based on coverage and mutation score.
+This script is **not intended to be run directly**.  Instead, use one of these scripts:
     ./mutation-fig6.sh
     ./mutation-fig7.sh
     ./mutation-fig8-9.sh
 
-These wrapper scripts configure the correct filters, input files, and environments required for each figure.
+This script supports generation of the following figures:
+
+- Table III: Average metric values per (time budget, tool), aggregated over all subject programs.
+- Figure 6: Box-and-whisker plots showing the distribution of metric values across subject programs.
+- Figure 7: Branch coverage distribution by GRT component.
+- Figures 8-9: Line plots showing the progression of branch coverage over time for each GRT
+  component on two hand-picked subject programs.
 
 Usage (for reference only):
-    python generate-grt-figures.py <figure_type>
-
-Where <figure_type> is one of: fig6-table3, fig7, fig8-9
+    python generate-grt-figures.py { fig6-table3 | fig7 | fig8-9 }
 """
 
 def load_data(csv_file='results/info.csv'):
@@ -69,7 +63,7 @@ def generate_table_3(df):
     Generate data for Table III: Average coverage and mutation scores per (tool, time) pair.
     
     This function performs a second level of aggregation, averaging the previously averaged
-    metrics (per tool-time-subject) across all subject programs. The resulting table shows
+    metrics (per tool-time-subject) across all subject programs. The resulting table has
     a single row for each (time limit, tool) configuration.
 
     Parameters:
@@ -141,7 +135,7 @@ def generate_fig_7(df):
 
 def generate_fig_8_9(df):
     """
-    Generate Figures 8–9: Line plots showing branch coverage over time per subject.
+    Generate Figures 8-9: Line plots showing branch coverage over time per subject.
 
     This figure plots branch coverage for each subject program across time limits,
     comparing performance of different Randoop versions.
