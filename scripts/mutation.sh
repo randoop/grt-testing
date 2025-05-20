@@ -82,10 +82,10 @@ REPLACECALL_JAR=$(realpath "build/replacecall-4.3.3.jar")           # For replac
 # Argument Parsing & Experiment Configuration
 #===============================================================================
 
-NUM_LOOP=1     # Number of experiment runs (10 in GRT paper)
-VERBOSE=0      # Verbose option
-REDIRECT=0     # Redirect output to mutation_output.txt
-ABLATION=false # Feature ablation option
+NUM_LOOP=1      # Number of experiment runs (10 in GRT paper)
+VERBOSE=0       # Verbose option
+REDIRECT=0      # Redirect output to mutation_output.txt
+ABLATION=false  # Feature ablation option
 UUID=$(uuidgen) # Generate a unique identifier per instance
 
 # Parse command-line arguments
@@ -260,19 +260,19 @@ declare -A program_deps=(
 # Subject Program Specific Dependencies
 #===============================================================================
 setup_build_dir() {
-  rm -rf $SCRIPT_DIR/build/lib
-  mkdir -p $SCRIPT_DIR/build/lib
+  rm -rf "$SCRIPT_DIR"/build/lib
+  mkdir -p "$SCRIPT_DIR"/build/lib
 }
 
 download_jars() {
   for url in "$@"; do
-    wget -P $SCRIPT_DIR/build/lib "$url"
+    wget -P "$SCRIPT_DIR"/build/lib "$url"
   done
 }
 
 copy_jars() {
   for path in "$@"; do
-    cp -r "$path" $SCRIPT_DIR/build/lib
+    cp -r "$path" "$SCRIPT_DIR"/build/lib
   done
 }
 
@@ -547,7 +547,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
     # We cd into the result directory because Randoop generates jacoco.exec in the directory which it is run.
     # This is a concurrency issue since multiple runs will output a jacoco file to the exact same spot.
     # Each result directory is unique to each instance of this script.
-    cd $RESULT_DIR
+    cd "$RESULT_DIR"
 
     # shellcheck disable=SC2086 # FEATURE_FLAG may contain multiple arguments.
     $RANDOOP_COMMAND --junit-output-dir=$TEST_DIRECTORY $FEATURE_FLAG
