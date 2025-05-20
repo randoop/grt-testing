@@ -86,7 +86,7 @@ NUM_LOOP=1      # Number of experiment runs (10 in GRT paper)
 VERBOSE=0       # Verbose option
 REDIRECT=0      # Redirect output to mutation_output.txt
 ABLATION=false  # Feature ablation option
-UID=$(uuidgen) # Seed that is unique to each instance of this script
+UUID=$(uuidgen) # Generate a unique identifier per instance
 
 # Parse command-line arguments
 while getopts ":hvrf:at:c:n:" opt; do
@@ -239,40 +239,40 @@ JAVA_SRC_DIR=$SRC_BASE_DIR${program_src[$SUBJECT_PROGRAM]}
 # Map subject programs to their dependencies
 declare -A program_deps=(
   ["a4j-1.0b"]="$SRC_BASE_DIR/jars/"
-  ["commons-compress-1.8"]="$SCRIPT_DIR/build/lib/$UID/"
-  ["easymock-3.2"]="$SCRIPT_DIR/build/lib/$UID/"
+  ["commons-compress-1.8"]="$SCRIPT_DIR/build/lib/$UUID/"
+  ["easymock-3.2"]="$SCRIPT_DIR/build/lib/$UUID/"
   ["fixsuite-r48"]="$SRC_BASE_DIR/lib/"
-  ["guava-16.0.1"]="$SCRIPT_DIR/build/lib/$UID/"
-  ["hamcrest-core-1.3"]="$SCRIPT_DIR/build/lib/$UID/"
-  ["javassist-3.19"]="$SCRIPT_DIR/build/lib/$UID/"
-  ["jaxen-1.1.6"]="$SCRIPT_DIR/build/lib/$UID/"
-  ["jdom-1.0"]="$SCRIPT_DIR/build/lib/$UID/"
-  ["joda-time-2.3"]="$SCRIPT_DIR/build/lib/$UID/"
+  ["guava-16.0.1"]="$SCRIPT_DIR/build/lib/$UUID/"
+  ["hamcrest-core-1.3"]="$SCRIPT_DIR/build/lib/$UUID/"
+  ["javassist-3.19"]="$SCRIPT_DIR/build/lib/$UUID/"
+  ["jaxen-1.1.6"]="$SCRIPT_DIR/build/lib/$UUID/"
+  ["jdom-1.0"]="$SCRIPT_DIR/build/lib/$UUID/"
+  ["joda-time-2.3"]="$SCRIPT_DIR/build/lib/$UUID/"
   ["JSAP-2.1"]="$MAJOR_HOME/lib/ant:$SRC_BASE_DIR/lib/" # need to override ant.jar in $SRC_BASE_DIR/lib
   ["jvc-1.1"]="$SRC_BASE_DIR/lib/"
   ["nekomud-r16"]="$SRC_BASE_DIR/lib/"
   ["pmd-core-5.2.2"]="$SRC_BASE_DIR/pmd-core/lib"
   ["sat4j-core-2.3.5"]="$SRC_BASE_DIR/lib/"
-  ["shiro-core-1.2.3"]="$SCRIPT_DIR/build/lib/$UID/"
+  ["shiro-core-1.2.3"]="$SCRIPT_DIR/build/lib/$UUID/"
 )
 
 #===============================================================================
 # Subject Program Specific Dependencies
 #===============================================================================
 setup_build_dir() {
-  rm -rf "$SCRIPT_DIR"/build/lib/"$UID"
-  mkdir -p "$SCRIPT_DIR"/build/lib/"$UID"
+  rm -rf "$SCRIPT_DIR/build/lib/$UUID"
+  mkdir -p "$SCRIPT_DIR/build/lib/$UUID"
 }
 
 download_jars() {
   for url in "$@"; do
-    wget -P "$SCRIPT_DIR"/build/lib/"$UID" "$url"
+    wget -P "$SCRIPT_DIR/build/lib/$UUID" "$url"
   done
 }
 
 copy_jars() {
   for path in "$@"; do
-    cp -r "$path" "$SCRIPT_DIR"/build/lib/"$UID"
+    cp -r "$path" "$SCRIPT_DIR/build/lib/$UUID"
   done
 }
 
@@ -458,6 +458,7 @@ fi
 #===============================================================================
 # Test Generation & Execution
 #===============================================================================
+
 # The value for the -lib command-line option; that is, the classpath.
 LIB_ARG="$CLASSPATH"
 
@@ -475,7 +476,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
     echo
 
     # This suffix is unique to each instance of this script. We use it to prevent concurrency issues between processes.
-    FILE_SUFFIX="$SUBJECT_PROGRAM-$FEATURE_NAME-$UID"
+    FILE_SUFFIX="$SUBJECT_PROGRAM-$FEATURE_NAME-$UUID"
 
     # Test directory for each iteration.
     TEST_DIRECTORY="$SCRIPT_DIR/build/test/$FILE_SUFFIX"
@@ -546,8 +547,8 @@ for i in $(seq 1 "$NUM_LOOP"); do
     fi
 
     # We cd into the result directory because Randoop generates jacoco.exec in the directory in
-    # which it is run.  This is a concurrency issue since multiple runs will output a jacoco file to
-    # the exact same spot.  Each result directory is unique to each instance of this script.
+    # which it is run. This is a concurrency issue since multiple runs will output a jacoco file to
+    # the exact same spot. Each result directory is unique to each instance of this script.
     cd "$RESULT_DIR"
 
     # shellcheck disable=SC2086 # FEATURE_FLAG may contain multiple arguments.
@@ -639,7 +640,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
     fi
     row="$FEATURE_NAME,$(basename "$SRC_JAR"),$LOGGED_TIME,0,$instruction_coverage,$branch_coverage,$mutation_score"
     # info.csv contains a record of each pass.
-    echo -e "$row" >> "$SCRIPT_DIR/results/info.csv"
+    echo -e "$row" >> "$SCRIPT_DIR"/results/info.csv
 
     # Copy the test suites to results directory
     echo "Copying test suites to results directory..."

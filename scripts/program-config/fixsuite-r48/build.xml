@@ -85,7 +85,7 @@
                 haltonfailure="false"
                 fork="true" forkmode="once">
             <formatter type="brief" usefile="false"/>
-            <classpath path="build/bin:${major-rt.jar}"/>
+            <classpath path="${bindir}:${major-rt.jar}"/>
             <jvmarg value="-javaagent:${basedir}/build/jacocoagent.jar=destfile=${basedir}/${jacoco.destfile}"/>
             <jvmarg value="-Xbootclasspath/a:${basedir}/build/replacecall-4.3.3.jar"/>
             <jvmarg value="-javaagent:${basedir}/build/replacecall-4.3.3.jar"/>
