@@ -10,7 +10,7 @@ import sys
 """
 This script defines utilities to generate plots and tables based on coverage and mutation score.
 This script is **not intended to be run directly**.  Instead, use one of these scripts:
-    ./mutation-fig6.sh
+    ./mutation-fig6-table3.sh
     ./mutation-fig7.sh
     ./mutation-fig8-9.sh
 
@@ -26,7 +26,7 @@ Usage (for reference only):
     python generate-grt-figures.py { fig6-table3 | fig7 | fig8-9 }
 """
 
-def load_data(csv_file='results/info.csv'):
+def load_data(csv_file):
     """
     Load the CSV file containing coverage and mutation score data.
 
@@ -70,13 +70,39 @@ def generate_table_3(df):
         df (pd.DataFrame): Data averaged over repeated runs (output of average_over_loops).
 
     Returns:
-        pd.DataFrame: Aggregated data for Table III.
+        matplotlib.figure.Figure: The composite figure representing Table III.
     """
-    return df.groupby(['RandoopVersion', 'TimeLimit']).agg({
+
+    grouped = df.groupby(['RandoopVersion', 'TimeLimit']).agg({
         'InstructionCoverage': 'mean',
         'BranchCoverage': 'mean',
         'MutationScore': 'mean'
     }).reset_index()
+
+
+    fig = plt.figure(figsize=(10, 6))
+    plt.axis('off')
+
+
+    table_data = [['Time', 'Feature', 'Insn. cov. [%]', 'Branch cov. [%]', 'Mutation score [%]']]
+    for _, row in grouped.iterrows():
+        table_data.append([
+            row['TimeLimit'],
+            row['RandoopVersion'],
+            f"{row['InstructionCoverage']:.2f}",
+            f"{row['BranchCoverage']:.2f}",
+            f"{row['MutationScore']:.2f}"
+        ])
+
+
+    table = plt.table(cellText=table_data, loc='center', cellLoc='center')
+    table.auto_set_font_size(False)
+    table.set_fontsize(10)
+    table.scale(1, 1.5)
+
+    fig.suptitle('Table III: Average Coverage and Mutation Scores', fontsize=16, weight='bold')
+
+    return fig
 
 def generate_fig_6(df):
     """
@@ -93,22 +119,30 @@ def generate_fig_6(df):
         matplotlib.figure.Figure: The composite figure containing three subplots.
     """
     sns.set(style="whitegrid")
-    fig, axes = plt.subplots(1, 3, figsize=(18, 6))
+    fig, axes = plt.subplots(1, 3, figsize=(18, 6), sharey=False)
 
     sns.boxplot(x='TimeLimit', y='InstructionCoverage', hue='RandoopVersion', data=df, ax=axes[0])
     axes[0].set_xlabel('Time Limit (s)')
     axes[0].set_ylabel('Instruction Coverage (%)')
-    axes[0].get_legend().set_title('')
 
     sns.boxplot(x='TimeLimit', y='BranchCoverage', hue='RandoopVersion', data=df, ax=axes[1])
     axes[1].set_xlabel('Time Limit (s)')
     axes[1].set_ylabel('Branch Coverage (%)')
-    axes[1].get_legend().set_title('')
 
     sns.boxplot(x='TimeLimit', y='MutationScore', hue='RandoopVersion', data=df, ax=axes[2])
     axes[2].set_xlabel('Time Limit (s)')
     axes[2].set_ylabel('Mutation Score (%)')
-    axes[2].get_legend().set_title('')
+
+    for ax in axes:
+        ax.get_legend().remove()
+
+    handles, labels = axes[0].get_legend_handles_labels()
+    fig.legend(handles, labels, loc='upper center', ncol=len(labels), fontsize=10, title='GRT Component', bbox_to_anchor=(0.5, 1.05))
+
+    fig.suptitle('Figure 6: Coverage and Mutation Scores of Randoop, GRT, and EvoSuite (2s-60s Time Budgets)', 
+                 fontsize=16, weight='bold', y=1.12)
+
+    fig.tight_layout(rect=[0, 0, 1, 0.95])
 
     return fig
 
@@ -127,10 +161,10 @@ def generate_fig_7(df):
     """
     sns.set(style="whitegrid")
     fig, ax = plt.subplots(figsize=(8, 6))
-    sns.boxplot(x='RandoopVersion', y='BranchCoverage', data=df, ax=ax)
-    ax.set_xlabel('Randoop Version')
+    sns.boxplot(x='GRT Component', y='BranchCoverage', data=df, ax=ax)
+    ax.set_xlabel('GRT Component')
     ax.set_ylabel('Branch Coverage (%)')
-    ax.set_title('Figure 7: Branch Coverage by Randoop Version', fontsize=14, weight='bold')
+    fig.suptitle('Figure 7: Branch Coverage by GRT Component', fontsize=16, weight='bold')
     return fig
 
 def generate_fig_8_9(df):
@@ -157,10 +191,10 @@ def generate_fig_8_9(df):
             version_data = subject_data[subject_data['RandoopVersion'] == version]
             ax.plot(version_data['TimeLimit'], version_data['BranchCoverage'], label=version, marker='o')
 
-        ax.set_title(f'Figure 8-9: Branch Coverage over Time — {subject}', fontsize=14, weight='bold')
+        fig.suptitle(f'Figure 8-9: Branch Coverage over Time — {subject}', fontsize=16, weight='bold')
         ax.set_xlabel('Time Limit (s)')
         ax.set_ylabel('Branch Coverage (%)')
-        ax.legend(title='Randoop Version')
+        ax.legend(title='GRT Component')
         figures.append(fig)
 
     return figures
@@ -173,35 +207,22 @@ def save_to_pdf(df, fig_type):
         df (pd.DataFrame): Input data (averaged over repetitions).
         fig_type (str): One of: 'fig6-table3', 'fig7', 'fig8-9'.
     """
-    pdf_filename = f'results/{fig_type}-report.pdf'
+    pdf_filename = f'../results/{fig_type}-report.pdf'
 
     with PdfPages(pdf_filename) as pdf:
         if fig_type == 'fig6-table3':
-            grouped = generate_table_3(df)
-            fig_table = plt.figure(figsize=(8, 6))
-            plt.text(0.5, 0.9, 'Table III: Average Coverage and Mutation Scores', ha='center', va='center', fontsize=14, weight='bold')
-            plt.axis('off')
-            table_data = []
-            for _, row in grouped.iterrows():
-                table_data.append([row['TimeLimit'], row['RandoopVersion'], f"{row['InstructionCoverage']:.2f}",
-                                f"{row['BranchCoverage']:.2f}", f"{row['MutationScore']:.2f}"])
-            table_data.insert(0, ['Time', 'Feature', 'Insn. cov. [%]', 'Branch cov. [%]', 'Mutation score[%]'])
-            table = plt.table(cellText=table_data, loc='center', cellLoc='center')
-            table.auto_set_font_size(False)
-            table.set_fontsize(10)
-            table.scale(1, 1.5)
-            pdf.savefig(fig_table)
-            plt.close(fig_table)
-
-            fig = generate_fig_6(df)
-            plt.suptitle('Figure 6: Box and Whisker Plots of Coverage and Mutation Scores', fontsize=14, weight='bold')
-            pdf.savefig(fig)
-            plt.close(fig)
+            table_3 = generate_table_3(df)
+            pdf.savefig(table_3)
+            plt.close(table_3)
+            
+            fig_6 = generate_fig_6(df)
+            pdf.savefig(fig_6)
+            plt.close(fig_6)
 
         elif fig_type == 'fig7':
-            fig = generate_fig_7(df)
-            pdf.savefig(fig)
-            plt.close(fig)
+            fig_7 = generate_fig_7(df)
+            pdf.savefig(fig_7)
+            plt.close(fig_7)
 
         elif fig_type == 'fig8-9':
             figs = generate_fig_8_9(df)
@@ -221,3 +242,10 @@ def main():
     """
     parser = argparse.ArgumentParser(description='Generate figures from coverage data.')
     parser.add_argument('figure', choices=['fig6-table3', 'fig7', 'fig8-9'], help='Figure to generate')
+    args = parser.parse_args()
+
+    df = average_over_loops(load_data(f'../results/{args.figure}-info.csv'))
+    save_to_pdf(df, args.figure)
+
+if __name__ == "__main__":
+    main()

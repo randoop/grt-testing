@@ -40,7 +40,7 @@
 set -e
 set -o pipefail
 
-USAGE_STRING="usage: mutation.sh [-h] [-v] [-r] [-f features] [-a] [-t total_time] [-c time_per_class] [-n num_iterations] TEST-CASE-NAME
+USAGE_STRING="usage: mutation.sh [-h] [-v] [-r] [-f features] [-a] [-i info_file_prefix] [-t total_time] [-c time_per_class] [-n num_iterations] TEST-CASE-NAME
   -h    Displays this help message.
   -v    Enables verbose mode.
   -r    Redirect Randoop and Major output to results/result/mutation_output.txt.
@@ -48,6 +48,9 @@ USAGE_STRING="usage: mutation.sh [-h] [-v] [-r] [-f features] [-a] [-t total_tim
         Available features: BASELINE, BLOODHOUND, ORIENTEERING, BLOODHOUND_AND_ORIENTEERING, DETECTIVE, GRT_FUZZING, ELEPHANT_BRAIN, CONSTANT_MINING.
         example usage: -f BASELINE,BLOODHOUND
   -a    Perform feature ablation studies.
+  -i N  Prefix for the info output filename (default: "info.csv").
+        Output will be written to results/<prefix>-info.csv.
+        Example: -i fig6-table3 -> results/fig6-table3-info.csv
   -t N  Total time limit for Randoop test generation (in seconds).
   -c N  Per-class time limit for Randoop (in seconds, default: 2s/class).
         Mutually exclusive with -t.
@@ -89,7 +92,7 @@ ABLATION=false  # Feature ablation option
 UUID=$(uuidgen) # Generate a unique identifier per instance
 
 # Parse command-line arguments
-while getopts ":hvrf:at:c:n:" opt; do
+while getopts ":hvrf:ai:t:c:n:" opt; do
   case ${opt} in
     h)
       # Display help message
@@ -109,6 +112,9 @@ while getopts ":hvrf:at:c:n:" opt; do
       ;;
     a)
       ABLATION=true
+      ;;
+    i)
+      INFO_PREFIX="$OPTARG"
       ;;
     t)
       # Total experiment time, mutually exclusive with SECONDS_PER_CLASS
@@ -138,6 +144,14 @@ while getopts ":hvrf:at:c:n:" opt; do
 done
 
 shift $((OPTIND - 1))
+
+if [[ -z "$INFO_PREFIX" ]]; then
+  # If INFO_PREFIX is not set, default to "info.csv"
+  INFO_FILENAME="info.csv"
+else
+  # If INFO_PREFIX is set, use it for the filename (INFO_PREFIX-info.csv)
+  INFO_FILENAME="$INFO_PREFIX-info.csv"
+fi
 
 # Enforce that mutually exclusive options are not bundled together
 if [[ -n "$TOTAL_TIME" ]] && [[ -n "$SECONDS_PER_CLASS" ]]; then
@@ -450,9 +464,9 @@ echo
 
 # Output file for runtime information
 mkdir -p results/
-if [ ! -f "results/info.csv" ]; then
-  touch results/info.csv
-  echo -e "RandoopVersion,FileName,TimeLimit,Seed,InstructionCoverage,BranchCoverage,MutationScore" > results/info.csv
+if [ ! -f "results/$INFO_FILENAME" ]; then
+  touch "results/$INFO_FILENAME"
+  echo -e "RandoopVersion,FileName,TimeLimit,Seed,InstructionCoverage,BranchCoverage,MutationScore" > "results/$INFO_FILENAME"
 fi
 
 #===============================================================================
@@ -639,8 +653,8 @@ for i in $(seq 1 "$NUM_LOOP"); do
       LOGGED_TIME="$SECONDS_PER_CLASS"
     fi
     row="$FEATURE_NAME,$(basename "$SRC_JAR"),$LOGGED_TIME,0,$instruction_coverage,$branch_coverage,$mutation_score"
-    # info.csv contains a record of each pass.
-    echo -e "$row" >> "$SCRIPT_DIR"/results/info.csv
+    # results/$-INFO_FILENAME.csv contains a record of each pass.
+    echo -e "$row" >> "$SCRIPT_DIR/results/$INFO_FILENAME"
 
     # Copy the test suites to results directory
     echo "Copying test suites to results directory..."
