@@ -239,21 +239,21 @@ JAVA_SRC_DIR=$SRC_BASE_DIR${program_src[$SUBJECT_PROGRAM]}
 # Map subject programs to their dependencies
 declare -A program_deps=(
   ["a4j-1.0b"]="$SRC_BASE_DIR/jars/"
-  ["commons-compress-1.8"]="$SCRIPT_DIR/build/lib/$UUID"
-  ["easymock-3.2"]="$SCRIPT_DIR/build/lib/$UUID"
+  ["commons-compress-1.8"]="$SCRIPT_DIR/build/lib/$UUID/"
+  ["easymock-3.2"]="$SCRIPT_DIR/build/lib/$UUID/"
   ["fixsuite-r48"]="$SRC_BASE_DIR/lib/"
-  ["guava-16.0.1"]="$SCRIPT_DIR/build/lib/$UUID"
-  ["hamcrest-core-1.3"]="$SCRIPT_DIR/build/lib/$UUID"
-  ["javassist-3.19"]="$SCRIPT_DIR/build/lib/$UUID"
-  ["jaxen-1.1.6"]="$SCRIPT_DIR/build/lib/$UUID"
-  ["jdom-1.0"]="$SCRIPT_DIR/build/lib/$UUID"
-  ["joda-time-2.3"]="$SCRIPT_DIR/build/lib/$UUID"
+  ["guava-16.0.1"]="$SCRIPT_DIR/build/lib/$UUID/"
+  ["hamcrest-core-1.3"]="$SCRIPT_DIR/build/lib/$UUID/"
+  ["javassist-3.19"]="$SCRIPT_DIR/build/lib/$UUID/"
+  ["jaxen-1.1.6"]="$SCRIPT_DIR/build/lib/$UUID/"
+  ["jdom-1.0"]="$SCRIPT_DIR/build/lib/$UUID/"
+  ["joda-time-2.3"]="$SCRIPT_DIR/build/lib/$UUID/"
   ["JSAP-2.1"]="$MAJOR_HOME/lib/ant:$SRC_BASE_DIR/lib/" # need to override ant.jar in $SRC_BASE_DIR/lib
   ["jvc-1.1"]="$SRC_BASE_DIR/lib/"
   ["nekomud-r16"]="$SRC_BASE_DIR/lib/"
   ["pmd-core-5.2.2"]="$SRC_BASE_DIR/pmd-core/lib"
   ["sat4j-core-2.3.5"]="$SRC_BASE_DIR/lib/"
-  ["shiro-core-1.2.3"]="$SCRIPT_DIR/build/lib/$UUID"
+  ["shiro-core-1.2.3"]="$SCRIPT_DIR/build/lib/$UUID/"
 )
 
 #===============================================================================
