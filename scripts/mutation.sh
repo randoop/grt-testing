@@ -476,7 +476,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
     echo
 
     # This suffix is unique to each instance of this script. We use it to prevent concurrency issues between processes.
-    FILE_SUFFIX="$SUBJECT_PROGRAM-$FEATURE_NAME-$UID"
+    FILE_SUFFIX="$SUBJECT_PROGRAM-$FEATURE_NAME-$UUID"
 
     # Test directory for each iteration.
     TEST_DIRECTORY="$SCRIPT_DIR/build/test/$FILE_SUFFIX"
