@@ -86,7 +86,7 @@ NUM_LOOP=1     # Number of experiment runs (10 in GRT paper)
 VERBOSE=0      # Verbose option
 REDIRECT=0     # Redirect output to mutation_output.txt
 ABLATION=false # Feature ablation option
-UID=$(uuidgen) # Seed that is unique to each instance of this script
+UID=$(uuidgen) # Generate a unique identifier per instance
 
 # Parse command-line arguments
 while getopts ":hvrf:at:c:n:" opt; do
@@ -241,18 +241,18 @@ declare -A program_deps=(
   ["a4j-1.0b"]="$SRC_BASE_DIR/jars/"
   ["commons-compress-1.8"]="$SCRIPT_DIR/build/lib/$UID/"
   ["easymock-3.2"]="$SCRIPT_DIR/build/lib/$UID/"
-  ["fixsuite-r48"]="$SRC_BASE_DIR/lib/"
+  ["fixsuite-r48"]="$SRC_BASE_DIR/lib/$UID/"
   ["guava-16.0.1"]="$SCRIPT_DIR/build/lib/$UID/"
   ["hamcrest-core-1.3"]="$SCRIPT_DIR/build/lib/$UID/"
   ["javassist-3.19"]="$SCRIPT_DIR/build/lib/$UID/"
   ["jaxen-1.1.6"]="$SCRIPT_DIR/build/lib/$UID/"
   ["jdom-1.0"]="$SCRIPT_DIR/build/lib/$UID/"
   ["joda-time-2.3"]="$SCRIPT_DIR/build/lib/$UID/"
-  ["JSAP-2.1"]="$MAJOR_HOME/lib/ant:$SRC_BASE_DIR/lib/" # need to override ant.jar in $SRC_BASE_DIR/lib
-  ["jvc-1.1"]="$SRC_BASE_DIR/lib/"
-  ["nekomud-r16"]="$SRC_BASE_DIR/lib/"
-  ["pmd-core-5.2.2"]="$SRC_BASE_DIR/pmd-core/lib"
-  ["sat4j-core-2.3.5"]="$SRC_BASE_DIR/lib/"
+  ["JSAP-2.1"]="$MAJOR_HOME/lib/ant:$SRC_BASE_DIR/lib/$UID/" # need to override ant.jar in $SRC_BASE_DIR/lib
+  ["jvc-1.1"]="$SRC_BASE_DIR/lib/$UID/"
+  ["nekomud-r16"]="$SRC_BASE_DIR/lib/$UID/"
+  ["pmd-core-5.2.2"]="$SRC_BASE_DIR/pmd-core/lib/$UID/"
+  ["sat4j-core-2.3.5"]="$SRC_BASE_DIR/lib/$UID/"
   ["shiro-core-1.2.3"]="$SCRIPT_DIR/build/lib/$UID/"
 )
 
@@ -260,19 +260,19 @@ declare -A program_deps=(
 # Subject Program Specific Dependencies
 #===============================================================================
 setup_build_dir() {
-  rm -rf "$SCRIPT_DIR"/build/lib/"$UID"
-  mkdir -p "$SCRIPT_DIR"/build/lib/"$UID"
+  rm -rf "$SCRIPT_DIR/build/lib/$UID/"
+  mkdir -p "$SCRIPT_DIR/build/lib/$UID/"
 }
 
 download_jars() {
   for url in "$@"; do
-    wget -P "$SCRIPT_DIR"/build/lib/"$UID" "$url"
+    wget -P "$SCRIPT_DIR/build/lib/$UID" "$url"
   done
 }
 
 copy_jars() {
   for path in "$@"; do
-    cp -r "$path" "$SCRIPT_DIR"/build/lib/"$UID"
+    cp -r "$path" "$SCRIPT_DIR/build/lib/$UID"
   done
 }
 
@@ -458,6 +458,7 @@ fi
 #===============================================================================
 # Test Generation & Execution
 #===============================================================================
+
 # The value for the -lib command-line option; that is, the classpath.
 LIB_ARG="$CLASSPATH"
 
@@ -639,7 +640,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
     fi
     row="$FEATURE_NAME,$(basename "$SRC_JAR"),$LOGGED_TIME,0,$instruction_coverage,$branch_coverage,$mutation_score"
     # info.csv contains a record of each pass.
-    echo -e "$row" >> "$SCRIPT_DIR/results/info.csv"
+    echo -e "$row" >> "$SCRIPT_DIR"/results/info.csv
 
     # Copy the test suites to results directory
     echo "Copying test suites to results directory..."
