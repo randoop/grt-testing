@@ -19,7 +19,7 @@ For instructions on using the scripts, run the following command:
 ./scripts/mutation.sh -h
 ```
 
-### Running Experiments
+### Running GRT Experiments
 See file `scripts/experiment-scripts/README.md`.
 
 ### Subject Programs
