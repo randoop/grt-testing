@@ -82,10 +82,10 @@ REPLACECALL_JAR=$(realpath "build/replacecall-4.3.3.jar")           # For replac
 # Argument Parsing & Experiment Configuration
 #===============================================================================
 
-NUM_LOOP=1      # Number of experiment runs (10 in GRT paper)
-VERBOSE=0       # Verbose option
-REDIRECT=0      # Redirect output to mutation_output.txt
-ABLATION=false  # Feature ablation option
+NUM_LOOP=1     # Number of experiment runs (10 in GRT paper)
+VERBOSE=0      # Verbose option
+REDIRECT=0     # Redirect output to mutation_output.txt
+ABLATION=false # Feature ablation option
 UID=$(uuidgen) # Seed that is unique to each instance of this script
 
 # Parse command-line arguments
