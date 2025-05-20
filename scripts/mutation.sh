@@ -239,40 +239,40 @@ JAVA_SRC_DIR=$SRC_BASE_DIR${program_src[$SUBJECT_PROGRAM]}
 # Map subject programs to their dependencies
 declare -A program_deps=(
   ["a4j-1.0b"]="$SRC_BASE_DIR/jars/"
-  ["commons-compress-1.8"]="$SCRIPT_DIR/build/lib/"
-  ["easymock-3.2"]="$SCRIPT_DIR/build/lib/"
+  ["commons-compress-1.8"]="$SCRIPT_DIR/build/lib/$UUID"
+  ["easymock-3.2"]="$SCRIPT_DIR/build/lib/$UUID"
   ["fixsuite-r48"]="$SRC_BASE_DIR/lib/"
-  ["guava-16.0.1"]="$SCRIPT_DIR/build/lib/"
-  ["hamcrest-core-1.3"]="$SCRIPT_DIR/build/lib/"
-  ["javassist-3.19"]="$SCRIPT_DIR/build/lib/"
-  ["jaxen-1.1.6"]="$SCRIPT_DIR/build/lib/"
-  ["jdom-1.0"]="$SCRIPT_DIR/build/lib/"
-  ["joda-time-2.3"]="$SCRIPT_DIR/build/lib/"
+  ["guava-16.0.1"]="$SCRIPT_DIR/build/lib/$UUID"
+  ["hamcrest-core-1.3"]="$SCRIPT_DIR/build/lib/$UUID"
+  ["javassist-3.19"]="$SCRIPT_DIR/build/lib/$UUID"
+  ["jaxen-1.1.6"]="$SCRIPT_DIR/build/lib/$UUID"
+  ["jdom-1.0"]="$SCRIPT_DIR/build/lib/$UUID"
+  ["joda-time-2.3"]="$SCRIPT_DIR/build/lib/$UUID"
   ["JSAP-2.1"]="$MAJOR_HOME/lib/ant:$SRC_BASE_DIR/lib/" # need to override ant.jar in $SRC_BASE_DIR/lib
   ["jvc-1.1"]="$SRC_BASE_DIR/lib/"
   ["nekomud-r16"]="$SRC_BASE_DIR/lib/"
   ["pmd-core-5.2.2"]="$SRC_BASE_DIR/pmd-core/lib"
   ["sat4j-core-2.3.5"]="$SRC_BASE_DIR/lib/"
-  ["shiro-core-1.2.3"]="$SCRIPT_DIR/build/lib/"
+  ["shiro-core-1.2.3"]="$SCRIPT_DIR/build/lib/$UUID"
 )
 
 #===============================================================================
 # Subject Program Specific Dependencies
 #===============================================================================
 setup_build_dir() {
-  rm -rf "$SCRIPT_DIR"/build/lib
-  mkdir -p "$SCRIPT_DIR"/build/lib
+  rm -rf "$SCRIPT_DIR/build/lib/$UUID"
+  mkdir -p "$SCRIPT_DIR/build/lib/$UUID"
 }
 
 download_jars() {
   for url in "$@"; do
-    wget -P "$SCRIPT_DIR"/build/lib "$url"
+    wget -P "$SCRIPT_DIR/build/lib/$UUID" "$url"
   done
 }
 
 copy_jars() {
   for path in "$@"; do
-    cp -r "$path" "$SCRIPT_DIR"/build/lib
+    cp -r "$path" "$SCRIPT_DIR/build/lib/$UUID"
   done
 }
 
@@ -480,10 +480,12 @@ for i in $(seq 1 "$NUM_LOOP"); do
 
     # Test directory for each iteration.
     TEST_DIRECTORY="$SCRIPT_DIR/build/test/$FILE_SUFFIX"
+    rm -rf "$TEST_DIRECTORY"
     mkdir -p "$TEST_DIRECTORY"
 
     # Result directory for each test generation and execution.
     RESULT_DIR="$SCRIPT_DIR/results/$FILE_SUFFIX"
+    rm -rf "$RESULT_DIR"
     mkdir -p "$RESULT_DIR"
 
     # If the REDIRECT flag is set, redirect all output to a log file.
@@ -544,9 +546,9 @@ for i in $(seq 1 "$NUM_LOOP"); do
       FEATURE_FLAG="--constant-mining=true"
     fi
 
-    # We cd into the result directory because Randoop generates jacoco.exec in the directory which it is run.
-    # This is a concurrency issue since multiple runs will output a jacoco file to the exact same spot.
-    # Each result directory is unique to each instance of this script.
+    # We cd into the result directory because Randoop generates jacoco.exec in the directory in
+    # which it is run. This is a concurrency issue since multiple runs will output a jacoco file to 
+    # the exact same spot. Each result directory is unique to each instance of this script.
     cd "$RESULT_DIR"
 
     # shellcheck disable=SC2086 # FEATURE_FLAG may contain multiple arguments.
