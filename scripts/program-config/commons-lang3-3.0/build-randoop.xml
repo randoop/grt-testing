@@ -8,7 +8,7 @@
     <property name="major.jar" value="build/major/lib/major.jar"/>
     <property name="mutator" value=""/>
     <property name="plugin" value="-Xplugin:MajorPlugin ${mutator}"/>
-    <property name="jacoco.destfile" value="results/jacoco.exec"/>
+    <property name="jacoco.destfile" value="${resultdir}/jacoco.exec"/>
 
 <!-- Import JaCoCo Ant tasks -->
     <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
@@ -17,23 +17,23 @@
 
 <!-- Target to clean up -->
     <target name="clean" description="Clean">
-        <delete dir="build/bin"/>
+        <delete dir="${bindir}"/>
         <delete>
-            <fileset dir="./results" includes="*.csv" excludes="info.csv"/>
-            <fileset dir="./results" includes="*.log"/>
+            <fileset dir="${resultdir}" includes="*.csv" excludes="info.csv"/>
+            <fileset dir="${resultdir}" includes="*.log"/>
         </delete>
     </target>
 
 <!-- Target to initialize build -->
     <target name="init">
-        <mkdir dir="build/bin"/>
+        <mkdir dir="${bindir}"/>
     </target>
 
 <!-- Target to compile the project -->
     <target name="compile" depends="init" description="Compile">
         <javac includeantruntime="true" 
                srcdir="${src}"
-               destdir="build/bin"
+               destdir="${bindir}"
                debug="yes"
                source="1.5"
                target="1.5"
@@ -47,7 +47,7 @@
     <target name="compile.tests" description="Compile all tests">
         <javac includeantruntime="true"
                srcdir="${test}"
-               destdir="build/bin"
+               destdir="${bindir}"
                debug="yes">
         </javac>
     </target>
@@ -59,15 +59,15 @@
                showoutput="false"
                mutationAnalysis="true"
                excludeFailingTests="false"
-               serializedMapsFile="results/preprocessing.ser"
+               serializedMapsFile="${resultdir}/preprocessing.ser"
                mutantsLogFile="mutants.log"
-               summaryFile="results/summary.csv"
-               mutantDetailsFile="results/details.csv"
-               covMapFile="results/covMap.csv"
-               testMapFile="results/testMap.csv"
-               killMapFile="results/killMap.csv"
+               summaryFile="${resultdir}/summary.csv"
+               mutantDetailsFile="${resultdir}/details.csv"
+               covMapFile="${resultdir}/covMap.csv"
+               testMapFile="${resultdir}/testMap.csv"
+               killMapFile="${resultdir}/killMap.csv"
                testOrder="sort_methods">
-            <classpath path="build/bin"/>
+            <classpath path="${bindir}"/>
             <batchtest fork="false">
                 <fileset dir="${test}">
                     <include name="**/*Test*.java"/>
@@ -86,7 +86,7 @@
                     haltonfailure="false"
                     fork="true" forkmode="once">
                 <formatter type="brief" usefile="false"/>
-                <classpath path="build/bin"/>
+                <classpath path="${bindir}"/>
 
                 <batchtest fork="no">
                     <fileset dir="${test}">
