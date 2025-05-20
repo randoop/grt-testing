@@ -30,12 +30,6 @@
 #------------------------------------------------------------------------------
 # See file `mutation-prerequisites.md`.
 
-#------------------------------------------------------------------------------
-# Randoop versions (for GRT features):
-#------------------------------------------------------------------------------
-# For Demand-driven (PR #1260), GRT Fuzzing (PR #1304), and Elephant Brain (PR #1347),
-# checkout the respective pull requests from the Randoop repository and build locally.
-
 # Fail this script on errors.
 set -e
 set -o pipefail
@@ -44,10 +38,10 @@ USAGE_STRING="usage: mutation-randoop.sh [-h] [-v] [-r] [-f features] [-a] [-t t
   -h    Displays this help message.
   -v    Enables verbose mode.
   -r    Redirect Randoop and Major output to results/result/mutation_output.txt.
-  -f    Specify the features to use.
+  -f    Specify the Randoop features to use.
         Available features: BASELINE, BLOODHOUND, ORIENTEERING, BLOODHOUND_AND_ORIENTEERING, DETECTIVE, GRT_FUZZING, ELEPHANT_BRAIN, CONSTANT_MINING.
         example usage: -f BASELINE,BLOODHOUND
-  -a    Perform feature ablation studies.
+  -a    Perform ablation studies for Randoop features.
   -t N  Total time limit for Randoop test generation (in seconds).
   -c N  Per-class time limit for Randoop (in seconds, default: 2s/class).
         Mutually exclusive with -t.
@@ -97,11 +91,9 @@ while getopts ":hvrf:at:c:n:" opt; do
       exit 0
       ;;
     v)
-      # Verbose mode
       VERBOSE=1
       ;;
     r)
-      # Redirect output to a log file
       REDIRECT=1
       ;;
     f)
@@ -260,6 +252,7 @@ declare -A program_deps=(
 #===============================================================================
 # Subject Program Specific Dependencies
 #===============================================================================
+
 setup_build_dir() {
   rm -rf "$SCRIPT_DIR/build/lib/$UUID"
   mkdir -p "$SCRIPT_DIR/build/lib/$UUID"
@@ -422,6 +415,7 @@ fi
 #===============================================================================
 # Method Call Replacement Setup
 #===============================================================================
+
 # Path to the replacement file for the replacecall agent.
 REPLACEMENT_FILE_PATH="$SCRIPT_DIR/program-config/$SUBJECT_PROGRAM/replacecall-replacements.txt"
 
@@ -448,7 +442,7 @@ RANDOOP_BASE_COMMAND="java \
 -Xbootclasspath/a:$JACOCO_AGENT_JAR:$REPLACECALL_JAR \
 -javaagent:$JACOCO_AGENT_JAR \
 -javaagent:$REPLACECALL_COMMAND \
--classpath $RANDOOP_CLASSPATH:$RANDOOP_JAR \
+-classpath $CLASSPATH:$RANDOOP_JAR \
 randoop.main.Main gentests \
 --testjar=$SRC_JAR \
 --time-limit=$TIME_LIMIT \
@@ -494,15 +488,9 @@ RANDOOP_COMMAND="$RANDOOP_BASE_COMMAND ${command_suffix[$SUBJECT_PROGRAM]}"
 #===============================================================================
 # Build System Preparation
 #===============================================================================
+
 cd "$JAVA_SRC_DIR" || exit 1
 
-# For slf4j-api-1.7.12 and javax.mail, this Randoop script uses the main branch, which retains the default namespaces (e.g., org.slf4j, javax.mail),
-# since Randoop does not restrict test generation based on package names.
-#
-# However, EvoSuite contains hardcoded checks that prevent test generation for certain core namespaces like org.slf4j and javax.mail.
-# To work around this, the EvoSuite script (which will eventually be merged) uses the include-major branch,
-# where the packages have been renamed to org1.slf4j and javax1.mail.
-#
 # We also update the jarfiles accordingly to reflect this behavior in both scripts.
 
 # Only checkout include-major if the subject program is neither slf4j-api-1.7.12 nor javax.mail-1.5.1
@@ -683,11 +671,13 @@ for i in $(seq 1 "$NUM_LOOP"); do
     branch_coverage=$(echo "scale=4; $branch_covered / ($branch_missed + $branch_covered) * 100" | bc)
     branch_coverage=$(printf "%.2f" "$branch_coverage")
 
-    # For hamcrest-core-1.3, we need to run the generated tests with EvoSuite's runner
-    # in order for mutation analysis to properly work. Randoop-generated tests may report 0 mutants covered
-    # during mutation analysis due to issues with test detection, static state handling, or instrumentation.
-    # This script modifies the tests to run with the EvoSuite runner, which ensures proper isolation and compatibility
-    # for accurate mutant coverage.
+    # For hamcrest-core-1.3, we need to run the generated tests with EvoSuite's
+    # runner in order for mutation analysis to properly work. Randoop-generated
+    # tests may report 0 mutants covered during mutation analysis due to issues
+    # with test detection, static state handling, or instrumentation.  This
+    # script modifies the tests to run with the EvoSuite runner, which ensures
+    # proper isolation and compatibility for accurate mutant coverage.
+
     if [ "$SUBJECT_PROGRAM" == "hamcrest-core-1.3" ]; then
       PYTHON_EXECUTABLE=$(command -v python3 2> /dev/null || command -v python 2> /dev/null)
       if [ -z "$PYTHON_EXECUTABLE" ]; then
@@ -742,6 +732,7 @@ done
 #===============================================================================
 # Build System Cleanup
 #===============================================================================
+
 echo "Restoring $JAVA_SRC_DIR to main branch"
 # switch to main branch (may already be there)
 (

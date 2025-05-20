@@ -68,6 +68,7 @@ EVOSUITE_JAR=$(realpath "${SCRIPT_DIR}/build/evosuite-1.2.0.jar") # EvoSuite jar
 #===============================================================================
 # Argument Parsing & Experiment Configuration
 #===============================================================================
+
 NUM_LOOP=1 # Number of experiment runs (10 in GRT paper)
 VERBOSE=0  # Verbose option
 REDIRECT=0 # Redirect output to mutation_output.txt
@@ -226,6 +227,7 @@ declare -A project_deps=(
 #===============================================================================
 # Subject Program Specific Dependencies
 #===============================================================================
+
 setup_build_dir() {
   rm -rf build/lib
   mkdir -p build/lib
@@ -399,7 +401,7 @@ fi
 EVOSUITE_COMMAND="java \
 -jar $EVOSUITE_JAR \
 -target $SRC_JAR \
--projectCP $EVOSUITE_CLASSPATH:$EVOSUITE_JAR \
+-projectCP $CLASSPATH:$EVOSUITE_JAR \
 -Dsearch_budget=$TIME_LIMIT \
 -Dreplace_gui=true \
 -Drandom_seed=0"
@@ -407,17 +409,21 @@ EVOSUITE_COMMAND="java \
 #===============================================================================
 # Build System Preparation
 #===============================================================================
+
 # Installs all of the jarfiles in build/lib to maven (used for measuring code coverage).
 ./generate-mvn-dependencies.sh "$SUBJECT_PROGRAM"
 
 cd "$JAVA_SRC_DIR" || exit 1
 
-# For slf4j-api-1.7.12 and javax.mail, this EvoSuite script uses the include-major branch, which adjusts the default namespaces
-# (e.g., org1.slf4j, javax1.mail).
+# EvoSuite contains hardcoded checks that prevent test generation for certain
+# core namespaces (like org.slf4j and javax.mail).  Therefore, for
+# slf4j-api-1.7.12 and javax.mail, this EvoSuite script uses the include-major
+# branch, which adjusts the default namespaces (e.g., org1.slf4j, javax1.mail).
 #
-# This is because EvoSuite contains hardcoded checks that prevent test generation for certain core namespaces (like org.slf4j and javax.mail).
-# Therefore, we need to use the include-major branch to avoid issues during test generation.
-#
+# The EvoSuite script also temporarily modifies the corresponding source jarfile
+# to reflect this namespace change during test generation, and then restores the
+# original JARs afterward to maintain consistency.
+
 # We also update the jarfiles accordingly to reflect this behavior in both scripts.
 
 # Always ensure we're using the include-major branch for EvoSuite
@@ -425,7 +431,6 @@ if git checkout include-major > /dev/null 2>&1; then
   echo "Checked out include-major."
 fi
 
-# Handle specific program downloads
 if [ "$SUBJECT_PROGRAM" == "slf4j-api-1.7.12" ]; then
   # Make sure slf4j-api-1.7.12 has modified namespace
   wget -O "$SCRIPT_DIR"/../subject-programs/slf4j-api-1.7.12.jar https://raw.githubusercontent.com/randoop/grt-slf4j-api-1.7.12/include-major/slf4j-api-1.7.12.jar
@@ -451,6 +456,7 @@ fi
 #===============================================================================
 # Test Generation & Execution
 #===============================================================================
+
 # Remove old test directories.
 rm -rf "$SCRIPT_DIR"/build/evosuite-tests/ && rm -rf "$SCRIPT_DIR"/build/evosuite-report/ && rm -rf "$SCRIPT_DIR"/build/target/
 
@@ -476,6 +482,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
 
   # Result directory for each test generation and execution.
   RESULT_DIR="$SCRIPT_DIR/results/$SUBJECT_PROGRAM-EVOSUITE-$TIMESTAMP"
+  rm -rf "$RESULT_DIR"
   mkdir -p "$RESULT_DIR"
 
   # If the REDIRECT flag is set, redirect all output to a log file.
@@ -496,6 +503,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
   #===============================================================================
   # Coverage & Mutation Analysis
   #===============================================================================
+
   echo
   echo "Compiling and mutating subject program..."
   if [[ "$VERBOSE" -eq 1 ]]; then
@@ -593,6 +601,7 @@ done
 #===============================================================================
 # Build System Cleanup
 #===============================================================================
+
 echo "Restoring $JAVA_SRC_DIR to main branch"
 # switch to main branch (may already be there)
 (
