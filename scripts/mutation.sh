@@ -48,7 +48,7 @@ USAGE_STRING="usage: mutation.sh [-h] [-v] [-r] [-f features] [-a] [-i info_file
         Available features: BASELINE, BLOODHOUND, ORIENTEERING, BLOODHOUND_AND_ORIENTEERING, DETECTIVE, GRT_FUZZING, ELEPHANT_BRAIN, CONSTANT_MINING.
         example usage: -f BASELINE,BLOODHOUND
   -a    Perform feature ablation studies.
-  -i N  Prefix for the info output filename (default: "info.csv").
+  -i N  Prefix for the info output filename (default: \"info.csv\").
         Output will be written to results/<prefix>-info.csv.
         Example: -i fig6-table3 -> results/fig6-table3-info.csv
   -t N  Total time limit for Randoop test generation (in seconds).

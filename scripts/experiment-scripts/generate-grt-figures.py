@@ -28,7 +28,7 @@ Usage (for reference only):
 
 def load_data(csv_file):
     """
-    Load the CSV file containing coverage and mutation score data.
+    Load a CSV file containing coverage and mutation score data.
 
     Parameters:
         csv_file (str): Path to the CSV file.
@@ -50,7 +50,7 @@ def average_over_loops(df):
         df (pd.DataFrame): Raw data with repeated executions per configuration.
 
     Returns:
-        pd.DataFrame: Data averaged over repeated runs, retaining one row per (tool, time, subject).
+        pd.DataFrame: Data averaged over repeated runs, retaining one row per (tool, timelimit, subject).
     """
     return df.groupby(['RandoopVersion', 'TimeLimit', 'FileName'], as_index=False).agg({
         'InstructionCoverage': 'mean',
@@ -60,14 +60,14 @@ def average_over_loops(df):
 
 def generate_table_3(df):
     """
-    Generate data for Table III: Average coverage and mutation scores per (tool, time) pair.
+    Generate data for Table III: Average coverage and mutation scores per (tool, timelimit) pair.
     
     This function performs a second level of aggregation, averaging the previously averaged
     metrics (per tool-time-subject) across all subject programs. The resulting table has
     a single row for each (time limit, tool) configuration.
 
     Parameters:
-        df (pd.DataFrame): Data averaged over repeated runs (output of average_over_loops).
+        df (pd.DataFrame): Data averaged over repeated runs (output of `average_over_loops`).
 
     Returns:
         matplotlib.figure.Figure: The composite figure representing Table III.
@@ -113,7 +113,7 @@ def generate_fig_6(df):
     across subject programs.
 
     Parameters:
-        df (pd.DataFrame): Data averaged over repeated runs but not across subjects.
+        df (pd.DataFrame): Data averaged over repeated runs (output of `average_over_loops`).
 
     Returns:
         matplotlib.figure.Figure: The composite figure containing three subplots.
@@ -154,7 +154,7 @@ def generate_fig_7(df):
     for each Randoop version, showing how the tool's performance varies.
 
     Parameters:
-        df (pd.DataFrame): Data averaged over repeated runs but not across subjects.
+        df (pd.DataFrame): Data averaged over repeated runs (output of `average_over_loops`).
 
     Returns:
         matplotlib.figure.Figure: Box plot figure.
@@ -175,7 +175,7 @@ def generate_fig_8_9(df):
     comparing performance of different Randoop versions.
 
     Parameters:
-        df (pd.DataFrame): Data averaged over repeated runs.
+        df (pd.DataFrame): Data averaged over repeated runs (output of `average_over_loops`).
 
     Returns:
         list of matplotlib.figure.Figure: One figure per subject.
@@ -201,13 +201,13 @@ def generate_fig_8_9(df):
 
 def save_to_pdf(df, fig_type):
     """
-    Save the requested figure/table to a PDF file, named using the figure type.
+    Save a figure/table of the given type to a PDF file.
 
     Parameters:
-        df (pd.DataFrame): Input data (averaged over repetitions).
+        df (pd.DataFrame): Data averaged over repeated runs (output of `average_over_loops`).
         fig_type (str): One of: 'fig6-table3', 'fig7', 'fig8-9'.
     """
-    pdf_filename = f'../results/{fig_type}-report.pdf'
+    pdf_filename = f'../results/{fig_type}.pdf'
 
     with PdfPages(pdf_filename) as pdf:
         if fig_type == 'fig6-table3':
@@ -244,7 +244,7 @@ def main():
     parser.add_argument('figure', choices=['fig6-table3', 'fig7', 'fig8-9'], help='Figure to generate')
     args = parser.parse_args()
 
-    df = average_over_loops(load_data(f'../results/{args.figure}-info.csv'))
+    df = average_over_loops(load_data(f'../results/{args.figure}.csv'))
     save_to_pdf(df, args.figure)
 
 if __name__ == "__main__":
