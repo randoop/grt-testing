@@ -30,5 +30,7 @@ Each experiment script writes its output to the `results/` directory. This inclu
 `results/[experiment].csv`: the raw collected data from multiple `mutation.sh` runs.
 `results/[experiment].pdf`: the final rendered figure(s) and/or table(s) for the experiment.
 
-**Note:** Running an experiment script will overwrite any existing results for that specific experiment. For instance, results from
-`./mutation-fig7.sh` and `./mutation-fig8-9.sh` are stored separately and won't interfere. However, running `./mutation-fig7.sh` multiple times will replace previous outputs. To preserve existing results, be sure to copy or download them before rerunning the same script.
+**Note:** Running an experiment script will overwrite any existing results for
+that specific experiment, but will not overwrite results for other scripts.  To
+preserve existing results, be sure to copy or download them before rerunning the
+same script.

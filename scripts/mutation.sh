@@ -12,7 +12,7 @@
 # Directories and files:
 # - `build/test*`: Randoop-created test suites.
 # - `build/bin`: Compiled tests and code.
-# - `results/info.csv`: statistics about each iteration.
+# - `results/$OUTPUT_FILE`: statistics about each iteration.
 # - `results/`: everything else specific to the most recent iteration.
 
 #------------------------------------------------------------------------------
@@ -40,7 +40,7 @@
 set -e
 set -o pipefail
 
-USAGE_STRING="usage: mutation.sh [-h] [-v] [-r] [-f features] [-a] [-i info_file_prefix] [-t total_time] [-c time_per_class] [-n num_iterations] TEST-CASE-NAME
+USAGE_STRING="usage: mutation.sh [-h] [-v] [-r] [-f features] [-a] [-o output_file] [-t total_time] [-c time_per_class] [-n num_iterations] TEST-CASE-NAME
   -h    Displays this help message.
   -v    Enables verbose mode.
   -r    Redirect Randoop and Major output to results/result/mutation_output.txt.
@@ -48,9 +48,7 @@ USAGE_STRING="usage: mutation.sh [-h] [-v] [-r] [-f features] [-a] [-i info_file
         Available features: BASELINE, BLOODHOUND, ORIENTEERING, BLOODHOUND_AND_ORIENTEERING, DETECTIVE, GRT_FUZZING, ELEPHANT_BRAIN, CONSTANT_MINING.
         example usage: -f BASELINE,BLOODHOUND
   -a    Perform feature ablation studies.
-  -i N  Prefix for the info output filename (default: \"info.csv\").
-        Output will be written to results/<prefix>-info.csv.
-        Example: -i fig6-table3 -> results/fig6-table3-info.csv
+  -o N  Csv output filename; should end in \".csv\"; if relative, should not include a directory name.
   -t N  Total time limit for Randoop test generation (in seconds).
   -c N  Per-class time limit for Randoop (in seconds, default: 2s/class).
         Mutually exclusive with -t.
@@ -92,7 +90,7 @@ ABLATION=false  # Feature ablation option
 UUID=$(uuidgen) # Generate a unique identifier per instance
 
 # Parse command-line arguments
-while getopts ":hvrf:ai:t:c:n:" opt; do
+while getopts ":hvrf:ao:t:c:n:" opt; do
   case ${opt} in
     h)
       # Display help message
@@ -113,8 +111,8 @@ while getopts ":hvrf:ai:t:c:n:" opt; do
     a)
       ABLATION=true
       ;;
-    i)
-      INFO_PREFIX="$OPTARG"
+    o)
+      OUTPUT_FILE="$OPTARG"
       ;;
     t)
       # Total experiment time, mutually exclusive with SECONDS_PER_CLASS
@@ -145,18 +143,15 @@ done
 
 shift $((OPTIND - 1))
 
-if [[ -z "$INFO_PREFIX" ]]; then
-  # If INFO_PREFIX is not set, default to "info.csv"
-  INFO_FILENAME="info.csv"
-else
-  # If INFO_PREFIX is set, use it for the filename (INFO_PREFIX-info.csv)
-  INFO_FILENAME="$INFO_PREFIX-info.csv"
+if [[ -z "$OUTPUT_FILE" ]]; then
+  echo "No -o command-line argument given."
+  exit 2
 fi
 
 # Enforce that mutually exclusive options are not bundled together
 if [[ -n "$TOTAL_TIME" ]] && [[ -n "$SECONDS_PER_CLASS" ]]; then
   echo "Options -t and -c cannot be used together in any form (e.g., -t -c)."
-  exit 1
+  exit 2
 fi
 
 # Default to 2 seconds per class if not specified
@@ -462,11 +457,12 @@ cd - || exit 1
 echo "Using Randoop to generate tests."
 echo
 
-# Output file for runtime information
-mkdir -p results/
-if [ ! -f "results/$INFO_FILENAME" ]; then
-  touch "results/$INFO_FILENAME"
-  echo -e "RandoopVersion,FileName,TimeLimit,Seed,InstructionCoverage,BranchCoverage,MutationScore" > "results/$INFO_FILENAME"
+# Handle relative and absolute output files; make sure output file exists.
+RESULTS_DIR="$SCRIPT_DIR/results"
+mkdir "$RESULTS_DIR"
+OUTPUT_FILE=$(cd "$RESULTS_DIR" && realpath "$OUTPUT_FILE")
+if [ ! -f "$OUTPUT_FILE" ]; then
+  echo -e "RandoopVersion,FileName,TimeLimit,Seed,InstructionCoverage,BranchCoverage,MutationScore" > "$OUTPUT_FILE"
 fi
 
 #===============================================================================
@@ -653,8 +649,10 @@ for i in $(seq 1 "$NUM_LOOP"); do
       LOGGED_TIME="$SECONDS_PER_CLASS"
     fi
     row="$FEATURE_NAME,$(basename "$SRC_JAR"),$LOGGED_TIME,0,$instruction_coverage,$branch_coverage,$mutation_score"
-    # results/$-INFO_FILENAME.csv contains a record of each pass.
-    echo -e "$row" >> "$SCRIPT_DIR/results/$INFO_FILENAME"
+    # $OUTPUT_FILE is a csv file that contains a record of each pass.
+    # On Unix, ">>" is generally atomic as long as the content is small enough
+    # (usually the limit is at least 1024).
+    echo -e "$row" >> "$OUTPUT_FILE"
 
     # Copy the test suites to results directory
     echo "Copying test suites to results directory..."
