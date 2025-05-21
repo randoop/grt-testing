@@ -54,8 +54,8 @@ pip install seaborn
 rm -rf "$MUTATION_DIR"/build/bin/*
 rm -rf "$MUTATION_DIR"/build/test/*
 rm -rf "$MUTATION_DIR"/build/lib/*
-rm -f $MUTATION_DIR"/results/fig6-table3-report.pdf
-rm -f $MUTATION_DIR"/results/fig6-table3-info.csv
+rm -f "$MUTATION_DIR"/results/fig6-table3-report.pdf
+rm -f "$MUTATION_DIR"/results/fig6-table3-info.csv
 
 #===============================================================================
 # The GRT paper's parameters are as follows:
@@ -119,7 +119,9 @@ TASKS=()
 for cseconds in "${SECONDS_PER_CLASS[@]}"; do
   for program in "${SUBJECT_PROGRAMS[@]}"; do
     for feature in "${FEATURES[@]}"; do
-      TASKS+=("$MUTATION_DIR $cseconds $program $feature $NUM_LOOP")
+      for i in $(seq 1 "$NUM_LOOP"); do
+        TASKS+=("$MUTATION_DIR $cseconds $program $feature")
+      done
     done
   done
 done
@@ -131,9 +133,8 @@ run_task() {
   cseconds=$2
   program=$3
   feature=$4
-  num_loop=$5
-  echo "Running: (cd $mutation_dir && ./mutation.sh -c $cseconds -f $feature -r -i fig6-table3 -n $num_loop $program)"
-  (cd "$mutation_dir" && ./mutation.sh -c "$cseconds" -f "$feature" -r -i "fig6-table3" -n "$num_loop" "$program")
+  echo "Running: (cd $mutation_dir && ./mutation.sh -c $cseconds -f $feature -r -i fig6-table3 $program)"
+  (cd "$mutation_dir" && ./mutation.sh -c "$cseconds" -f "$feature" -r -i "fig6-table3" "$program")
 }
 
 export -f run_task

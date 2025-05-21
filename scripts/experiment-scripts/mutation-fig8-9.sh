@@ -54,11 +54,11 @@ pip install matplotlib
 pip install seaborn
 
 # Clean up previous run artifacts
-rm -rf $MUTATION_DIR/build/bin/*
-rm -rf $MUTATION_DIR/build/test/*
-rm -rf $MUTATION_DIR/build/lib/*
-rm -f $MUTATION_DIR/results/fig8-9-report.pdf
-rm -f $MUTATION_DIR/results/fig8-9-info.csv
+rm -rf "$MUTATION_DIR"/build/bin/*
+rm -rf "$MUTATION_DIR"/build/test/*
+rm -rf "$MUTATION_DIR"/build/lib/*
+rm -f "$MUTATION_DIR"/results/fig8-9-report.pdf
+rm -f "$MUTATION_DIR"/results/fig8-9-info.csv
 
 #===============================================================================
 # The GRT paper's parameters are as follows:
@@ -94,7 +94,9 @@ TASKS=()
 for tseconds in "${TOTAL_SECONDS[@]}"; do
   for program in "${SUBJECT_PROGRAMS[@]}"; do
     for feature in "${FEATURES[@]}"; do
-      TASKS+=("$MUTATION_DIR $tseconds $program $feature $NUM_LOOP")
+      for i in $(seq 1 "$NUM_LOOP"); do
+        TASKS+=("$MUTATION_DIR $tseconds $program $feature")
+      done
     done
   done
 done
@@ -106,9 +108,8 @@ run_task() {
   tseconds=$2
   program=$3
   feature=$4
-  num_loop=$5
-  echo "Running: (cd $mutation_dir && ./mutation.sh -c $tseconds -f $feature -r -i fig8-9 -n $num_loop $program)"
-  (cd "$mutation_dir" && ./mutation.sh -t "$tseconds" -f "$feature" -r -i "fig8-9" -n "$num_loop" "$program")
+  echo "Running: (cd $mutation_dir && ./mutation.sh -c $tseconds -f $feature -r -i fig8-9 $program)"
+  (cd "$mutation_dir" && ./mutation.sh -t "$tseconds" -f "$feature" -r -i "fig8-9" "$program")
 }
 
 export -f run_task
