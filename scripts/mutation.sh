@@ -77,7 +77,7 @@ MAJOR_HOME=$(realpath "${SCRIPT_DIR}/build/major/")                 # Major home
 RANDOOP_JAR=$(realpath "${SCRIPT_DIR}/build/randoop-all-4.3.3.jar") # Randoop jar file
 JACOCO_AGENT_JAR=$(realpath "${SCRIPT_DIR}/build/jacocoagent.jar")  # For Bloodhound
 JACOCO_CLI_JAR=$(realpath "${SCRIPT_DIR}/build/jacococli.jar")      # For coverage report generation
-REPLACECALL_JAR=$(realpath "build/replacecall-4.3.3.jar")           # For replacing undesired method calls
+REPLACECALL_JAR=$(realpath "${SCRIPT_DIR}/build/replacecall-4.3.3.jar") # For replacing undesired method calls
 
 #===============================================================================
 # Argument Parsing & Experiment Configuration
@@ -260,7 +260,7 @@ declare -A program_deps=(
   ["JSAP-2.1"]="$MAJOR_HOME/lib/ant:$SRC_BASE_DIR/lib/" # need to override ant.jar in $SRC_BASE_DIR/lib
   ["jvc-1.1"]="$SRC_BASE_DIR/lib/"
   ["nekomud-r16"]="$SRC_BASE_DIR/lib/"
-  ["pmd-core-5.2.2"]="$SRC_BASE_DIR/pmd-core/lib"
+  ["pmd-core-5.2.2"]="$SRC_BASE_DIR/pmd-core/lib/"
   ["sat4j-core-2.3.5"]="$SRC_BASE_DIR/lib/"
   ["shiro-core-1.2.3"]="$SCRIPT_DIR/build/lib/$UUID/"
 )
@@ -459,7 +459,7 @@ echo
 
 # Handle relative and absolute output files; make sure output file exists.
 RESULTS_DIR="$SCRIPT_DIR/results"
-mkdir "$RESULTS_DIR"
+mkdir -p "$RESULTS_DIR"
 OUTPUT_FILE=$(cd "$RESULTS_DIR" && realpath "$OUTPUT_FILE")
 if [ ! -f "$OUTPUT_FILE" ]; then
   echo -e "RandoopVersion,FileName,TimeLimit,Seed,InstructionCoverage,BranchCoverage,MutationScore" > "$OUTPUT_FILE"

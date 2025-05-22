@@ -161,7 +161,7 @@ def generate_fig_7(df):
     """
     sns.set(style="whitegrid")
     fig, ax = plt.subplots(figsize=(8, 6))
-    sns.boxplot(x='GRT Component', y='BranchCoverage', data=df, ax=ax)
+    sns.boxplot(x='RandoopVersion', y='BranchCoverage', data=df, ax=ax)
     ax.set_xlabel('GRT Component')
     ax.set_ylabel('Branch Coverage (%)')
     fig.suptitle('Figure 7: Branch Coverage by GRT Component', fontsize=16, weight='bold')

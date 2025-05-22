@@ -1,18 +1,18 @@
-<project name="Script" default="compile" basedir="." xmlns:jacoco="antlib:org.jacoco.ant">
+<project name="Script" default="compile" basedir="${basedir}" xmlns:jacoco="antlib:org.jacoco.ant">
 
 <!-- ##############################################
       Path to major.jar and (optional) mml file
       Use -Dmutator="mml:<path-to-mml-file>" to set a
       particular (compiled) mml-file.
      ############################################## -->
-    <property name="major.jar" value="build/major/lib/major.jar"/>
+    <property name="major.jar" value="${basedir}/build/major/lib/major.jar"/>
     <property name="mutator" value=""/>
     <property name="plugin" value="-Xplugin:MajorPlugin ${mutator}"/>
     <property name="jacoco.destfile" value="${resultdir}/jacoco.exec"/>
 
 <!-- Import JaCoCo Ant tasks -->
     <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
-        <classpath path="build/jacocoant.jar"/>
+        <classpath path="${basedir}/build/jacocoant.jar"/>
     </taskdef>
 
 <!-- Target to clean up -->
@@ -39,7 +39,7 @@
                target="1.5">
             <classpath location="${major.jar}"/>
             <compilerarg value="${plugin}"/>
-            <compilerarg value="-Xbootclasspath/p:../subject-programs/src/tiny-sql-2.26/src/com/sqlmagic/tinysql/jdk5.rt.jar"/>
+            <compilerarg value="-Xbootclasspath/p:${basedir}/../subject-programs/src/tiny-sql-2.26/src/com/sqlmagic/tinysql/jdk5.rt.jar"/>
         </javac>
     </target>
 
