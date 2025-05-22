@@ -92,7 +92,9 @@ for cseconds in "${SECONDS_PER_CLASS[@]}"; do
 done
 
 # Function for parallel execution.
-# Each run's output is redirected to mutation_output.txt within its respective results directory.
+# Each time the script runs, it creates a new subdirectory under results/, e.g., results/commons-cli-1.2-BASELINE-{UUIDSEED}/.
+# Each run's standard output is redirected to mutation_output.txt within its corresponding results subdirectory.
+# Other related files (e.g., jacoco.exec, mutants.log, major.log) are also stored there.
 run_task() {
   mutation_dir=$1
   cseconds=$2
