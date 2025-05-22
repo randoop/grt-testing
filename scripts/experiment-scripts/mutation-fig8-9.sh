@@ -1,0 +1,119 @@
+#!/bin/bash
+
+#===============================================================================
+# Overview
+#===============================================================================
+# This script generates Figure 8-9 from the GRT paper.
+# It executes `mutation.sh` multiple times, varying:
+#   - Subject programs (SUBJECT_PROGRAMS)
+#   - Feature variants (FEATURES)
+#   - Total execution time (TOTAL_TIME)
+#
+# Note: Figure 10 could not be generated because we weren't able to locate
+# the subject program scch-collection-1.0.
+#
+#===============================================================================
+# Output
+#===============================================================================
+# `results/fig8-9.csv`: Raw data appended to by `mutation.sh`.
+# `results/fig8-9.pdf`: Figures 8-9, generated from `results/fig8-9.csv`.
+#
+#===============================================================================
+# Important Notes
+#===============================================================================
+# This script overwrites previous output (results/fig8-9.pdf and results/fig8-9.csv).
+# If you wish to preserve previous files, **download or back it up before
+# re-running this script**.
+#
+#------------------------------------------------------------------------------
+# Usage:
+#------------------------------------------------------------------------------
+#   mutation-fig8-9.sh
+#------------------------------------------------------------------------------
+# Prerequisites:
+#------------------------------------------------------------------------------
+# See file `mutation-prerequisites.md`.
+#
+#===============================================================================
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" > /dev/null 2>&1 && pwd -P)"
+MUTATION_DIR="$(realpath "$SCRIPT_DIR"/../)"
+
+PYTHON_EXECUTABLE=$(command -v python3 2> /dev/null || command -v python 2> /dev/null)
+if [ -z "$PYTHON_EXECUTABLE" ]; then
+  echo "Error: Python is not installed." >&2
+  exit 1
+fi
+
+pip install pandas
+pip install matplotlib
+pip install seaborn
+
+# Clean up previous run artifacts
+rm -rf "$MUTATION_DIR"/build/bin/*
+rm -rf "$MUTATION_DIR"/build/test/*
+rm -rf "$MUTATION_DIR"/build/lib/*
+rm -f "$MUTATION_DIR"/results/fig8-9.pdf
+rm -f "$MUTATION_DIR"/results/fig8-9.csv
+
+#===============================================================================
+# The GRT paper's parameters are as follows:
+NUM_LOOP=10
+TOTAL_SECONDS=(100 200 300 400 500 600)
+SUBJECT_PROGRAMS=(
+  "asm-5.0.1"
+  "tiny-sql-2.26"
+)
+FEATURES=(CONSTANT_MINING GRT_FUZZING ELEPHANT_BRAIN DETECTIVE ORIENTEERING BLOODHOUND GRT)
+
+# Temporary parameters for testing that override the defaults, since we haven't
+# implemented all GRT features. See mutation.sh for a list of different features
+# you can specify.
+NUM_LOOP=3
+TOTAL_SECONDS=(100 200)
+FEATURES=(
+  "BLOODHOUND"
+  "ORIENTEERING"
+)
+
+NUM_CORES=$(($(nproc) - 4))
+echo "$(basename "$0"): Running $NUM_CORES concurrent processes."
+
+#===============================================================================
+# Task Generation & Execution
+#===============================================================================
+TASKS=()
+for tseconds in "${TOTAL_SECONDS[@]}"; do
+  for program in "${SUBJECT_PROGRAMS[@]}"; do
+    for feature in "${FEATURES[@]}"; do
+      for _ in $(seq 1 "$NUM_LOOP"); do
+        TASKS+=("$MUTATION_DIR $tseconds $program $feature")
+      done
+    done
+  done
+done
+
+# Function for parallel execution.
+# Each time the script runs, it creates a new subdirectory under results/, e.g., results/commons-cli-1.2-BASELINE-{UUIDSEED}/.
+# Each run's standard output is redirected to mutation_output.txt within its corresponding results subdirectory.
+# Other related files (e.g., jacoco.exec, mutants.log, major.log) are also stored there.
+run_task() {
+  mutation_dir=$1
+  tseconds=$2
+  program=$3
+  feature=$4
+  echo "Running: mutation.sh -t $tseconds -f $feature -r -o fig8-9.csv $program"
+  "$mutation_dir"/mutation.sh -t "$tseconds" -f "$feature" -r -o fig8-9.csv "$program"
+}
+
+export -f run_task
+
+# Run tasks in parallel.
+printf "%s\n" "${TASKS[@]}" | parallel -j $NUM_CORES --colsep ' ' run_task
+
+#===============================================================================
+# Figure Generation (Fig. 8 and 9)
+#===============================================================================
+
+# Outputs figures to result/fig8-9.pdf
+"$PYTHON_EXECUTABLE" "$MUTATION_DIR"/experiment-scripts/generate-grt-figures.py fig8-9

@@ -12,7 +12,7 @@
 # Directories and files:
 # - `build/test*`: Randoop-created test suites.
 # - `build/bin`: Compiled tests and code.
-# - `results/info.csv`: statistics about each iteration.
+# - `results/$OUTPUT_FILE`: statistics about each iteration.
 # - `results/`: everything else specific to the most recent iteration.
 
 #------------------------------------------------------------------------------
@@ -40,7 +40,7 @@
 set -e
 set -o pipefail
 
-USAGE_STRING="usage: mutation.sh [-h] [-v] [-r] [-f features] [-a] [-t total_time] [-c time_per_class] [-n num_iterations] TEST-CASE-NAME
+USAGE_STRING="usage: mutation.sh [-h] [-v] [-r] [-f features] [-a] [-o output_file] [-t total_time] [-c time_per_class] [-n num_iterations] TEST-CASE-NAME
   -h    Displays this help message.
   -v    Enables verbose mode.
   -r    Redirect Randoop and Major output to results/result/mutation_output.txt.
@@ -48,6 +48,7 @@ USAGE_STRING="usage: mutation.sh [-h] [-v] [-r] [-f features] [-a] [-t total_tim
         Available features: BASELINE, BLOODHOUND, ORIENTEERING, BLOODHOUND_AND_ORIENTEERING, DETECTIVE, GRT_FUZZING, ELEPHANT_BRAIN, CONSTANT_MINING.
         example usage: -f BASELINE,BLOODHOUND
   -a    Perform feature ablation studies.
+  -o N  Csv output filename; should end in \".csv\"; if relative, should not include a directory name.
   -t N  Total time limit for Randoop test generation (in seconds).
   -c N  Per-class time limit for Randoop (in seconds, default: 2s/class).
         Mutually exclusive with -t.
@@ -76,7 +77,7 @@ MAJOR_HOME=$(realpath "${SCRIPT_DIR}/build/major/")                 # Major home
 RANDOOP_JAR=$(realpath "${SCRIPT_DIR}/build/randoop-all-4.3.3.jar") # Randoop jar file
 JACOCO_AGENT_JAR=$(realpath "${SCRIPT_DIR}/build/jacocoagent.jar")  # For Bloodhound
 JACOCO_CLI_JAR=$(realpath "${SCRIPT_DIR}/build/jacococli.jar")      # For coverage report generation
-REPLACECALL_JAR=$(realpath "build/replacecall-4.3.3.jar")           # For replacing undesired method calls
+REPLACECALL_JAR=$(realpath "${SCRIPT_DIR}/build/replacecall-4.3.3.jar") # For replacing undesired method calls
 
 #===============================================================================
 # Argument Parsing & Experiment Configuration
@@ -89,7 +90,7 @@ ABLATION=false  # Feature ablation option
 UUID=$(uuidgen) # Generate a unique identifier per instance
 
 # Parse command-line arguments
-while getopts ":hvrf:at:c:n:" opt; do
+while getopts ":hvrf:ao:t:c:n:" opt; do
   case ${opt} in
     h)
       # Display help message
@@ -109,6 +110,9 @@ while getopts ":hvrf:at:c:n:" opt; do
       ;;
     a)
       ABLATION=true
+      ;;
+    o)
+      OUTPUT_FILE="$OPTARG"
       ;;
     t)
       # Total experiment time, mutually exclusive with SECONDS_PER_CLASS
@@ -139,10 +143,15 @@ done
 
 shift $((OPTIND - 1))
 
+if [[ -z "$OUTPUT_FILE" ]]; then
+  echo "No -o command-line argument given."
+  exit 2
+fi
+
 # Enforce that mutually exclusive options are not bundled together
 if [[ -n "$TOTAL_TIME" ]] && [[ -n "$SECONDS_PER_CLASS" ]]; then
   echo "Options -t and -c cannot be used together in any form (e.g., -t -c)."
-  exit 1
+  exit 2
 fi
 
 # Default to 2 seconds per class if not specified
@@ -251,7 +260,7 @@ declare -A program_deps=(
   ["JSAP-2.1"]="$MAJOR_HOME/lib/ant:$SRC_BASE_DIR/lib/" # need to override ant.jar in $SRC_BASE_DIR/lib
   ["jvc-1.1"]="$SRC_BASE_DIR/lib/"
   ["nekomud-r16"]="$SRC_BASE_DIR/lib/"
-  ["pmd-core-5.2.2"]="$SRC_BASE_DIR/pmd-core/lib"
+  ["pmd-core-5.2.2"]="$SRC_BASE_DIR/pmd-core/lib/"
   ["sat4j-core-2.3.5"]="$SRC_BASE_DIR/lib/"
   ["shiro-core-1.2.3"]="$SCRIPT_DIR/build/lib/$UUID/"
 )
@@ -448,11 +457,12 @@ cd - || exit 1
 echo "Using Randoop to generate tests."
 echo
 
-# Output file for runtime information
-mkdir -p results/
-if [ ! -f "results/info.csv" ]; then
-  touch results/info.csv
-  echo -e "RandoopVersion,FileName,TimeLimit,Seed,InstructionCoverage,BranchCoverage,MutationScore" > results/info.csv
+# Handle relative and absolute output files; make sure output file exists.
+RESULTS_DIR="$SCRIPT_DIR/results"
+mkdir -p "$RESULTS_DIR"
+OUTPUT_FILE=$(cd "$RESULTS_DIR" && realpath "$OUTPUT_FILE")
+if [ ! -f "$OUTPUT_FILE" ]; then
+  echo -e "RandoopVersion,FileName,TimeLimit,Seed,InstructionCoverage,BranchCoverage,MutationScore" > "$OUTPUT_FILE"
 fi
 
 #===============================================================================
@@ -639,8 +649,10 @@ for i in $(seq 1 "$NUM_LOOP"); do
       LOGGED_TIME="$SECONDS_PER_CLASS"
     fi
     row="$FEATURE_NAME,$(basename "$SRC_JAR"),$LOGGED_TIME,0,$instruction_coverage,$branch_coverage,$mutation_score"
-    # info.csv contains a record of each pass.
-    echo -e "$row" >> "$SCRIPT_DIR"/results/info.csv
+    # $OUTPUT_FILE is a csv file that contains a record of each pass.
+    # On Unix, ">>" is generally atomic as long as the content is small enough
+    # (usually the limit is at least 1024).
+    echo -e "$row" >> "$OUTPUT_FILE"
 
     # Copy the test suites to results directory
     echo "Copying test suites to results directory..."
