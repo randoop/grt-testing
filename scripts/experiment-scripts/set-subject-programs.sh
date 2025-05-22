@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# shellcheck disable=SC2034
 SUBJECT_PROGRAMS=(
   "a4j-1.0b"
   "asm-5.0.1"
