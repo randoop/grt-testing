@@ -296,7 +296,8 @@ case "$SUBJECT_PROGRAM" in
     download_jars \
       "https://repo1.maven.org/maven2/com/google/dexmaker/dexmaker/1.0/dexmaker-1.0.jar" \
       "https://repo1.maven.org/maven2/org/objenesis/objenesis/1.3/objenesis-1.3.jar" \
-      "https://repo1.maven.org/maven2/cglib/cglib-nodep/2.2.2/cglib-nodep-2.2.2.jar"
+      "https://repo1.maven.org/maven2/cglib/cglib-nodep/2.2.2/cglib-nodep-2.2.2.jar" \
+      "https://repo1.maven.org/maven2/junit/junit/4.13.2/junit-4.13.2.jar"
     ;;
 
   "guava-16.0.1")
