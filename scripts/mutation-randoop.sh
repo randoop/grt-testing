@@ -7,18 +7,18 @@
 # This script:
 #  * Generates test suites using Randoop.
 #  * Computes mutation score (mutants are generated using Major via ant).
-#  * Computes code coverage (using Jacoco via Maven).
+#  * Computes code coverage (using Jacoco).
 #
 # Directories and files:
-# - `build/test*`: Randoop-created test suites.
+# - `build/randoop-tests*`: Randoop-created test suites.
 # - `build/bin`: Compiled tests and code.
-# - `results/info.csv`: statistics about each iteration.
+# - `results/$OUTPUT_FILE`: statistics about each iteration.
 # - `results/`: everything else specific to the most recent iteration.
 
 #------------------------------------------------------------------------------
 # Example usage:
 #------------------------------------------------------------------------------
-#   ./mutation-randoop.sh -c 1 commons-lang3-3.0
+#   ./mutation-randoop.sh -c 1 -o info.csv commons-lang3-3.0
 
 #------------------------------------------------------------------------------
 # Options (command-line arguments):
@@ -34,14 +34,15 @@
 set -e
 set -o pipefail
 
-USAGE_STRING="usage: mutation-randoop.sh [-h] [-v] [-r] [-f features] [-a] [-t total_time] [-c time_per_class] [-n num_iterations] TEST-CASE-NAME
+USAGE_STRING="usage: mutation-randoop.sh [-h] [-v] [-r] [-f features] [-a] [-o output_file] [-t total_time] [-c time_per_class] [-n num_iterations] TEST-CASE-NAME
   -h    Displays this help message.
   -v    Enables verbose mode.
   -r    Redirect Randoop and Major output to results/result/mutation_output.txt.
   -f    Specify the Randoop features to use.
         Available features: BASELINE, BLOODHOUND, ORIENTEERING, BLOODHOUND_AND_ORIENTEERING, DETECTIVE, GRT_FUZZING, ELEPHANT_BRAIN, CONSTANT_MINING.
         example usage: -f BASELINE,BLOODHOUND
-  -a    Perform ablation studies for Randoop features.
+  -a    Perform feature ablation studies.
+  -o N  Csv output filename; should end in \".csv\"; if relative, should not include a directory name.
   -t N  Total time limit for Randoop test generation (in seconds).
   -c N  Per-class time limit for Randoop (in seconds, default: 2s/class).
         Mutually exclusive with -t.
@@ -66,11 +67,11 @@ if [[ "$JAVA_VER" -ne 18 ]]; then
 fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null 2>&1 && pwd)"
-MAJOR_HOME=$(realpath "${SCRIPT_DIR}/build/major/")                 # Major home directory, for mutation testing
-RANDOOP_JAR=$(realpath "${SCRIPT_DIR}/build/randoop-all-4.3.3.jar") # Randoop jar file
-JACOCO_AGENT_JAR=$(realpath "${SCRIPT_DIR}/build/jacocoagent.jar")  # For Bloodhound
-JACOCO_CLI_JAR=$(realpath "${SCRIPT_DIR}/build/jacococli.jar")      # For coverage report generation
-REPLACECALL_JAR=$(realpath "build/replacecall-4.3.3.jar")           # For replacing undesired method calls
+MAJOR_HOME=$(realpath "${SCRIPT_DIR}/build/major/")                     # Major home directory, for mutation testing
+RANDOOP_JAR=$(realpath "${SCRIPT_DIR}/build/randoop-all-4.3.3.jar")     # Randoop jar file
+JACOCO_AGENT_JAR=$(realpath "${SCRIPT_DIR}/build/jacocoagent.jar")      # For Bloodhound
+JACOCO_CLI_JAR=$(realpath "${SCRIPT_DIR}/build/jacococli.jar")          # For coverage report generation
+REPLACECALL_JAR=$(realpath "${SCRIPT_DIR}/build/replacecall-4.3.3.jar") # For replacing undesired method calls
 
 #===============================================================================
 # Argument Parsing & Experiment Configuration
@@ -83,7 +84,7 @@ ABLATION=false  # Feature ablation option
 UUID=$(uuidgen) # Generate a unique identifier per instance
 
 # Parse command-line arguments
-while getopts ":hvrf:at:c:n:" opt; do
+while getopts ":hvrf:ao:t:c:n:" opt; do
   case ${opt} in
     h)
       # Display help message
@@ -91,9 +92,11 @@ while getopts ":hvrf:at:c:n:" opt; do
       exit 0
       ;;
     v)
+      # Verbose mode
       VERBOSE=1
       ;;
     r)
+      # Redirect output to a log file
       REDIRECT=1
       ;;
     f)
@@ -101,6 +104,9 @@ while getopts ":hvrf:at:c:n:" opt; do
       ;;
     a)
       ABLATION=true
+      ;;
+    o)
+      OUTPUT_FILE="$OPTARG"
       ;;
     t)
       # Total experiment time, mutually exclusive with SECONDS_PER_CLASS
@@ -131,10 +137,15 @@ done
 
 shift $((OPTIND - 1))
 
+if [[ -z "$OUTPUT_FILE" ]]; then
+  echo "No -o command-line argument given."
+  exit 2
+fi
+
 # Enforce that mutually exclusive options are not bundled together
 if [[ -n "$TOTAL_TIME" ]] && [[ -n "$SECONDS_PER_CLASS" ]]; then
   echo "Options -t and -c cannot be used together in any form (e.g., -t -c)."
-  exit 1
+  exit 2
 fi
 
 # Default to 2 seconds per class if not specified
@@ -226,26 +237,25 @@ declare -A program_src=(
   ["slf4j-api-1.7.12"]="/slf4j-api/src/main/java/"
   ["pmd-core-5.2.2"]="/pmd-core/src/main/java/"
 )
-# Link to src files for mutation generation and analysis
 JAVA_SRC_DIR=$SRC_BASE_DIR${program_src[$SUBJECT_PROGRAM]}
 
 # Map subject programs to their dependencies
 declare -A program_deps=(
-  ["a4j-1.0b"]="$SRC_BASE_DIR/jars/"
+  ["a4j-1.0b"]="$SCRIPT_DIR/build/lib/$UUID/"
   ["commons-compress-1.8"]="$SCRIPT_DIR/build/lib/$UUID/"
   ["easymock-3.2"]="$SCRIPT_DIR/build/lib/$UUID/"
-  ["fixsuite-r48"]="$SRC_BASE_DIR/lib/"
+  ["fixsuite-r48"]="$SCRIPT_DIR/build/lib/$UUID/"
   ["guava-16.0.1"]="$SCRIPT_DIR/build/lib/$UUID/"
   ["hamcrest-core-1.3"]="$SCRIPT_DIR/build/lib/$UUID/"
   ["javassist-3.19"]="$SCRIPT_DIR/build/lib/$UUID/"
   ["jaxen-1.1.6"]="$SCRIPT_DIR/build/lib/$UUID/"
   ["jdom-1.0"]="$SCRIPT_DIR/build/lib/$UUID/"
   ["joda-time-2.3"]="$SCRIPT_DIR/build/lib/$UUID/"
-  ["JSAP-2.1"]="$MAJOR_HOME/lib/ant:$SRC_BASE_DIR/lib/" # need to override ant.jar in $SRC_BASE_DIR/lib
-  ["jvc-1.1"]="$SRC_BASE_DIR/lib/"
-  ["nekomud-r16"]="$SRC_BASE_DIR/lib/"
-  ["pmd-core-5.2.2"]="$SRC_BASE_DIR/pmd-core/lib"
-  ["sat4j-core-2.3.5"]="$SRC_BASE_DIR/lib/"
+  ["JSAP-2.1"]="$SCRIPT_DIR/build/lib/$UUID/"
+  ["jvc-1.1"]="$SCRIPT_DIR/build/lib/$UUID/"
+  ["nekomud-r16"]="$SCRIPT_DIR/build/lib/$UUID/"
+  ["pmd-core-5.2.2"]="$SCRIPT_DIR/build/lib/$UUID/"
+  ["sat4j-core-2.3.5"]="$SCRIPT_DIR/build/lib/$UUID/"
   ["shiro-core-1.2.3"]="$SCRIPT_DIR/build/lib/$UUID/"
 )
 
@@ -287,7 +297,8 @@ case "$SUBJECT_PROGRAM" in
     download_jars \
       "https://repo1.maven.org/maven2/com/google/dexmaker/dexmaker/1.0/dexmaker-1.0.jar" \
       "https://repo1.maven.org/maven2/org/objenesis/objenesis/1.3/objenesis-1.3.jar" \
-      "https://repo1.maven.org/maven2/cglib/cglib-nodep/2.2.2/cglib-nodep-2.2.2.jar"
+      "https://repo1.maven.org/maven2/cglib/cglib-nodep/2.2.2/cglib-nodep-2.2.2.jar" \
+      "https://repo1.maven.org/maven2/junit/junit/4.13.2/junit-4.13.2.jar"
     ;;
 
   "fixsuite-r48")
@@ -332,7 +343,8 @@ case "$SUBJECT_PROGRAM" in
       "$SRC_BASE_DIR/lib/xerces.jar" \
       "$SRC_BASE_DIR/lib/jaxen-core.jar" \
       "$SRC_BASE_DIR/lib/jaxen-jdom.jar" \
-      "$SRC_BASE_DIR/lib/saxpath.jar"
+      "$SRC_BASE_DIR/lib/saxpath.jar" \
+      "$SCRIPT_DIR/../subject-programs/jaxen-1.1.6.jar"
     ;;
 
   "joda-time-2.3")
@@ -402,8 +414,8 @@ case "$SUBJECT_PROGRAM" in
 esac
 
 CLASSPATH="$SRC_JAR"
-if [[ -n "${project_deps[$SUBJECT_PROGRAM]}" ]]; then
-  CLASSPATH="$CLASSPATH:${project_deps[$SUBJECT_PROGRAM]}"
+if [[ -n "${program_deps[$SUBJECT_PROGRAM]}" ]]; then
+  CLASSPATH="$CLASSPATH:${program_deps[$SUBJECT_PROGRAM]}"
 fi
 
 if [[ "$VERBOSE" -eq 1 ]]; then
@@ -432,17 +444,17 @@ REPLACECALL_COMMAND="$REPLACECALL_JAR${replacement_files[$SUBJECT_PROGRAM]}"
 # Test generator command configuration
 #===============================================================================
 
-RANDOOP_CLASSPATH="$CLASSPATH"
-if [[ -n "${project_deps[$SUBJECT_PROGRAM]}" ]]; then
-  # Expand .jar files from the directory specified in project_deps[$SUBJECT_PROGRAM]
-  RANDOOP_CLASSPATH+=":$(echo "${project_deps[$SUBJECT_PROGRAM]}"*.jar | tr ' ' ':')"
+RANDOOP_CLASSPATH="$SRC_JAR"
+if [[ -n "${program_deps[$SUBJECT_PROGRAM]}" ]]; then
+  # Expand .jar files from the directory specified in program_deps[$SUBJECT_PROGRAM]
+  RANDOOP_CLASSPATH+=":$(echo "${program_deps[$SUBJECT_PROGRAM]}"*.jar | tr ' ' ':')"
 fi
 
 RANDOOP_BASE_COMMAND="java \
 -Xbootclasspath/a:$JACOCO_AGENT_JAR:$REPLACECALL_JAR \
 -javaagent:$JACOCO_AGENT_JAR \
 -javaagent:$REPLACECALL_COMMAND \
--classpath $CLASSPATH:$RANDOOP_JAR \
+-classpath $RANDOOP_CLASSPATH:$RANDOOP_JAR \
 randoop.main.Main gentests \
 --testjar=$SRC_JAR \
 --time-limit=$TIME_LIMIT \
@@ -488,12 +500,18 @@ RANDOOP_COMMAND="$RANDOOP_BASE_COMMAND ${command_suffix[$SUBJECT_PROGRAM]}"
 #===============================================================================
 # Build System Preparation
 #===============================================================================
-
 cd "$JAVA_SRC_DIR" || exit 1
 
-# We also update the jarfiles accordingly to reflect this behavior in both scripts.
+# For slf4j-api-1.7.12 and javax.mail, this Randoop script uses the main branch, which retains the default namespaces (e.g., org.slf4j, javax.mail),
+# since Randoop does not restrict test generation based on package names.
+#
+# However, EvoSuite contains hardcoded checks that prevent test generation for certain core namespaces like org.slf4j and javax.mail.
+# To work around this, the EvoSuite script (which will eventually be merged) uses the include-major branch,
+# where the packages have been renamed to org1.slf4j and javax1.mail.
+#
+# The EvoSuite script will also temporarily modifies the corresponding source jarfile to reflect this namespace change during test generation.
 
-# Only checkout include-major if the subject program is neither slf4j-api-1.7.12 nor javax.mail-1.5.1
+# Use main branch for slf4j-api and javax.mail
 if [ "$SUBJECT_PROGRAM" != "slf4j-api-1.7.12" ] && [ "$SUBJECT_PROGRAM" != "javax.mail-1.5.1" ]; then
   if git checkout include-major > /dev/null 2>&1; then
     echo "Checked out include-major."
@@ -515,11 +533,12 @@ cd - || exit 1
 echo "Using Randoop to generate tests."
 echo
 
-# Output file for runtime information
-mkdir -p results/
-if [ ! -f "results/info.csv" ]; then
-  touch results/info.csv
-  echo -e "Version,FileName,TimeLimit,Seed,InstructionCoverage,BranchCoverage,MutationScore" > results/info.csv
+# Handle relative and absolute output files; make sure output file exists.
+RESULTS_DIR="$SCRIPT_DIR/results"
+mkdir -p "$RESULTS_DIR"
+OUTPUT_FILE=$(cd "$RESULTS_DIR" && realpath "$OUTPUT_FILE")
+if [ ! -f "$OUTPUT_FILE" ]; then
+  echo -e "Version,FileName,TimeLimit,Seed,InstructionCoverage,BranchCoverage,MutationScore" > "$OUTPUT_FILE"
 fi
 
 #===============================================================================
@@ -546,7 +565,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
     FILE_SUFFIX="$SUBJECT_PROGRAM-$FEATURE_NAME-$UUID"
 
     # Test directory for each iteration.
-    TEST_DIRECTORY="$SCRIPT_DIR/build/test/$FILE_SUFFIX"
+    TEST_DIRECTORY="$SCRIPT_DIR/build/randoop-tests/$FILE_SUFFIX"
     rm -rf "$TEST_DIRECTORY"
     mkdir -p "$TEST_DIRECTORY"
 
@@ -623,7 +642,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
 
     # After test generation, for JSAP-2.1, we need to remove the ant.jar from the classpath
     if [[ "$SUBJECT_PROGRAM" == "JSAP-2.1" ]]; then
-      rm "build/lib/ant.jar"
+      rm "$SCRIPT_DIR/build/lib/$UUID/ant.jar"
     fi
 
     #===============================================================================
@@ -713,8 +732,10 @@ for i in $(seq 1 "$NUM_LOOP"); do
       LOGGED_TIME="$SECONDS_PER_CLASS"
     fi
     row="$FEATURE_NAME,$(basename "$SRC_JAR"),$LOGGED_TIME,0,$instruction_coverage,$branch_coverage,$mutation_score"
-    # info.csv contains a record of each pass.
-    echo -e "$row" >> "$SCRIPT_DIR"/results/info.csv
+    # $OUTPUT_FILE is a csv file that contains a record of each pass.
+    # On Unix, ">>" is generally atomic as long as the content is small enough
+    # (usually the limit is at least 1024).
+    echo -e "$row" >> "$OUTPUT_FILE"
 
     # Copy the test suites to results directory
     echo "Copying test suites to results directory..."

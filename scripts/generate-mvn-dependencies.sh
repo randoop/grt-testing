@@ -1,10 +1,11 @@
 #!/bin/bash
 
-# For each .jar file in build/lib/, this script:
+# For each .jar file in build/lib/UUID, this script:
 #  * installs the .jar file into the local Maven repository
 
 # The path to the lib directory.
-LIBS_DIR="build/lib"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null 2>&1 && pwd)"
+LIBS_DIR="$SCRIPT_DIR/build/lib/$1"
 
 # Installs necessary packages to maven for all subject programs
 mvn install:install-file -Dfile="build/org.jacoco.agent-0.8.0-runtime.jar" -DgroupId="org.jacoco" -DartifactId="org.jacoco.agent" -Dversion="0.8.0" -Dclassifier="runtime" -Dpackaging=jar

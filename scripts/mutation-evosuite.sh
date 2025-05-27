@@ -12,13 +12,13 @@
 # Directories and files:
 # - `build/evosuite-tests*`: EvoSuite-created test suites.
 # - `build/bin`: Compiled tests and code.
-# - `results/info.csv`: statistics about each iteration.
+# - `results/$OUTPUT_FILE`: statistics about each iteration.
 # - `results/`: everything else specific to the most recent iteration.
 
 #------------------------------------------------------------------------------
 # Example usage:
 #------------------------------------------------------------------------------
-#   ./mutation-evosuite.sh -c 1 commons-lang3-3.0
+#   ./mutation-evosuite.sh -c 1 -o info.csv commons-lang3-3.0
 
 #------------------------------------------------------------------------------
 # Options (command-line arguments):
@@ -34,12 +34,13 @@
 set -e
 set -o pipefail
 
-USAGE_STRING="usage: mutation-evosuite.sh [-h] [-v] [-r] [-t total_time] [-c time_per_class] [-n num_iterations] TEST-CASE-NAME
+USAGE_STRING="usage: mutation-evosuite.sh [-h] [-v] [-r] [-o output_file] [-t total_time] [-c time_per_class] [-n num_iterations] TEST-CASE-NAME
   -h    Displays this help message.
   -v    Enables verbose mode.
-  -r    Redirect Randoop and Major output to results/result/mutation_output.txt.
-  -t N  Total time limit for Randoop test generation (in seconds).
-  -c N  Per-class time limit for Randoop (in seconds, default: 2s/class).
+  -r    Redirect EvoSuite and Major output to results/result/mutation_output.txt.
+  -o N  Csv output filename; should end in \".csv\"; if relative, should not include a directory name.
+  -t N  Total time limit for EvoSuite test generation (in seconds).
+  -c N  Per-class time limit for EvoSuite (in seconds, default: 2s/class).
         Mutually exclusive with -t.
   -n N  Number of iterations to run the experiment (default: 1).
   TEST-CASE-NAME is the name of a jar file in ../subject-programs/, without .jar.
@@ -69,12 +70,13 @@ EVOSUITE_JAR=$(realpath "${SCRIPT_DIR}/build/evosuite-1.2.0.jar") # EvoSuite jar
 # Argument Parsing & Experiment Configuration
 #===============================================================================
 
-NUM_LOOP=1 # Number of experiment runs (10 in GRT paper)
-VERBOSE=0  # Verbose option
-REDIRECT=0 # Redirect output to mutation_output.txt
+NUM_LOOP=1      # Number of experiment runs (10 in GRT paper)
+VERBOSE=0       # Verbose option
+REDIRECT=0      # Redirect output to mutation_output.txt
+UUID=$(uuidgen) # Generate a unique identifier per instance
 
 # Parse command-line arguments
-while getopts ":hvrt:c:n:" opt; do
+while getopts ":hvro:t:c:n:" opt; do
   case ${opt} in
     h)
       # Display help message
@@ -82,10 +84,15 @@ while getopts ":hvrt:c:n:" opt; do
       exit 0
       ;;
     v)
+      # Verbose mode
       VERBOSE=1
       ;;
     r)
+      # Redirect output to a log file
       REDIRECT=1
+      ;;
+    o)
+      OUTPUT_FILE="$OPTARG"
       ;;
     t)
       # Total experiment time, mutually exclusive with SECONDS_PER_CLASS
@@ -116,10 +123,15 @@ done
 
 shift $((OPTIND - 1))
 
+if [[ -z "$OUTPUT_FILE" ]]; then
+  echo "No -o command-line argument given."
+  exit 2
+fi
+
 # Enforce that mutually exclusive options are not bundled together
 if [[ -n "$TOTAL_TIME" ]] && [[ -n "$SECONDS_PER_CLASS" ]]; then
   echo "Options -t and -c cannot be used together in any form (e.g., -t -c)."
-  exit 1
+  exit 2
 fi
 
 # Default to 2 seconds per class if not specified
@@ -202,26 +214,25 @@ declare -A program_src=(
   ["slf4j-api-1.7.12"]="/slf4j-api/src/main/java/"
   ["pmd-core-5.2.2"]="/pmd-core/src/main/java/"
 )
-# Link to src files for mutation generation and analysis
 JAVA_SRC_DIR=$SRC_BASE_DIR${program_src[$SUBJECT_PROGRAM]}
 
-# Map project names to their respective dependencies
-declare -A project_deps=(
-  ["a4j-1.0b"]="build/lib/"
-  ["commons-compress-1.8"]="build/lib/"
-  ["easymock-3.2"]="build/lib/"
-  ["fixsuite-r48"]="build/lib/"
-  ["guava-16.0.1"]="build/lib/"
-  ["javassist-3.19"]="build/lib/"
-  ["jaxen-1.1.6"]="build/lib/"
-  ["jdom-1.0"]="build/lib/"
-  ["joda-time-2.3"]="build/lib/"
-  ["JSAP-2.1"]="build/lib/"
-  ["jvc-1.1"]="build/lib/"
-  ["nekomud-r16"]="build/lib/"
-  ["pmd-core-5.2.2"]="build/lib/"
-  ["sat4j-core-2.3.5"]="build/lib/"
-  ["shiro-core-1.2.3"]="build/lib/"
+# Map subject programs to their dependencies
+declare -A program_deps=(
+  ["a4j-1.0b"]="$SCRIPT_DIR/build/lib/$UUID/"
+  ["commons-compress-1.8"]="$SCRIPT_DIR/build/lib/$UUID/"
+  ["easymock-3.2"]="$SCRIPT_DIR/build/lib/$UUID/"
+  ["fixsuite-r48"]="$SCRIPT_DIR/build/lib/$UUID/"
+  ["guava-16.0.1"]="$SCRIPT_DIR/build/lib/$UUID/"
+  ["javassist-3.19"]="$SCRIPT_DIR/build/lib/$UUID/"
+  ["jaxen-1.1.6"]="$SCRIPT_DIR/build/lib/$UUID/"
+  ["jdom-1.0"]="$SCRIPT_DIR/build/lib/$UUID/"
+  ["joda-time-2.3"]="$SCRIPT_DIR/build/lib/$UUID/"
+  ["JSAP-2.1"]="$SCRIPT_DIR/build/lib/$UUID/"
+  ["jvc-1.1"]="$SCRIPT_DIR/build/lib/$UUID/"
+  ["nekomud-r16"]="$SCRIPT_DIR/build/lib/$UUID/"
+  ["pmd-core-5.2.2"]="$SCRIPT_DIR/build/lib/$UUID/"
+  ["sat4j-core-2.3.5"]="$SCRIPT_DIR/build/lib/$UUID/"
+  ["shiro-core-1.2.3"]="$SCRIPT_DIR/build/lib/$UUID/"
 )
 
 #===============================================================================
@@ -229,19 +240,19 @@ declare -A project_deps=(
 #===============================================================================
 
 setup_build_dir() {
-  rm -rf build/lib
-  mkdir -p build/lib
+  rm -rf "$SCRIPT_DIR/build/lib/$UUID"
+  mkdir -p "$SCRIPT_DIR/build/lib/$UUID"
 }
 
 download_jars() {
   for url in "$@"; do
-    wget -P build/lib "$url"
+    wget -P "$SCRIPT_DIR/build/lib/$UUID" "$url"
   done
 }
 
 copy_jars() {
   for path in "$@"; do
-    cp -r "$path" build/lib
+    cp -r "$path" "$SCRIPT_DIR/build/lib/$UUID"
   done
 }
 
@@ -262,7 +273,8 @@ case "$SUBJECT_PROGRAM" in
     download_jars \
       "https://repo1.maven.org/maven2/com/google/dexmaker/dexmaker/1.0/dexmaker-1.0.jar" \
       "https://repo1.maven.org/maven2/org/objenesis/objenesis/1.3/objenesis-1.3.jar" \
-      "https://repo1.maven.org/maven2/cglib/cglib-nodep/2.2.2/cglib-nodep-2.2.2.jar"
+      "https://repo1.maven.org/maven2/cglib/cglib-nodep/2.2.2/cglib-nodep-2.2.2.jar" \
+      "https://repo1.maven.org/maven2/junit/junit/4.13.2/junit-4.13.2.jar"
     ;;
 
   "fixsuite-r48")
@@ -303,7 +315,7 @@ case "$SUBJECT_PROGRAM" in
       "$SRC_BASE_DIR/lib/jaxen-core.jar" \
       "$SRC_BASE_DIR/lib/jaxen-jdom.jar" \
       "$SRC_BASE_DIR/lib/saxpath.jar" \
-      "../subject-programs/jaxen-1.1.6.jar"
+      "$SCRIPT_DIR/../subject-programs/jaxen-1.1.6.jar"
     ;;
 
   "joda-time-2.3")
@@ -373,13 +385,13 @@ case "$SUBJECT_PROGRAM" in
 esac
 
 if [[ "$SUBJECT_PROGRAM" == "hamcrest-core-1.3" ]]; then
-  CLASSPATH="$SRC_JAR:build/evosuite-standalone-runtime-1.2.0.jar:build/junit-4.12.jar"
+  CLASSPATH="$SRC_JAR:$SCRIPT_DIR/build/evosuite-standalone-runtime-1.2.0.jar:$SCRIPT_DIR/build/junit-4.12.jar"
 else
-  CLASSPATH="$SRC_JAR:build/evosuite-standalone-runtime-1.2.0.jar:build/evosuite-tests/:build/junit-4.12.jar:build/hamcrest-core-1.3.jar"
+  CLASSPATH="$SRC_JAR:$SCRIPT_DIR/build/evosuite-standalone-runtime-1.2.0.jar:$SCRIPT_DIR/build/evosuite-tests/:$SCRIPT_DIR/build/junit-4.12.jar:$SCRIPT_DIR/build/hamcrest-core-1.3.jar"
 fi
 
-if [[ -n "${project_deps[$SUBJECT_PROGRAM]}" ]]; then
-  CLASSPATH="$CLASSPATH:${project_deps[$SUBJECT_PROGRAM]}"
+if [[ -n "${program_deps[$SUBJECT_PROGRAM]}" ]]; then
+  CLASSPATH="$CLASSPATH:${program_deps[$SUBJECT_PROGRAM]}"
 fi
 
 if [[ "$VERBOSE" -eq 1 ]]; then
@@ -392,16 +404,16 @@ fi
 # Test generator command configuration
 #===============================================================================
 
-EVOSUITE_CLASSPATH="$CLASSPATH"
-if [[ -n "${project_deps[$SUBJECT_PROGRAM]}" ]]; then
-  # Expand .jar files from the directory specified in project_deps[$SUBJECT_PROGRAM]
-  EVOSUITE_CLASSPATH+=":$(echo "${project_deps[$SUBJECT_PROGRAM]}"*.jar | tr ' ' ':')"
+EVOSUITE_CLASSPATH="$SRC_JAR"
+if [[ -n "${program_deps[$SUBJECT_PROGRAM]}" ]]; then
+  # Expand .jar files from the directory specified in program_deps[$SUBJECT_PROGRAM]
+  EVOSUITE_CLASSPATH+=":$(echo "${program_deps[$SUBJECT_PROGRAM]}"*.jar | tr ' ' ':')"
 fi
 
 EVOSUITE_COMMAND="java \
 -jar $EVOSUITE_JAR \
 -target $SRC_JAR \
--projectCP $CLASSPATH:$EVOSUITE_JAR \
+-projectCP $EVOSUITE_CLASSPATH:$EVOSUITE_JAR \
 -Dsearch_budget=$TIME_LIMIT \
 -Dreplace_gui=true \
 -Drandom_seed=0"
@@ -411,20 +423,13 @@ EVOSUITE_COMMAND="java \
 #===============================================================================
 
 # Installs all of the jarfiles in build/lib to maven (used for measuring code coverage).
-./generate-mvn-dependencies.sh "$SUBJECT_PROGRAM"
+./generate-mvn-dependencies.sh "$UUID"
 
 cd "$JAVA_SRC_DIR" || exit 1
 
-# EvoSuite contains hardcoded checks that prevent test generation for certain
-# core namespaces (like org.slf4j and javax.mail).  Therefore, for
-# slf4j-api-1.7.12 and javax.mail, this EvoSuite script uses the include-major
-# branch, which adjusts the default namespaces (e.g., org1.slf4j, javax1.mail).
-#
-# The EvoSuite script also temporarily modifies the corresponding source jarfile
-# to reflect this namespace change during test generation, and then restores the
-# original JARs afterward to maintain consistency.
-
-# We also update the jarfiles accordingly to reflect this behavior in both scripts.
+# For slf4j-api-1.7.12 and javax.mail, this EvoSuite script uses the include-major branch, which adjusts the 
+# default namespaces (e.g., org1.slf4j) since EvoSuite restricts test generation based on package names.
+# This script also temporarily modifies the corresponding source jarfiles to reflect this namespace change during test generation.
 
 # Always ensure we're using the include-major branch for EvoSuite
 if git checkout include-major > /dev/null 2>&1; then
@@ -446,58 +451,65 @@ cd - || exit 1
 echo "Using EvoSuite to generate tests."
 echo
 
-# Output file for runtime information
-mkdir -p results/
-if [ ! -f "results/info.csv" ]; then
-  touch results/info.csv
-  echo -e "Version,FileName,TimeLimit,Seed,InstructionCoverage,BranchCoverage,MutationScore" > results/info.csv
+# Handle relative and absolute output files; make sure output file exists.
+RESULTS_DIR="$SCRIPT_DIR/results"
+mkdir -p "$RESULTS_DIR"
+OUTPUT_FILE=$(cd "$RESULTS_DIR" && realpath "$OUTPUT_FILE")
+if [ ! -f "$OUTPUT_FILE" ]; then
+  echo -e "Version,FileName,TimeLimit,Seed,InstructionCoverage,BranchCoverage,MutationScore" > "$OUTPUT_FILE"
 fi
 
 #===============================================================================
 # Test Generation & Execution
 #===============================================================================
 
-# Remove old test directories.
-rm -rf "$SCRIPT_DIR"/build/evosuite-tests/ && rm -rf "$SCRIPT_DIR"/build/evosuite-report/ && rm -rf "$SCRIPT_DIR"/build/target/
-
 # The value for the -lib command-line option; that is, the classpath.
 LIB_ARG="$CLASSPATH"
 
 # shellcheck disable=SC2034 # i counts iterations but is not otherwise used.
 for i in $(seq 1 "$NUM_LOOP"); do
-  TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+
+  # This suffix is unique to each instance of this script. We use it to prevent concurrency issues between processes.
+  FILE_SUFFIX="$SUBJECT_PROGRAM-EVOSUITE-$UUID"
+
   # Evosuite test directory for each iteration.
-  TEST_DIRECTORY="$SCRIPT_DIR/build/evosuite-tests/$TIMESTAMP"
+  TEST_DIRECTORY="$SCRIPT_DIR/build/evosuite-tests/$FILE_SUFFIX"
+  rm -rf "$TEST_DIRECTORY"
   mkdir -p "$TEST_DIRECTORY"
 
   # Evosuite report directory for each iteration
-  REPORT_DIRECTORY="$SCRIPT_DIR/build/evosuite-report/$TIMESTAMP"
+  REPORT_DIRECTORY="$SCRIPT_DIR/build/evosuite-report/$FILE_SUFFIX"
+  rm -rf "$REPORT_DIRECTORY"
   mkdir -p "$REPORT_DIRECTORY"
 
   # Jacoco directory for each iteration
-  COVERAGE_DIRECTORY="$SCRIPT_DIR/build/target/$TIMESTAMP"
+  COVERAGE_DIRECTORY="$SCRIPT_DIR/build/target/$FILE_SUFFIX"
+  rm -rf "$COVERAGE_DIRECTORY"
   mkdir -p "$COVERAGE_DIRECTORY"
   mkdir -p "$COVERAGE_DIRECTORY"/coverage-reports
   touch "$COVERAGE_DIRECTORY"/coverage-reports/jacoco-ut.exec
 
   # Result directory for each test generation and execution.
-  RESULT_DIR="$SCRIPT_DIR/results/$SUBJECT_PROGRAM-EVOSUITE-$TIMESTAMP"
+  RESULT_DIR="$SCRIPT_DIR/results/$FILE_SUFFIX"
   rm -rf "$RESULT_DIR"
   mkdir -p "$RESULT_DIR"
 
   # If the REDIRECT flag is set, redirect all output to a log file.
   if [[ "$REDIRECT" -eq 1 ]]; then
-    touch mutation_output.txt
+    touch "$RESULT_DIR"/mutation_output.txt
     echo "Redirecting output to $RESULT_DIR/mutation_output.txt..."
     exec 3>&1 4>&2
-    exec 1>> "mutation_output.txt" 2>&1
+    exec 1>> "$RESULT_DIR"/mutation_output.txt 2>&1
   fi
 
+  cd "$RESULT_DIR"
+
+  echo $EVOSUITE_COMMAND -Dtest_dir="$TEST_DIRECTORY" -Dreport_dir="$REPORT_DIRECTORY"
   $EVOSUITE_COMMAND -Dtest_dir="$TEST_DIRECTORY" -Dreport_dir="$REPORT_DIRECTORY"
 
   # After test generation, for JSAP-2.1, we need to remove the ant.jar from the classpath
   if [[ "$SUBJECT_PROGRAM" == "JSAP-2.1" ]]; then
-    rm "build/lib/ant.jar"
+    rm "$SCRIPT_DIR/build/lib/$UUID/ant.jar"
   fi
 
   #===============================================================================
@@ -508,28 +520,28 @@ for i in $(seq 1 "$NUM_LOOP"); do
   echo "Compiling and mutating subject program..."
   if [[ "$VERBOSE" -eq 1 ]]; then
     echo command:
-    echo "$MAJOR_HOME"/bin/ant -f program-config/"$1"/build-evosuite.xml -Dbasedir=./ -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" clean compile
+    echo "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/build-evosuite.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" clean compile
   fi
   echo
-  "$MAJOR_HOME"/bin/ant -f program-config/"$1"/build-evosuite.xml -Dbasedir=./ -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" clean compile
+  "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/build-evosuite.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" clean compile
 
   echo
   echo "Compiling tests..."
   if [[ "$VERBOSE" -eq 1 ]]; then
     echo command:
-    echo "$MAJOR_HOME"/bin/ant -f program-config/"$1"/build-evosuite.xml -Dbasedir=./ -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" compile.tests
+    echo "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/build-evosuite.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" compile.tests
   fi
   echo
-  "$MAJOR_HOME"/bin/ant -f program-config/"$1"/build-evosuite.xml -Dbasedir=./ -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" compile.tests
+  "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/build-evosuite.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" compile.tests
 
   echo
   echo "Running tests with coverage..."
   if [[ "$VERBOSE" -eq 1 ]]; then
     echo command:
-    echo mvn -f program-config/"$1"/pom.xml test jacoco:restore-instrumented-classes jacoco:report -Dmain.source.dir="$JAVA_SRC_DIR" -Dcoverage.dir="$COVERAGE_DIRECTORY" -Dtest.dir="$TEST_DIRECTORY"
+    echo mvn -f "$SCRIPT_DIR"/program-config/"$1"/pom.xml test jacoco:restore-instrumented-classes jacoco:report -Dmain.source.dir="$JAVA_SRC_DIR" -Dcoverage.dir="$COVERAGE_DIRECTORY" -Dtest.dir="$TEST_DIRECTORY"
   fi
   echo
-  mvn -f program-config/"$1"/pom.xml test jacoco:restore-instrumented-classes jacoco:report -Dmain.source.dir="$JAVA_SRC_DIR" -Dcoverage.dir="$COVERAGE_DIRECTORY" -Dtest.dir="$TEST_DIRECTORY"
+  mvn -f "$SCRIPT_DIR"/program-config/"$1"/pom.xml test jacoco:restore-instrumented-classes jacoco:report -Dmain.source.dir="$JAVA_SRC_DIR" -Dcoverage.dir="$COVERAGE_DIRECTORY" -Dtest.dir="$TEST_DIRECTORY"
 
   mv "$COVERAGE_DIRECTORY"/jacoco.csv "$RESULT_DIR"/report.csv
 
@@ -545,18 +557,13 @@ for i in $(seq 1 "$NUM_LOOP"); do
   branch_coverage=$(echo "scale=4; $branch_covered / ($branch_missed + $branch_covered) * 100" | bc)
   branch_coverage=$(printf "%.2f" "$branch_coverage")
 
-  echo "Instruction Coverage: $instruction_coverage%"
-  echo "Branch Coverage: $branch_coverage%"
-
   echo
   echo "Running tests with mutation analysis..."
   if [[ "$VERBOSE" -eq 1 ]]; then
     echo command:
-    echo "$MAJOR_HOME"/bin/ant -f program-config/"$1"/build-evosuite.xml -Dbasedir=./ -Dtest="$TEST_DIRECTORY" -lib "$LIB_ARG" mutation.test
+    echo "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/build-evosuite.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -lib "$LIB_ARG" mutation.test
   fi
-  "$MAJOR_HOME"/bin/ant -f program-config/"$1"/build-evosuite.xml -Dbasedir=./ -Dtest="$TEST_DIRECTORY" -lib "$LIB_ARG" mutation.test
-
-  mv results/summary.csv "$RESULT_DIR"
+  "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/build-evosuite.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -lib "$LIB_ARG" mutation.test
 
   # Calculate Mutation Score
   mutants_generated=$(awk -F, 'NR==2 {print $1}' "$RESULT_DIR"/summary.csv)
@@ -568,34 +575,28 @@ for i in $(seq 1 "$NUM_LOOP"); do
   echo "Branch Coverage: $branch_coverage%"
   echo "Mutation Score: $mutation_score%"
 
-  row="EVOSUITE,$(basename "$SRC_JAR"),$TIME_LIMIT,0,$instruction_coverage%,$branch_coverage%,$mutation_score%"
-  # info.csv contains a record of each pass.
-  echo -e "$row" >> results/info.csv
+  # Determine time limit to log: use TOTAL_TIME if specified, otherwise use SECONDS_PER_CLASS.
+  if [[ -n "$TOTAL_TIME" ]]; then
+    LOGGED_TIME="$TOTAL_TIME"
+  else
+    LOGGED_TIME="$SECONDS_PER_CLASS"
+  fi
+  row="EVOSUITE,$(basename "$SRC_JAR"),$LOGGED_TIME,0,$instruction_coverage,$branch_coverage,$mutation_score"
+  # $OUTPUT_FILE is a csv file that contains a record of each pass.
+  # On Unix, ">>" is generally atomic as long as the content is small enough
+  # (usually the limit is at least 1024).
+  echo -e "$row" >> "$OUTPUT_FILE"
 
   # Copy the test suites to results directory
   echo "Copying test suites to results directory..."
   cp -r "$TEST_DIRECTORY" "$RESULT_DIR"
 
   if [[ "$REDIRECT" -eq 1 ]]; then
-    echo "Move mutation_output to results directory..."
-    mv mutation_output.txt "$RESULT_DIR"
     exec 1>&3 2>&4
     exec 3>&- 4>&-
   fi
 
-  # Move output files into the $RESULT_DIR directory.
-  FILES_TO_MOVE=(
-    "major.log"
-    "mutants.log"
-    "suppression.log"
-    "results/covMap.csv"
-    "results/details.csv"
-    "results/preprocessing.ser"
-    "results/testMap.csv"
-  )
-  for f in "${FILES_TO_MOVE[@]}"; do
-    [ -e "$f" ] && mv "$f" "$RESULT_DIR"
-  done
+  cd "$SCRIPT_DIR"
 done
 
 #===============================================================================

@@ -18,6 +18,9 @@ To set up the environment, refer to the `scripts/mutation-prerequisites.md` file
 For prerequisities, refer to `scripts/mutation-prerequisities.md`.
 For instructions on using the scripts, refer to `scripts/mutation-randoop.sh` for Randoop and `scripts/mutation-evosuite.sh` for EvoSuite.
 
+### Running GRT Experiments
+See file `scripts/experiment-scripts/README.md`.
+
 ### Subject Programs
 
 The compiled subject programs used by the GRT paper appear in the `subject-programs/` directory.
