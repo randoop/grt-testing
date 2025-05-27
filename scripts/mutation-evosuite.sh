@@ -427,7 +427,7 @@ EVOSUITE_COMMAND="java \
 
 cd "$JAVA_SRC_DIR" || exit 1
 
-# For slf4j-api-1.7.12 and javax.mail, this EvoSuite script uses the include-major branch, which adjusts the 
+# For slf4j-api-1.7.12 and javax.mail, this EvoSuite script uses the include-major branch, which adjusts the
 # default namespaces (e.g., org1.slf4j) since EvoSuite restricts test generation based on package names.
 # This script also temporarily modifies the corresponding source jarfiles to reflect this namespace change during test generation.
 

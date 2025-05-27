@@ -4,11 +4,7 @@
 # Overview
 #===============================================================================
 # This script generates Figure 6 and Table 3 from the GRT paper.
-# It executes `mutation-randoop.sh` multiple times, varying:
-#   - Subject programs (SUBJECT_PROGRAMS)
-#   - Feature variants (FEATURES)
-#   - Execution time per class (SECONDS_PER_CLASS)
-# It also executes `mutation-evosuite.sh`, varying:
+# It executes `mutation-randoop.sh` and `mutation-evosuite.sh` multiple times, varying:
 #   - Subject programs (SUBJECT_PROGRAMS)
 #   - Execution time per class (SECONDS_PER_CLASS)
 #
@@ -61,20 +57,18 @@ rm -f "$MUTATION_DIR"/results/fig6-table3.csv
 NUM_LOOP=10
 SECONDS_PER_CLASS=(2 10 30 60)
 . "$SCRIPT_DIR"/set-subject-programs.sh
-FEATURES=(BASELINE GRT EVOSUITE)
+MODES=(BASELINE GRT EVOSUITE)
 
-# Temporary parameters for testing that override the defaults, since we haven't
-# implemented all GRT features. See mutation-randoop.sh for a list of different features
-# you can specify.
+# Temporary parameters for testing that override the defaults.
 NUM_LOOP=1
 SECONDS_PER_CLASS=(2)
 SUBJECT_PROGRAMS=(
   "dcParseArgs-10.2008"
   "slf4j-api-1.7.12"
 )
-FEATURES=(
+MODES=(
   "BASELINE"
-  "BLOODHOUND"
+  "EVOSUITE"
 )
 
 NUM_CORES=$(($(nproc) - 4))
@@ -86,9 +80,9 @@ echo "$(basename "$0"): Running $NUM_CORES concurrent processes."
 TASKS=()
 for cseconds in "${SECONDS_PER_CLASS[@]}"; do
   for program in "${SUBJECT_PROGRAMS[@]}"; do
-    for feature in "${FEATURES[@]}"; do
+    for mode in "${MODES[@]}"; do
       for _ in $(seq 1 "$NUM_LOOP"); do
-        TASKS+=("$MUTATION_DIR $cseconds $program $feature")
+        TASKS+=("$MUTATION_DIR $cseconds $program $mode")
       done
     done
   done
@@ -102,9 +96,19 @@ run_task() {
   mutation_dir=$1
   cseconds=$2
   program=$3
-  feature=$4
-  echo "Running: mutation-randoop.sh -c $cseconds -f $feature -r -o fig6-table3.csv $program"
-  "$mutation_dir"/mutation-randoop.sh -c "$cseconds" -f "$feature" -r -o fig6-table3.csv "$program"
+  mode=$4
+  if [ "$mode" == "EVOSUITE" ]; then
+    echo "Running: mutation-evosuite.sh -c $cseconds -r -o fig6-table3.csv $program"
+    "$mutation_dir"/mutation-evosuite.sh -c "$cseconds" -r -o fig6-table3.csv "$program"
+  elif [ "$mode" == "GRT" ]; then
+    echo "Running (GRT): mutation-randoop.sh -c $cseconds -f BLOODHOUND,ORIENTEERING,DETECTIVE,GRT_FUZZING,ELEPHANT_BRAIN,CONSTANT_MINING -r -o fig6-table3.csv $program"
+    "$mutation_dir"/mutation-randoop.sh -c "$cseconds" -f BLOODHOUND,ORIENTEERING,DETECTIVE,GRT_FUZZING,ELEPHANT_BRAIN,CONSTANT_MINING -r -o fig6-table3.csv "$program"
+  elif [ "$mode" == "BASELINE" ]; then
+    echo "Running (Baseline): mutation-randoop.sh -c $cseconds -f BASELINE -r -o fig6-table3.csv $program"
+    "$mutation_dir"/mutation-randoop.sh -c $cseconds -f BASELINE -r -o fig6-table3.csv "$program"
+  else
+    echo "Used a mode that is not supported. Please use either GRT, EVOSUITE, or BASELINE"
+  fi
 }
 
 export -f run_task
