@@ -82,7 +82,7 @@ echo "$(basename "$0"): Running $NUM_CORES concurrent processes."
 # IMPORTANT NOTE: EvoSuite and Randoop both modify certain shared files (e.g., source code or jar files)
 # for some subject programs. Running them concurrently can cause conflicts,
 # resulting in inconsistent or corrupted results.
-# 
+#
 # To avoid these issues, we run all BASELINE and GRT (Randoop-based) tasks in parallel first,
 # and only after they complete do we run the EVOSUITE tasks. This ensures no overlap or race
 # conditions between the tools.
