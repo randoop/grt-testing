@@ -8,10 +8,10 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null 2>&1 && pwd)"
 LIBS_DIR="$SCRIPT_DIR/build/lib/$1"
 
 # Installs necessary packages to maven for all subject programs
-mvn install:install-file -Dfile="build/org.jacoco.agent-0.8.0-runtime.jar" -DgroupId="org.jacoco" -DartifactId="org.jacoco.agent" -Dversion="0.8.0" -Dclassifier="runtime" -Dpackaging=jar
-mvn install:install-file -Dfile="build/evosuite-standalone-runtime-1.2.0.jar" -DgroupId="org.evosuite" -DartifactId="evosuite-standalone-runtime" -Dversion="1.2.0" -Dpackaging=jar
-mvn install:install-file -Dfile="build/junit-4.12.jar" -DgroupId="com.example" -DartifactId="junit" -Dversion="4.12" -Dpackaging=jar
-mvn install:install-file -Dfile="build/hamcrest-core-1.3.jar" -DgroupId="com.example" -DartifactId="hamcrest-core" -Dversion="1.3" -Dpackaging=jar
+mvn install:install-file -Dfile="$SCRIPT_DIR/build/org.jacoco.agent-0.8.0-runtime.jar" -DgroupId="org.jacoco" -DartifactId="org.jacoco.agent" -Dversion="0.8.0" -Dclassifier="runtime" -Dpackaging=jar
+mvn install:install-file -Dfile="$SCRIPT_DIR/build/evosuite-standalone-runtime-1.2.0.jar" -DgroupId="org.evosuite" -DartifactId="evosuite-standalone-runtime" -Dversion="1.2.0" -Dpackaging=jar
+mvn install:install-file -Dfile="$SCRIPT_DIR/build/junit-4.12.jar" -DgroupId="com.example" -DartifactId="junit" -Dversion="4.12" -Dpackaging=jar
+mvn install:install-file -Dfile="$SCRIPT_DIR/build/hamcrest-core-1.3.jar" -DgroupId="com.example" -DartifactId="hamcrest-core" -Dversion="1.3" -Dpackaging=jar
 
 if ! find "$LIBS_DIR" -maxdepth 1 -name '*.jar' | grep -q .; then
   echo "No JAR files found in $LIBS_DIR. Skipping."

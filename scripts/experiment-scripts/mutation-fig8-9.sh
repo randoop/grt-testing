@@ -51,7 +51,10 @@ pip install seaborn
 
 # Clean up previous run artifacts
 rm -rf "$MUTATION_DIR"/build/bin/*
-rm -rf "$MUTATION_DIR"/build/test/*
+rm -rf "$MUTATION_DIR"/build/randoop-tests/*
+rm -rf "$MUTATION_DIR"/build/evosuite-tests/*
+rm -rf "$MUTATION_DIR"/build/evosuite-report/*
+rm -rf "$MUTATION_DIR"/build/target/*
 rm -rf "$MUTATION_DIR"/build/lib/*
 rm -f "$MUTATION_DIR"/results/fig8-9.pdf
 rm -f "$MUTATION_DIR"/results/fig8-9.csv
@@ -102,8 +105,13 @@ run_task() {
   tseconds=$2
   program=$3
   feature=$4
-  echo "Running: mutation-randoop.sh -t $tseconds -f $feature -r -o fig8-9.csv $program"
-  "$mutation_dir"/mutation-randoop.sh -t "$tseconds" -f "$feature" -r -o fig8-9.csv "$program"
+  if [ "$feature" == "GRT" ]; then
+    echo "Running (GRT): mutation-randoop.sh -t $tseconds -f BLOODHOUND,ORIENTEERING,DETECTIVE,GRT_FUZZING,ELEPHANT_BRAIN,CONSTANT_MINING -r -o fig8-9.csv $program"
+    "$mutation_dir"/mutation-randoop.sh -t "$tseconds" -f BLOODHOUND,ORIENTEERING,DETECTIVE,GRT_FUZZING,ELEPHANT_BRAIN,CONSTANT_MINING -r -o fig8-9.csv "$program"
+  else
+    echo "Running: mutation-randoop.sh -t $tseconds -f $feature -r -o fig8-9.csv $program"
+    "$mutation_dir"/mutation-randoop.sh -t "$tseconds" -f "$feature" -r -o fig8-9.csv "$program"
+  fi
 }
 
 export -f run_task

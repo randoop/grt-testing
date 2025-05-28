@@ -512,7 +512,11 @@ cd "$JAVA_SRC_DIR" || exit 1
 # The EvoSuite script will also temporarily modifies the corresponding source jarfile to reflect this namespace change during test generation.
 
 # Use main branch for slf4j-api and javax.mail
-if [ "$SUBJECT_PROGRAM" != "slf4j-api-1.7.12" ] && [ "$SUBJECT_PROGRAM" != "javax.mail-1.5.1" ]; then
+if [ "$SUBJECT_PROGRAM" == "slf4j-api-1.7.12" ] || [ "$SUBJECT_PROGRAM" == "javax.mail-1.5.1" ]; then
+  if git checkout main > /dev/null 2>&1; then
+    echo "Checked out main."
+  fi
+else
   if git checkout include-major > /dev/null 2>&1; then
     echo "Checked out include-major."
   fi

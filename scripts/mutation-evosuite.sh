@@ -423,7 +423,7 @@ EVOSUITE_COMMAND="java \
 #===============================================================================
 
 # Installs all of the jarfiles in build/lib to maven (used for measuring code coverage).
-./generate-mvn-dependencies.sh "$UUID"
+"$SCRIPT_DIR/generate-mvn-dependencies.sh" "$UUID"
 
 cd "$JAVA_SRC_DIR" || exit 1
 
