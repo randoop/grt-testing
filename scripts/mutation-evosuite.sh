@@ -337,7 +337,7 @@ case "$SUBJECT_PROGRAM" in
     setup_build_dir
     copy_jars \
       "$SRC_BASE_DIR/lib/jsp-api-2.1.jar" \
-      "$SRC_BASE_DIR/lib/junit-4.13.jar" \
+      "$SRC_BASE_DIR/lib/junit-4.12.jar" \
       "$SRC_BASE_DIR/lib/log4j-1.2.15.jar" \
       "$SRC_BASE_DIR/lib/servlet-api-2.5.jar"
     ;;
