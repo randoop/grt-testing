@@ -105,7 +105,7 @@ run_task() {
     "$mutation_dir"/mutation-randoop.sh -c "$cseconds" -f BLOODHOUND,ORIENTEERING,DETECTIVE,GRT_FUZZING,ELEPHANT_BRAIN,CONSTANT_MINING -r -o fig6-table3.csv "$program"
   elif [ "$mode" == "BASELINE" ]; then
     echo "Running (Baseline): mutation-randoop.sh -c $cseconds -f BASELINE -r -o fig6-table3.csv $program"
-    "$mutation_dir"/mutation-randoop.sh -c $cseconds -f BASELINE -r -o fig6-table3.csv "$program"
+    "$mutation_dir"/mutation-randoop.sh -c "$cseconds" -f BASELINE -r -o fig6-table3.csv "$program"
   else
     echo "Used a mode that is not supported. Please use either GRT, EVOSUITE, or BASELINE"
   fi
