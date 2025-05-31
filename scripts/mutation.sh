@@ -548,7 +548,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
     # Elephant Brain
     if [[ ("$RANDOOP_FEATURE" == "ELEPHANT_BRAIN" && "$ABLATION" != "true") ||
       ("$RANDOOP_FEATURE" != "ELEPHANT_BRAIN" && "$ABLATION" == "true") ]]; then
-      FEATURE_FLAG="--elephant-brain=true"
+      FEATURE_FLAG="--cast-to-run-time-type=true"
     fi
 
     # Constant Mining
