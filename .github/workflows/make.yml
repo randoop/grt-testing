@@ -14,6 +14,7 @@ jobs:
         show-progress: false
     - name: install ruff
       run: |
+        sudo apt-get update
         sudo apt-get -y install pipx
         sudo pipx install ruff
     - name: Install shellcheck and checkbashisms
