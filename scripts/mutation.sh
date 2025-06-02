@@ -422,6 +422,7 @@ declare -A command_suffix=(
   # Force termination if a test case takes too long to execute
   ["commons-math3-3.2"]="--usethreads=true"
   ["nekomud-r16"]="--omit-methods=^net\.sourceforge\.nekomud\.service\.NetworkService\.stop\(\)$"
+  ["tiny-sql-2.26"]="--specifications=$SCRIPT_DIR/program-specs/tiny-sql-2.26-specs.json"
 )
 
 # Check if the environment is headless. If it is, we can't use the spec for fixsuite-r48 due to initialization errors.
