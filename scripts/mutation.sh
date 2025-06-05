@@ -72,7 +72,7 @@ if [[ "$JAVA_VER" -ne 18 ]]; then
   exit 1
 fi
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null 2>&1 && pwd)"
+SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)"
 MAJOR_HOME=$(realpath "${SCRIPT_DIR}/build/major/")                     # Major home directory, for mutation testing
 RANDOOP_JAR=$(realpath "${SCRIPT_DIR}/build/randoop-all-4.3.3.jar")     # Randoop jar file
 JACOCO_AGENT_JAR=$(realpath "${SCRIPT_DIR}/build/jacocoagent.jar")      # For Bloodhound
