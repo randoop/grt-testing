@@ -11,7 +11,7 @@ all: \
     build/major/bin/ant-replacecall \
     build/org.jacoco.agent-0.8.0-runtime.jar \
     build/randoop \
-    build/randoop-all-4.3.3.jar \
+    build/randoop-all-4.3.4.jar \
     build/replacecall-4.3.3.jar \
     results
 
@@ -24,11 +24,11 @@ build/org.jacoco.agent-0.8.0-runtime.jar:
 	mkdir -p build
 	cd build && wget -nv -O org.jacoco.agent-0.8.0-runtime.jar https://repo1.maven.org/maven2/org/jacoco/org.jacoco.agent/0.8.0/org.jacoco.agent-0.8.0-runtime.jar
 
-build/randoop-all-4.3.3.jar:
+build/randoop-all-4.3.4.jar:
 	# mkdir -p build
 	# cd build
-	# wget -nv https://github.com/randoop/randoop/releases/download/v4.3.3/randoop-all-4.3.3.jar
-	echo "See scripts/reproinstruction.txt to obtain randoop-all-4.3.3.jar"
+	# wget -nv https://github.com/randoop/randoop/releases/download/v4.3.4/randoop-all-4.3.4.jar
+	echo "See scripts/reproinstruction.txt to obtain randoop-all-4.3.4.jar"
 
 build/major:
 	mkdir -p build
@@ -43,7 +43,7 @@ randoop-from-source:
 	cd build/randoop && \
 	git pull && \
 	./gradlew shadowJar && \
-	mv -f build/libs/randoop-all-4.3.3.jar ..
+	mv -f build/libs/randoop-all-4.3.4.jar ..
 
 build/replacecall-4.3.3.jar:
 	LATEST_RELEASE=$$(curl -s https://api.github.com/repos/randoop/grt-replacecall/releases/latest | grep -o '"tag_name": "[^"]*' | cut -d'"' -f4) && \

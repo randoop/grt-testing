@@ -32,7 +32,7 @@
 #
 #===============================================================================
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" > /dev/null 2>&1 && pwd -P)"
+SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)"
 MUTATION_DIR="$(realpath "$SCRIPT_DIR"/../)"
 
 PYTHON_EXECUTABLE=$(command -v python3 2> /dev/null || command -v python 2> /dev/null)
