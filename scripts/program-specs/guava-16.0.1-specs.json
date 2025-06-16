@@ -48,5 +48,32 @@
     ],
     "post": [],
     "throws": []
+  },
+  {
+    "operation": {
+      "classname": "com.google.common.math.BigIntegerMath",
+      "name": "factorial",
+      "parameterTypes": [
+        "int"
+      ]
+    },
+    "identifiers": {
+      "parameters": [
+        "n"
+      ],
+      "receiverName": "receiver",
+      "returnName": "result"
+    },
+    "pre": [
+      {
+        "description": "n must be non-negative and small enough to prevent excessive computation",
+        "guard": {
+          "condition": "n >= 0 && n <= 170",
+          "description": "n is between 0 and 170 (inclusive)"
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
   }
 ]

@@ -1,0 +1,33 @@
+[
+    {
+      "operation": {
+        "classname": "com.sqlmagic.tinysql.UtilString",
+        "name": "replaceAll",
+        "parameterTypes": [
+          "java.lang.String",
+          "java.lang.String",
+          "java.lang.String"
+        ]
+      },
+      "identifiers": {
+        "parameters": [
+          "inputString",
+          "oldString",
+          "newString"
+        ],
+        "receiverName": "receiver",
+        "returnName": "result"
+      },
+      "pre": [
+        {
+          "description": "oldString must be non-empty",
+          "guard": {
+            "condition": "oldString != null && oldString.length() != 0",
+            "description": "oldString must be non-empty"
+          }
+        }
+      ],
+      "post": [],
+      "throws": []
+    }
+]

@@ -72,9 +72,9 @@ if [[ "$JAVA_VER" -ne 18 ]]; then
   exit 1
 fi
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null 2>&1 && pwd)"
+SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)"
 MAJOR_HOME=$(realpath "${SCRIPT_DIR}/build/major/")                     # Major home directory, for mutation testing
-RANDOOP_JAR=$(realpath "${SCRIPT_DIR}/build/randoop-all-4.3.3.jar")     # Randoop jar file
+RANDOOP_JAR=$(realpath "${SCRIPT_DIR}/build/randoop-all-4.3.4.jar")     # Randoop jar file
 JACOCO_AGENT_JAR=$(realpath "${SCRIPT_DIR}/build/jacocoagent.jar")      # For Bloodhound
 JACOCO_CLI_JAR=$(realpath "${SCRIPT_DIR}/build/jacococli.jar")          # For coverage report generation
 REPLACECALL_JAR=$(realpath "${SCRIPT_DIR}/build/replacecall-4.3.3.jar") # For replacing undesired method calls
@@ -405,7 +405,7 @@ declare -A command_suffix=(
   ["ClassViewer-5.0.5b"]="--specifications=$SCRIPT_DIR/program-specs/ClassViewer-5.0.5b-specs.json --omit-methods=^com\.jstevh\.viewer\.ClassViewer\.callBrowser\(java\.lang\.String\)$"
   ["commons-cli-1.2"]="--specifications=$SCRIPT_DIR/program-specs/commons-cli-1.2-specs.json"
   ["commons-lang3-3.0"]="--specifications=$SCRIPT_DIR/program-specs/commons-lang3-3.0-specs.json"
-  ["guava-16.0.1"]="--specifications=$SCRIPT_DIR/program-specs/guava-16.0.1-specs.json"
+  ["guava-16.0.1"]="--specifications=$SCRIPT_DIR/program-specs/guava-16.0.1-specs.json --usethreads=true"
   ["jaxen-1.1.6"]="--specifications=$SCRIPT_DIR/program-specs/jaxen-1.1.6-specs.json"
 
   # Randoop generates bad sequences for handling webserver lifecycle, don't test them
@@ -422,6 +422,7 @@ declare -A command_suffix=(
   # Force termination if a test case takes too long to execute
   ["commons-math3-3.2"]="--usethreads=true"
   ["nekomud-r16"]="--omit-methods=^net\.sourceforge\.nekomud\.service\.NetworkService\.stop\(\)$"
+  ["tiny-sql-2.26"]="--specifications=$SCRIPT_DIR/program-specs/tiny-sql-2.26-specs.json"
 )
 
 # Check if the environment is headless. If it is, we can't use the spec for fixsuite-r48 due to initialization errors.
