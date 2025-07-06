@@ -65,6 +65,7 @@ fi
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null 2>&1 && pwd)"
 MAJOR_HOME=$(realpath "${SCRIPT_DIR}/build/major/")               # Major home directory, for mutation testing
 EVOSUITE_JAR=$(realpath "${SCRIPT_DIR}/build/evosuite-1.2.0.jar") # EvoSuite jar file
+JACOCO_CLI_JAR=$(realpath "${SCRIPT_DIR}/build/jacococli.jar")    # For coverage report generation
 
 #===============================================================================
 # Argument Parsing & Experiment Configuration
@@ -216,25 +217,6 @@ declare -A program_src=(
 )
 JAVA_SRC_DIR=$SRC_BASE_DIR${program_src[$SUBJECT_PROGRAM]}
 
-# Map subject programs to their dependencies
-declare -A program_deps=(
-  ["a4j-1.0b"]="$SCRIPT_DIR/build/lib/$UUID/"
-  ["commons-compress-1.8"]="$SCRIPT_DIR/build/lib/$UUID/"
-  ["easymock-3.2"]="$SCRIPT_DIR/build/lib/$UUID/"
-  ["fixsuite-r48"]="$SCRIPT_DIR/build/lib/$UUID/"
-  ["guava-16.0.1"]="$SCRIPT_DIR/build/lib/$UUID/"
-  ["javassist-3.19"]="$SCRIPT_DIR/build/lib/$UUID/"
-  ["jaxen-1.1.6"]="$SCRIPT_DIR/build/lib/$UUID/"
-  ["jdom-1.0"]="$SCRIPT_DIR/build/lib/$UUID/"
-  ["joda-time-2.3"]="$SCRIPT_DIR/build/lib/$UUID/"
-  ["JSAP-2.1"]="$SCRIPT_DIR/build/lib/$UUID/"
-  ["jvc-1.1"]="$SCRIPT_DIR/build/lib/$UUID/"
-  ["nekomud-r16"]="$SCRIPT_DIR/build/lib/$UUID/"
-  ["pmd-core-5.2.2"]="$SCRIPT_DIR/build/lib/$UUID/"
-  ["sat4j-core-2.3.5"]="$SCRIPT_DIR/build/lib/$UUID/"
-  ["shiro-core-1.2.3"]="$SCRIPT_DIR/build/lib/$UUID/"
-)
-
 #===============================================================================
 # Subject Program Specific Dependencies
 #===============================================================================
@@ -242,6 +224,7 @@ declare -A program_deps=(
 setup_build_dir() {
   rm -rf "$SCRIPT_DIR/build/lib/$UUID"
   mkdir -p "$SCRIPT_DIR/build/lib/$UUID"
+  copy_jars $SRC_JAR
 }
 
 download_jars() {
@@ -278,6 +261,8 @@ case "$SUBJECT_PROGRAM" in
     ;;
 
   "fixsuite-r48")
+    # For EvoSuite, mutation analysis doesn't work if slf4j-log4j12-1.5.2.jar is on the classpath
+    # However, Randoop needs this dependency.
     setup_build_dir
     copy_jars \
       "$SRC_BASE_DIR/lib/jdom.jar" \
@@ -343,6 +328,8 @@ case "$SUBJECT_PROGRAM" in
     ;;
 
   "nekomud-r16")
+    # For EvoSuite, mutation analysis doesn't work if slf4j-log4j12-1.5.2.jar is on the classpath
+    # However, Randoop needs this dependency.
     setup_build_dir
     copy_jars \
       "$SRC_BASE_DIR/lib/aspectjweaver.jar" \
@@ -376,7 +363,8 @@ case "$SUBJECT_PROGRAM" in
     setup_build_dir
     download_jars \
       "https://repo1.maven.org/maven2/commons-beanutils/commons-beanutils/1.8.3/commons-beanutils-1.8.3.jar" \
-      "https://repo1.maven.org/maven2/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar"
+      "https://repo1.maven.org/maven2/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar" \
+      "https://repo1.maven.org/maven2/org/slf4j/slf4j-simple/1.7.25/slf4j-simple-1.7.25.jar"
     ;;
 
   *)
@@ -384,35 +372,15 @@ case "$SUBJECT_PROGRAM" in
     ;;
 esac
 
-if [[ "$SUBJECT_PROGRAM" == "hamcrest-core-1.3" ]]; then
-  CLASSPATH="$SRC_JAR:$SCRIPT_DIR/build/evosuite-standalone-runtime-1.2.0.jar:$SCRIPT_DIR/build/junit-4.12.jar"
-else
-  CLASSPATH="$SRC_JAR:$SCRIPT_DIR/build/evosuite-standalone-runtime-1.2.0.jar:$SCRIPT_DIR/build/evosuite-tests/:$SCRIPT_DIR/build/junit-4.12.jar:$SCRIPT_DIR/build/hamcrest-core-1.3.jar"
-fi
-
-if [[ -n "${program_deps[$SUBJECT_PROGRAM]}" ]]; then
-  CLASSPATH="$CLASSPATH:${program_deps[$SUBJECT_PROGRAM]}"
-fi
-
-if [[ "$VERBOSE" -eq 1 ]]; then
-  echo "JAVA_SRC_DIR: $JAVA_SRC_DIR"
-  echo "CLASSPATH: $CLASSPATH"
-  echo
-fi
-
 #===============================================================================
 # Test generator command configuration
 #===============================================================================
-
-EVOSUITE_CLASSPATH="$SRC_JAR"
-if [[ -n "${program_deps[$SUBJECT_PROGRAM]}" ]]; then
-  # Expand .jar files from the directory specified in program_deps[$SUBJECT_PROGRAM]
-  EVOSUITE_CLASSPATH+=":$(echo "${program_deps[$SUBJECT_PROGRAM]}"*.jar | tr ' ' ':')"
-fi
+EVOSUITE_CLASSPATH="$(echo "$SCRIPT_DIR/build/lib/$UUID/"*.jar | tr ' ' ':')"
+TARGET_JAR="$SCRIPT_DIR/build/lib/$UUID/$SUBJECT_PROGRAM.jar"
 
 EVOSUITE_COMMAND="java \
 -jar $EVOSUITE_JAR \
--target $SRC_JAR \
+-target $TARGET_JAR \
 -projectCP $EVOSUITE_CLASSPATH:$EVOSUITE_JAR \
 -Dsearch_budget=$TIME_LIMIT \
 -Dreplace_gui=true \
@@ -421,33 +389,6 @@ EVOSUITE_COMMAND="java \
 #===============================================================================
 # Build System Preparation
 #===============================================================================
-
-# Installs all of the jarfiles in build/lib to maven (used for measuring code coverage).
-"$SCRIPT_DIR/generate-mvn-dependencies.sh" "$UUID"
-
-cd "$JAVA_SRC_DIR" || exit 1
-
-# For slf4j-api-1.7.12 and javax.mail, this EvoSuite script uses the include-major branch, which adjusts the
-# default namespaces (e.g., org1.slf4j) since EvoSuite restricts test generation based on package names.
-# This script also temporarily modifies the corresponding source jarfiles to reflect this namespace change during test generation.
-
-# Always ensure we're using the include-major branch for EvoSuite
-if git checkout include-major > /dev/null 2>&1; then
-  echo "Checked out include-major."
-fi
-
-if [ "$SUBJECT_PROGRAM" == "slf4j-api-1.7.12" ]; then
-  # Make sure slf4j-api-1.7.12 has modified namespace
-  wget -O "$SCRIPT_DIR"/../subject-programs/slf4j-api-1.7.12.jar https://raw.githubusercontent.com/randoop/grt-slf4j-api-1.7.12/include-major/slf4j-api-1.7.12.jar
-fi
-
-if [ "$SUBJECT_PROGRAM" == "javax.mail-1.5.1" ]; then
-  # Make sure javax.mail-1.5.1.jar has modified namespace
-  wget -O "$SCRIPT_DIR"/../subject-programs/javax.mail-1.5.1.jar https://raw.githubusercontent.com/randoop/grt-javax.mail-1.5.1/include-major/javax.mail-1.5.1.jar
-fi
-
-cd - || exit 1
-
 echo "Using EvoSuite to generate tests."
 echo
 
@@ -462,9 +403,6 @@ fi
 #===============================================================================
 # Test Generation & Execution
 #===============================================================================
-
-# The value for the -lib command-line option; that is, the classpath.
-LIB_ARG="$CLASSPATH"
 
 # shellcheck disable=SC2034 # i counts iterations but is not otherwise used.
 for i in $(seq 1 "$NUM_LOOP"); do
@@ -486,8 +424,6 @@ for i in $(seq 1 "$NUM_LOOP"); do
   COVERAGE_DIRECTORY="$SCRIPT_DIR/build/target/$FILE_SUFFIX"
   rm -rf "$COVERAGE_DIRECTORY"
   mkdir -p "$COVERAGE_DIRECTORY"
-  mkdir -p "$COVERAGE_DIRECTORY"/coverage-reports
-  touch "$COVERAGE_DIRECTORY"/coverage-reports/jacoco-ut.exec
 
   # Result directory for each test generation and execution.
   RESULT_DIR="$SCRIPT_DIR/results/$FILE_SUFFIX"
@@ -518,31 +454,37 @@ for i in $(seq 1 "$NUM_LOOP"); do
   echo
   echo "Compiling and mutating subject program..."
   if [[ "$VERBOSE" -eq 1 ]]; then
-    echo command:
-    echo "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/build-evosuite.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" clean compile
+    echo compile.mutation command:
+    echo "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/build-evosuite.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -Dtargetdir="$COVERAGE_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" compile.mutation
+    echo compile.jacoco command:
+    echo "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/build-evosuite.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -Dtargetdir="$COVERAGE_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" compile.jacoco
   fi
   echo
-  "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/build-evosuite.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" clean compile
+  "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/build-evosuite.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -Dtargetdir="$COVERAGE_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" compile.mutation
+  "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/build-evosuite.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -Dtargetdir="$COVERAGE_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" compile.jacoco
 
   echo
   echo "Compiling tests..."
   if [[ "$VERBOSE" -eq 1 ]]; then
-    echo command:
-    echo "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/build-evosuite.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" compile.tests
+    echo compile.mutation.tests command:
+    echo "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/build-evosuite.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -Dtargetdir="$COVERAGE_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" compile.mutation.tests
+    echo compile.jacoco.tests command:
+    echo "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/build-evosuite.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -Dtargetdir="$COVERAGE_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" compile.jacoco.tests
   fi
   echo
-  "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/build-evosuite.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" compile.tests
+  "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/build-evosuite.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -Dtargetdir="$COVERAGE_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" compile.mutation.tests
+  "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/build-evosuite.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -Dtargetdir="$COVERAGE_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" compile.jacoco.tests
 
   echo
   echo "Running tests with coverage..."
   if [[ "$VERBOSE" -eq 1 ]]; then
     echo command:
-    echo mvn -f "$SCRIPT_DIR"/program-config/"$1"/pom.xml test jacoco:restore-instrumented-classes jacoco:report -Dmain.source.dir="$JAVA_SRC_DIR" -Dcoverage.dir="$COVERAGE_DIRECTORY" -Dtest.dir="$TEST_DIRECTORY"
+    echo "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/build-evosuite.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -Dtargetdir="$COVERAGE_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" test
   fi
   echo
-  mvn -f "$SCRIPT_DIR"/program-config/"$1"/pom.xml test jacoco:restore-instrumented-classes jacoco:report -Dmain.source.dir="$JAVA_SRC_DIR" -Dcoverage.dir="$COVERAGE_DIRECTORY" -Dtest.dir="$TEST_DIRECTORY"
-
-  mv "$COVERAGE_DIRECTORY"/jacoco.csv "$RESULT_DIR"/report.csv
+  "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/build-evosuite.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -Dtargetdir="$COVERAGE_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" test
+  
+  java -jar "$JACOCO_CLI_JAR" report "$RESULT_DIR/jacoco.exec" --classfiles "$COVERAGE_DIRECTORY/classes" --sourcefiles "$JAVA_SRC_DIR" --csv "$RESULT_DIR"/report.csv
 
   # Calculate Instruction Coverage
   inst_missed=$(awk -F, 'NR>1 {sum+=$4} END {print sum}' "$RESULT_DIR"/report.csv)
@@ -556,13 +498,27 @@ for i in $(seq 1 "$NUM_LOOP"); do
   branch_coverage=$(echo "scale=4; $branch_covered / ($branch_missed + $branch_covered) * 100" | bc)
   branch_coverage=$(printf "%.2f" "$branch_coverage")
 
+  
+  # For jdom-1.0, we need to convert the generated tests from EvoSuite format to Randoop format.
+  # This is because the EvoSuite runner inteferes with the bytecode manipulation done by Major,
+  # resulting in a lot of methods being excluded from mutation analysis.
+  # We use a Python script to convert the tests.
+  if [ "$SUBJECT_PROGRAM" == "jdom-1.0" ]; then
+    PYTHON_EXECUTABLE=$(command -v python3 2> /dev/null || command -v python 2> /dev/null)
+    if [ -z "$PYTHON_EXECUTABLE" ]; then
+      echo "Error: Python is not installed." >&2
+      exit 1
+    fi
+    "$PYTHON_EXECUTABLE" "$SCRIPT_DIR"/update_tests.py "$TEST_DIRECTORY" --mode evosuite-to-randoop
+  fi
+  
   echo
   echo "Running tests with mutation analysis..."
   if [[ "$VERBOSE" -eq 1 ]]; then
     echo command:
-    echo "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/build-evosuite.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -lib "$LIB_ARG" mutation.test
+    echo "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/build-evosuite.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" mutation.test
   fi
-  "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/build-evosuite.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -lib "$LIB_ARG" mutation.test
+  "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/build-evosuite.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" mutation.test
 
   # Calculate Mutation Score
   mutants_generated=$(awk -F, 'NR==2 {print $1}' "$RESULT_DIR"/summary.csv)

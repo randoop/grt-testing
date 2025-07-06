@@ -68,10 +68,10 @@ fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null 2>&1 && pwd)"
 MAJOR_HOME=$(realpath "${SCRIPT_DIR}/build/major/")                     # Major home directory, for mutation testing
-RANDOOP_JAR=$(realpath "${SCRIPT_DIR}/build/randoop-all-4.3.3.jar")     # Randoop jar file
+RANDOOP_JAR=$(realpath "${SCRIPT_DIR}/build/randoop-all-4.3.4.jar")     # Randoop jar file
 JACOCO_AGENT_JAR=$(realpath "${SCRIPT_DIR}/build/jacocoagent.jar")      # For Bloodhound
 JACOCO_CLI_JAR=$(realpath "${SCRIPT_DIR}/build/jacococli.jar")          # For coverage report generation
-REPLACECALL_JAR=$(realpath "${SCRIPT_DIR}/build/replacecall-4.3.3.jar") # For replacing undesired method calls
+REPLACECALL_JAR=$(realpath "${SCRIPT_DIR}/build/replacecall-4.3.4.jar") # For replacing undesired method calls
 
 #===============================================================================
 # Argument Parsing & Experiment Configuration
@@ -239,26 +239,6 @@ declare -A program_src=(
 )
 JAVA_SRC_DIR=$SRC_BASE_DIR${program_src[$SUBJECT_PROGRAM]}
 
-# Map subject programs to their dependencies
-declare -A program_deps=(
-  ["a4j-1.0b"]="$SCRIPT_DIR/build/lib/$UUID/"
-  ["commons-compress-1.8"]="$SCRIPT_DIR/build/lib/$UUID/"
-  ["easymock-3.2"]="$SCRIPT_DIR/build/lib/$UUID/"
-  ["fixsuite-r48"]="$SCRIPT_DIR/build/lib/$UUID/"
-  ["guava-16.0.1"]="$SCRIPT_DIR/build/lib/$UUID/"
-  ["hamcrest-core-1.3"]="$SCRIPT_DIR/build/lib/$UUID/"
-  ["javassist-3.19"]="$SCRIPT_DIR/build/lib/$UUID/"
-  ["jaxen-1.1.6"]="$SCRIPT_DIR/build/lib/$UUID/"
-  ["jdom-1.0"]="$SCRIPT_DIR/build/lib/$UUID/"
-  ["joda-time-2.3"]="$SCRIPT_DIR/build/lib/$UUID/"
-  ["JSAP-2.1"]="$SCRIPT_DIR/build/lib/$UUID/"
-  ["jvc-1.1"]="$SCRIPT_DIR/build/lib/$UUID/"
-  ["nekomud-r16"]="$SCRIPT_DIR/build/lib/$UUID/"
-  ["pmd-core-5.2.2"]="$SCRIPT_DIR/build/lib/$UUID/"
-  ["sat4j-core-2.3.5"]="$SCRIPT_DIR/build/lib/$UUID/"
-  ["shiro-core-1.2.3"]="$SCRIPT_DIR/build/lib/$UUID/"
-)
-
 #===============================================================================
 # Subject Program Specific Dependencies
 #===============================================================================
@@ -266,6 +246,7 @@ declare -A program_deps=(
 setup_build_dir() {
   rm -rf "$SCRIPT_DIR/build/lib/$UUID"
   mkdir -p "$SCRIPT_DIR/build/lib/$UUID"
+  copy_jars "$SRC_JAR"
 }
 
 download_jars() {
@@ -302,21 +283,19 @@ case "$SUBJECT_PROGRAM" in
     ;;
 
   "fixsuite-r48")
+    # For EvoSuite, mutation analysis doesn't work if slf4j-log4j12-1.5.2.jar is on the classpath
+    # However, Randoop needs this dependency.
     setup_build_dir
     copy_jars \
       "$SRC_BASE_DIR/lib/jdom.jar" \
       "$SRC_BASE_DIR/lib/log4j-1.2.15.jar" \
-      "$SRC_BASE_DIR/lib/slf4j-api-1.5.0.jar"
+      "$SRC_BASE_DIR/lib/slf4j-api-1.5.0.jar" \
+      "$SRC_BASE_DIR/lib/slf4j-log4j12-1.5.0.jar"
     ;;
 
   "guava-16.0.1")
     setup_build_dir
     download_jars "https://repo1.maven.org/maven2/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar"
-    ;;
-
-  "hamcrest-core-1.3")
-    setup_build_dir
-    download_jars "https://github.com/EvoSuite/evosuite/releases/download/v1.2.0/evosuite-1.2.0.jar"
     ;;
 
   "javassist-3.19")
@@ -372,6 +351,8 @@ case "$SUBJECT_PROGRAM" in
     ;;
 
   "nekomud-r16")
+    # For EvoSuite, mutation analysis doesn't work if slf4j-log4j12-1.5.2.jar is on the classpath
+    # However, Randoop needs this dependency.
     setup_build_dir
     copy_jars \
       "$SRC_BASE_DIR/lib/aspectjweaver.jar" \
@@ -382,7 +363,8 @@ case "$SUBJECT_PROGRAM" in
       "$SRC_BASE_DIR/lib/log4j-1.2.15.jar" \
       "$SRC_BASE_DIR/lib/slf4j-api-1.5.2.jar" \
       "$SRC_BASE_DIR/lib/spring-test.jar" \
-      "$SRC_BASE_DIR/lib/spring.jar"
+      "$SRC_BASE_DIR/lib/spring.jar" \
+      "$SRC_BASE_DIR/lib/slf4j-log4j12-1.5.2.jar"
     ;;
 
   "pmd-core-5.2.2")
@@ -405,24 +387,14 @@ case "$SUBJECT_PROGRAM" in
     setup_build_dir
     download_jars \
       "https://repo1.maven.org/maven2/commons-beanutils/commons-beanutils/1.8.3/commons-beanutils-1.8.3.jar" \
-      "https://repo1.maven.org/maven2/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar"
+      "https://repo1.maven.org/maven2/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar" \
+      "https://repo1.maven.org/maven2/org/slf4j/slf4j-simple/1.7.25/slf4j-simple-1.7.25.jar"
     ;;
 
   *)
     setup_build_dir
     ;;
 esac
-
-CLASSPATH="$SRC_JAR"
-if [[ -n "${program_deps[$SUBJECT_PROGRAM]}" ]]; then
-  CLASSPATH="$CLASSPATH:${program_deps[$SUBJECT_PROGRAM]}"
-fi
-
-if [[ "$VERBOSE" -eq 1 ]]; then
-  echo "JAVA_SRC_DIR: $JAVA_SRC_DIR"
-  echo "CLASSPATH: $CLASSPATH"
-  echo
-fi
 
 #===============================================================================
 # Method Call Replacement Setup
@@ -443,12 +415,8 @@ REPLACECALL_COMMAND="$REPLACECALL_JAR${replacement_files[$SUBJECT_PROGRAM]}"
 #===============================================================================
 # Test generator command configuration
 #===============================================================================
-
-RANDOOP_CLASSPATH="$SRC_JAR"
-if [[ -n "${program_deps[$SUBJECT_PROGRAM]}" ]]; then
-  # Expand .jar files from the directory specified in program_deps[$SUBJECT_PROGRAM]
-  RANDOOP_CLASSPATH+=":$(echo "${program_deps[$SUBJECT_PROGRAM]}"*.jar | tr ' ' ':')"
-fi
+RANDOOP_CLASSPATH="$(echo "$SCRIPT_DIR/build/lib/$UUID/"*.jar | tr ' ' ':')"
+TARGET_JAR="$SCRIPT_DIR/build/lib/$UUID/$SUBJECT_PROGRAM.jar"
 
 RANDOOP_BASE_COMMAND="java \
 -Xbootclasspath/a:$JACOCO_AGENT_JAR:$REPLACECALL_JAR \
@@ -456,7 +424,7 @@ RANDOOP_BASE_COMMAND="java \
 -javaagent:$REPLACECALL_COMMAND \
 -classpath $RANDOOP_CLASSPATH:$RANDOOP_JAR \
 randoop.main.Main gentests \
---testjar=$SRC_JAR \
+--testjar=$TARGET_JAR \
 --time-limit=$TIME_LIMIT \
 --deterministic=false \
 --no-error-revealing-tests=true \
@@ -485,6 +453,7 @@ declare -A command_suffix=(
   # Force termination if a test case takes too long to execute
   ["commons-math3-3.2"]="--usethreads=true"
   ["nekomud-r16"]="--omit-methods=^net\.sourceforge\.nekomud\.service\.NetworkService\.stop\(\)$"
+  ["tiny-sql-2.26"]="--specifications=$SCRIPT_DIR/program-specs/tiny-sql-2.26-specs.json"
 )
 
 # Check if the environment is headless. If it is, we can't use the spec for fixsuite-r48 due to initialization errors.
@@ -500,40 +469,6 @@ RANDOOP_COMMAND="$RANDOOP_BASE_COMMAND ${command_suffix[$SUBJECT_PROGRAM]}"
 #===============================================================================
 # Build System Preparation
 #===============================================================================
-cd "$JAVA_SRC_DIR" || exit 1
-
-# For slf4j-api-1.7.12 and javax.mail, this Randoop script uses the main branch, which retains the default namespaces (e.g., org.slf4j, javax.mail),
-# since Randoop does not restrict test generation based on package names.
-#
-# However, EvoSuite contains hardcoded checks that prevent test generation for certain core namespaces like org.slf4j and javax.mail.
-# To work around this, the EvoSuite script (which will eventually be merged) uses the include-major branch,
-# where the packages have been renamed to org1.slf4j and javax1.mail.
-#
-# The EvoSuite script will also temporarily modifies the corresponding source jarfile to reflect this namespace change during test generation.
-
-# Use main branch for slf4j-api and javax.mail
-if [ "$SUBJECT_PROGRAM" == "slf4j-api-1.7.12" ] || [ "$SUBJECT_PROGRAM" == "javax.mail-1.5.1" ]; then
-  if git checkout main > /dev/null 2>&1; then
-    echo "Checked out main."
-  fi
-else
-  if git checkout include-major > /dev/null 2>&1; then
-    echo "Checked out include-major."
-  fi
-fi
-
-if [ "$SUBJECT_PROGRAM" == "slf4j-api-1.7.12" ]; then
-  # Make sure slf4j-api-1.7.12 jarfile has normal namespace
-  wget -O "$SCRIPT_DIR"/../subject-programs/slf4j-api-1.7.12.jar https://raw.githubusercontent.com/randoop/grt-slf4j-api-1.7.12/main/slf4j-api-1.7.12.jar
-fi
-
-if [ "$SUBJECT_PROGRAM" == "javax.mail-1.5.1" ]; then
-  # Make sure javax.mail has normal namespace
-  wget -O "$SCRIPT_DIR"/../subject-programs/javax.mail-1.5.1.jar https://raw.githubusercontent.com/randoop/grt-javax.mail-1.5.1/main/javax.mail-1.5.1.jar
-fi
-
-cd - || exit 1
-
 echo "Using Randoop to generate tests."
 echo
 
@@ -548,9 +483,6 @@ fi
 #===============================================================================
 # Test Generation & Execution
 #===============================================================================
-
-# The value for the -lib command-line option; that is, the classpath.
-LIB_ARG="$CLASSPATH"
 
 # shellcheck disable=SC2034 # i counts iterations but is not otherwise used.
 for i in $(seq 1 "$NUM_LOOP"); do
@@ -572,6 +504,11 @@ for i in $(seq 1 "$NUM_LOOP"); do
     TEST_DIRECTORY="$SCRIPT_DIR/build/randoop-tests/$FILE_SUFFIX"
     rm -rf "$TEST_DIRECTORY"
     mkdir -p "$TEST_DIRECTORY"
+
+    # Jacoco directory for each iteration
+    COVERAGE_DIRECTORY="$SCRIPT_DIR/build/target/$FILE_SUFFIX"
+    rm -rf "$COVERAGE_DIRECTORY"
+    mkdir -p "$COVERAGE_DIRECTORY"
 
     # Result directory for each test generation and execution.
     RESULT_DIR="$SCRIPT_DIR/results/$FILE_SUFFIX"
@@ -644,6 +581,9 @@ for i in $(seq 1 "$NUM_LOOP"); do
     # shellcheck disable=SC2086 # FEATURE_FLAG may contain multiple arguments.
     $RANDOOP_COMMAND --junit-output-dir=$TEST_DIRECTORY $FEATURE_FLAG
 
+    # Remove jacoco.exec file generated by Randoop
+    rm -rf $RESULT_DIR/jacoco.exec
+
     # After test generation, for JSAP-2.1, we need to remove the ant.jar from the classpath
     if [[ "$SUBJECT_PROGRAM" == "JSAP-2.1" ]]; then
       rm "$SCRIPT_DIR/build/lib/$UUID/ant.jar"
@@ -656,31 +596,37 @@ for i in $(seq 1 "$NUM_LOOP"); do
     echo
     echo "Compiling and mutating subject program..."
     if [[ "$VERBOSE" -eq 1 ]]; then
-      echo command:
-      echo "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/build-randoop.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" clean compile
+      echo compile.mutation command:
+      echo "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/build-randoop.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -Dtargetdir="$COVERAGE_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" compile.mutation
+      echo compile.jacoco command:
+      echo "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/build-randoop.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -Dtargetdir="$COVERAGE_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" compile.jacoco
     fi
     echo
-    "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/build-randoop.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" clean compile
+    "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/build-randoop.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -Dtargetdir="$COVERAGE_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" compile.mutation
+    "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/build-randoop.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -Dtargetdir="$COVERAGE_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" compile.jacoco
 
     echo
     echo "Compiling tests..."
     if [[ "$VERBOSE" -eq 1 ]]; then
-      echo command:
-      echo "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/build-randoop.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" compile.tests
+      echo compile.mutation.tests command:
+      echo "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/build-randoop.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -Dtargetdir="$COVERAGE_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" compile.mutation.tests
+      echo compile.jacoco.tests command:
+      echo "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/build-randoop.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -Dtargetdir="$COVERAGE_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" compile.jacoco.tests
     fi
     echo
-    "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/build-randoop.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" compile.tests
-
+    "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/build-randoop.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -Dtargetdir="$COVERAGE_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" compile.mutation.tests
+    "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/build-randoop.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -Dtargetdir="$COVERAGE_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" compile.jacoco.tests
+    
     echo
     echo "Running tests with coverage..."
     if [[ "$VERBOSE" -eq 1 ]]; then
       echo command:
-      echo "$MAJOR_HOME"/bin/"$ANT" -f "$SCRIPT_DIR"/program-config/"$1"/build-randoop.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" test
+      echo "$MAJOR_HOME"/bin/"$ANT" -f "$SCRIPT_DIR"/program-config/"$1"/build-randoop.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -Dtargetdir="$COVERAGE_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" test
     fi
     echo
-    "$MAJOR_HOME"/bin/"$ANT" -f "$SCRIPT_DIR"/program-config/"$1"/build-randoop.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -lib "$LIB_ARG" test
-
-    java -jar "$JACOCO_CLI_JAR" report "$RESULT_DIR/jacoco.exec" --classfiles "$SRC_JAR" --sourcefiles "$JAVA_SRC_DIR" --csv "$RESULT_DIR"/report.csv
+    "$MAJOR_HOME"/bin/"$ANT" -f "$SCRIPT_DIR"/program-config/"$1"/build-randoop.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -Dtargetdir="$COVERAGE_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" test
+    
+    java -jar "$JACOCO_CLI_JAR" report "$RESULT_DIR/jacoco.exec" --classfiles "$COVERAGE_DIRECTORY/classes" --sourcefiles "$JAVA_SRC_DIR" --csv "$RESULT_DIR"/report.csv
 
     # Calculate Instruction Coverage
     inst_missed=$(awk -F, 'NR>1 {sum+=$4} END {print sum}' "$RESULT_DIR"/report.csv)
@@ -707,17 +653,17 @@ for i in $(seq 1 "$NUM_LOOP"); do
         echo "Error: Python is not installed." >&2
         exit 1
       fi
-      "$PYTHON_EXECUTABLE" "$SCRIPT_DIR"/update_hamcrest_tests.py "$TEST_DIRECTORY"
+      "$PYTHON_EXECUTABLE" "$SCRIPT_DIR"/update_tests.py "$TEST_DIRECTORY" --mode randoop-to-evosuite
     fi
 
     echo
     echo "Running tests with mutation analysis..."
     if [[ "$VERBOSE" -eq 1 ]]; then
       echo command:
-      echo "$MAJOR_HOME"/bin/"$ANT" -f "$SCRIPT_DIR"/program-config/"$1"/build-randoop.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -lib "$LIB_ARG" mutation.test
+      echo "$MAJOR_HOME"/bin/"$ANT" -f "$SCRIPT_DIR"/program-config/"$1"/build-randoop.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" mutation.test
     fi
     echo
-    "$MAJOR_HOME"/bin/"$ANT" -f "$SCRIPT_DIR"/program-config/"$1"/build-randoop.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -lib "$LIB_ARG" mutation.test
+    "$MAJOR_HOME"/bin/"$ANT" -f "$SCRIPT_DIR"/program-config/"$1"/build-randoop.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" mutation.test
 
     # Calculate Mutation Score
     mutants_generated=$(awk -F, 'NR==2 {print $1}' "$RESULT_DIR"/summary.csv)

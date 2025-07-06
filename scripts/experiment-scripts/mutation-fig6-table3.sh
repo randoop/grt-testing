@@ -60,18 +60,16 @@ rm -f "$MUTATION_DIR"/results/fig6-table3.csv
 NUM_LOOP=10
 SECONDS_PER_CLASS=(2 10 30 60)
 . "$SCRIPT_DIR"/set-subject-programs.sh
-BG_MODES=(BASELINE GRT)
-EVO_MODES=(EVOSUITE)
+MODES=(BASELINE GRT EVOSUITE)
 
 # Temporary parameters for testing that override the defaults (GRT has not been finished yet)
 NUM_LOOP=1
 SECONDS_PER_CLASS=(2)
 SUBJECT_PROGRAMS=(
   "dcParseArgs-10.2008"
-  "slf4j-api-1.7.12"
+  "jvc-1.1"
 )
-BG_MODES=(BASELINE)
-EVO_MODES=(EVOSUITE)
+MODES=(BASELINE EVOSUITE)
 
 NUM_CORES=$(($(nproc) - 4))
 echo "$(basename "$0"): Running $NUM_CORES concurrent processes."
@@ -79,34 +77,12 @@ echo "$(basename "$0"): Running $NUM_CORES concurrent processes."
 #===============================================================================
 # Task Generation & Execution
 #===============================================================================
-# IMPORTANT NOTE: EvoSuite and Randoop both modify certain shared files (e.g., source code or jar files)
-# for some subject programs. Running them concurrently can cause conflicts,
-# resulting in inconsistent or corrupted results.
-#
-# To avoid these issues, we run all BASELINE and GRT (Randoop-based) tasks in parallel first,
-# and only after they complete do we run the EVOSUITE tasks. This ensures no overlap or race
-# conditions between the tools.
-#===============================================================================
-
-# Collect tasks for BASELINE and GRT
-TASKS_BG=()
+TASKS=()
 for cseconds in "${SECONDS_PER_CLASS[@]}"; do
   for program in "${SUBJECT_PROGRAMS[@]}"; do
-    for mode in "${BG_MODES[@]}"; do
+    for mode in "${MODES[@]}"; do
       for _ in $(seq 1 "$NUM_LOOP"); do
-        TASKS_BG+=("$MUTATION_DIR $cseconds $program $mode")
-      done
-    done
-  done
-done
-
-# Collect tasks for EVOSUITE
-TASKS_EVO=()
-for cseconds in "${SECONDS_PER_CLASS[@]}"; do
-  for program in "${SUBJECT_PROGRAMS[@]}"; do
-    for mode in "${EVO_MODES[@]}"; do
-      for _ in $(seq 1 "$NUM_LOOP"); do
-        TASKS_EVO+=("$MUTATION_DIR $cseconds $program $mode")
+        TASKS+=("$MUTATION_DIR $cseconds $program $mode")
       done
     done
   done
@@ -137,11 +113,8 @@ run_task() {
 
 export -f run_task
 
-# Run BASELINE and GRT modes in parallel
-printf "%s\n" "${TASKS_BG[@]}" | parallel -j $NUM_CORES --colsep ' ' run_task
-
-# Then run EVOSUITE mode in parallel
-printf "%s\n" "${TASKS_EVO[@]}" | parallel -j $NUM_CORES --colsep ' ' run_task
+# Run all tasks in parallel
+printf "%s\n" "${TASKS[@]}" | parallel -j $NUM_CORES --colsep ' ' run_task
 
 #===============================================================================
 # Figure Generation (Table III and Fig. 6)
