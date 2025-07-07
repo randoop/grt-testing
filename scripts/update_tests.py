@@ -9,6 +9,7 @@ import os
 import re
 import argparse
 
+
 def convert_randoop_to_evosuite_runner(test_dir):
     test_file_pattern = re.compile(r"RegressionTest\d+\.java$")
     fix_method_order_pattern = re.compile(
@@ -105,7 +106,9 @@ def convert_evosuite_to_randoop_runner(test_dir):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Convert test runners between Randoop and EvoSuite.")
+    parser = argparse.ArgumentParser(
+        description="Convert test runners between Randoop and EvoSuite."
+    )
     parser.add_argument("test_dir", type=str, help="Path to the test directory")
     parser.add_argument(
         "--mode",
