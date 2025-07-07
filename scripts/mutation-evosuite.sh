@@ -62,7 +62,7 @@ if [[ "$JAVA_VER" -ne 18 ]]; then
   exit 1
 fi
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null 2>&1 && pwd)"
+SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)"
 MAJOR_HOME=$(realpath "${SCRIPT_DIR}/build/major/")               # Major home directory, for mutation testing
 EVOSUITE_JAR=$(realpath "${SCRIPT_DIR}/build/evosuite-1.2.0.jar") # EvoSuite jar file
 JACOCO_CLI_JAR=$(realpath "${SCRIPT_DIR}/build/jacococli.jar")    # For coverage report generation
@@ -224,7 +224,7 @@ JAVA_SRC_DIR=$SRC_BASE_DIR${program_src[$SUBJECT_PROGRAM]}
 setup_build_dir() {
   rm -rf "$SCRIPT_DIR/build/lib/$UUID"
   mkdir -p "$SCRIPT_DIR/build/lib/$UUID"
-  copy_jars $SRC_JAR
+  copy_jars "$SRC_JAR"
 }
 
 download_jars() {
