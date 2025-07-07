@@ -483,7 +483,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
   fi
   echo
   "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/build-evosuite.xml -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -Dtargetdir="$COVERAGE_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" test
-  
+
   java -jar "$JACOCO_CLI_JAR" report "$RESULT_DIR/jacoco.exec" --classfiles "$COVERAGE_DIRECTORY/classes" --sourcefiles "$JAVA_SRC_DIR" --csv "$RESULT_DIR"/report.csv
 
   # Calculate Instruction Coverage
@@ -498,7 +498,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
   branch_coverage=$(echo "scale=4; $branch_covered / ($branch_missed + $branch_covered) * 100" | bc)
   branch_coverage=$(printf "%.2f" "$branch_coverage")
 
-  
+
   # For jdom-1.0, we need to convert the generated tests from EvoSuite format to Randoop format.
   # This is because the EvoSuite runner inteferes with the bytecode manipulation done by Major,
   # resulting in a lot of methods being excluded from mutation analysis.
