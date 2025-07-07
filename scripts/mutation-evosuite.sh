@@ -498,7 +498,6 @@ for i in $(seq 1 "$NUM_LOOP"); do
   branch_coverage=$(echo "scale=4; $branch_covered / ($branch_missed + $branch_covered) * 100" | bc)
   branch_coverage=$(printf "%.2f" "$branch_coverage")
 
-
   # For jdom-1.0, we need to convert the generated tests from EvoSuite format to Randoop format.
   # This is because the EvoSuite runner inteferes with the bytecode manipulation done by Major,
   # resulting in a lot of methods being excluded from mutation analysis.
@@ -511,7 +510,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
     fi
     "$PYTHON_EXECUTABLE" "$SCRIPT_DIR"/update_tests.py "$TEST_DIRECTORY" --mode evosuite-to-randoop
   fi
-  
+
   echo
   echo "Running tests with mutation analysis..."
   if [[ "$VERBOSE" -eq 1 ]]; then
