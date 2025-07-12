@@ -508,7 +508,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
       echo "Error: Python is not installed." >&2
       exit 1
     fi
-    "$PYTHON_EXECUTABLE" "$SCRIPT_DIR"/update_tests.py "$TEST_DIRECTORY" --mode evosuite-to-randoop
+    "$PYTHON_EXECUTABLE" "$SCRIPT_DIR"/convert_test_runners.py "$TEST_DIRECTORY" --mode evosuite-to-randoop
   fi
 
   echo

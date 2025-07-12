@@ -70,8 +70,7 @@ SUBJECT_PROGRAMS=(
 FEATURES=(CONSTANT_MINING GRT_FUZZING ELEPHANT_BRAIN DETECTIVE ORIENTEERING BLOODHOUND GRT)
 
 # Temporary parameters for testing that override the defaults, since we haven't
-# implemented all GRT features. See mutation-randoop.sh for a list of different features
-# you can specify.
+# implemented all GRT features. See mutation-randoop.sh for the list of features.
 NUM_LOOP=3
 TOTAL_SECONDS=(100 200)
 FEATURES=(
@@ -109,6 +108,7 @@ run_task() {
     echo "Running (GRT): mutation-randoop.sh -t $tseconds -f BLOODHOUND,ORIENTEERING,DETECTIVE,GRT_FUZZING,ELEPHANT_BRAIN,CONSTANT_MINING -r -o fig8-9.csv $program"
     "$mutation_dir"/mutation-randoop.sh -t "$tseconds" -f BLOODHOUND,ORIENTEERING,DETECTIVE,GRT_FUZZING,ELEPHANT_BRAIN,CONSTANT_MINING -r -o fig8-9.csv "$program"
   else
+    # `mutation-randoop.sh` checks the validity of $feature.
     echo "Running: mutation-randoop.sh -t $tseconds -f $feature -r -o fig8-9.csv $program"
     "$mutation_dir"/mutation-randoop.sh -t "$tseconds" -f "$feature" -r -o fig8-9.csv "$program"
   fi
@@ -116,12 +116,11 @@ run_task() {
 
 export -f run_task
 
-# Run tasks in parallel.
+# Run all tasks in parallel.
 printf "%s\n" "${TASKS[@]}" | parallel -j $NUM_CORES --colsep ' ' run_task
 
 #===============================================================================
-# Figure Generation (Fig. 8 and 9)
+# Figure Generation
 #===============================================================================
 
-# Outputs figures to result/fig8-9.pdf
 "$PYTHON_EXECUTABLE" "$MUTATION_DIR"/experiment-scripts/generate-grt-figures.py fig8-9

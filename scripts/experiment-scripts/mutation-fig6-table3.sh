@@ -107,18 +107,17 @@ run_task() {
     echo "Running (Baseline): mutation-randoop.sh -c $cseconds -f BASELINE -r -o fig6-table3.csv $program"
     "$mutation_dir"/mutation-randoop.sh -c "$cseconds" -f BASELINE -r -o fig6-table3.csv "$program"
   else
-    echo "Used a mode that is not supported. Please use either GRT, EVOSUITE, or BASELINE"
+    echo "Invalid mode $mode. Please use GRT, EVOSUITE, or BASELINE."
   fi
 }
 
 export -f run_task
 
-# Run all tasks in parallel
+# Run all tasks in parallel.
 printf "%s\n" "${TASKS[@]}" | parallel -j $NUM_CORES --colsep ' ' run_task
 
 #===============================================================================
-# Figure Generation (Table III and Fig. 6)
+# Figure Generation
 #===============================================================================
 
-# Outputs figures to result/fig6-table3.pdf
 "$PYTHON_EXECUTABLE" "$MUTATION_DIR"/experiment-scripts/generate-grt-figures.py fig6-table3
