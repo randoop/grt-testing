@@ -29,6 +29,18 @@ Usage (for reference only):
 """
 
 
+def main():
+    """Parse arguments, load and process data, and save the selected figure type."""
+    parser = argparse.ArgumentParser(description="Generate figures from coverage data.")
+    parser.add_argument(
+        "figure", choices=["fig6-table3", "fig7", "fig8-9"], help="Figure to generate"
+    )
+    args = parser.parse_args()
+
+    df = average_over_loops(load_data(f"../results/{args.figure}.csv"))
+    save_to_pdf(df, args.figure)
+
+
 def load_data(csv_file):
     """Load a CSV file containing coverage and mutation score data.
 
@@ -287,19 +299,6 @@ def save_to_pdf(df, fig_type):
             sys.exit(1)
 
     print(f"PDF saved as '{pdf_filename}'")
-
-
-def main():
-    """Entry point for the script. Parses arguments, loads and processes data, and saves the selected figure type.
-    """
-    parser = argparse.ArgumentParser(description="Generate figures from coverage data.")
-    parser.add_argument(
-        "figure", choices=["fig6-table3", "fig7", "fig8-9"], help="Figure to generate"
-    )
-    args = parser.parse_args()
-
-    df = average_over_loops(load_data(f"../results/{args.figure}.csv"))
-    save_to_pdf(df, args.figure)
 
 
 if __name__ == "__main__":
