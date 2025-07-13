@@ -5,9 +5,9 @@
 # correctly reports mutant coverage.  This script resolves the 0 mutant coverage
 # issue by running the Randoop tests with the EvoSuite runner.
 
+import argparse
 import os
 import re
-import argparse
 
 # Parse arguments
 parser = argparse.ArgumentParser(description="Update Java regression test files.")
@@ -21,9 +21,7 @@ test_dir = args.test_dir
 
 # Regex patterns
 test_file_pattern = re.compile(r"RegressionTest\d+\.java$")
-fix_method_order_pattern = re.compile(
-    r"@FixMethodOrder\s*\(\s*MethodSorters\.NAME_ASCENDING\s*\)"
-)
+fix_method_order_pattern = re.compile(r"@FixMethodOrder\s*\(\s*MethodSorters\.NAME_ASCENDING\s*\)")
 
 # The new import lines to add
 new_imports = [
@@ -47,7 +45,7 @@ for root, dirs, files in os.walk(test_dir):
             continue
 
         file_path = os.path.join(root, file)
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, encoding="utf-8") as f:
             lines = f.readlines()
 
         # Find end of import statements
@@ -58,9 +56,7 @@ for root, dirs, files in os.walk(test_dir):
                 import_end_index = i + 1
 
         # Collect existing stripped import lines for comparison
-        existing_imports = set(
-            line.strip() for line in lines if line.strip().startswith("import")
-        )
+        existing_imports = set(line.strip() for line in lines if line.strip().startswith("import"))
 
         # Insert new imports if they are not already there
         for import_line in reversed(new_imports):

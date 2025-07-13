@@ -1,12 +1,13 @@
-import pandas as pd
 import matplotlib
+import pandas as pd
 
 matplotlib.use("Agg")  # For headless environments (without GUI)
+import argparse
+import sys
+
 import matplotlib.pyplot as plt
 import seaborn as sns
 from matplotlib.backends.backend_pdf import PdfPages
-import argparse
-import sys
 
 """
 This script defines utilities to generate plots and tables based on coverage and mutation score.
@@ -29,30 +30,32 @@ Usage (for reference only):
 
 
 def load_data(csv_file):
-    """
-    Load a CSV file containing coverage and mutation score data.
+    """Load a CSV file containing coverage and mutation score data.
 
-    Parameters:
+    Parameters
+    ----------
         csv_file (str): Path to the CSV file.
 
-    Returns:
+    Returns
+    -------
         pd.DataFrame: DataFrame containing the loaded data.
     """
     return pd.read_csv(csv_file)
 
 
 def average_over_loops(df):
-    """
-    Average metrics over repeated runs of the same configuration.
+    """Average metrics over repeated runs of the same configuration.
 
     Each (time budget, tool, subject program) configuration is repeated multiple times
     to mitigate randomness. This function computes the average metrics (instruction coverage,
     branch coverage, mutation score) across those repeated runs.
 
-    Parameters:
+    Parameters
+    ----------
         df (pd.DataFrame): Raw data with repeated executions per configuration.
 
-    Returns:
+    Returns
+    -------
         pd.DataFrame: Data averaged over repeated runs, retaining one row per (tool, timelimit, subject).
     """
     return df.groupby(["RandoopVersion", "TimeLimit", "FileName"], as_index=False).agg(
@@ -65,20 +68,20 @@ def average_over_loops(df):
 
 
 def generate_table_3(df):
-    """
-    Generate data for Table III: Average coverage and mutation scores per (tool, timelimit) pair.
+    """Generate data for Table III: Average coverage and mutation scores per (tool, timelimit) pair.
 
     This function performs a second level of aggregation, averaging the previously averaged
     metrics (per tool-time-subject) across all subject programs. The resulting table has
     a single row for each (time limit, tool) configuration.
 
-    Parameters:
+    Parameters
+    ----------
         df (pd.DataFrame): Data averaged over repeated runs (output of `average_over_loops`).
 
-    Returns:
+    Returns
+    -------
         matplotlib.figure.Figure: The composite figure representing Table III.
     """
-
     grouped = (
         df.groupby(["RandoopVersion", "TimeLimit"])
         .agg(
@@ -94,9 +97,7 @@ def generate_table_3(df):
     fig = plt.figure(figsize=(10, 6))
     plt.axis("off")
 
-    table_data = [
-        ["Time", "Feature", "Insn. cov. [%]", "Branch cov. [%]", "Mutation score [%]"]
-    ]
+    table_data = [["Time", "Feature", "Insn. cov. [%]", "Branch cov. [%]", "Mutation score [%]"]]
     for _, row in grouped.iterrows():
         table_data.append(
             [
@@ -113,25 +114,24 @@ def generate_table_3(df):
     table.set_fontsize(10)
     table.scale(1, 1.5)
 
-    fig.suptitle(
-        "Table III: Average Coverage and Mutation Scores", fontsize=16, weight="bold"
-    )
+    fig.suptitle("Table III: Average Coverage and Mutation Scores", fontsize=16, weight="bold")
 
     return fig
 
 
 def generate_fig_6(df):
-    """
-    Generate Figure 6: Box-and-whisker plots for coverage and mutation metrics.
+    """Generate Figure 6: Box-and-whisker plots for coverage and mutation metrics.
 
     This visualization shows the distribution of metrics across individual subject programs
     for each (time limit, tool) configuration. It illustrates variability and does not average
     across subject programs.
 
-    Parameters:
+    Parameters
+    ----------
         df (pd.DataFrame): Data averaged over repeated runs (output of `average_over_loops`).
 
-    Returns:
+    Returns
+    -------
         matplotlib.figure.Figure: The composite figure containing three subplots.
     """
     sns.set(style="whitegrid")
@@ -147,15 +147,11 @@ def generate_fig_6(df):
     axes[0].set_xlabel("Time Limit (s)")
     axes[0].set_ylabel("Instruction Coverage (%)")
 
-    sns.boxplot(
-        x="TimeLimit", y="BranchCoverage", hue="RandoopVersion", data=df, ax=axes[1]
-    )
+    sns.boxplot(x="TimeLimit", y="BranchCoverage", hue="RandoopVersion", data=df, ax=axes[1])
     axes[1].set_xlabel("Time Limit (s)")
     axes[1].set_ylabel("Branch Coverage (%)")
 
-    sns.boxplot(
-        x="TimeLimit", y="MutationScore", hue="RandoopVersion", data=df, ax=axes[2]
-    )
+    sns.boxplot(x="TimeLimit", y="MutationScore", hue="RandoopVersion", data=df, ax=axes[2])
     axes[2].set_xlabel("Time Limit (s)")
     axes[2].set_ylabel("Mutation Score (%)")
 
@@ -186,16 +182,17 @@ def generate_fig_6(df):
 
 
 def generate_fig_7(df):
-    """
-    Generate Figure 7: Box plot of branch coverage by Randoop version.
+    """Generate Figure 7: Box plot of branch coverage by Randoop version.
 
     This plot visualizes the distribution of branch coverage across subject programs
     for each Randoop version, showing how the tool's performance varies.
 
-    Parameters:
+    Parameters
+    ----------
         df (pd.DataFrame): Data averaged over repeated runs (output of `average_over_loops`).
 
-    Returns:
+    Returns
+    -------
         matplotlib.figure.Figure: Box plot figure.
     """
     sns.set(style="whitegrid")
@@ -203,23 +200,22 @@ def generate_fig_7(df):
     sns.boxplot(x="RandoopVersion", y="BranchCoverage", data=df, ax=ax)
     ax.set_xlabel("GRT Component")
     ax.set_ylabel("Branch Coverage (%)")
-    fig.suptitle(
-        "Figure 7: Branch Coverage by GRT Component", fontsize=16, weight="bold"
-    )
+    fig.suptitle("Figure 7: Branch Coverage by GRT Component", fontsize=16, weight="bold")
     return fig
 
 
 def generate_fig_8_9(df):
-    """
-    Generate Figures 8-9: Line plots showing branch coverage over time per subject.
+    """Generate Figures 8-9: Line plots showing branch coverage over time per subject.
 
     This figure plots branch coverage for each subject program across time limits,
     comparing performance of different Randoop versions.
 
-    Parameters:
+    Parameters
+    ----------
         df (pd.DataFrame): Data averaged over repeated runs (output of `average_over_loops`).
 
-    Returns:
+    Returns
+    -------
         list of matplotlib.figure.Figure: One figure per subject.
     """
     sns.set(style="whitegrid")
@@ -256,10 +252,10 @@ def generate_fig_8_9(df):
 
 
 def save_to_pdf(df, fig_type):
-    """
-    Save a figure/table of the given type to a PDF file.
+    """Save a figure/table of the given type to a PDF file.
 
-    Parameters:
+    Parameters
+    ----------
         df (pd.DataFrame): Data averaged over repeated runs (output of `average_over_loops`).
         fig_type (str): One of: 'fig6-table3', 'fig7', 'fig8-9'.
     """
@@ -294,8 +290,7 @@ def save_to_pdf(df, fig_type):
 
 
 def main():
-    """
-    Entry point for the script. Parses arguments, loads and processes data, and saves the selected figure type.
+    """Entry point for the script. Parses arguments, loads and processes data, and saves the selected figure type.
     """
     parser = argparse.ArgumentParser(description="Generate figures from coverage data.")
     parser.add_argument(
