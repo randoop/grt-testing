@@ -17,6 +17,7 @@ jobs:
         sudo apt-get update
         sudo apt-get -y install pipx
         sudo pipx install ruff
+        sudo pip install mypy
     - name: Install shellcheck and checkbashisms
       run: sudo apt install shfmt shellcheck devscripts
     - name: style check
