@@ -124,15 +124,6 @@ def generate_table_3(df: pd.DataFrame) -> mpl.figure.Figure:
                 f"{row['MutationScore']:.2f}",
             ]
         )
-        table_data.append(
-            [
-                row["TimeLimit"],
-                row["RandoopVersion"],
-                f"{row['InstructionCoverage']:.2f}",
-                f"{row['BranchCoverage']:.2f}",
-                f"{row['MutationScore']:.2f}",
-            ]
-        )
 
     table = plt.table(cellText=table_data, loc="center", cellLoc="center")
     table = plt.table(cellText=table_data, loc="center", cellLoc="center")
