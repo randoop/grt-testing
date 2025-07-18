@@ -103,6 +103,7 @@ def generate_table_3(df: pd.DataFrame) -> mpl.figure.Figure:
 
     fig = plt.figure(figsize=(10, 6))
     plt.axis("off")
+    plt.axis("off")
 
     table_data = [["Time", "Feature", "Insn. cov. [%]", "Branch cov. [%]", "Mutation score [%]"]]
     for _, row in grouped.iterrows():
@@ -115,7 +116,6 @@ def generate_table_3(df: pd.DataFrame) -> mpl.figure.Figure:
                 f"{row['MutationScore']:.2f}",
             ]
         )
-
     table = plt.table(cellText=table_data, loc="center", cellLoc="center")
     table.auto_set_font_size(False)
     table.set_fontsize(10)
@@ -155,6 +155,10 @@ def generate_fig_6(df: pd.DataFrame) -> mpl.figure.Figure:
     sns.boxplot(x="TimeLimit", y="BranchCoverage", hue="RandoopVersion", data=df, ax=axes[1])
     axes[1].set_xlabel("Time Limit (s)")
     axes[1].set_ylabel("Branch Coverage (%)")
+
+    sns.boxplot(x="TimeLimit", y="MutationScore", hue="RandoopVersion", data=df, ax=axes[2])
+    axes[2].set_xlabel("Time Limit (s)")
+    axes[2].set_ylabel("Mutation Score (%)")
 
     for ax in axes:
         ax.get_legend().remove()
@@ -263,6 +267,7 @@ def save_to_pdf(df: pd.DataFrame, fig_type: str):
             table_3 = generate_table_3(df)
             pdf.savefig(table_3)
             plt.close(table_3)
+
 
             fig_6 = generate_fig_6(df)
             pdf.savefig(fig_6)

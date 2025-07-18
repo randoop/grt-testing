@@ -1,8 +1,7 @@
 all: style-fix style-check
 
 style-fix: python-style-fix shell-style-fix
-# TODO: add python-typecheck here
-style-check: python-style-check shell-style-check
+style-check: python-style-check python-typecheck shell-style-check
 
 PYTHON_FILES:=$(wildcard *.py) $(wildcard **/*.py) $(shell grep -r -l --exclude='*.py' --exclude='*~' --exclude='*.tar' --exclude=gradlew --exclude-dir=.git '^\#! \?\(/bin/\|/usr/bin/env \)python')
 PYTHON_FILES_TO_CHECK:=$(filter-out ${lcb_runner},${PYTHON_FILES})
