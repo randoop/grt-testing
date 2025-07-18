@@ -1,5 +1,5 @@
-"""Utilities to generate plots and tables based on coverage and mutation score.
-
+"""
+This script defines utilities to generate plots and tables based on coverage and mutation score.
 This script is **not intended to be run directly**.  Instead, use one of these scripts:
     ./mutation-fig6-table3.sh
     ./mutation-fig7.sh
@@ -16,6 +16,7 @@ This script supports generation of the following figures:
 Usage (for reference only):
     python generate-grt-figures.py { fig6-table3 | fig7 | fig8-9 }
 """
+
 
 import matplotlib as mpl
 import pandas as pd
@@ -42,7 +43,8 @@ def main():
 
 
 def load_data(csv_file: str) -> pd.DataFrame:
-    """Load a CSV file containing coverage and mutation score data.
+    """
+    Load a CSV file containing coverage and mutation score data.
 
     Args:
         csv_file: Path to the CSV file.
@@ -66,6 +68,14 @@ def average_over_loops(df: pd.DataFrame) -> pd.DataFrame:
     Returns:
         Data averaged over repeated runs, retaining one row per (tool, timelimit, subject).
     """
+    return df.groupby(["RandoopVersion", "TimeLimit", "FileName"], as_index=False).agg(
+        {
+            "InstructionCoverage": "mean",
+            "BranchCoverage": "mean",
+            "MutationScore": "mean",
+        }
+    )
+
     return df.groupby(["RandoopVersion", "TimeLimit", "FileName"], as_index=False).agg(
         {
             "InstructionCoverage": "mean",
@@ -102,6 +112,7 @@ def generate_table_3(df: pd.DataFrame) -> mpl.figure.Figure:
 
     fig = plt.figure(figsize=(10, 6))
     plt.axis("off")
+    plt.axis("off")
 
     table_data = [["Time", "Feature", "Insn. cov. [%]", "Branch cov. [%]", "Mutation score [%]"]]
     for _, row in grouped.iterrows():
@@ -114,7 +125,17 @@ def generate_table_3(df: pd.DataFrame) -> mpl.figure.Figure:
                 f"{row['MutationScore']:.2f}",
             ]
         )
+        table_data.append(
+            [
+                row["TimeLimit"],
+                row["RandoopVersion"],
+                f"{row['InstructionCoverage']:.2f}",
+                f"{row['BranchCoverage']:.2f}",
+                f"{row['MutationScore']:.2f}",
+            ]
+        )
 
+    table = plt.table(cellText=table_data, loc="center", cellLoc="center")
     table = plt.table(cellText=table_data, loc="center", cellLoc="center")
     table.auto_set_font_size(False)
     table.set_fontsize(10)
@@ -150,6 +171,15 @@ def generate_fig_6(df: pd.DataFrame) -> mpl.figure.Figure:
     )
     axes[0].set_xlabel("Time Limit (s)")
     axes[0].set_ylabel("Instruction Coverage (%)")
+    sns.boxplot(
+        x="TimeLimit",
+        y="InstructionCoverage",
+        hue="RandoopVersion",
+        data=df,
+        ax=axes[0],
+    )
+    axes[0].set_xlabel("Time Limit (s)")
+    axes[0].set_ylabel("Instruction Coverage (%)")
 
     sns.boxplot(x="TimeLimit", y="BranchCoverage", hue="RandoopVersion", data=df, ax=axes[1])
     axes[1].set_xlabel("Time Limit (s)")
@@ -163,6 +193,15 @@ def generate_fig_6(df: pd.DataFrame) -> mpl.figure.Figure:
         ax.get_legend().remove()
 
     handles, labels = axes[0].get_legend_handles_labels()
+    fig.legend(
+        handles,
+        labels,
+        loc="upper center",
+        ncol=len(labels),
+        fontsize=10,
+        title="GRT Component",
+        bbox_to_anchor=(0.5, 1.05),
+    )
     fig.legend(
         handles,
         labels,
@@ -225,11 +264,26 @@ def generate_fig_8_9(df: pd.DataFrame) -> list[mpl.figure.Figure]:
         .mean()
         .reset_index()
     )
+    grouped = (
+        df.groupby(["FileName", "TimeLimit", "RandoopVersion"])["BranchCoverage"]
+        .mean()
+        .reset_index()
+    )
     figures = []
+    for subject in grouped["FileName"].unique():
     for subject in grouped["FileName"].unique():
         fig, ax = plt.subplots(figsize=(10, 6))
         subject_data = grouped[grouped["FileName"] == subject]
+        subject_data = grouped[grouped["FileName"] == subject]
 
+        for version in subject_data["RandoopVersion"].unique():
+            version_data = subject_data[subject_data["RandoopVersion"] == version]
+            ax.plot(
+                version_data["TimeLimit"],
+                version_data["BranchCoverage"],
+                label=version,
+                marker="o",
+            )
         for version in subject_data["RandoopVersion"].unique():
             version_data = subject_data[subject_data["RandoopVersion"] == version]
             ax.plot(
@@ -247,35 +301,49 @@ def generate_fig_8_9(df: pd.DataFrame) -> list[mpl.figure.Figure]:
         ax.set_xlabel("Time Limit (s)")
         ax.set_ylabel("Branch Coverage (%)")
         ax.legend(title="GRT Component")
+        fig.suptitle(
+            f"Figure 8-9: Branch Coverage over Time — {subject}",
+            fontsize=16,
+            weight="bold",
+        )
+        ax.set_xlabel("Time Limit (s)")
+        ax.set_ylabel("Branch Coverage (%)")
+        ax.legend(title="GRT Component")
         figures.append(fig)
 
     return figures
 
 
 def save_to_pdf(df: pd.DataFrame, fig_type: str):
-    """Save a figure/table of the given type to a PDF file.
+    """
+    Save a figure/table of the given type to a PDF file.
 
     Args:
         df: Data averaged over repeated runs (output of `average_over_loops`).
         fig_type: One of: 'fig6-table3', 'fig7', 'fig8-9'.
     """
     pdf_filename = f"../results/{fig_type}.pdf"
+    pdf_filename = f"../results/{fig_type}.pdf"
 
     with PdfPages(pdf_filename) as pdf:
+        if fig_type == "fig6-table3":
         if fig_type == "fig6-table3":
             table_3 = generate_table_3(df)
             pdf.savefig(table_3)
             plt.close(table_3)
+
 
             fig_6 = generate_fig_6(df)
             pdf.savefig(fig_6)
             plt.close(fig_6)
 
         elif fig_type == "fig7":
+        elif fig_type == "fig7":
             fig_7 = generate_fig_7(df)
             pdf.savefig(fig_7)
             plt.close(fig_7)
 
+        elif fig_type == "fig8-9":
         elif fig_type == "fig8-9":
             figs = generate_fig_8_9(df)
             for fig in figs:
@@ -287,6 +355,7 @@ def save_to_pdf(df: pd.DataFrame, fig_type: str):
             sys.exit(1)
 
     print(f"PDF saved as '{pdf_filename}'")
+
 
 
 if __name__ == "__main__":
