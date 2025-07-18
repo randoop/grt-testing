@@ -76,15 +76,6 @@ def average_over_loops(df: pd.DataFrame) -> pd.DataFrame:
         }
     )
 
-    return df.groupby(["RandoopVersion", "TimeLimit", "FileName"], as_index=False).agg(
-        {
-            "InstructionCoverage": "mean",
-            "BranchCoverage": "mean",
-            "MutationScore": "mean",
-        }
-    )
-
-
 def generate_table_3(df: pd.DataFrame) -> mpl.figure.Figure:
     """Generate data for Table III: Average coverage and mutation scores per (tool, timelimit) pair.
 
