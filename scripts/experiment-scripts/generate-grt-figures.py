@@ -76,15 +76,6 @@ def average_over_loops(df: pd.DataFrame) -> pd.DataFrame:
         }
     )
 
-    return df.groupby(["RandoopVersion", "TimeLimit", "FileName"], as_index=False).agg(
-        {
-            "InstructionCoverage": "mean",
-            "BranchCoverage": "mean",
-            "MutationScore": "mean",
-        }
-    )
-
-
 def generate_table_3(df: pd.DataFrame) -> mpl.figure.Figure:
     """Generate data for Table III: Average coverage and mutation scores per (tool, timelimit) pair.
 
@@ -125,17 +116,6 @@ def generate_table_3(df: pd.DataFrame) -> mpl.figure.Figure:
                 f"{row['MutationScore']:.2f}",
             ]
         )
-        table_data.append(
-            [
-                row["TimeLimit"],
-                row["RandoopVersion"],
-                f"{row['InstructionCoverage']:.2f}",
-                f"{row['BranchCoverage']:.2f}",
-                f"{row['MutationScore']:.2f}",
-            ]
-        )
-
-    table = plt.table(cellText=table_data, loc="center", cellLoc="center")
     table = plt.table(cellText=table_data, loc="center", cellLoc="center")
     table.auto_set_font_size(False)
     table.set_fontsize(10)
@@ -159,18 +139,9 @@ def generate_fig_6(df: pd.DataFrame) -> mpl.figure.Figure:
     Returns:
         The composite figure containing three subplots.
     """
-    sns.set(style="whitegrid")
+    sns.set_theme(style="whitegrid")
     fig, axes = plt.subplots(1, 3, figsize=(18, 6), sharey=False)
 
-    sns.boxplot(
-        x="TimeLimit",
-        y="InstructionCoverage",
-        hue="RandoopVersion",
-        data=df,
-        ax=axes[0],
-    )
-    axes[0].set_xlabel("Time Limit (s)")
-    axes[0].set_ylabel("Instruction Coverage (%)")
     sns.boxplot(
         x="TimeLimit",
         y="InstructionCoverage",
@@ -193,15 +164,6 @@ def generate_fig_6(df: pd.DataFrame) -> mpl.figure.Figure:
         ax.get_legend().remove()
 
     handles, labels = axes[0].get_legend_handles_labels()
-    fig.legend(
-        handles,
-        labels,
-        loc="upper center",
-        ncol=len(labels),
-        fontsize=10,
-        title="GRT Component",
-        bbox_to_anchor=(0.5, 1.05),
-    )
     fig.legend(
         handles,
         labels,
@@ -237,7 +199,7 @@ def generate_fig_7(df: pd.DataFrame) -> mpl.figure.Figure:
     Returns:
         Box plot figure.
     """
-    sns.set(style="whitegrid")
+    sns.set_theme(style="whitegrid")
     fig, ax = plt.subplots(figsize=(8, 6))
     sns.boxplot(x="RandoopVersion", y="BranchCoverage", data=df, ax=ax)
     ax.set_xlabel("GRT Component")
@@ -258,12 +220,7 @@ def generate_fig_8_9(df: pd.DataFrame) -> list[mpl.figure.Figure]:
     Returns:
         One figure per subject.
     """
-    sns.set(style="whitegrid")
-    grouped = (
-        df.groupby(["FileName", "TimeLimit", "RandoopVersion"])["BranchCoverage"]
-        .mean()
-        .reset_index()
-    )
+    sns.set_theme(style="whitegrid")
     grouped = (
         df.groupby(["FileName", "TimeLimit", "RandoopVersion"])["BranchCoverage"]
         .mean()
@@ -271,19 +228,8 @@ def generate_fig_8_9(df: pd.DataFrame) -> list[mpl.figure.Figure]:
     )
     figures = []
     for subject in grouped["FileName"].unique():
-    for subject in grouped["FileName"].unique():
         fig, ax = plt.subplots(figsize=(10, 6))
         subject_data = grouped[grouped["FileName"] == subject]
-        subject_data = grouped[grouped["FileName"] == subject]
-
-        for version in subject_data["RandoopVersion"].unique():
-            version_data = subject_data[subject_data["RandoopVersion"] == version]
-            ax.plot(
-                version_data["TimeLimit"],
-                version_data["BranchCoverage"],
-                label=version,
-                marker="o",
-            )
         for version in subject_data["RandoopVersion"].unique():
             version_data = subject_data[subject_data["RandoopVersion"] == version]
             ax.plot(
@@ -293,14 +239,6 @@ def generate_fig_8_9(df: pd.DataFrame) -> list[mpl.figure.Figure]:
                 marker="o",
             )
 
-        fig.suptitle(
-            f"Figure 8-9: Branch Coverage over Time — {subject}",
-            fontsize=16,
-            weight="bold",
-        )
-        ax.set_xlabel("Time Limit (s)")
-        ax.set_ylabel("Branch Coverage (%)")
-        ax.legend(title="GRT Component")
         fig.suptitle(
             f"Figure 8-9: Branch Coverage over Time — {subject}",
             fontsize=16,
@@ -323,10 +261,8 @@ def save_to_pdf(df: pd.DataFrame, fig_type: str):
         fig_type: One of: 'fig6-table3', 'fig7', 'fig8-9'.
     """
     pdf_filename = f"../results/{fig_type}.pdf"
-    pdf_filename = f"../results/{fig_type}.pdf"
 
     with PdfPages(pdf_filename) as pdf:
-        if fig_type == "fig6-table3":
         if fig_type == "fig6-table3":
             table_3 = generate_table_3(df)
             pdf.savefig(table_3)
@@ -338,12 +274,10 @@ def save_to_pdf(df: pd.DataFrame, fig_type: str):
             plt.close(fig_6)
 
         elif fig_type == "fig7":
-        elif fig_type == "fig7":
             fig_7 = generate_fig_7(df)
             pdf.savefig(fig_7)
             plt.close(fig_7)
 
-        elif fig_type == "fig8-9":
         elif fig_type == "fig8-9":
             figs = generate_fig_8_9(df)
             for fig in figs:
