@@ -112,7 +112,6 @@ def generate_table_3(df: pd.DataFrame) -> mpl.figure.Figure:
 
     fig = plt.figure(figsize=(10, 6))
     plt.axis("off")
-    plt.axis("off")
 
     table_data = [["Time", "Feature", "Insn. cov. [%]", "Branch cov. [%]", "Mutation score [%]"]]
     for _, row in grouped.iterrows():
