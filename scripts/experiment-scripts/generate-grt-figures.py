@@ -25,9 +25,9 @@ mpl.use("Agg")  # For headless environments (without GUI)
 import argparse
 import sys
 
-import mpl.pyplot as plt
+import matplotlib.pyplot as plt
 import seaborn as sns
-from mpl.backends.backend_pdf import PdfPages
+from matplotlib.backends.backend_pdf import PdfPages
 
 
 def main():

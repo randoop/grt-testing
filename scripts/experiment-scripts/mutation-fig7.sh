@@ -68,7 +68,7 @@ NUM_LOOP=1
 TOTAL_SECONDS=(10)
 SUBJECT_PROGRAMS=(
   "dcParseArgs-10.2008"
-  "slf4j-api-1.7.12"
+  "nekomud-r16"
 )
 FEATURES=(
   "BLOODHOUND"

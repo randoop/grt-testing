@@ -67,7 +67,7 @@ NUM_LOOP=1
 SECONDS_PER_CLASS=(2)
 SUBJECT_PROGRAMS=(
   "dcParseArgs-10.2008"
-  "jvc-1.1"
+  "nekomud-r16"
 )
 MODES=(BASELINE EVOSUITE)
 

@@ -71,8 +71,8 @@ FEATURES=(CONSTANT_MINING GRT_FUZZING ELEPHANT_BRAIN DETECTIVE ORIENTEERING BLOO
 
 # Temporary parameters for testing that override the defaults, since we haven't
 # implemented all GRT features. See mutation-randoop.sh for the list of features.
-NUM_LOOP=3
-TOTAL_SECONDS=(100 200)
+NUM_LOOP=1
+TOTAL_SECONDS=(5 10)
 FEATURES=(
   "BLOODHOUND"
   "ORIENTEERING"
