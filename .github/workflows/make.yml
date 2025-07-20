@@ -1,23 +1,24 @@
 name: Run make under CI
 
-on: [push, pull_request]
+on:
+  - push
+  - pull_request
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 1
-        show-progress: false
-    - name: install ruff
-      run: |
-        sudo apt-get update
-        sudo apt-get -y install pipx
-        sudo pipx install ruff
-    - name: Install shellcheck and checkbashisms
-      run: sudo apt install shfmt shellcheck devscripts
-    - name: style check
-      run: make style-check
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          show-progress: false
+      - name: install ruff
+        run: |
+          sudo apt-get update
+          sudo apt-get -y install pipx
+          sudo pipx install ruff
+          sudo pip install mypy
+      - name: Install shellcheck and checkbashisms
+        run: sudo apt install shfmt shellcheck devscripts
+      - name: style check
+        run: make style-check
