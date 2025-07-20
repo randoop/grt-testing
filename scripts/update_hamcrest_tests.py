@@ -48,7 +48,7 @@ for root, _dirs, files in os.walk(test_dir):
             continue
 
         file_path = Path(root) / file
-        with Path.open(file_path, encoding="utf-8") as f:
+        with Path(file_path).open(encoding="utf-8") as f:
             lines = f.readlines()
 
         # Find end of import statements
@@ -73,7 +73,7 @@ for root, _dirs, files in os.walk(test_dir):
                 break
 
         # Write changes back to the file
-        with Path.open(file_path, "w", encoding="utf-8") as f:
+        with Path(file_path).open("w", encoding="utf-8") as f:
             f.writelines(lines)
 
         print(f"Updated: {file_path}")
