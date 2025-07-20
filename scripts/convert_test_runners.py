@@ -11,6 +11,7 @@ different runners and instrumentation, though the exact cause is uncertain.
 This script modifies the annotations and class structure in test files to convert between the
 two formats, enabling flexible integration with mutation testing tools across different projects.
 """
+
 import argparse
 import os
 import re
