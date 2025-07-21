@@ -18,7 +18,7 @@ import re
 from pathlib import Path
 
 
-def main():
+def main() -> None:
     """Parse command-line arguments and convert test runners between Randoop and EvoSuite.
 
     Parses the test directory and mode from the command line. Depending on the mode,
@@ -46,7 +46,7 @@ def main():
         convert_evosuite_to_randoop_runner(args.test_dir)
 
 
-def convert_randoop_to_evosuite_runner(test_dir):
+def convert_randoop_to_evosuite_runner(test_dir: str) -> None:
     """Convert Randoop-generated test files into a format compatible with the EvoSuite test runner.
 
     Specifically:
@@ -111,7 +111,7 @@ def convert_randoop_to_evosuite_runner(test_dir):
             print(f"[EvoSuite Runner] Updated: {file_path}")
 
 
-def convert_evosuite_to_randoop_runner(test_dir):
+def convert_evosuite_to_randoop_runner(test_dir: str) -> None:
     """Convert EvoSuite-generated test files to a plain JUnit format compatible with Randoop tests.
 
     Specifically:
