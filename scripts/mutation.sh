@@ -197,7 +197,7 @@ echo
 SRC_BASE_DIR="$(realpath "$SCRIPT_DIR/../subject-programs/src/$SUBJECT_PROGRAM")"
 
 # Path to the jar file of the subject program.
-SRC_JAR=$(realpath "$SCRIPT_DIR/../subject-programs/$SUBJECT_PROGRAM.jar")
+SRC_JAR=$(realpath "$SCRIPT_DIR/../subject-programs/jars/$SUBJECT_PROGRAM.jar")
 
 # Number of classes in given jar file.
 NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
