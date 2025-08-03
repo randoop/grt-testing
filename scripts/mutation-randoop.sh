@@ -23,17 +23,6 @@
 #------------------------------------------------------------------------------
 # Options (command-line arguments):
 #------------------------------------------------------------------------------
-# See variable USAGE_STRING below
-
-#------------------------------------------------------------------------------
-# Prerequisites:
-#------------------------------------------------------------------------------
-# See file `mutation-prerequisites.md`.
-
-# Fail this script on errors.
-set -e
-set -o pipefail
-
 USAGE_STRING="usage: mutation-randoop.sh [-h] [-v] [-r] [-f features] [-a] [-o output_file] [-t total_time] [-c time_per_class] [-n num_iterations] TEST-CASE-NAME
   -h    Displays this help message.
   -v    Enables verbose mode.
@@ -49,6 +38,15 @@ USAGE_STRING="usage: mutation-randoop.sh [-h] [-v] [-r] [-f features] [-a] [-o o
   -n N  Number of iterations to run the experiment (default: 1).
   TEST-CASE-NAME is the name of a jar file in ../subject-programs/, without .jar.
   Example: commons-lang3-3.0"
+
+#------------------------------------------------------------------------------
+# Prerequisites:
+#------------------------------------------------------------------------------
+# See file `mutation-prerequisites.md`.
+
+# Fail this script on errors.
+set -e
+set -o pipefail
 
 if [ $# -eq 0 ]; then
   echo "$0: $USAGE_STRING"

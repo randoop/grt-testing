@@ -1,4 +1,4 @@
-"""Facilitates switching between Randoop and EvoSuite JUnit test runners.
+"""Switches between Randoop and EvoSuite JUnit test runners.
 
 Certain subject programs require specific test runner configurations to ensure correct execution
 and accurate mutation analysis results. For instance, some Randoop-generated tests yield no mutant
@@ -19,12 +19,9 @@ from pathlib import Path
 
 
 def main() -> None:
-    """Parse command-line arguments and convert test runners between Randoop and EvoSuite.
+    """Convert test runners between Randoop and EvoSuite.
 
-    Parses the test directory and mode from the command line. Depending on the mode,
-    it calls the appropriate function to convert test runner annotations in the specified
-    test directory:
-
+    Functionality depends on the mode:
     - "randoop-to-evosuite": converts Randoop test runners to EvoSuite format.
     - "evosuite-to-randoop": converts EvoSuite test runners to Randoop format.
     """
@@ -62,8 +59,15 @@ def convert_randoop_to_evosuite_runner(test_dir: str) -> None:
         test_dir (str): Path to the directory containing test files to convert.
     """
     test_file_pattern = re.compile(r"RegressionTest\d+\.java$")
+
     fix_method_order_pattern = re.compile(
         r"@FixMethodOrder\s*\(\s*MethodSorters\.NAME_ASCENDING\s*\)"
+    )
+    fix_method_order_replacement = (
+        "@RunWith(EvoRunner.class) "
+        "@EvoRunnerParameters(mockJVMNonDeterminism = true, "
+        "useVFS = true, useVNET = true, resetStaticState = true, "
+        "separateClassLoader = true)"
     )
 
     new_imports = [
@@ -71,13 +75,6 @@ def convert_randoop_to_evosuite_runner(test_dir: str) -> None:
         "import org.evosuite.runtime.EvoRunnerParameters;",
         "import org.junit.runner.RunWith;",
     ]
-
-    fix_method_order_replacement = (
-        "@RunWith(EvoRunner.class) "
-        "@EvoRunnerParameters(mockJVMNonDeterminism = true, "
-        "useVFS = true, useVNET = true, resetStaticState = true, "
-        "separateClassLoader = true)"
-    )
 
     for root, _dirs, files in os.walk(test_dir):
         for file in files:
@@ -127,6 +124,8 @@ def convert_evosuite_to_randoop_runner(test_dir: str) -> None:
         test_dir (str): Path to the directory containing test files to convert.
     """
     evosuite_test_pattern = re.compile(r".*_ESTest\.java$")
+
+    # Swallow lines (no output) from the first regex to the second one.
     runner_annotation_pattern = re.compile(
         r"@RunWith\(EvoRunner\.class\)\s*@EvoRunnerParameters\([^)]+\)\s*"
     )
