@@ -18,7 +18,7 @@ Thumbs.db
 tests/src
 subject-programs/src
 
-# subdirectory created by scripts/mutation.sh
+# subdirectory created by scripts/mutation-randoop.sh and scripts/mutation-evosuite.sh
 scripts/jarfiles
 
 scripts/build/

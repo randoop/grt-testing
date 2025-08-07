@@ -1,9 +1,11 @@
-# Test cases and scripts for testing Randoop
+# Test cases and scripts for testing Randoop and EvoSuite
 
 ## Overview
 
 This repository contains test cases and scripts designed for testing
-[Randoop](https://github.com/randoop/randoop), specifically for comparison with
+[Randoop](https://github.com/randoop/randoop) and
+[EvoSuite](https://www.evosuite.org/),
+specifically for comparison with
 the results presented in the paper "[GRT: Program-Analysis-Guided Random
 Testing](GRT_Program-Analysis-Guided_Random_Testing.pdf)"
 
@@ -13,11 +15,8 @@ Testing](GRT_Program-Analysis-Guided_Random_Testing.pdf)"
 To set up the environment, refer to the `scripts/mutation-prerequisites.md` file.
 
 ### Running Scripts
-For instructions on using the scripts, run the following command:
-
-```bash
-./scripts/mutation.sh -h
-```
+For prerequisities, refer to `scripts/mutation-prerequisities.md`.
+For instructions on using the scripts, refer to `scripts/mutation-randoop.sh` for Randoop and `scripts/mutation-evosuite.sh` for EvoSuite.
 
 ### Running GRT Experiments
 See file `scripts/experiment-scripts/README.md`.
