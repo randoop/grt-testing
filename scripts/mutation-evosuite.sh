@@ -12,7 +12,7 @@
 # Directories and files:
 # - `build/evosuite-tests*`: EvoSuite-created test suites.
 # - `build/bin`: Compiled tests and code.
-# - `results/$OUTPUT_FILE`: statistics about each iteration.
+# - `results/$OUTPUT_FILE.csv`: CSV file containing summary statistics for each iteration (see -o flag)
 # - `results/`: everything else specific to the most recent iteration.
 
 #------------------------------------------------------------------------------
