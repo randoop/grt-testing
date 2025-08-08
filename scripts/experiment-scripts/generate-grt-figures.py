@@ -25,9 +25,9 @@ mpl.use("Agg")  # For headless environments (without GUI)
 import argparse
 import sys
 
-import mpl.pyplot as plt
+import matplotlib.pyplot as plt
 import seaborn as sns
-from mpl.backends.backend_pdf import PdfPages
+from matplotlib.backends.backend_pdf import PdfPages
 
 
 def main():
@@ -68,11 +68,11 @@ def average_over_loops(df: pd.DataFrame) -> pd.DataFrame:
     Returns:
         Data averaged over repeated runs, retaining one row per (tool, timelimit, subject).
     """
-    return df.groupby(["RandoopVersion", "TimeLimit", "FileName"], as_index=False).agg(
+    return df.groupby(['Version', 'TimeLimit', 'FileName'], as_index=False).agg(
         {
-            "InstructionCoverage": "mean",
-            "BranchCoverage": "mean",
-            "MutationScore": "mean",
+        'InstructionCoverage': 'mean',
+        'BranchCoverage': 'mean',
+        'MutationScore': 'mean'
         }
     )
 
@@ -89,8 +89,9 @@ def generate_table_3(df: pd.DataFrame) -> mpl.figure.Figure:
     Returns:
         The composite figure representing Table III.
     """
+
     grouped = (
-        df.groupby(["RandoopVersion", "TimeLimit"])
+        df.groupby(["Version", "TimeLimit"])
         .agg(
             {
                 "InstructionCoverage": "mean",
@@ -110,7 +111,7 @@ def generate_table_3(df: pd.DataFrame) -> mpl.figure.Figure:
         table_data.append(
             [
                 row["TimeLimit"],
-                row["RandoopVersion"],
+                row["Version"],
                 f"{row['InstructionCoverage']:.2f}",
                 f"{row['BranchCoverage']:.2f}",
                 f"{row['MutationScore']:.2f}",
@@ -145,18 +146,18 @@ def generate_fig_6(df: pd.DataFrame) -> mpl.figure.Figure:
     sns.boxplot(
         x="TimeLimit",
         y="InstructionCoverage",
-        hue="RandoopVersion",
+        hue="Version",
         data=df,
         ax=axes[0],
     )
     axes[0].set_xlabel("Time Limit (s)")
     axes[0].set_ylabel("Instruction Coverage (%)")
 
-    sns.boxplot(x="TimeLimit", y="BranchCoverage", hue="RandoopVersion", data=df, ax=axes[1])
+    sns.boxplot(x="TimeLimit", y="BranchCoverage", hue="Version", data=df, ax=axes[1])
     axes[1].set_xlabel("Time Limit (s)")
     axes[1].set_ylabel("Branch Coverage (%)")
 
-    sns.boxplot(x="TimeLimit", y="MutationScore", hue="RandoopVersion", data=df, ax=axes[2])
+    sns.boxplot(x="TimeLimit", y="MutationScore", hue="Version", data=df, ax=axes[2])
     axes[2].set_xlabel("Time Limit (s)")
     axes[2].set_ylabel("Mutation Score (%)")
 
@@ -191,7 +192,7 @@ def generate_fig_7(df: pd.DataFrame) -> mpl.figure.Figure:
     """Generate Figure 7: Box plot of branch coverage by Randoop version.
 
     This plot visualizes the distribution of branch coverage across subject programs
-    for each Randoop version, showing how the tool's performance varies.
+    for each GRT component, showing how the tool's performance varies.
 
     Args:
         df: Data averaged over repeated runs (output of `average_over_loops`).
@@ -201,7 +202,7 @@ def generate_fig_7(df: pd.DataFrame) -> mpl.figure.Figure:
     """
     sns.set_theme(style="whitegrid")
     fig, ax = plt.subplots(figsize=(8, 6))
-    sns.boxplot(x="RandoopVersion", y="BranchCoverage", data=df, ax=ax)
+    sns.boxplot(x="Version", y="BranchCoverage", data=df, ax=ax)
     ax.set_xlabel("GRT Component")
     ax.set_ylabel("Branch Coverage (%)")
     fig.suptitle("Figure 7: Branch Coverage by GRT Component", fontsize=16, weight="bold")
@@ -212,7 +213,7 @@ def generate_fig_8_9(df: pd.DataFrame) -> list[mpl.figure.Figure]:
     """Generate Figures 8-9: Line plots showing branch coverage over time per subject.
 
     This figure plots branch coverage for each subject program across time limits,
-    comparing performance of different Randoop versions.
+    comparing performance of different GRT components.
 
     Args:
         df: Data averaged over repeated runs (output of `average_over_loops`).
@@ -222,7 +223,7 @@ def generate_fig_8_9(df: pd.DataFrame) -> list[mpl.figure.Figure]:
     """
     sns.set_theme(style="whitegrid")
     grouped = (
-        df.groupby(["FileName", "TimeLimit", "RandoopVersion"])["BranchCoverage"]
+        df.groupby(["FileName", "TimeLimit", "Version"])["BranchCoverage"]
         .mean()
         .reset_index()
     )
@@ -230,8 +231,8 @@ def generate_fig_8_9(df: pd.DataFrame) -> list[mpl.figure.Figure]:
     for subject in grouped["FileName"].unique():
         fig, ax = plt.subplots(figsize=(10, 6))
         subject_data = grouped[grouped["FileName"] == subject]
-        for version in subject_data["RandoopVersion"].unique():
-            version_data = subject_data[subject_data["RandoopVersion"] == version]
+        for version in subject_data["Version"].unique():
+            version_data = subject_data[subject_data["Version"] == version]
             ax.plot(
                 version_data["TimeLimit"],
                 version_data["BranchCoverage"],

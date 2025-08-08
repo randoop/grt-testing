@@ -4,15 +4,14 @@
 # Overview
 #===============================================================================
 # This script generates Figure 6 and Table 3 from the GRT paper.
-# It executes `mutation.sh` multiple times, varying:
+# It executes `mutation-randoop.sh` and `mutation-evosuite.sh` multiple times, varying:
 #   - Subject programs (SUBJECT_PROGRAMS)
-#   - Feature variants (FEATURES)
 #   - Execution time per class (SECONDS_PER_CLASS)
 #
 #===============================================================================
 # Output
 #===============================================================================
-# `results/fig6-table3.csv`: Raw data appended to by `mutation.sh`.
+# `results/fig6-table3.csv`: Raw data appended to by `mutation-randoop.sh` and `mutation-evosuite.sh`.
 # `results/fig6-table3.pdf`: Figure 6 and Table 3, generated from `results/fig6-table3.csv`.
 #
 #===============================================================================
@@ -48,7 +47,10 @@ pip install seaborn
 
 # Clean up previous run artifacts
 rm -rf "$MUTATION_DIR"/build/bin/*
-rm -rf "$MUTATION_DIR"/build/test/*
+rm -rf "$MUTATION_DIR"/build/randoop-tests/*
+rm -rf "$MUTATION_DIR"/build/evosuite-tests/*
+rm -rf "$MUTATION_DIR"/build/evosuite-report/*
+rm -rf "$MUTATION_DIR"/build/target/*
 rm -rf "$MUTATION_DIR"/build/lib/*
 rm -f "$MUTATION_DIR"/results/fig6-table3.pdf
 rm -f "$MUTATION_DIR"/results/fig6-table3.csv
@@ -58,21 +60,16 @@ rm -f "$MUTATION_DIR"/results/fig6-table3.csv
 NUM_LOOP=10
 SECONDS_PER_CLASS=(2 10 30 60)
 . "$SCRIPT_DIR"/set-subject-programs.sh
-FEATURES=(BASELINE GRT EVOSUITE)
+MODES=(BASELINE GRT EVOSUITE)
 
-# Temporary parameters for testing that override the defaults, since we haven't
-# implemented all GRT features. See mutation.sh for a list of different features
-# you can specify.
+# Temporary parameters for testing that override the defaults (GRT has not been finished yet)
 NUM_LOOP=1
 SECONDS_PER_CLASS=(2)
 SUBJECT_PROGRAMS=(
   "dcParseArgs-10.2008"
-  "slf4j-api-1.7.12"
+  "nekomud-r16"
 )
-FEATURES=(
-  "BASELINE"
-  "BLOODHOUND"
-)
+MODES=(BASELINE EVOSUITE)
 
 NUM_CORES=$(($(nproc) - 4))
 echo "$(basename "$0"): Running $NUM_CORES concurrent processes."
@@ -83,9 +80,9 @@ echo "$(basename "$0"): Running $NUM_CORES concurrent processes."
 TASKS=()
 for cseconds in "${SECONDS_PER_CLASS[@]}"; do
   for program in "${SUBJECT_PROGRAMS[@]}"; do
-    for feature in "${FEATURES[@]}"; do
+    for mode in "${MODES[@]}"; do
       for _ in $(seq 1 "$NUM_LOOP"); do
-        TASKS+=("$MUTATION_DIR $cseconds $program $feature")
+        TASKS+=("$MUTATION_DIR $cseconds $program $mode")
       done
     done
   done
@@ -99,19 +96,28 @@ run_task() {
   mutation_dir=$1
   cseconds=$2
   program=$3
-  feature=$4
-  echo "Running: mutation.sh -c $cseconds -f $feature -r -o fig6-table3.csv $program"
-  "$mutation_dir"/mutation.sh -c "$cseconds" -f "$feature" -r -o fig6-table3.csv "$program"
+  mode=$4
+  if [ "$mode" == "EVOSUITE" ]; then
+    echo "Running: mutation-evosuite.sh -c $cseconds -r -o fig6-table3.csv $program"
+    "$mutation_dir"/mutation-evosuite.sh -c "$cseconds" -r -o fig6-table3.csv "$program"
+  elif [ "$mode" == "GRT" ]; then
+    echo "Running (GRT): mutation-randoop.sh -c $cseconds -f BLOODHOUND,ORIENTEERING,DETECTIVE,GRT_FUZZING,ELEPHANT_BRAIN,CONSTANT_MINING -r -o fig6-table3.csv $program"
+    "$mutation_dir"/mutation-randoop.sh -c "$cseconds" -f BLOODHOUND,ORIENTEERING,DETECTIVE,GRT_FUZZING,ELEPHANT_BRAIN,CONSTANT_MINING -r -o fig6-table3.csv "$program"
+  elif [ "$mode" == "BASELINE" ]; then
+    echo "Running (Baseline): mutation-randoop.sh -c $cseconds -f BASELINE -r -o fig6-table3.csv $program"
+    "$mutation_dir"/mutation-randoop.sh -c "$cseconds" -f BASELINE -r -o fig6-table3.csv "$program"
+  else
+    echo "Invalid mode $mode. Please use GRT, EVOSUITE, or BASELINE."
+  fi
 }
 
 export -f run_task
 
-# Run tasks in parallel.
+# Run all tasks in parallel.
 printf "%s\n" "${TASKS[@]}" | parallel -j $NUM_CORES --colsep ' ' run_task
 
 #===============================================================================
-# Figure Generation (Table III and Fig. 6)
+# Figure Generation
 #===============================================================================
 
-# Outputs figures to result/fig6-table3.pdf
 "$PYTHON_EXECUTABLE" "$MUTATION_DIR"/experiment-scripts/generate-grt-figures.py fig6-table3

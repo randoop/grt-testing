@@ -1,0 +1,131 @@
+<project name="Script" default="compile" basedir="${basedir}" xmlns:jacoco="antlib:org.jacoco.ant">
+
+<!-- ##############################################
+      Path to major.jar and (optional) mml file
+      Use -Dmutator="mml:<path-to-mml-file>" to set a
+      particular (compiled) mml-file.
+     ############################################## -->
+    <property name="major.jar" value="${basedir}/build/major/lib/major.jar"/>
+    <property name="mutator" value=""/>
+    <property name="plugin" value="-Xplugin:MajorPlugin ${mutator}"/>
+
+    <path id="project.classpath">
+        <pathelement location="${basedir}/build/evosuite-standalone-runtime-1.2.0.jar"/>
+        <pathelement location="${basedir}/build/junit-4.12.jar"/>
+        <pathelement location="${basedir}/build/hamcrest-core-1.3.jar"/>
+        <fileset dir="${libdir}" includes="*.jar"/>
+    </path>
+
+<!-- Import JaCoCo Ant tasks -->
+    <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
+        <classpath path="${basedir}/build/jacocoant.jar"/>
+    </taskdef>
+
+<!-- Target to initialize build -->
+    <target name="init">
+        <mkdir dir="${bindir}"/>
+        <mkdir dir="${targetdir}/classes"/>
+        <mkdir dir="${targetdir}/test-classes"/>
+    </target>
+
+<!-- Target to compile the project (for mutation analysis) -->
+    <target name="compile.mutation" depends="init" description="Compile">
+        <javac includeantruntime="true" 
+               srcdir="${src}"
+               destdir="${bindir}"
+               debug="yes">
+            <classpath>
+                <pathelement location="${major.jar}"/>
+                <path refid="project.classpath"/>
+            </classpath>
+            <compilerarg value="${plugin}"/>
+        </javac>
+    </target>
+
+<!-- Target to compile the project (for Jacoco instrumentation) -->
+    <target name="compile.jacoco" depends="init" description="Compile">
+        <javac includeantruntime="true" 
+               srcdir="${src}"
+               destdir="${targetdir}/classes"
+               debug="yes">
+               <classpath refid="project.classpath"/>
+        </javac>
+    </target>
+
+<!-- Target to compile the test suite (for mutation analysis) -->
+    <target name="compile.mutation.tests" description="Compile all tests">
+        <javac includeantruntime="true"
+               srcdir="${test}"
+               destdir="${bindir}"
+               debug="yes">
+            <classpath refid="project.classpath"/>
+        </javac>
+    </target>
+
+<!-- Target to compile the test suite (for Jacoco instrumentation) -->
+    <target name="compile.jacoco.tests" description="Compile all tests">
+        <javac includeantruntime="true"
+               srcdir="${test}"
+               destdir="${targetdir}/test-classes"
+               debug="yes">
+               <classpath refid="project.classpath"/>
+        </javac>
+    </target>
+
+
+<!-- The adapted mutation test target -->
+    <target name="mutation.test" description="Run mutation analysis for all unit test cases">
+        <echo message="Running mutation analysis ..."/>
+        <junit printsummary="false"
+               showoutput="false"
+               mutationAnalysis="true"
+               excludeFailingTests="false"
+               testOrder="sort_methods"
+               serializedMapsFile="${resultdir}/preprocessing.ser"
+               mutantsLogFile="${resultdir}/mutants.log"
+               summaryFile="${resultdir}/summary.csv"
+               mutantDetailsFile="${resultdir}/details.csv"
+               covMapFile="${resultdir}/covMap.csv"
+               testMapFile="${resultdir}/testMap.csv"
+               killMapFile="${resultdir}/killMap.csv">
+            <classpath>
+                <pathelement location="${bindir}"/>
+                <path refid="project.classpath"/>
+            </classpath>
+            <batchtest fork="false">
+                <fileset dir="${test}">
+                    <include name="**/*Test*.java" />
+                    <exclude name="**/*_scaffolding.java" />
+                </fileset>
+            </batchtest>
+        </junit>
+    </target>
+
+    <target name="test" description="Run all unit test cases">
+        <echo message="Instrumenting classes for offline instrumentation ..."/>
+        <jacoco:instrument destdir="${targetdir}/instrument-classes">
+            <fileset dir="${targetdir}/classes" includes="**/*.class" />
+        </jacoco:instrument>
+
+        <echo message="Running unit tests..."/>
+        <junit  printsummary="true"
+                showoutput="false"
+                haltonfailure="false"
+                fork="true" forkmode="once">
+            <formatter type="plain" usefile="false" />
+            <classpath>
+                <pathelement location="${targetdir}/instrument-classes"/>
+                <pathelement location="${targetdir}/test-classes"/>
+                <pathelement location="${basedir}/build/jacocoagent.jar"/>
+                <path refid="project.classpath"/>
+            </classpath>
+            <batchtest>
+                <fileset dir="${test}">
+                    <include name="**/*Test*.java" />
+                    <exclude name="**/*_scaffolding.java" />
+                </fileset>
+            </batchtest>
+        </junit>
+    </target>
+    
+</project>

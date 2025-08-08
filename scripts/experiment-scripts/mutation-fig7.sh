@@ -4,14 +4,14 @@
 # Overview
 #===============================================================================
 # This script generates Figure 7 from the GRT paper.
-# It executes `mutation.sh` multiple times, varying:
+# It executes `mutation-randoop.sh` multiple times, varying:
 #   - Subject programs (SUBJECT_PROGRAMS)
 #   - Feature variants (FEATURES)
 #
 #===============================================================================
 # Output
 #===============================================================================
-# `results/fig7.csv`: Raw data appended to by `mutation.sh`.
+# `results/fig7.csv`: Raw data appended to by `mutation-randoop.sh`.
 # `results/fig7.pdf`: Figure 7, generated from `results/fig7.csv`.
 #
 #===============================================================================
@@ -47,7 +47,10 @@ pip install seaborn
 
 # Clean up previous run artifacts
 rm -rf "$MUTATION_DIR"/build/bin/*
-rm -rf "$MUTATION_DIR"/build/test/*
+rm -rf "$MUTATION_DIR"/build/randoop-tests/*
+rm -rf "$MUTATION_DIR"/build/evosuite-tests/*
+rm -rf "$MUTATION_DIR"/build/evosuite-report/*
+rm -rf "$MUTATION_DIR"/build/target/*
 rm -rf "$MUTATION_DIR"/build/lib/*
 rm -f "$MUTATION_DIR"/results/fig7.pdf
 rm -f "$MUTATION_DIR"/results/fig7.csv
@@ -60,13 +63,12 @@ TOTAL_SECONDS=(600)
 FEATURES=(CONSTANT_MINING GRT_FUZZING ELEPHANT_BRAIN DETECTIVE ORIENTEERING BLOODHOUND GRT)
 
 # Temporary parameters for testing that override the defaults, since we haven't
-# implemented all GRT features. See mutation.sh for a list of different features
-# you can specify.
+# implemented all GRT features. See mutation-randoop.sh for the list of features.
 NUM_LOOP=1
 TOTAL_SECONDS=(10)
 SUBJECT_PROGRAMS=(
   "dcParseArgs-10.2008"
-  "slf4j-api-1.7.12"
+  "nekomud-r16"
 )
 FEATURES=(
   "BLOODHOUND"
@@ -99,18 +101,23 @@ run_task() {
   tseconds=$2
   program=$3
   feature=$4
-  echo "Running: mutation.sh -t $tseconds -f $feature -r -o fig7.csv $program"
-  "$mutation_dir"/mutation.sh -t "$tseconds" -f "$feature" -r -o fig7.csv "$program"
+  if [ "$feature" == "GRT" ]; then
+    echo "Running (GRT): mutation-randoop.sh -t $tseconds -f BLOODHOUND,ORIENTEERING,DETECTIVE,GRT_FUZZING,ELEPHANT_BRAIN,CONSTANT_MINING -r -o fig7.csv $program"
+    "$mutation_dir"/mutation-randoop.sh -t "$tseconds" -f BLOODHOUND,ORIENTEERING,DETECTIVE,GRT_FUZZING,ELEPHANT_BRAIN,CONSTANT_MINING -r -o fig7.csv "$program"
+  else
+    # `mutation-randoop.sh` checks the validity of $feature.
+    echo "Running: mutation-randoop.sh -t $tseconds -f $feature -r -o fig7.csv $program"
+    "$mutation_dir"/mutation-randoop.sh -t "$tseconds" -f "$feature" -r -o fig7.csv "$program"
+  fi
 }
 
 export -f run_task
 
-# Run tasks in parallel.
+# Run all tasks in parallel.
 printf "%s\n" "${TASKS[@]}" | parallel -j $NUM_CORES --colsep ' ' run_task
 
 #===============================================================================
-# Figure Generation (Fig. 7)
+# Figure Generation
 #===============================================================================
 
-# Outputs figures to result/fig7.pdf
 "$PYTHON_EXECUTABLE" "$MUTATION_DIR"/experiment-scripts/generate-grt-figures.py fig7
