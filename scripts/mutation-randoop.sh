@@ -328,7 +328,7 @@ case "$SUBJECT_PROGRAM" in
       "$SRC_BASE_DIR/lib/jaxen-core.jar" \
       "$SRC_BASE_DIR/lib/jaxen-jdom.jar" \
       "$SRC_BASE_DIR/lib/saxpath.jar" \
-      "$SCRIPT_DIR/../subject-programs/jaxen-1.1.6.jar"
+      "$SCRIPT_DIR/../subject-programs/jars/jaxen-1.1.6.jar"
     ;;
 
   "joda-time-2.3")
