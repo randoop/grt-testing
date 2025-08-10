@@ -40,6 +40,13 @@
             </classpath>
             <compilerarg value="${plugin}"/>
         </javac>
+
+        <echo>Removing SLF4J dummy binders from ${bindir}</echo>
+        <delete includeEmptyDirs="true">
+            <fileset dir="${bindir}">
+                <include name="org1/slf4j/impl/**"/>
+            </fileset>
+        </delete>
     </target>
 
 <!-- Target to compile the project (for Jacoco instrumentation) -->
@@ -50,6 +57,13 @@
                debug="yes">
             <classpath refid="project.classpath"/>
         </javac>
+
+        <echo>Removing SLF4J dummy binders from ${targetdir}/classes</echo>
+        <delete includeEmptyDirs="true">
+            <fileset dir="${targetdir}/classes">
+                <include name="org1/slf4j/impl/**"/>
+            </fileset>
+        </delete>
     </target>
 
 <!-- Target to compile the test suite (for mutation analysis) -->
