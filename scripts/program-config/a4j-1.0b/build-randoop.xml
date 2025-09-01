@@ -23,7 +23,7 @@
 
 <!-- Target to compile the project (for mutation analysis) -->
     <target name="compile.mutation" depends="init" description="Compile">
-        <javac includeantruntime="true" 
+        <javac includeantruntime="true"
                srcdir="${src}"
                destdir="${bindir}"
                debug="yes">
@@ -37,7 +37,7 @@
 
 <!-- Target to compile the project (for Jacoco instrumentation) -->
     <target name="compile.jacoco" depends="init" description="Compile">
-        <javac includeantruntime="true" 
+        <javac includeantruntime="true"
                srcdir="${src}"
                destdir="${targetdir}/classes"
                debug="yes">

@@ -74,7 +74,7 @@ results:
 	mkdir -p results
 
 clean:
-	rm -rf build results evosuite-tests evosuite-report target libs 
+	rm -rf build results evosuite-tests evosuite-report target libs
 
 src:
 	get-all-subject-src.sh
