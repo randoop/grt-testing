@@ -1,8 +1,8 @@
 #!/bin/sh
 set -eu
 
-# Directory of this script (works even if invoked via relative path)
-SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd -P)
+# Directory of this script.
+SCRIPT_DIR=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)
 
 subjects="
 a4j-1.0b
