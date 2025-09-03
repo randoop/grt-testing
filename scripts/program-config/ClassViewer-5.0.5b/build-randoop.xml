@@ -9,7 +9,7 @@
     <property name="major-rt.jar" value="${basedir}/build/major/lib/major-rt.jar"/>
     <property name="mutator" value=""/>
     <property name="plugin" value="-Xplugin:MajorPlugin ${mutator}"/>
-    
+
 
 <!-- Import JaCoCo Ant tasks -->
     <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
@@ -25,7 +25,7 @@
 
 <!-- Target to compile the project (for mutation analysis) -->
     <target name="compile.mutation" depends="init" description="Compile">
-        <javac includeantruntime="true" 
+        <javac includeantruntime="true"
                srcdir="${src}"
                destdir="${bindir}"
                debug="yes">
@@ -39,7 +39,7 @@
 
 <!-- Target to compile the project (for Jacoco instrumentation) -->
     <target name="compile.jacoco" depends="init" description="Compile">
-        <javac includeantruntime="true" 
+        <javac includeantruntime="true"
                srcdir="${src}"
                destdir="${targetdir}/classes"
                debug="yes">
