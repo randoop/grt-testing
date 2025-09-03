@@ -12,6 +12,7 @@ all: \
     build/randoop \
     build/randoop-all-4.3.4.jar \
     build/replacecall-4.3.4.jar \
+	build/defects4j \
     results
 
 build/jacoco.jar:
@@ -69,6 +70,11 @@ build/major/bin/ant-replacecall:
 	LATEST_RELEASE=$$(curl -s https://api.github.com/repos/randoop/grt-replacecall/releases/latest | grep -o '"tag_name": "[^"]*' | cut -d'"' -f4) && \
 	wget "https://github.com/randoop/grt-replacecall/releases/download/$${LATEST_RELEASE}/ant-replacecall" && \
 	mv ant-replacecall build/major/bin/
+
+build/defects4j:
+	mkdir -p build
+	cd build && git clone https://github.com/rjust/defects4j
+	cd defects4j && cpanm --installdeps . && ./init.sh
 
 results:
 	mkdir -p results
