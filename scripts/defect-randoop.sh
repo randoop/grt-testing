@@ -216,124 +216,127 @@ TEST_DIR="$SCRIPT_DIR/build/randoop-tests/$FILE_SUFFIX"
 RELEVANT_CLASSES_FILE="$TEST_DIR/relevant_classes.txt"
 RESULT_DIR="$SCRIPT_DIR/results/$FILE_SUFFIX"
 
-# Clean up and create necessary directories
-rm -rf "$FIXED_WORK_DIR" "$TEST_DIR" "$RESULT_DIR"
-mkdir -p "$FIXED_WORK_DIR" "$TEST_DIR" "$RESULT_DIR"
-touch "$RELEVANT_CLASSES_FILE"
-
-# Handle optional output redirection
-if [[ "$REDIRECT" -eq 1 ]]; then
-  touch "$RESULT_DIR/defect_output.txt"
-  echo "Redirecting output to $RESULT_DIR/defect_output.txt..."
-  exec 3>&1 4>&2
-  exec 1>> "$RESULT_DIR/defect_output.txt" 2>&1
-fi
-
-# Create output file with header if it doesn't exist
-if [ ! -f "$SCRIPT_DIR/results/$OUTPUT_FILE" ]; then
-  echo -e "ProjectId,Version,TestSuiteSource,Test,TestClassification,NumTrigger,TimeLimit" > "$SCRIPT_DIR/results/$OUTPUT_FILE"
-fi
-
-#===============================================================================
-# Checkout and Setup Defects4J Project
-#===============================================================================
-
-echo "Checking out fixed version ${BUG_ID}f of $PROJECT_ID..."
-defects4j checkout -p "$PROJECT_ID" -v "${BUG_ID}f" -w "$FIXED_WORK_DIR"
-
-PROJECT_CP=$(defects4j export -p cp.compile -w "$FIXED_WORK_DIR")
-
-# Export fault-relevant classes
-defects4j export -p classes.relevant -w "$FIXED_WORK_DIR" > "$RELEVANT_CLASSES_FILE"
-
-#===============================================================================
-# Time Budget Allocation
-#===============================================================================
-
-# Count the number of relevant classes
-NUM_CLASSES=$(wc -l < "$RELEVANT_CLASSES_FILE")
-
-if [ "$NUM_CLASSES" -le 0 ]; then
-  echo "No relevant classes found."
-  exit 1
-fi
-
-if [[ -n "$TOTAL_TIME" ]]; then
-  TIME_LIMIT="$TOTAL_TIME"
-else
-  TIME_LIMIT=$((SECONDS_PER_CLASS * NUM_CLASSES))
-fi
-
-#===============================================================================
-# Test Generation
-#===============================================================================
 for i in $(seq 1 "$NUM_LOOP"); do
-echo "Generating tests with Randoop..."
-RANDOOP_BASE_COMMAND="java \
-  -Xbootclasspath/a:$JACOCO_AGENT_JAR:$REPLACECALL_JAR \
-  -javaagent:$JACOCO_AGENT_JAR \
-  -javaagent:$REPLACECALL_JAR \
-  -classpath $PROJECT_CP:$RANDOOP_JAR \
-  randoop.main.Main gentests \
-  --classlist=$RELEVANT_CLASSES_FILE \
-  --time-limit=$TIME_LIMIT \
-  --deterministic=false \
-  --randomseed=0 \
-  --regression-test-basename=RegressionTest \
-  --error-test-basename=ErrorTest \
-  --junit-output-dir=$TEST_DIR"
 
-if [ "$VERBOSE" -eq 1 ]; then
-  echo "Randoop command:"
-  echo "$RANDOOP_BASE_COMMAND ${EXPANDED_FEATURE_FLAGS[*]}"
-  echo
-fi
+  # Clean up and create necessary directories
+  rm -rf "$FIXED_WORK_DIR" "$TEST_DIR" "$RESULT_DIR"
+  mkdir -p "$FIXED_WORK_DIR" "$TEST_DIR" "$RESULT_DIR"
+  touch "$RELEVANT_CLASSES_FILE"
 
-cd "$RESULT_DIR"
-$RANDOOP_BASE_COMMAND "${EXPANDED_FEATURE_FLAGS[@]}"
+  # Handle optional output redirection
+  if [[ "$REDIRECT" -eq 1 ]]; then
+    touch "$RESULT_DIR/defect_output.txt"
+    echo "Redirecting output to $RESULT_DIR/defect_output.txt..."
+    exec 3>&1 4>&2
+    exec 1>> "$RESULT_DIR/defect_output.txt" 2>&1
+  fi
 
-# Clean up files
-rm -f "$TEST_DIR/RegressionTest.java" "$TEST_DIR/ErrorTest.java"
-rm "$RELEVANT_CLASSES_FILE"
+  # Create output file with header if it doesn't exist
+  if [ ! -f "$SCRIPT_DIR/results/$OUTPUT_FILE" ]; then
+    echo -e "ProjectId,Version,TestSuiteSource,Test,TestClassification,NumTrigger,TimeLimit" > "$SCRIPT_DIR/results/$OUTPUT_FILE"
+  fi
 
-#===============================================================================
-# Run Bug Detection
-#===============================================================================
+  #===============================================================================
+  # Checkout and Setup Defects4J Project
+  #===============================================================================
 
-# Determine the tarball suffix based on features
-if [[ ${#RANDOOP_FEATURES[@]} -eq 1 && "${RANDOOP_FEATURES[0]}" == "BASELINE" ]]; then
-  TAR_SUFFIX="randoop"
-else
-  TAR_SUFFIX="grt"
-fi
+  echo "Checking out fixed version ${BUG_ID}f of $PROJECT_ID..."
+  defects4j checkout -p "$PROJECT_ID" -v "${BUG_ID}f" -w "$FIXED_WORK_DIR"
 
-# run_bug_detection.pl expects a tar.bz2 file of the tests
-(
-  cd "$TEST_DIR" \
-    && tar -cjf "${PROJECT_ID}-${BUG_ID}f-${TAR_SUFFIX}.tar.bz2" . \
-    || {
-      rc=$?
-      if [ $rc -eq 1 ]; then echo "Warning ignored: tar returned code 1"; else exit $rc; fi
-    } \
-    && find . -name '*.java' -delete
-)
+  PROJECT_CP=$(defects4j export -p cp.compile -w "$FIXED_WORK_DIR")
 
-echo "Running bug detection with defects4j..."
-if [ "$VERBOSE" -eq 1 ]; then
-  echo "$DEFECTS4J_HOME/framework/bin/run_bug_detection.pl -p $PROJECT_ID -d $TEST_DIR -o $RESULT_DIR"
-  echo
-fi
+  # Export fault-relevant classes
+  defects4j export -p classes.relevant -w "$FIXED_WORK_DIR" > "$RELEVANT_CLASSES_FILE"
 
-"$DEFECTS4J_HOME"/framework/bin/run_bug_detection.pl -p "$PROJECT_ID" -d "$TEST_DIR" -o "$RESULT_DIR"
+  #===============================================================================
+  # Time Budget Allocation
+  #===============================================================================
 
-#===============================================================================
-# Append Detection Results and Clean Up
-#===============================================================================
+  # Count the number of relevant classes
+  NUM_CLASSES=$(wc -l < "$RELEVANT_CLASSES_FILE")
 
-echo "Appending results to output file $OUTPUT_FILE..."
-tr -d '\r' < "$RESULT_DIR/bug_detection" | tail -n +2 | awk -v time_limit="$TIME_LIMIT" 'NF > 0 {print $0 "," time_limit}' >> "$SCRIPT_DIR/results/$OUTPUT_FILE"
+  if [ "$NUM_CLASSES" -le 0 ]; then
+    echo "No relevant classes found."
+    exit 1
+  fi
 
-if [[ "$REDIRECT" -eq 1 ]]; then
-  exec 1>&3 2>&4
-  exec 3>&- 4>&-
-fi
+  if [[ -n "$TOTAL_TIME" ]]; then
+    TIME_LIMIT="$TOTAL_TIME"
+  else
+    TIME_LIMIT=$((SECONDS_PER_CLASS * NUM_CLASSES))
+  fi
+
+  #===============================================================================
+  # Test Generation
+  #===============================================================================
+
+  echo "Generating tests with Randoop..."
+  RANDOOP_BASE_COMMAND="java \
+    -Xbootclasspath/a:$JACOCO_AGENT_JAR:$REPLACECALL_JAR \
+    -javaagent:$JACOCO_AGENT_JAR \
+    -javaagent:$REPLACECALL_JAR \
+    -classpath $PROJECT_CP:$RANDOOP_JAR \
+    randoop.main.Main gentests \
+    --classlist=$RELEVANT_CLASSES_FILE \
+    --time-limit=$TIME_LIMIT \
+    --deterministic=false \
+    --randomseed=0 \
+    --regression-test-basename=RegressionTest \
+    --error-test-basename=ErrorTest \
+    --junit-output-dir=$TEST_DIR"
+
+  if [ "$VERBOSE" -eq 1 ]; then
+    echo "Randoop command:"
+    echo "$RANDOOP_BASE_COMMAND ${EXPANDED_FEATURE_FLAGS[*]}"
+    echo
+  fi
+
+  cd "$RESULT_DIR"
+  $RANDOOP_BASE_COMMAND "${EXPANDED_FEATURE_FLAGS[@]}"
+
+  # Clean up files
+  rm -f "$TEST_DIR/RegressionTest.java" "$TEST_DIR/ErrorTest.java"
+  rm "$RELEVANT_CLASSES_FILE"
+
+  #===============================================================================
+  # Run Bug Detection
+  #===============================================================================
+
+  # Determine the tarball suffix based on features
+  if [[ ${#RANDOOP_FEATURES[@]} -eq 1 && "${RANDOOP_FEATURES[0]}" == "BASELINE" ]]; then
+    TAR_SUFFIX="randoop"
+  else
+    TAR_SUFFIX="grt"
+  fi
+
+  # run_bug_detection.pl expects a tar.bz2 file of the tests
+  (
+    cd "$TEST_DIR" \
+      && tar -cjf "${PROJECT_ID}-${BUG_ID}f-${TAR_SUFFIX}.tar.bz2" . \
+      || {
+        rc=$?
+        if [ $rc -eq 1 ]; then echo "Warning ignored: tar returned code 1"; else exit $rc; fi
+      } \
+      && find . -name '*.java' -delete
+  )
+
+  echo "Running bug detection with defects4j..."
+  if [ "$VERBOSE" -eq 1 ]; then
+    echo "$DEFECTS4J_HOME/framework/bin/run_bug_detection.pl -p $PROJECT_ID -d $TEST_DIR -o $RESULT_DIR"
+    echo
+  fi
+
+  "$DEFECTS4J_HOME"/framework/bin/run_bug_detection.pl -p "$PROJECT_ID" -d "$TEST_DIR" -o "$RESULT_DIR"
+
+  #===============================================================================
+  # Append Detection Results and Clean Up
+  #===============================================================================
+
+  echo "Appending results to output file $OUTPUT_FILE..."
+  tr -d '\r' < "$RESULT_DIR/bug_detection" | tail -n +2 | awk -v time_limit="$TIME_LIMIT" 'NF > 0 {print $0 "," time_limit}' >> "$SCRIPT_DIR/results/$OUTPUT_FILE"
+
+  if [[ "$REDIRECT" -eq 1 ]]; then
+    exec 1>&3 2>&4
+    exec 3>&- 4>&-
+  fi
+done
