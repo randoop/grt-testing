@@ -37,8 +37,8 @@ USAGE_STRING="usage: defect-detection-evosuite.sh [-h] [-v] [-r] [-b id] [-o out
   -h    Displays this help message.
   -v    Enables verbose mode.
   -r    Redirect output to results/result/defect_output.txt.
-  -b id Specify the bug ID of the given project. 
-        The bug ID uniquely identifies a specific defect instance within the Defects4J project. 
+  -b id Specify the bug ID of the given project.
+        The bug ID uniquely identifies a specific defect instance within the Defects4J project.
         Example: -b 5 (runs the experiment on bug #5 of PROJECT-ID).
   -o N  Csv output filename; should end in \".csv\"; if relative, should not include a directory name.
   -t N  Total time limit for test generation (in seconds).
@@ -70,7 +70,6 @@ if [[ "$JAVA_VER" -ne 11 ]]; then
   echo "Error: Java version 11 is required. Please install it and try again."
   exit 1
 fi
-
 
 SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)"
 DEFECTS4J_HOME=$(realpath "${SCRIPT_DIR}/build/defects4j/")       # Defects4j home directory
@@ -185,7 +184,7 @@ if [[ "$REDIRECT" -eq 1 ]]; then
   touch "$RESULT_DIR/defect_output.txt"
   echo "Redirecting output to $RESULT_DIR/defect_output.txt..."
   exec 3>&1 4>&2
-  exec 1>>"$RESULT_DIR/defect_output.txt" 2>&1
+  exec 1>> "$RESULT_DIR/defect_output.txt" 2>&1
 fi
 
 # Create output file with header if it doesn't exist
@@ -220,51 +219,54 @@ fi
 if [[ -n "$SECONDS_PER_CLASS" ]]; then
   TIME_LIMIT="$SECONDS_PER_CLASS"
 else
-  TIME_LIMIT=$(( TOTAL_TIME / NUM_CLASSES ))
+  TIME_LIMIT=$((TOTAL_TIME / NUM_CLASSES))
   if [ "$TIME_LIMIT" -lt 1 ]; then
     TIME_LIMIT=1
   fi
 fi
 
 #===============================================================================
-# Test Generation 
+# Test Generation
 #===============================================================================
 
 echo "Generating tests with EvoSuite..."
 for CLASS in $(cat "$RELEVANT_CLASSES_FILE"); do
-    EVOSUITE_BASE_COMMAND="java \
-    -jar $EVOSUITE_JAR \
-    -class $CLASS \
-    -projectCP $PROJECT_CP \
-    -seed 0 \
-    -Dsearch_budget=$TIME_LIMIT \
-    -Dassertion_timeout=$TIME_LIMIT \
-    -Dtest_dir=$TEST_DIR \
-    -Dreport_dir=$REPORT_DIR"
+  EVOSUITE_BASE_COMMAND="java \
+  -jar $EVOSUITE_JAR \
+  -class $CLASS \
+  -projectCP $PROJECT_CP \
+  -seed 0 \
+  -Dsearch_budget=$TIME_LIMIT \
+  -Dassertion_timeout=$TIME_LIMIT \
+  -Dtest_dir=$TEST_DIR \
+  -Dreport_dir=$REPORT_DIR"
 
-    if [ "$VERBOSE" -eq 1 ]; then
-        echo "EvoSuite command:"
-        echo "$EVOSUITE_BASE_COMMAND"
-        echo
-    fi
+  if [ "$VERBOSE" -eq 1 ]; then
+    echo "EvoSuite command:"
+    echo "$EVOSUITE_BASE_COMMAND"
+    echo
+  fi
 
-    cd "$RESULT_DIR"
-    $EVOSUITE_BASE_COMMAND
+  cd "$RESULT_DIR"
+  $EVOSUITE_BASE_COMMAND
 done
 
 # Clean up files
 rm $RELEVANT_CLASSES_FILE
 
 #===============================================================================
-# Run Bug Detection 
+# Run Bug Detection
 #===============================================================================
 
 # run_bug_detection.pl expects a tar.bz2 file of the tests
 (
-  cd "$TEST_DIR" && \
-  tar -cjf "${PROJECT_ID}-${BUG_ID}f-evosuite.tar.bz2" . || \
-  { rc=$?; if [ $rc -eq 1 ]; then echo "Warning ignored: tar returned code 1"; else exit $rc; fi; } && \
-  find . -name '*.java' -delete
+  cd "$TEST_DIR" \
+    && tar -cjf "${PROJECT_ID}-${BUG_ID}f-evosuite.tar.bz2" . \
+    || {
+      rc=$?
+      if [ $rc -eq 1 ]; then echo "Warning ignored: tar returned code 1"; else exit $rc; fi
+    } \
+    && find . -name '*.java' -delete
 )
 
 echo "Running bug detection with defects4j..."

@@ -40,8 +40,8 @@ USAGE_STRING="usage: defect-detection-randoop.sh [-h] [-v] [-r] [-f features] [-
   -f    Specify the features to use.
         Available features: BLOODHOUND, ORIENTEERING, DETECTIVE, GRT_FUZZING, ELEPHANT_BRAIN, CONSTANT_MINING.
         example usage: -f BASELINE,BLOODHOUND
-  -b id Specify the bug ID of the given project. 
-        The bug ID uniquely identifies a specific defect instance within the Defects4J project. 
+  -b id Specify the bug ID of the given project.
+        The bug ID uniquely identifies a specific defect instance within the Defects4J project.
         Example: -b 5 (runs the experiment on bug #5 of PROJECT-ID).
   -o N  Csv output filename; should end in \".csv\"; if relative, should not include a directory name.
   -t N  Total time limit for test generation (in seconds).
@@ -73,7 +73,6 @@ if [[ "$JAVA_VER" -ne 11 ]]; then
   echo "Error: Java version 11 is required. Please install it and try again."
   exit 1
 fi
-
 
 SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)"
 DEFECTS4J_HOME=$(realpath "${SCRIPT_DIR}/build/defects4j/")             # Defects4j home directory
@@ -206,7 +205,10 @@ echo
 # Directory Setup
 #===============================================================================
 
-FEATURE_SUFFIX=$(IFS='+'; echo "${RANDOOP_FEATURES[*]}")
+FEATURE_SUFFIX=$(
+  IFS='+'
+  echo "${RANDOOP_FEATURES[*]}"
+)
 FILE_SUFFIX="$PROJECT_ID-$FEATURE_SUFFIX-$UUID"
 
 FIXED_WORK_DIR="$SCRIPT_DIR/build/defects4j-src/$PROJECT_ID-${BUG_ID}f/$FILE_SUFFIX"
@@ -224,7 +226,7 @@ if [[ "$REDIRECT" -eq 1 ]]; then
   touch "$RESULT_DIR/defect_output.txt"
   echo "Redirecting output to $RESULT_DIR/defect_output.txt..."
   exec 3>&1 4>&2
-  exec 1>>"$RESULT_DIR/defect_output.txt" 2>&1
+  exec 1>> "$RESULT_DIR/defect_output.txt" 2>&1
 fi
 
 # Create output file with header if it doesn't exist
@@ -263,7 +265,7 @@ else
 fi
 
 #===============================================================================
-# Test Generation 
+# Test Generation
 #===============================================================================
 
 echo "Generating tests with Randoop..."
@@ -295,7 +297,7 @@ rm -f "$TEST_DIR/RegressionTest.java" "$TEST_DIR/ErrorTest.java"
 rm $RELEVANT_CLASSES_FILE
 
 #===============================================================================
-# Run Bug Detection 
+# Run Bug Detection
 #===============================================================================
 
 # Determine the tarball suffix based on features
@@ -307,10 +309,13 @@ fi
 
 # run_bug_detection.pl expects a tar.bz2 file of the tests
 (
-  cd "$TEST_DIR" && \
-  tar -cjf "${PROJECT_ID}-${BUG_ID}f-${TAR_SUFFIX}.tar.bz2" . || \
-  { rc=$?; if [ $rc -eq 1 ]; then echo "Warning ignored: tar returned code 1"; else exit $rc; fi; } && \
-  find . -name '*.java' -delete
+  cd "$TEST_DIR" \
+    && tar -cjf "${PROJECT_ID}-${BUG_ID}f-${TAR_SUFFIX}.tar.bz2" . \
+    || {
+      rc=$?
+      if [ $rc -eq 1 ]; then echo "Warning ignored: tar returned code 1"; else exit $rc; fi
+    } \
+    && find . -name '*.java' -delete
 )
 
 echo "Running bug detection with defects4j..."

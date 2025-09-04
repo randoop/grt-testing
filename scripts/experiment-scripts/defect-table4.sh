@@ -61,7 +61,6 @@ PROJECT_IDS=("Chart" "Math" "Time" "Lang")
 MODES=(BASELINE GRT EVOSUITE)
 declare -A BUG_IDS
 
-
 # Temporary parameters for testing that override the defaults (GRT has not been finished yet)
 NUM_LOOP=1
 TOTAL_SECONDS=(10)
