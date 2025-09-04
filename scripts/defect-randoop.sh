@@ -216,6 +216,7 @@ TEST_DIR="$SCRIPT_DIR/build/randoop-tests/$FILE_SUFFIX"
 RELEVANT_CLASSES_FILE="$TEST_DIR/relevant_classes.txt"
 RESULT_DIR="$SCRIPT_DIR/results/$FILE_SUFFIX"
 
+# shellcheck disable=SC2034 # i counts iterations but is not otherwise used
 for i in $(seq 1 "$NUM_LOOP"); do
 
   # Clean up and create necessary directories
