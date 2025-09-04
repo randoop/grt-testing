@@ -190,7 +190,7 @@ for feat in "${RANDOOP_FEATURES[@]}"; do
     fi
   else
     echo "ERROR: unknown feature '$feat'"
-    echo "Valid features are: ${!FEATURE_FLAGS[@]}"
+    echo "Valid features are: ${!FEATURE_FLAGS[*]}"
     exit 1
   fi
 done
@@ -239,7 +239,7 @@ fi
 #===============================================================================
 
 echo "Checking out fixed version ${BUG_ID}f of $PROJECT_ID..."
-defects4j checkout -p $PROJECT_ID -v "${BUG_ID}f" -w "$FIXED_WORK_DIR"
+defects4j checkout -p "$PROJECT_ID" -v "${BUG_ID}f" -w "$FIXED_WORK_DIR"
 
 PROJECT_CP=$(defects4j export -p cp.compile -w "$FIXED_WORK_DIR")
 
@@ -267,7 +267,7 @@ fi
 #===============================================================================
 # Test Generation
 #===============================================================================
-
+for i in $(seq 1 "$NUM_LOOP"); do
 echo "Generating tests with Randoop..."
 RANDOOP_BASE_COMMAND="java \
   -Xbootclasspath/a:$JACOCO_AGENT_JAR:$REPLACECALL_JAR \
@@ -294,7 +294,7 @@ $RANDOOP_BASE_COMMAND "${EXPANDED_FEATURE_FLAGS[@]}"
 
 # Clean up files
 rm -f "$TEST_DIR/RegressionTest.java" "$TEST_DIR/ErrorTest.java"
-rm $RELEVANT_CLASSES_FILE
+rm "$RELEVANT_CLASSES_FILE"
 
 #===============================================================================
 # Run Bug Detection
@@ -320,11 +320,11 @@ fi
 
 echo "Running bug detection with defects4j..."
 if [ "$VERBOSE" -eq 1 ]; then
-  echo "$SCRIPT_DIR/build/defects4j/framework/bin/run_bug_detection.pl -p $PROJECT_ID -d $TEST_DIR -o $RESULT_DIR"
+  echo "$DEFECTS4J_HOME/framework/bin/run_bug_detection.pl -p $PROJECT_ID -d $TEST_DIR -o $RESULT_DIR"
   echo
 fi
 
-"$SCRIPT_DIR"/build/defects4j/framework/bin/run_bug_detection.pl -p "$PROJECT_ID" -d "$TEST_DIR" -o "$RESULT_DIR"
+"$DEFECTS4J_HOME"/framework/bin/run_bug_detection.pl -p "$PROJECT_ID" -d "$TEST_DIR" -o "$RESULT_DIR"
 
 #===============================================================================
 # Append Detection Results and Clean Up

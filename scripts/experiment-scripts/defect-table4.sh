@@ -108,13 +108,13 @@ run_task() {
   mode=$5
   if [ "$mode" == "EVOSUITE" ]; then
     echo "Running: defect-evosuite.sh -t $tseconds -b $bug_id -r -o table4.csv $project"
-    "$DEFECT_DIR"/defect-evosuite.sh -t "$tseconds" -b $bug_id -r -o table4.csv "$project"
+    "$DEFECT_DIR"/defect-evosuite.sh -t "$tseconds" -b "$bug_id" -r -o table4.csv "$project"
   elif [ "$mode" == "GRT" ]; then
     echo "Running (GRT): defect-randoop.sh -t $tseconds -b $bug_id -f BLOODHOUND,ORIENTEERING,DETECTIVE,GRT_FUZZING,ELEPHANT_BRAIN,CONSTANT_MINING -r -o table4.csv $project"
-    "$DEFECT_DIR"/defect-randoop.sh -t "$tseconds" -b $bug_id -f BLOODHOUND,ORIENTEERING,DETECTIVE,GRT_FUZZING,ELEPHANT_BRAIN,CONSTANT_MINING -r -o table4.csv "$project"
+    "$DEFECT_DIR"/defect-randoop.sh -t "$tseconds" -b "$bug_id" -f BLOODHOUND,ORIENTEERING,DETECTIVE,GRT_FUZZING,ELEPHANT_BRAIN,CONSTANT_MINING -r -o table4.csv "$project"
   elif [ "$mode" == "BASELINE" ]; then
     echo "Running (Baseline): defect-randoop.sh -t $tseconds -b $bug_id -r -o table4.csv $project"
-    "$DEFECT_DIR"/defect-randoop.sh -t "$tseconds" -b $bug_id -r -o table4.csv "$project"
+    "$DEFECT_DIR"/defect-randoop.sh -t "$tseconds" -b "$bug_id" -r -o table4.csv "$project"
   else
     echo "Invalid mode $mode. Please use GRT, EVOSUITE, or BASELINE."
   fi
