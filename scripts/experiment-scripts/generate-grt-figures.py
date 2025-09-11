@@ -271,10 +271,7 @@ def generate_table_4(df: pd.DataFrame) -> mpl.figure.Figure:
     Returns:
         Matplotlib Figure object containing the table.
     """
-    # Convert all column names to consistent casing if needed
     df.columns = [col.strip() for col in df.columns]
-
-    # Normalize Fail/Pass casing, just in case
     df['TestClassification'] = df['TestClassification'].str.strip().str.lower()
 
     # Mark each bug (Version) as detected if ANY test case for it fails

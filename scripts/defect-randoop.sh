@@ -22,21 +22,7 @@
 #------------------------------------------------------------------------------
 # Options (command-line arguments):
 #------------------------------------------------------------------------------
-# See variable USAGE_STRING below
-
-#------------------------------------------------------------------------------
-# Prerequisites:
-#------------------------------------------------------------------------------
-# See file `defect-prerequisites.md`.
-
-# Fail this script on errors.
-set -e
-set -o pipefail
-
-USAGE_STRING="usage: defect-detection-randoop.sh [-h] [-v] [-r] [-f features] [-b id] [-o output_file] [-t total_time] [-c time_per_class] [-n num_iterations] PROJECT-ID
-  -h    Displays this help message.
-  -v    Enables verbose mode.
-  -r    Redirect output to results/result/defect_output.txt.
+USAGE_STRING="usage: defect-detection-randoop.sh -b id -o output_file [-f features] [-t total_time] [-c time_per_class] [-n num_iterations] [-r] [-v] [-h] PROJECT-ID
   -f    Specify the features to use.
         Available features: BLOODHOUND, ORIENTEERING, DETECTIVE, GRT_FUZZING, ELEPHANT_BRAIN, CONSTANT_MINING.
         example usage: -f BASELINE,BLOODHOUND
@@ -48,13 +34,19 @@ USAGE_STRING="usage: defect-detection-randoop.sh [-h] [-v] [-r] [-f features] [-
   -c N  Per-class time limit (in seconds, default: 2s/class).
         Mutually exclusive with -t.
   -n N  Number of iterations to run the experiment (default: 1).
-  PROJECT-ID is the name of a Project Identifier in Defects4J.
-  Example: Lang"
+  -r    Redirect output to results/result/defect_output.txt.
+  -v    Enables verbose mode.
+  -h    Displays this help message.
+  PROJECT-ID is the name of a Project Identifier in Defects4J (e.g., Lang)."
 
-if [ $# -eq 0 ]; then
-  echo "$0: $USAGE_STRING"
-  exit 1
-fi
+#------------------------------------------------------------------------------
+# Prerequisites:
+#------------------------------------------------------------------------------
+# See file `defect-prerequisites.md`.
+
+# Fail this script on errors.
+set -e
+set -o pipefail
 
 #===============================================================================
 # Environment Setup
@@ -70,8 +62,8 @@ JAVA_VER=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '
 }')
 
 if [[ "$JAVA_VER" -ne 11 ]]; then
-  echo "Error: Java version 11 is required. Please install it and try again."
-  exit 1
+  echo "Error: $0 requires Java 11, found ${JAVA_VER}"
+  exit 2
 fi
 
 SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)"
@@ -87,7 +79,7 @@ REPLACECALL_JAR=$(realpath "${SCRIPT_DIR}/build/replacecall-4.3.4.jar") # For re
 NUM_LOOP=1      # Number of experiment runs (10 in GRT paper)
 VERBOSE=0       # Verbose option
 REDIRECT=0      # Redirect output to defect_output.txt
-UUID=$(uuidgen) # Generate a unique identifier per instance
+UUID=$(uuidgen) # A unique identifier per instance
 
 # Parse command-line arguments
 while getopts ":hvrf:o:b:t:c:n:" opt; do
@@ -129,22 +121,17 @@ while getopts ":hvrf:o:b:t:c:n:" opt; do
     \?)
       echo "Invalid option: -$OPTARG" >&2
       echo "$USAGE_STRING"
-      exit 1
+      exit 2
       ;;
     :)
       echo "Option -$OPTARG requires an argument." >&2
       echo "$USAGE_STRING"
-      exit 1
+      exit 2
       ;;
   esac
 done
 
 shift $((OPTIND - 1))
-
-if [[ -z "$OUTPUT_FILE" ]]; then
-  echo "No -o command-line argument given."
-  exit 2
-fi
 
 # Enforce that mutually exclusive options are not bundled together
 if [[ -n "$TOTAL_TIME" ]] && [[ -n "$SECONDS_PER_CLASS" ]]; then
@@ -158,10 +145,15 @@ if [[ -z "$SECONDS_PER_CLASS" ]] && [[ -z "$TOTAL_TIME" ]]; then
   SECONDS_PER_CLASS=2
 fi
 
+if [[ -z "$OUTPUT_FILE" ]]; then
+  echo "No -o command-line argument given."
+  exit 2
+fi
+
 if [[ -z "$BUG_ID" ]]; then
   echo "Error: Bug ID (-b) not specified."
   echo "$USAGE_STRING"
-  exit 1
+  exit 2
 fi
 
 if [[ -n "$FEATURES_OPT" ]]; then
@@ -191,7 +183,7 @@ for feat in "${RANDOOP_FEATURES[@]}"; do
   else
     echo "ERROR: unknown feature '$feat'"
     echo "Valid features are: ${!FEATURE_FLAGS[*]}"
-    exit 1
+    exit 2
   fi
 done
 

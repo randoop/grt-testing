@@ -58,14 +58,14 @@ rm -f "$DEFECT_DIR"/results/table4.csv
 NUM_LOOP=10
 TOTAL_SECONDS=(120 300 600)
 PROJECT_IDS=("Chart" "Math" "Time" "Lang")
-MODES=(BASELINE GRT EVOSUITE)
+TEST_GENERATORS=(BASELINE GRT EVOSUITE)
 declare -A BUG_IDS
 
 # Temporary parameters for testing that override the defaults (GRT has not been finished yet)
 NUM_LOOP=1
 TOTAL_SECONDS=(10)
 PROJECT_IDS=("Lang")
-MODES=(BASELINE EVOSUITE)
+TEST_GENERATORS=(BASELINE EVOSUITE)
 BUG_IDS["Lang"]="1 3"
 
 NUM_CORES=$(($(nproc) - 4))
@@ -87,9 +87,9 @@ TASKS=()
 for tseconds in "${TOTAL_SECONDS[@]}"; do
   for project in "${PROJECT_IDS[@]}"; do
     for bug_id in $(get_bug_ids "$project"); do
-      for mode in "${MODES[@]}"; do
+      for test_generator in "${TEST_GENERATORS[@]}"; do
         for _ in $(seq 1 "$NUM_LOOP"); do
-          TASKS+=("$DEFECT_DIR $tseconds $project $bug_id $mode")
+          TASKS+=("$DEFECT_DIR $tseconds $project $bug_id $test_generator")
         done
       done
     done
@@ -105,18 +105,18 @@ run_task() {
   tseconds=$2
   project=$3
   bug_id=$4
-  mode=$5
-  if [ "$mode" == "EVOSUITE" ]; then
+  test_generator=$5
+  if [ "$test_generator" == "EVOSUITE" ]; then
     echo "Running: defect-evosuite.sh -t $tseconds -b $bug_id -r -o table4.csv $project"
     "$DEFECT_DIR"/defect-evosuite.sh -t "$tseconds" -b "$bug_id" -r -o table4.csv "$project"
-  elif [ "$mode" == "GRT" ]; then
+  elif [ "$test_generator" == "GRT" ]; then
     echo "Running (GRT): defect-randoop.sh -t $tseconds -b $bug_id -f BLOODHOUND,ORIENTEERING,DETECTIVE,GRT_FUZZING,ELEPHANT_BRAIN,CONSTANT_MINING -r -o table4.csv $project"
     "$DEFECT_DIR"/defect-randoop.sh -t "$tseconds" -b "$bug_id" -f BLOODHOUND,ORIENTEERING,DETECTIVE,GRT_FUZZING,ELEPHANT_BRAIN,CONSTANT_MINING -r -o table4.csv "$project"
-  elif [ "$mode" == "BASELINE" ]; then
+  elif [ "$test_generator" == "BASELINE" ]; then
     echo "Running (Baseline): defect-randoop.sh -t $tseconds -b $bug_id -r -o table4.csv $project"
     "$DEFECT_DIR"/defect-randoop.sh -t "$tseconds" -b "$bug_id" -r -o table4.csv "$project"
   else
-    echo "Invalid mode $mode. Please use GRT, EVOSUITE, or BASELINE."
+    echo "Invalid test generator $test_generator. Please use GRT, EVOSUITE, or BASELINE."
   fi
 }
 
