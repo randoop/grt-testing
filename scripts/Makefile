@@ -1,6 +1,7 @@
 MAKEFILE_DIR := $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
 
 all: \
+    build/checker-framework/checker/dist/checker-qual.jar \
     build/evosuite-1.2.0.jar \
     build/evosuite-standalone-runtime-1.2.0.jar \
     build/hamcrest-core-1.3.jar \
@@ -63,12 +64,19 @@ build/junit-4.12.jar:
 
 build/hamcrest-core-1.3.jar:
 	mkdir -p build
-	cp ../subject-programs/hamcrest-core-1.3.jar build/
+	cp ../subject-programs/jars/hamcrest-core-1.3.jar build/
 
 build/major/bin/ant-replacecall:
 	LATEST_RELEASE=$$(curl -s https://api.github.com/repos/randoop/grt-replacecall/releases/latest | grep -o '"tag_name": "[^"]*' | cut -d'"' -f4) && \
 	wget "https://github.com/randoop/grt-replacecall/releases/download/$${LATEST_RELEASE}/ant-replacecall" && \
 	mv ant-replacecall build/major/bin/
+
+build/checker-framework/checker/dist/checker-qual.jar:
+	mkdir -p build
+	CFVER=3.50.0 && \
+	cd build && wget "https://github.com/typetools/checker-framework/releases/download/checker-framework-$${CFVER}/checker-framework-$${CFVER}.zip" && \
+	unzip -o checker-framework-$${CFVER}.zip && \
+	mv checker-framework-$${CFVER} checker-framework
 
 results:
 	mkdir -p results
