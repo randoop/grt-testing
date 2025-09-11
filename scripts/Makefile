@@ -64,7 +64,7 @@ build/junit-4.12.jar:
 
 build/hamcrest-core-1.3.jar:
 	mkdir -p build
-	cp ../subject-programs/hamcrest-core-1.3.jar build/
+	cp ../subject-programs/jars/hamcrest-core-1.3.jar build/
 
 build/major/bin/ant-replacecall:
 	LATEST_RELEASE=$$(curl -s https://api.github.com/repos/randoop/grt-replacecall/releases/latest | grep -o '"tag_name": "[^"]*' | cut -d'"' -f4) && \
@@ -72,10 +72,11 @@ build/major/bin/ant-replacecall:
 	mv ant-replacecall build/major/bin/
 
 build/checker-framework/checker/dist/checker-qual.jar:
-	CFVER=3.50.0
-	cd build && wget "https://github.com/typetools/checker-framework/releases/download/checker-framework-${CFVER}/checker-framework-${CFVER}.zip"
-	cd build && unzip -o checker-framework-${CFVER}.zip
-	cd build && mv checker-framework-${CFVER} checker-framework
+	mkdir -p build
+	CFVER=3.50.0 && \
+	cd build && wget "https://github.com/typetools/checker-framework/releases/download/checker-framework-$${CFVER}/checker-framework-$${CFVER}.zip" && \
+	unzip -o checker-framework-$${CFVER}.zip && \
+	mv checker-framework-$${CFVER} checker-framework
 
 results:
 	mkdir -p results
