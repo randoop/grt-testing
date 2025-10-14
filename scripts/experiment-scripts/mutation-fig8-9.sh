@@ -78,9 +78,9 @@ FEATURES=(
   "ORIENTEERING"
 )
 
-if command -v nproc >/dev/null 2>&1; then
+if command -v nproc > /dev/null 2>&1; then
   NPROC=$(nproc)
-elif command -v getconf >/dev/null 2>&1; then
+elif command -v getconf > /dev/null 2>&1; then
   NPROC=$(getconf _NPROCESSORS_ONLN)
 else
   NPROC=1

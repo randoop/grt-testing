@@ -76,9 +76,18 @@ JACOCO_AGENT_JAR=$(realpath "${SCRIPT_DIR}/build/jacocoagent.jar")      # For Bl
 REPLACECALL_JAR=$(realpath "${SCRIPT_DIR}/build/replacecall-4.3.4.jar") # For replacing undesired method calls
 
 command -v defects4j >/dev/null 2>&1 || { echo "Error: defects4j not on PATH." >&2; exit 2; }
-[ -f "$RANDOOP_JAR" ] || { echo "Error: Missing $RANDOOP_JAR." >&2; exit 2; }
-[ -f "$JACOCO_AGENT_JAR" ] || { echo "Error: Missing $JACOCO_AGENT_JAR." >&2; exit 2; }
-[ -f "$REPLACECALL_JAR" ] || { echo "Error: Missing $REPLACECALL_JAR." >&2; exit 2; }
+[ -f "$RANDOOP_JAR" ] || { 
+  echo "Error: Missing $RANDOOP_JAR." >&2
+  exit 2
+}
+[ -f "$JACOCO_AGENT_JAR" ] || { 
+  echo "Error: Missing $JACOCO_AGENT_JAR." >&2
+  exit 2
+}
+[ -f "$REPLACECALL_JAR" ] || { 
+  echo "Error: Missing $REPLACECALL_JAR." >&2 
+  exit 2
+}
 
 . "$SCRIPT_DIR/usejdk.sh" # Source the usejdk.sh script to enable JDK switching
 usejdk11
@@ -244,7 +253,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
 
   # Create the experiment results CSV file with a header row if it doesn’t already exist
   {
-    exec {fd}>>"$SCRIPT_DIR/results/$RESULTS_CSV"
+    exec {fd}>> "$SCRIPT_DIR/results/$RESULTS_CSV"
     flock -n "$fd" || true
     if [ ! -s "$SCRIPT_DIR/results/$RESULTS_CSV" ]; then
       echo "ProjectId,Version,TestSuiteSource,Test,TestClassification,NumTrigger,TimeLimit" >&"$fd"
@@ -350,7 +359,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
 
   echo "Appending results to output file $RESULTS_CSV..."
   {
-    exec {fd}>>"$SCRIPT_DIR/results/$RESULTS_CSV"
+    exec {fd}>> "$SCRIPT_DIR/results/$RESULTS_CSV"
     flock -n "$fd" || true
     tr -d '\r' < "$RESULT_DIR/bug_detection" | tail -n +2 | awk -v time_limit="$TIME_LIMIT" 'NF > 0 {print $0 "," time_limit}' >&"$fd"
     exec {fd}>&-

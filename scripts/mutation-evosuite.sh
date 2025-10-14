@@ -68,9 +68,18 @@ MAJOR_HOME=$(realpath "${SCRIPT_DIR}/build/major/")               # Major home d
 EVOSUITE_JAR=$(realpath "${SCRIPT_DIR}/build/evosuite-1.2.0.jar") # EvoSuite jar file
 JACOCO_CLI_JAR=$(realpath "${SCRIPT_DIR}/build/jacococli.jar")    # For coverage report generation
 
-[ -d "$MAJOR_HOME" ] || { echo "Error: Missing $MAJOR_HOME." >&2; exit 2; }
-[ -f "$EVOSUITE_JAR" ] || { echo "Error: Missing $EVOSUITE_JAR." >&2; exit 2; }
-[ -f "$JACOCO_CLI_JAR" ] || { echo "Error: Missing $JACOCO_CLI_JAR." >&2; exit 2; }
+[ -d "$MAJOR_HOME" ] || { 
+  echo "Error: Missing $MAJOR_HOME." >&2
+  exit 2
+}
+[ -f "$EVOSUITE_JAR" ] || { 
+  echo "Error: Missing $EVOSUITE_JAR." >&2
+  exit 2
+}
+[ -f "$JACOCO_CLI_JAR" ] || { 
+  echo "Error: Missing $JACOCO_CLI_JAR." >&2
+  exit 2
+}
 
 . "$SCRIPT_DIR/usejdk.sh" # Source the usejdk.sh script to enable JDK switching
 usejdk8
@@ -411,7 +420,7 @@ echo
 # Create the experiment results CSV file with a header row if it doesn’t already exist
 mkdir -p "$SCRIPT_DIR/results"
 {
-  exec {fd}>>"$SCRIPT_DIR/results/$RESULTS_CSV"
+  exec {fd}>> "$SCRIPT_DIR/results/$RESULTS_CSV"
   flock -n "$fd" || true
   if [ ! -s "$SCRIPT_DIR/results/$RESULTS_CSV" ]; then
     echo "Version,FileName,TimeLimit,Seed,InstructionCoverage,BranchCoverage,MutationScore" >&"$fd"
@@ -562,7 +571,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
   # On Unix, ">>" is generally atomic as long as the content is small enough
   # (usually the limit is at least 1024).
   {
-    exec {fd}>>"$SCRIPT_DIR/results/$RESULTS_CSV"
+    exec {fd}>> "$SCRIPT_DIR/results/$RESULTS_CSV"
     flock -n "$fd" || true
     echo -e "$row" >> "$RESULTS_CSV"
     exec {fd}>&-
