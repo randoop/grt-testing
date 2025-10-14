@@ -143,6 +143,14 @@ if [[ -z "$RESULTS_CSV" ]]; then
   echo "No -o command-line argument given."
   exit 2
 fi
+if [[ "$RESULTS_CSV" == */* ]]; then
+  echo "Error: -o expects a filename only (no paths). Given: $RESULTS_CSV" >&2
+  exit 2
+fi
+[[ "$RESULTS_CSV" == *.csv ]] || {
+  echo "Error: -o must end with .csv"
+  exit 2
+}
 
 # Enforce that mutually exclusive options are not bundled together
 if [[ -n "$TOTAL_TIME" ]] && [[ -n "$SECONDS_PER_CLASS" ]]; then
@@ -401,13 +409,15 @@ esac
 EVOSUITE_CLASSPATH="$(echo "$SCRIPT_DIR/build/lib/$UUID/"*.jar | tr ' ' ':')"
 TARGET_JAR="$SCRIPT_DIR/build/lib/$UUID/$SUBJECT_PROGRAM.jar"
 
-EVOSUITE_COMMAND="java \
--jar $EVOSUITE_JAR \
--target $TARGET_JAR \
--projectCP \"$EVOSUITE_CLASSPATH:$EVOSUITE_JAR\" \
--Dsearch_budget=$TIME_LIMIT \
--Dreplace_gui=true \
--Drandom_seed=0"
+EVOSUITE_COMMAND=(
+  java
+  -jar "$EVOSUITE_JAR"
+  -target "$TARGET_JAR"
+  -projectCP "$EVOSUITE_CLASSPATH:$EVOSUITE_JAR"
+  -Dsearch_budget="$TIME_LIMIT"
+  -Drandom_seed=0
+  -Dreplace_gui=true
+)
 
 #===============================================================================
 # Build System Preparation
@@ -466,7 +476,12 @@ for i in $(seq 1 "$NUM_LOOP"); do
 
   cd "$RESULT_DIR"
 
-  $EVOSUITE_COMMAND -Dtest_dir="$TEST_DIRECTORY" -Dreport_dir="$REPORT_DIRECTORY"
+  EVOSUITE_COMMAND+=( 
+    -Dtest_dir="$TEST_DIRECTORY"
+    -Dreport_dir="$REPORT_DIRECTORY"
+  )
+
+  "${EVOSUITE_COMMAND[@]}"
 
   # After test generation, for JSAP-2.1, we need to remove the ant.jar from the classpath
   if [[ "$SUBJECT_PROGRAM" == "JSAP-2.1" ]]; then

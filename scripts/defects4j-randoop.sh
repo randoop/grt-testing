@@ -167,6 +167,14 @@ if [[ -z "$RESULTS_CSV" ]]; then
   echo "No -o command-line argument given."
   exit 2
 fi
+if [[ "$RESULTS_CSV" == */* ]]; then
+  echo "Error: -o expects a filename only (no paths). Given: $RESULTS_CSV" >&2
+  exit 2
+fi
+[[ "$RESULTS_CSV" == *.csv ]] || {
+  echo "Error: -o must end with .csv"
+  exit 2
+}
 
 if [[ -z "$BUG_ID" ]]; then
   echo "Error: Bug ID (-b) not specified."
@@ -294,28 +302,32 @@ for i in $(seq 1 "$NUM_LOOP"); do
   #===============================================================================
 
   echo "Generating tests with Randoop..."
-  RANDOOP_BASE_COMMAND="java \
-    -Xbootclasspath/a:$JACOCO_AGENT_JAR:$REPLACECALL_JAR \
-    -javaagent:$JACOCO_AGENT_JAR \
-    -javaagent:$REPLACECALL_JAR \
-    -classpath \"$PROJECT_CP:$RANDOOP_JAR\" \
-    randoop.main.Main gentests \
-    --classlist=\"$RELEVANT_CLASSES_FILE\" \
-    --time-limit=$TIME_LIMIT \
-    --deterministic=false \
-    --randomseed=0 \
-    --regression-test-basename=RegressionTest \
-    --error-test-basename=ErrorTest \
-    --junit-output-dir=\"$TEST_DIR\""
+  RANDOOP_COMMAND=(
+    java
+    -Xbootclasspath/a:"$JACOCO_AGENT_JAR:$REPLACECALL_JAR"
+    -javaagent:"$JACOCO_AGENT_JAR"
+    -javaagent:"$REPLACECALL_JAR"
+    -classpath "$PROJECT_CP:$RANDOOP_JAR"
+    randoop.main.Main
+    gentests
+    --classlist="$RELEVANT_CLASSES_FILE"
+    --time-limit="$TIME_LIMIT"
+    --deterministic=false
+    --randomseed=0
+    --regression-test-basename=RegressionTest
+    --error-test-basename=ErrorTest
+    --junit-output-dir="$TEST_DIR"
+    "${EXPANDED_FEATURE_FLAGS[@]}"
+  )
 
   if [ "$VERBOSE" -eq 1 ]; then
-    echo "Randoop command:"
-    echo "$RANDOOP_BASE_COMMAND ${EXPANDED_FEATURE_FLAGS[*]}"
-    echo
-  fi
+      echo "Randoop command:"
+      echo "${RANDOOP_COMMAND[@]}"
+      echo
+    fi
 
   cd "$RESULT_DIR"
-  $RANDOOP_BASE_COMMAND "${EXPANDED_FEATURE_FLAGS[@]}"
+  "${RANDOOP_COMMAND[@]}"
 
   # Clean up files
   rm -f "$TEST_DIR/RegressionTest.java" "$TEST_DIR/ErrorTest.java"

@@ -151,6 +151,14 @@ if [[ -z "$RESULTS_CSV" ]]; then
   echo "No -o command-line argument given."
   exit 2
 fi
+if [[ "$RESULTS_CSV" == */* ]]; then
+  echo "Error: -o expects a filename only (no paths). Given: $RESULTS_CSV" >&2
+  exit 2
+fi
+[[ "$RESULTS_CSV" == *.csv ]] || {
+  echo "Error: -o must end with .csv"
+  exit 2
+}
 
 if [[ -z "$BUG_ID" ]]; then
   echo "Error: Bug ID (-b) not specified."
@@ -248,24 +256,26 @@ for i in $(seq 1 "$NUM_LOOP"); do
 
   echo "Generating tests with EvoSuite..."
   while IFS= read -r CLASS; do
-    EVOSUITE_BASE_COMMAND="java \
-    -jar $EVOSUITE_JAR \
-    -class $CLASS \
-    -projectCP \"$PROJECT_CP\" \
-    -seed 0 \
-    -Dsearch_budget=$TIME_LIMIT \
-    -Dassertion_timeout=$TIME_LIMIT \
-    -Dtest_dir=\"$TEST_DIR\" \
-    -Dreport_dir=\"$REPORT_DIR\""
+    EVOSUITE_COMMAND=(
+      java
+      -jar "$EVOSUITE_JAR"
+      -class "$CLASS"
+      -projectCP "$PROJECT_CP"
+      -seed 0
+      -Dsearch_budget="$TIME_LIMIT"
+      -Dassertion_timeout="$TIME_LIMIT"
+      -Dtest_dir="$TEST_DIR"
+      -Dreport_dir="$REPORT_DIR"
+    )
 
     if [ "$VERBOSE" -eq 1 ]; then
       echo "EvoSuite command:"
-      echo "$EVOSUITE_BASE_COMMAND"
+      echo "${EVOSUITE_COMMAND[@]}"
       echo
     fi
 
     cd "$RESULT_DIR"
-    $EVOSUITE_BASE_COMMAND
+    "${EVOSUITE_COMMAND[@]}"
   done < "$RELEVANT_CLASSES_FILE"
 
   # Clean up files
