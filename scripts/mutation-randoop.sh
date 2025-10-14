@@ -12,7 +12,7 @@
 # Directories and files:
 # - `build/randoop-tests*`: Randoop-created test suites.
 # - `build/bin`: Compiled tests and code.
-# - `results/$RESULTS_CSV.csv`: CSV file containing summary statistics for each iteration (see -o flag)
+# - `results/$RESULTS_CSV`: CSV file containing summary statistics for each iteration (see -o flag)
 # - `results/`: everything else specific to the most recent iteration.
 
 #------------------------------------------------------------------------------
@@ -519,7 +519,7 @@ fi
 if [[ -n "${command_suffix[$SUBJECT_PROGRAM]}" ]]; then
   # shellcheck disable=SC2206
   suffix_parts=(${command_suffix[$SUBJECT_PROGRAM]})
-  RANDOOP_BASE_COMMAND+=( "${suffix_parts[@]}" )
+  RANDOOP_BASE_COMMAND+=("${suffix_parts[@]}")
 fi
 
 #===============================================================================
@@ -691,7 +691,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
   else
     LOGGED_TIME="$SECONDS_PER_CLASS"
   fi
-  row="$FEATURE_NAME,$(basename "$SRC_JAR"),$LOGGED_TIME,0,$instruction_coverage,$branch_coverage,$mutation_score"
+  row="$FEATURE_SUFFIX,$(basename "$SRC_JAR"),$LOGGED_TIME,0,$instruction_coverage,$branch_coverage,$mutation_score"
   # $RESULTS_CSV is updated under an exclusive flock via a dedicated fd to prevent interleaving
   {
     exec {fd}>> "$SCRIPT_DIR/results/$RESULTS_CSV"
