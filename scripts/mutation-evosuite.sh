@@ -12,7 +12,7 @@
 # Directories and files:
 # - `build/evosuite-tests*`: EvoSuite-created test suites.
 # - `build/bin`: Compiled tests and code.
-# - `results/$RESULTS_CSV.csv`: CSV file containing summary statistics for each iteration (see -o flag)
+# - `results/$RESULTS_CSV`: CSV file containing summary statistics for each iteration (see -o flag)
 # - `results/`: everything else specific to the most recent iteration.
 
 #------------------------------------------------------------------------------
@@ -581,9 +581,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
     LOGGED_TIME="$SECONDS_PER_CLASS"
   fi
   row="EVOSUITE,$(basename "$SRC_JAR"),$LOGGED_TIME,0,$instruction_coverage,$branch_coverage,$mutation_score"
-  # $RESULTS_CSV is a csv file that contains a record of each pass.
-  # On Unix, ">>" is generally atomic as long as the content is small enough
-  # (usually the limit is at least 1024).
+  # $RESULTS_CSV is updated under an exclusive flock via a dedicated fd to prevent interleaving.
   {
     exec {fd}>> "$SCRIPT_DIR/results/$RESULTS_CSV"
     flock "$fd"

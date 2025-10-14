@@ -30,7 +30,7 @@ USAGE_STRING="usage: defects4j-randoop.sh -b id -o RESULTS_CSV [-f features] [-t
         If the file does not exist, a header row will be created automatically.
         Paths are not allowed; only a filename may be given.
   -f    Specify the features to use.
-        Available features: BLOODHOUND, ORIENTEERING, DETECTIVE, GRT_FUZZING, ELEPHANT_BRAIN, CONSTANT_MINING.
+        Available features: BASELINE, BLOODHOUND, ORIENTEERING, DETECTIVE, GRT_FUZZING, ELEPHANT_BRAIN, CONSTANT_MINING.
         example usage: -f BASELINE,BLOODHOUND
   -t N  Total time limit for test generation (in seconds).
   -c N  Per-class time limit (in seconds, default: 2s/class).
@@ -172,7 +172,7 @@ if [[ "$RESULTS_CSV" == */* ]]; then
   exit 2
 fi
 [[ "$RESULTS_CSV" == *.csv ]] || {
-  echo "Error: -o must end with .csv"
+  echo "Error: -o must end with .csv" >&2
   exit 2
 }
 

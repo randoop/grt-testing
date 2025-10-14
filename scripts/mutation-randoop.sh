@@ -23,11 +23,10 @@
 #------------------------------------------------------------------------------
 # Options (command-line arguments):
 #------------------------------------------------------------------------------
-USAGE_STRING="usage: mutation-randoop.sh [-h] [-v] [-r] [-f features] [-a] [-o RESULTS_CSV] [-t total_time] [-c time_per_class] [-n num_iterations] TEST-CASE-NAME
+USAGE_STRING="usage: mutation-randoop.sh [-h] [-v] [-r] [-f features] [-o RESULTS_CSV] [-t total_time] [-c time_per_class] [-n num_iterations] TEST-CASE-NAME
   -f    Specify the Randoop features to use.
-        Available features: BASELINE, BLOODHOUND, ORIENTEERING, BLOODHOUND_AND_ORIENTEERING, DETECTIVE, GRT_FUZZING, ELEPHANT_BRAIN, CONSTANT_MINING.
+        Available features: BASELINE, BLOODHOUND, ORIENTEERING, DETECTIVE, GRT_FUZZING, ELEPHANT_BRAIN, CONSTANT_MINING.
         example usage: -f BASELINE,BLOODHOUND
-  -a    Perform feature ablation studies.
   -o N  Write experiment results to this CSV file (N should end in '.csv').
         If the file does not exist, a header row will be created automatically.
         Paths are not allowed; only a filename may be given.
@@ -103,11 +102,10 @@ fi
 NUM_LOOP=1      # Number of experiment runs (10 in GRT paper)
 VERBOSE=0       # Verbose option
 REDIRECT=0      # Redirect output to mutation_output.txt
-ABLATION=false  # Feature ablation option
 UUID=$(uuidgen) # Generate a unique identifier per instance
 
 # Parse command-line arguments
-while getopts ":hvrf:ao:t:c:n:" opt; do
+while getopts ":hvrf:o:t:c:n:" opt; do
   case ${opt} in
     h)
       # Display help message
@@ -124,9 +122,6 @@ while getopts ":hvrf:ao:t:c:n:" opt; do
       ;;
     f)
       FEATURES_OPT="$OPTARG"
-      ;;
-    a)
-      ABLATION=true
       ;;
     o)
       RESULTS_CSV="$OPTARG"
@@ -173,6 +168,37 @@ fi
   exit 2
 }
 
+if [[ -n "$FEATURES_OPT" ]]; then
+  IFS=',' read -r -a RANDOOP_FEATURES <<< "$FEATURES_OPT"
+else
+  RANDOOP_FEATURES=("BASELINE")
+fi
+
+declare -A FEATURE_FLAGS
+FEATURE_FLAGS=(
+  ["BLOODHOUND"]="--method-selection=BLOODHOUND"
+  ["ORIENTEERING"]="--input-selection=ORIENTEERING"
+  ["DETECTIVE"]="--demand-driven=true"
+  ["GRT_FUZZING"]="--grt-fuzzing=true"
+  ["ELEPHANT_BRAIN"]="--cast-to-run-time-type=true"
+  ["CONSTANT_MINING"]="--constant-mining=true"
+  ["BASELINE"]=""
+)
+
+EXPANDED_FEATURE_FLAGS=()
+for feat in "${RANDOOP_FEATURES[@]}"; do
+  if [[ "${FEATURE_FLAGS[$feat]+exists}" ]]; then
+    flag="${FEATURE_FLAGS[$feat]}"
+    if [[ -n "$flag" ]]; then
+      EXPANDED_FEATURE_FLAGS+=("$flag")
+    fi
+  else
+    echo "ERROR: unknown feature '$feat'"
+    echo "Valid features are: ${!FEATURE_FLAGS[*]}"
+    exit 2
+  fi
+done
+
 # Enforce that mutually exclusive options are not bundled together
 if [[ -n "$TOTAL_TIME" ]] && [[ -n "$SECONDS_PER_CLASS" ]]; then
   echo "Options -t and -c cannot be used together in any form (e.g., -t -c)."
@@ -192,21 +218,6 @@ if [[ -z "$SUBJECT_PROGRAM" ]]; then
   echo "$USAGE_STRING"
   exit 2
 fi
-
-ALL_RANDOOP_FEATURES=("BASELINE" "BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
-if [[ -n "$FEATURES_OPT" ]]; then
-  IFS=',' read -r -a RANDOOP_FEATURES <<< "$FEATURES_OPT"
-else
-  RANDOOP_FEATURES=("BASELINE")
-fi
-
-# validate
-for feat in "${RANDOOP_FEATURES[@]}"; do
-  if [[ ! " ${ALL_RANDOOP_FEATURES[*]} " =~ ${feat} ]]; then
-    echo "ERROR: unknown feature: $feat"
-    exit 1
-  fi
-done
 
 # Select the ant executable based on the subject program
 if [ "$SUBJECT_PROGRAM" == "bcel-5.2" ] || [ "$SUBJECT_PROGRAM" = "ClassViewer-5.0.5b" ] || [ "$SUBJECT_PROGRAM" = "jcommander-1.35" ] || [ "$SUBJECT_PROGRAM" = "fixsuite-r48" ]; then
@@ -468,6 +479,7 @@ RANDOOP_BASE_COMMAND=(
   --deterministic=false
   --no-error-revealing-tests=true
   --randomseed=0
+  "${EXPANDED_FEATURE_FLAGS[@]}"
 )
 
 # Add special command suffixes for specific subject programs
@@ -504,9 +516,11 @@ else
   command_suffix["fixsuite-r48"]="--specifications=$SCRIPT_DIR/program-specs/fixsuite-r48-specs.json"
 fi
 
-RANDOOP_BASE_COMMAND+=(
-  "${command_suffix[$SUBJECT_PROGRAM]}"
-)
+if [[ -n "${command_suffix[$SUBJECT_PROGRAM]}" ]]; then
+   # shellcheck disable=SC2206
+   suffix_parts=(${command_suffix[$SUBJECT_PROGRAM]})
+   RANDOOP_BASE_COMMAND+=( "${suffix_parts[@]}" )
+fi
 
 #===============================================================================
 # Build System Preparation
@@ -531,229 +545,171 @@ mkdir -p "$SCRIPT_DIR/results"
 
 # shellcheck disable=SC2034 # i counts iterations but is not otherwise used.
 for i in $(seq 1 "$NUM_LOOP"); do
-  for RANDOOP_FEATURE in "${RANDOOP_FEATURES[@]}"; do
 
-    FEATURE_NAME=""
-    if [[ "$ABLATION" == "true" ]]; then
-      FEATURE_NAME="ALL-EXCEPT-$RANDOOP_FEATURE"
-    else
-      FEATURE_NAME="$RANDOOP_FEATURE"
+  # This suffix is unique to each instance of this script. We use it to prevent concurrency issues between processes.
+  FEATURE_SUFFIX=$(
+    IFS='+'
+    echo "${RANDOOP_FEATURES[*]}"
+  )
+  FILE_SUFFIX="$SUBJECT_PROGRAM-$FEATURE_SUFFIX-$UUID"
+
+  # Test directory for each iteration.
+  TEST_DIRECTORY="$SCRIPT_DIR/build/randoop-tests/$FILE_SUFFIX"
+  rm -rf "$TEST_DIRECTORY"
+  mkdir -p "$TEST_DIRECTORY"
+
+  # Jacoco directory for each iteration
+  COVERAGE_DIRECTORY="$SCRIPT_DIR/build/target/$FILE_SUFFIX"
+  rm -rf "$COVERAGE_DIRECTORY"
+  mkdir -p "$COVERAGE_DIRECTORY"
+
+  # Result directory for each test generation and execution.
+  RESULT_DIR="$SCRIPT_DIR/results/$FILE_SUFFIX"
+  rm -rf "$RESULT_DIR"
+  mkdir -p "$RESULT_DIR"
+
+  # If the REDIRECT flag is set, redirect all output to a log file.
+  if [[ "$REDIRECT" -eq 1 ]]; then
+    touch "$RESULT_DIR"/mutation_output.txt
+    echo "Redirecting output to $RESULT_DIR/mutation_output.txt..."
+    exec 3>&1 4>&2
+    exec 1>> "$RESULT_DIR"/mutation_output.txt 2>&1
+  fi
+
+  # We cd into the result directory because Randoop generates jacoco.exec in the directory in
+  # which it is run. This is a concurrency issue since multiple runs will output a jacoco file to
+  # the exact same spot. Each result directory is unique to each instance of this script.
+  cd "$RESULT_DIR"
+
+  # shellcheck disable=SC2086 # FEATURE_FLAG may contain multiple arguments.
+  RANDOOP_COMMAND=(
+    "${RANDOOP_BASE_COMMAND[@]}"
+    --junit-output-dir="$TEST_DIRECTORY"
+  )
+
+  "${RANDOOP_COMMAND[@]}"
+
+  # Remove jacoco.exec file generated by Randoop
+  rm -rf "$RESULT_DIR/jacoco.exec"
+
+  # After test generation, for JSAP-2.1, we need to remove the ant.jar from the classpath
+  if [[ "$SUBJECT_PROGRAM" == "JSAP-2.1" ]]; then
+    rm "$SCRIPT_DIR/build/lib/$UUID/ant.jar"
+  fi
+
+  #===============================================================================
+  # Coverage & Mutation Analysis
+  #===============================================================================
+
+  buildfile=build-randoop.xml
+
+  echo
+  echo "Compiling and mutating subject program..."
+  if [[ "$VERBOSE" -eq 1 ]]; then
+    echo compile.mutation command:
+    echo "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/${buildfile} -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -Dtargetdir="$COVERAGE_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" compile.mutation
+    echo compile.jacoco command:
+    echo "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/${buildfile} -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -Dtargetdir="$COVERAGE_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" compile.jacoco
+  fi
+  echo
+  "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/${buildfile} -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -Dtargetdir="$COVERAGE_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" compile.mutation
+  "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/${buildfile} -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -Dtargetdir="$COVERAGE_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" compile.jacoco
+
+  echo
+  echo "Compiling tests..."
+  if [[ "$VERBOSE" -eq 1 ]]; then
+    echo compile.mutation.tests command:
+    echo "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/${buildfile} -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -Dtargetdir="$COVERAGE_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" compile.mutation.tests
+    echo compile.jacoco.tests command:
+    echo "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/${buildfile} -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -Dtargetdir="$COVERAGE_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" compile.jacoco.tests
+  fi
+  echo
+  "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/${buildfile} -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -Dtargetdir="$COVERAGE_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" compile.mutation.tests
+  "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/${buildfile} -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -Dtargetdir="$COVERAGE_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" compile.jacoco.tests
+
+  echo
+  echo "Running tests with coverage..."
+  if [[ "$VERBOSE" -eq 1 ]]; then
+    echo command:
+    echo "$MAJOR_HOME"/bin/"$ANT" -f "$SCRIPT_DIR"/program-config/"$1"/${buildfile} -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -Dtargetdir="$COVERAGE_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" test
+  fi
+  echo
+  "$MAJOR_HOME"/bin/"$ANT" -f "$SCRIPT_DIR"/program-config/"$1"/${buildfile} -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -Dtargetdir="$COVERAGE_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" test
+
+  java -jar "$JACOCO_CLI_JAR" report "$RESULT_DIR/jacoco.exec" --classfiles "$COVERAGE_DIRECTORY/classes" --sourcefiles "$JAVA_SRC_DIR" --csv "$RESULT_DIR"/report.csv
+
+  # Calculate Instruction Coverage
+  inst_missed=$(awk -F, 'NR>1 {sum+=$4} END {print sum}' "$RESULT_DIR"/report.csv)
+  inst_covered=$(awk -F, 'NR>1 {sum+=$5} END {print sum}' "$RESULT_DIR"/report.csv)
+  instruction_coverage=$(echo "scale=4; $inst_covered / ($inst_missed + $inst_covered) * 100" | bc)
+  instruction_coverage=$(printf "%.2f" "$instruction_coverage")
+
+  # Calculate Branch Coverage
+  branch_missed=$(awk -F, 'NR>1 {sum+=$6} END {print sum}' "$RESULT_DIR"/report.csv)
+  branch_covered=$(awk -F, 'NR>1 {sum+=$7} END {print sum}' "$RESULT_DIR"/report.csv)
+  branch_coverage=$(echo "scale=4; $branch_covered / ($branch_missed + $branch_covered) * 100" | bc)
+  branch_coverage=$(printf "%.2f" "$branch_coverage")
+
+  # For hamcrest-core-1.3, we need to run the generated tests with EvoSuite's
+  # runner in order for mutation analysis to properly work. Randoop-generated
+  # tests may report 0 mutants covered during mutation analysis due to issues
+  # with test detection, static state handling, or instrumentation.  This
+  # script modifies the tests to run with the EvoSuite runner, which ensures
+  # proper isolation and compatibility for accurate mutant coverage.
+
+  if [ "$SUBJECT_PROGRAM" == "hamcrest-core-1.3" ]; then
+    PYTHON_EXECUTABLE=$(command -v python3 2> /dev/null || command -v python 2> /dev/null)
+    if [ -z "$PYTHON_EXECUTABLE" ]; then
+      echo "Error: Python is not installed." >&2
+      exit 1
     fi
-    echo "Using $FEATURE_NAME"
-    echo
+    "$PYTHON_EXECUTABLE" "$SCRIPT_DIR"/convert_test_runners.py "$TEST_DIRECTORY" --mode randoop-to-evosuite
+  fi
 
-    # This suffix is unique to each instance of this script. We use it to prevent concurrency issues between processes.
-    FILE_SUFFIX="$SUBJECT_PROGRAM-$FEATURE_NAME-$UUID"
+  echo
+  echo "Running tests with mutation analysis..."
+  if [[ "$VERBOSE" -eq 1 ]]; then
+    echo command:
+    echo "$MAJOR_HOME"/bin/"$ANT" -f "$SCRIPT_DIR"/program-config/"$1"/${buildfile} -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" mutation.test
+  fi
+  echo
+  "$MAJOR_HOME"/bin/"$ANT" -f "$SCRIPT_DIR"/program-config/"$1"/${buildfile} -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" mutation.test
 
-    # Test directory for each iteration.
-    TEST_DIRECTORY="$SCRIPT_DIR/build/randoop-tests/$FILE_SUFFIX"
-    rm -rf "$TEST_DIRECTORY"
-    mkdir -p "$TEST_DIRECTORY"
+  # Calculate Mutation Score
+  mutants_generated=$(awk -F, 'NR==2 {print $1}' "$RESULT_DIR"/summary.csv)
+  mutants_killed=$(awk -F, 'NR==2 {print $4}' "$RESULT_DIR"/summary.csv)
+  mutation_score=$(echo "scale=4; $mutants_killed / $mutants_generated * 100" | bc)
+  mutation_score=$(printf "%.2f" "$mutation_score")
 
-    # Jacoco directory for each iteration
-    COVERAGE_DIRECTORY="$SCRIPT_DIR/build/target/$FILE_SUFFIX"
-    rm -rf "$COVERAGE_DIRECTORY"
-    mkdir -p "$COVERAGE_DIRECTORY"
+  echo "Instruction Coverage: $instruction_coverage%"
+  echo "Branch Coverage: $branch_coverage%"
+  echo "Mutation Score: $mutation_score%"
 
-    # Result directory for each test generation and execution.
-    RESULT_DIR="$SCRIPT_DIR/results/$FILE_SUFFIX"
-    rm -rf "$RESULT_DIR"
-    mkdir -p "$RESULT_DIR"
+  # Determine time limit to log: use TOTAL_TIME if specified, otherwise use SECONDS_PER_CLASS.
+  if [[ -n "$TOTAL_TIME" ]]; then
+    LOGGED_TIME="$TOTAL_TIME"
+  else
+    LOGGED_TIME="$SECONDS_PER_CLASS"
+  fi
+  row="$FEATURE_NAME,$(basename "$SRC_JAR"),$LOGGED_TIME,0,$instruction_coverage,$branch_coverage,$mutation_score"
+  # $RESULTS_CSV is updated under an exclusive flock via a dedicated fd to prevent interleaving
+  {
+    exec {fd}>> "$SCRIPT_DIR/results/$RESULTS_CSV"
+    flock "$fd"
+    echo "$row" >&"$fd"
+    exec {fd}>&-
+  }
 
-    # If the REDIRECT flag is set, redirect all output to a log file.
-    if [[ "$REDIRECT" -eq 1 ]]; then
-      touch "$RESULT_DIR"/mutation_output.txt
-      echo "Redirecting output to $RESULT_DIR/mutation_output.txt..."
-      exec 3>&1 4>&2
-      exec 1>> "$RESULT_DIR"/mutation_output.txt 2>&1
-    fi
+  # Copy the test suites to results directory
+  echo "Copying test suites to results directory..."
+  cp -r "$TEST_DIRECTORY" "$RESULT_DIR"
 
-    # Bloodhound
-    if [[ ("$RANDOOP_FEATURE" == "BLOODHOUND" && "$ABLATION" != "true") ||
-      ("$RANDOOP_FEATURE" != "BLOODHOUND" && "$ABLATION" == "true") ]]; then
-      FEATURE_FLAG="--method-selection=BLOODHOUND"
-    fi
+  if [[ "$REDIRECT" -eq 1 ]]; then
+    exec 1>&3 2>&4
+    exec 3>&- 4>&-
+  fi
 
-    # Baseline
-    if [[ ("$RANDOOP_FEATURE" == "BASELINE" && "$ABLATION" != "true") ||
-      ("$RANDOOP_FEATURE" != "BASELINE" && "$ABLATION" == "true") ]]; then
-      ## There is nothing to do in this case.
-      # FEATURE_FLAG=""
-      true
-    fi
-
-    # Orienteering
-    if [[ ("$RANDOOP_FEATURE" == "ORIENTEERING" && "$ABLATION" != "true") ||
-      ("$RANDOOP_FEATURE" != "ORIENTEERING" && "$ABLATION" == "true") ]]; then
-      FEATURE_FLAG="--input-selection=ORIENTEERING"
-    fi
-
-    # Bloodhound and Orienteering
-    if [[ ("$RANDOOP_FEATURE" == "BLOODHOUND_AND_ORIENTEERING" && "$ABLATION" != "true") ||
-      ("$RANDOOP_FEATURE" != "BLOODHOUND_AND_ORIENTEERING" && "$ABLATION" == "true") ]]; then
-      FEATURE_FLAG="--input-selection=ORIENTEERING --method-selection=BLOODHOUND"
-    fi
-
-    # Detective (Demand-Driven)
-    if [[ ("$RANDOOP_FEATURE" == "DETECTIVE" && "$ABLATION" != "true") ||
-      ("$RANDOOP_FEATURE" != "DETECTIVE" && "$ABLATION" == "true") ]]; then
-      FEATURE_FLAG="--demand-driven=true"
-    fi
-
-    # GRT Fuzzing
-    if [[ ("$RANDOOP_FEATURE" == "GRT_FUZZING" && "$ABLATION" != "true") ||
-      ("$RANDOOP_FEATURE" != "GRT_FUZZING" && "$ABLATION" == "true") ]]; then
-      FEATURE_FLAG="--grt-fuzzing=true"
-    fi
-
-    # Elephant Brain
-    if [[ ("$RANDOOP_FEATURE" == "ELEPHANT_BRAIN" && "$ABLATION" != "true") ||
-      ("$RANDOOP_FEATURE" != "ELEPHANT_BRAIN" && "$ABLATION" == "true") ]]; then
-      FEATURE_FLAG="--cast-to-run-time-type=true"
-    fi
-
-    # Constant Mining
-    if [[ ("$RANDOOP_FEATURE" == "CONSTANT_MINING" && "$ABLATION" != "true") ||
-      ("$RANDOOP_FEATURE" != "CONSTANT_MINING" && "$ABLATION" == "true") ]]; then
-      FEATURE_FLAG="--constant-mining=true"
-    fi
-
-    # We cd into the result directory because Randoop generates jacoco.exec in the directory in
-    # which it is run. This is a concurrency issue since multiple runs will output a jacoco file to
-    # the exact same spot. Each result directory is unique to each instance of this script.
-    cd "$RESULT_DIR"
-
-    # shellcheck disable=SC2086 # FEATURE_FLAG may contain multiple arguments.
-    RANDOOP_COMMAND=(
-      "${RANDOOP_BASE_COMMAND[@]}"
-      --junit-output-dir="$TEST_DIRECTORY"
-      "$FEATURE_FLAG"
-    )
-
-    "${RANDOOP_COMMAND[@]}"
-
-    # Remove jacoco.exec file generated by Randoop
-    rm -rf "$RESULT_DIR/jacoco.exec"
-
-    # After test generation, for JSAP-2.1, we need to remove the ant.jar from the classpath
-    if [[ "$SUBJECT_PROGRAM" == "JSAP-2.1" ]]; then
-      rm "$SCRIPT_DIR/build/lib/$UUID/ant.jar"
-    fi
-
-    #===============================================================================
-    # Coverage & Mutation Analysis
-    #===============================================================================
-
-    buildfile=build-randoop.xml
-
-    echo
-    echo "Compiling and mutating subject program..."
-    if [[ "$VERBOSE" -eq 1 ]]; then
-      echo compile.mutation command:
-      echo "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/${buildfile} -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -Dtargetdir="$COVERAGE_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" compile.mutation
-      echo compile.jacoco command:
-      echo "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/${buildfile} -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -Dtargetdir="$COVERAGE_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" compile.jacoco
-    fi
-    echo
-    "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/${buildfile} -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -Dtargetdir="$COVERAGE_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" compile.mutation
-    "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/${buildfile} -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -Dtargetdir="$COVERAGE_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" compile.jacoco
-
-    echo
-    echo "Compiling tests..."
-    if [[ "$VERBOSE" -eq 1 ]]; then
-      echo compile.mutation.tests command:
-      echo "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/${buildfile} -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -Dtargetdir="$COVERAGE_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" compile.mutation.tests
-      echo compile.jacoco.tests command:
-      echo "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/${buildfile} -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -Dtargetdir="$COVERAGE_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" compile.jacoco.tests
-    fi
-    echo
-    "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/${buildfile} -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -Dtargetdir="$COVERAGE_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" compile.mutation.tests
-    "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/${buildfile} -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -Dtargetdir="$COVERAGE_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" compile.jacoco.tests
-
-    echo
-    echo "Running tests with coverage..."
-    if [[ "$VERBOSE" -eq 1 ]]; then
-      echo command:
-      echo "$MAJOR_HOME"/bin/"$ANT" -f "$SCRIPT_DIR"/program-config/"$1"/${buildfile} -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -Dtargetdir="$COVERAGE_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" test
-    fi
-    echo
-    "$MAJOR_HOME"/bin/"$ANT" -f "$SCRIPT_DIR"/program-config/"$1"/${buildfile} -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -Dsrc="$JAVA_SRC_DIR" -Dtargetdir="$COVERAGE_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" test
-
-    java -jar "$JACOCO_CLI_JAR" report "$RESULT_DIR/jacoco.exec" --classfiles "$COVERAGE_DIRECTORY/classes" --sourcefiles "$JAVA_SRC_DIR" --csv "$RESULT_DIR"/report.csv
-
-    # Calculate Instruction Coverage
-    inst_missed=$(awk -F, 'NR>1 {sum+=$4} END {print sum}' "$RESULT_DIR"/report.csv)
-    inst_covered=$(awk -F, 'NR>1 {sum+=$5} END {print sum}' "$RESULT_DIR"/report.csv)
-    instruction_coverage=$(echo "scale=4; $inst_covered / ($inst_missed + $inst_covered) * 100" | bc)
-    instruction_coverage=$(printf "%.2f" "$instruction_coverage")
-
-    # Calculate Branch Coverage
-    branch_missed=$(awk -F, 'NR>1 {sum+=$6} END {print sum}' "$RESULT_DIR"/report.csv)
-    branch_covered=$(awk -F, 'NR>1 {sum+=$7} END {print sum}' "$RESULT_DIR"/report.csv)
-    branch_coverage=$(echo "scale=4; $branch_covered / ($branch_missed + $branch_covered) * 100" | bc)
-    branch_coverage=$(printf "%.2f" "$branch_coverage")
-
-    # For hamcrest-core-1.3, we need to run the generated tests with EvoSuite's
-    # runner in order for mutation analysis to properly work. Randoop-generated
-    # tests may report 0 mutants covered during mutation analysis due to issues
-    # with test detection, static state handling, or instrumentation.  This
-    # script modifies the tests to run with the EvoSuite runner, which ensures
-    # proper isolation and compatibility for accurate mutant coverage.
-
-    if [ "$SUBJECT_PROGRAM" == "hamcrest-core-1.3" ]; then
-      PYTHON_EXECUTABLE=$(command -v python3 2> /dev/null || command -v python 2> /dev/null)
-      if [ -z "$PYTHON_EXECUTABLE" ]; then
-        echo "Error: Python is not installed." >&2
-        exit 1
-      fi
-      "$PYTHON_EXECUTABLE" "$SCRIPT_DIR"/convert_test_runners.py "$TEST_DIRECTORY" --mode randoop-to-evosuite
-    fi
-
-    echo
-    echo "Running tests with mutation analysis..."
-    if [[ "$VERBOSE" -eq 1 ]]; then
-      echo command:
-      echo "$MAJOR_HOME"/bin/"$ANT" -f "$SCRIPT_DIR"/program-config/"$1"/${buildfile} -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" mutation.test
-    fi
-    echo
-    "$MAJOR_HOME"/bin/"$ANT" -f "$SCRIPT_DIR"/program-config/"$1"/${buildfile} -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" mutation.test
-
-    # Calculate Mutation Score
-    mutants_generated=$(awk -F, 'NR==2 {print $1}' "$RESULT_DIR"/summary.csv)
-    mutants_killed=$(awk -F, 'NR==2 {print $4}' "$RESULT_DIR"/summary.csv)
-    mutation_score=$(echo "scale=4; $mutants_killed / $mutants_generated * 100" | bc)
-    mutation_score=$(printf "%.2f" "$mutation_score")
-
-    echo "Instruction Coverage: $instruction_coverage%"
-    echo "Branch Coverage: $branch_coverage%"
-    echo "Mutation Score: $mutation_score%"
-
-    # Determine time limit to log: use TOTAL_TIME if specified, otherwise use SECONDS_PER_CLASS.
-    if [[ -n "$TOTAL_TIME" ]]; then
-      LOGGED_TIME="$TOTAL_TIME"
-    else
-      LOGGED_TIME="$SECONDS_PER_CLASS"
-    fi
-    row="$FEATURE_NAME,$(basename "$SRC_JAR"),$LOGGED_TIME,0,$instruction_coverage,$branch_coverage,$mutation_score"
-    # $RESULTS_CSV is updated under an exclusive flock via a dedicated fd to prevent interleaving
-    {
-      exec {fd}>> "$SCRIPT_DIR/results/$RESULTS_CSV"
-      flock "$fd"
-      echo "$row" >&"$fd"
-      exec {fd}>&-
-    }
-
-    # Copy the test suites to results directory
-    echo "Copying test suites to results directory..."
-    cp -r "$TEST_DIRECTORY" "$RESULT_DIR"
-
-    if [[ "$REDIRECT" -eq 1 ]]; then
-      exec 1>&3 2>&4
-      exec 3>&- 4>&-
-    fi
-
-    cd "$SCRIPT_DIR"
-  done
+  cd "$SCRIPT_DIR"
 done
 
 #===============================================================================
