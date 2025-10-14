@@ -12,7 +12,7 @@
 # Directories and files:
 # - `build/evosuite-tests*`: EvoSuite-created test suites.
 # - `build/bin`: Compiled tests and code.
-# - `results/$OUTPUT_FILE.csv`: CSV file containing summary statistics for each iteration (see -o flag)
+# - `results/$RESULTS_CSV.csv`: CSV file containing summary statistics for each iteration (see -o flag)
 # - `results/`: everything else specific to the most recent iteration.
 
 #------------------------------------------------------------------------------
@@ -23,15 +23,18 @@
 #------------------------------------------------------------------------------
 # Options (command-line arguments):
 #------------------------------------------------------------------------------
-USAGE_STRING="usage: mutation-evosuite.sh [-h] [-v] [-r] [-o output_file] [-t total_time] [-c time_per_class] [-n num_iterations] TEST-CASE-NAME
-  -h    Displays this help message.
-  -v    Enables verbose mode.
-  -r    Redirect EvoSuite and Major output to results/result/mutation_output.txt.
-  -o N  Csv output filename; should end in \".csv\"; if relative, should not include a directory name.
+USAGE_STRING="usage: mutation-evosuite.sh [-h] [-v] [-r] [-o RESULTS_CSV] [-t total_time] [-c time_per_class] [-n num_iterations] TEST-CASE-NAME
+  -o N  Write experiment results to this CSV file (N should end in '.csv').
+        If the file does not exist, a header row will be created automatically.
+        Paths are not allowed; only a filename may be given.
   -t N  Total time limit for test generation (in seconds).
   -c N  Per-class time limit (in seconds, default: 2s/class).
         Mutually exclusive with -t.
   -n N  Number of iterations to run the experiment (default: 1).
+  -r    Redirect program logs and diagnostic messages
+        to results/result/mutation_output.txt.
+  -v    Enables verbose mode.
+  -h    Displays this help message.
   TEST-CASE-NAME is the name of a jar file in ../subject-programs/, without .jar.
   Example: commons-lang3-3.0"
 
@@ -65,6 +68,13 @@ MAJOR_HOME=$(realpath "${SCRIPT_DIR}/build/major/")               # Major home d
 EVOSUITE_JAR=$(realpath "${SCRIPT_DIR}/build/evosuite-1.2.0.jar") # EvoSuite jar file
 JACOCO_CLI_JAR=$(realpath "${SCRIPT_DIR}/build/jacococli.jar")    # For coverage report generation
 
+[ -d "$MAJOR_HOME" ] || { echo "Error: Missing $MAJOR_HOME." >&2; exit 2; }
+[ -f "$EVOSUITE_JAR" ] || { echo "Error: Missing $EVOSUITE_JAR." >&2; exit 2; }
+[ -f "$JACOCO_CLI_JAR" ] || { echo "Error: Missing $JACOCO_CLI_JAR." >&2; exit 2; }
+
+. "$SCRIPT_DIR/usejdk.sh" # Source the usejdk.sh script to enable JDK switching
+usejdk8
+
 #===============================================================================
 # Argument Parsing & Experiment Configuration
 #===============================================================================
@@ -91,7 +101,7 @@ while getopts ":hvro:t:c:n:" opt; do
       REDIRECT=1
       ;;
     o)
-      OUTPUT_FILE="$OPTARG"
+      RESULTS_CSV="$OPTARG"
       ;;
     t)
       # Total experiment time, mutually exclusive with SECONDS_PER_CLASS
@@ -122,7 +132,7 @@ done
 
 shift $((OPTIND - 1))
 
-if [[ -z "$OUTPUT_FILE" ]]; then
+if [[ -z "$RESULTS_CSV" ]]; then
   echo "No -o command-line argument given."
   exit 2
 fi
@@ -140,6 +150,12 @@ fi
 
 # Name of the subject program.
 SUBJECT_PROGRAM="$1"
+
+if [[ -z "$SUBJECT_PROGRAM" ]]; then
+  echo "Error: SUBJECT-PROGRAM is required." >&2
+  echo "$USAGE_STRING"
+  exit 2
+fi
 
 ANT="ant"
 
@@ -392,13 +408,16 @@ EVOSUITE_COMMAND="java \
 echo "Using EvoSuite to generate tests."
 echo
 
-# Handle relative and absolute output files; make sure output file exists.
-RESULTS_DIR="$SCRIPT_DIR/results"
-mkdir -p "$RESULTS_DIR"
-OUTPUT_FILE=$(cd "$RESULTS_DIR" && realpath "$OUTPUT_FILE")
-if [ ! -f "$OUTPUT_FILE" ]; then
-  echo -e "Version,FileName,TimeLimit,Seed,InstructionCoverage,BranchCoverage,MutationScore" > "$OUTPUT_FILE"
-fi
+# Create the experiment results CSV file with a header row if it doesn’t already exist
+mkdir -p "$SCRIPT_DIR/results"
+{
+  exec {fd}>>"$SCRIPT_DIR/results/$RESULTS_CSV"
+  flock -n "$fd" || true
+  if [ ! -s "$SCRIPT_DIR/results/$RESULTS_CSV" ]; then
+    echo "Version,FileName,TimeLimit,Seed,InstructionCoverage,BranchCoverage,MutationScore" >&"$fd"
+  fi
+  exec {fd}>&-
+}
 
 #===============================================================================
 # Test Generation & Execution
@@ -539,10 +558,15 @@ for i in $(seq 1 "$NUM_LOOP"); do
     LOGGED_TIME="$SECONDS_PER_CLASS"
   fi
   row="EVOSUITE,$(basename "$SRC_JAR"),$LOGGED_TIME,0,$instruction_coverage,$branch_coverage,$mutation_score"
-  # $OUTPUT_FILE is a csv file that contains a record of each pass.
+  # $RESULTS_CSV is a csv file that contains a record of each pass.
   # On Unix, ">>" is generally atomic as long as the content is small enough
   # (usually the limit is at least 1024).
-  echo -e "$row" >> "$OUTPUT_FILE"
+  {
+    exec {fd}>>"$SCRIPT_DIR/results/$RESULTS_CSV"
+    flock -n "$fd" || true
+    echo -e "$row" >> "$RESULTS_CSV"
+    exec {fd}>&-
+  }
 
   # Copy the test suites to results directory
   echo "Copying test suites to results directory..."

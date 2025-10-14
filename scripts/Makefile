@@ -73,8 +73,7 @@ build/major/bin/ant-replacecall:
 
 build/defects4j:
 	mkdir -p build
-	cd build && git clone https://github.com/rjust/defects4j
-	cd defects4j && cpanm --installdeps . && ./init.sh
+	cd build && git clone https://github.com/rjust/defects4j && cd defects4j && cpanm --installdeps . && ./init.sh
 
 results:
 	mkdir -p results

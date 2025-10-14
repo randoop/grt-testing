@@ -12,7 +12,7 @@
 # Directories and files:
 # - `build/randoop-tests*`: Randoop-created test suites.
 # - `build/bin`: Compiled tests and code.
-# - `results/$OUTPUT_FILE.csv`: CSV file containing summary statistics for each iteration (see -o flag)
+# - `results/$RESULTS_CSV.csv`: CSV file containing summary statistics for each iteration (see -o flag)
 # - `results/`: everything else specific to the most recent iteration.
 
 #------------------------------------------------------------------------------
@@ -23,19 +23,22 @@
 #------------------------------------------------------------------------------
 # Options (command-line arguments):
 #------------------------------------------------------------------------------
-USAGE_STRING="usage: mutation-randoop.sh [-h] [-v] [-r] [-f features] [-a] [-o output_file] [-t total_time] [-c time_per_class] [-n num_iterations] TEST-CASE-NAME
-  -h    Displays this help message.
-  -v    Enables verbose mode.
-  -r    Redirect Randoop and Major output to results/result/mutation_output.txt.
+USAGE_STRING="usage: mutation-randoop.sh [-h] [-v] [-r] [-f features] [-a] [-o RESULTS_CSV] [-t total_time] [-c time_per_class] [-n num_iterations] TEST-CASE-NAME
   -f    Specify the Randoop features to use.
         Available features: BASELINE, BLOODHOUND, ORIENTEERING, BLOODHOUND_AND_ORIENTEERING, DETECTIVE, GRT_FUZZING, ELEPHANT_BRAIN, CONSTANT_MINING.
         example usage: -f BASELINE,BLOODHOUND
   -a    Perform feature ablation studies.
-  -o N  Csv output filename; should end in \".csv\"; if relative, should not include a directory name.
+  -o N  Write experiment results to this CSV file (N should end in '.csv').
+        If the file does not exist, a header row will be created automatically.
+        Paths are not allowed; only a filename may be given.
   -t N  Total time limit for test generation (in seconds).
   -c N  Per-class time limit (in seconds, default: 2s/class).
         Mutually exclusive with -t.
   -n N  Number of iterations to run the experiment (default: 1).
+  -r    Redirect program logs and diagnostic messages
+        to results/result/mutation_output.txt.
+  -v    Enables verbose mode.
+  -h    Displays this help message.
   TEST-CASE-NAME is the name of a jar file in ../subject-programs/, without .jar.
   Example: commons-lang3-3.0"
 
@@ -71,6 +74,15 @@ JACOCO_AGENT_JAR=$(realpath "${SCRIPT_DIR}/build/jacocoagent.jar")      # For Bl
 JACOCO_CLI_JAR=$(realpath "${SCRIPT_DIR}/build/jacococli.jar")          # For coverage report generation
 REPLACECALL_JAR=$(realpath "${SCRIPT_DIR}/build/replacecall-4.3.4.jar") # For replacing undesired method calls
 
+[ -d "$MAJOR_HOME" ] || { echo "Error: Missing $MAJOR_HOME." >&2; exit 2; }
+[ -f "$RANDOOP_JAR" ] || { echo "Error: Missing $RANDOOP_JAR." >&2; exit 2; }
+[ -f "$JACOCO_AGENT_JAR" ] || { echo "Error: Missing $JACOCO_AGENT_JAR." >&2; exit 2; }
+[ -f "$JACOCO_CLI_JAR" ] || { echo "Error: Missing $JACOCO_CLI_JAR." >&2; exit 2; }
+[ -f "$REPLACECALL_JAR" ] || { echo "Error: Missing $REPLACECALL_JAR." >&2; exit 2; }
+
+. "$SCRIPT_DIR/usejdk.sh" # Source the usejdk.sh script to enable JDK switching
+usejdk8
+
 #===============================================================================
 # Argument Parsing & Experiment Configuration
 #===============================================================================
@@ -104,7 +116,7 @@ while getopts ":hvrf:ao:t:c:n:" opt; do
       ABLATION=true
       ;;
     o)
-      OUTPUT_FILE="$OPTARG"
+      RESULTS_CSV="$OPTARG"
       ;;
     t)
       # Total experiment time, mutually exclusive with SECONDS_PER_CLASS
@@ -135,7 +147,7 @@ done
 
 shift $((OPTIND - 1))
 
-if [[ -z "$OUTPUT_FILE" ]]; then
+if [[ -z "$RESULTS_CSV" ]]; then
   echo "No -o command-line argument given."
   exit 2
 fi
@@ -153,6 +165,12 @@ fi
 
 # Name of the subject program.
 SUBJECT_PROGRAM="$1"
+
+if [[ -z "$SUBJECT_PROGRAM" ]]; then
+  echo "Error: SUBJECT-PROGRAM is required." >&2
+  echo "$USAGE_STRING"
+  exit 2
+fi
 
 ALL_RANDOOP_FEATURES=("BASELINE" "BLOODHOUND" "ORIENTEERING" "BLOODHOUND_AND_ORIENTEERING" "DETECTIVE" "GRT_FUZZING" "ELEPHANT_BRAIN" "CONSTANT_MINING")
 if [[ -n "$FEATURES_OPT" ]]; then
@@ -470,13 +488,16 @@ RANDOOP_COMMAND="$RANDOOP_BASE_COMMAND ${command_suffix[$SUBJECT_PROGRAM]}"
 echo "Using Randoop to generate tests."
 echo
 
-# Handle relative and absolute output files; make sure output file exists.
-RESULTS_DIR="$SCRIPT_DIR/results"
-mkdir -p "$RESULTS_DIR"
-OUTPUT_FILE=$(cd "$RESULTS_DIR" && realpath "$OUTPUT_FILE")
-if [ ! -f "$OUTPUT_FILE" ]; then
-  echo -e "Version,FileName,TimeLimit,Seed,InstructionCoverage,BranchCoverage,MutationScore" > "$OUTPUT_FILE"
-fi
+# Create the experiment results CSV file with a header row if it doesn’t already exist
+mkdir -p "$SCRIPT_DIR/results"
+{
+  exec {fd}>>"$SCRIPT_DIR/results/$RESULTS_CSV"
+  flock -n "$fd" || true
+  if [ ! -s "$SCRIPT_DIR/results/$RESULTS_CSV" ]; then
+    echo "Version,FileName,TimeLimit,Seed,InstructionCoverage,BranchCoverage,MutationScore" >&"$fd"
+  fi
+  exec {fd}>&-
+}
 
 #===============================================================================
 # Test Generation & Execution
@@ -682,10 +703,15 @@ for i in $(seq 1 "$NUM_LOOP"); do
       LOGGED_TIME="$SECONDS_PER_CLASS"
     fi
     row="$FEATURE_NAME,$(basename "$SRC_JAR"),$LOGGED_TIME,0,$instruction_coverage,$branch_coverage,$mutation_score"
-    # $OUTPUT_FILE is a csv file that contains a record of each pass.
+    # $RESULTS_CSV is a csv file that contains a record of each pass.
     # On Unix, ">>" is generally atomic as long as the content is small enough
     # (usually the limit is at least 1024).
-    echo -e "$row" >> "$OUTPUT_FILE"
+    {
+      exec {fd}>>"$SCRIPT_DIR/results/$RESULTS_CSV"
+      flock -n "$fd" || true
+      echo -e "$row" >> "$RESULTS_CSV"
+      exec {fd}>&-
+    }
 
     # Copy the test suites to results directory
     echo "Copying test suites to results directory..."

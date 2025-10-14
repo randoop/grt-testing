@@ -37,7 +37,7 @@
 #===============================================================================
 
 SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)"
-MUTATION_DIR="$(realpath "$SCRIPT_DIR"/../)"
+GRT_TESTING_ROOT="$(realpath "$SCRIPT_DIR"/../)"
 
 PYTHON_EXECUTABLE=$(command -v python3 2> /dev/null || command -v python 2> /dev/null)
 if [ -z "$PYTHON_EXECUTABLE" ]; then
@@ -50,14 +50,14 @@ pip install matplotlib
 pip install seaborn
 
 # Clean up previous run artifacts
-rm -rf "$MUTATION_DIR"/build/bin/*
-rm -rf "$MUTATION_DIR"/build/randoop-tests/*
-rm -rf "$MUTATION_DIR"/build/evosuite-tests/*
-rm -rf "$MUTATION_DIR"/build/evosuite-report/*
-rm -rf "$MUTATION_DIR"/build/target/*
-rm -rf "$MUTATION_DIR"/build/lib/*
-rm -f "$MUTATION_DIR"/results/fig8-9.pdf
-rm -f "$MUTATION_DIR"/results/fig8-9.csv
+rm -rf "$GRT_TESTING_ROOT"/build/bin/*
+rm -rf "$GRT_TESTING_ROOT"/build/randoop-tests/*
+rm -rf "$GRT_TESTING_ROOT"/build/evosuite-tests/*
+rm -rf "$GRT_TESTING_ROOT"/build/evosuite-report/*
+rm -rf "$GRT_TESTING_ROOT"/build/target/*
+rm -rf "$GRT_TESTING_ROOT"/build/lib/*
+rm -f "$GRT_TESTING_ROOT"/results/fig8-9.pdf
+rm -f "$GRT_TESTING_ROOT"/results/fig8-9.csv
 
 #===============================================================================
 # The GRT paper's parameters are as follows:
@@ -78,7 +78,15 @@ FEATURES=(
   "ORIENTEERING"
 )
 
-NUM_CORES=$(($(nproc) - 4))
+if command -v nproc >/dev/null 2>&1; then
+  NPROC=$(nproc)
+elif command -v getconf >/dev/null 2>&1; then
+  NPROC=$(getconf _NPROCESSORS_ONLN)
+else
+  NPROC=1
+fi
+NUM_CORES=$((NPROC - 4))
+if [ "$NUM_CORES" -lt 1 ]; then NUM_CORES=1; fi
 echo "$(basename "$0"): Running $NUM_CORES concurrent processes."
 
 #===============================================================================
@@ -89,7 +97,7 @@ for tseconds in "${TOTAL_SECONDS[@]}"; do
   for program in "${SUBJECT_PROGRAMS[@]}"; do
     for feature in "${FEATURES[@]}"; do
       for _ in $(seq 1 "$NUM_LOOP"); do
-        TASKS+=("$MUTATION_DIR $tseconds $program $feature")
+        TASKS+=("$GRT_TESTING_ROOT $tseconds $program $feature")
       done
     done
   done
@@ -100,17 +108,17 @@ done
 # Each run's standard output is redirected to mutation_output.txt within its corresponding results subdirectory.
 # Other related files (e.g., jacoco.exec, mutants.log, major.log) are also stored there.
 run_task() {
-  mutation_dir=$1
+  GRT_TESTING_ROOT=$1
   tseconds=$2
   program=$3
   feature=$4
   if [ "$feature" == "GRT" ]; then
     echo "Running (GRT): mutation-randoop.sh -t $tseconds -f BLOODHOUND,ORIENTEERING,DETECTIVE,GRT_FUZZING,ELEPHANT_BRAIN,CONSTANT_MINING -r -o fig8-9.csv $program"
-    "$mutation_dir"/mutation-randoop.sh -t "$tseconds" -f BLOODHOUND,ORIENTEERING,DETECTIVE,GRT_FUZZING,ELEPHANT_BRAIN,CONSTANT_MINING -r -o fig8-9.csv "$program"
+    "$GRT_TESTING_ROOT"/mutation-randoop.sh -t "$tseconds" -f BLOODHOUND,ORIENTEERING,DETECTIVE,GRT_FUZZING,ELEPHANT_BRAIN,CONSTANT_MINING -r -o fig8-9.csv "$program"
   else
     # `mutation-randoop.sh` checks the validity of $feature.
     echo "Running: mutation-randoop.sh -t $tseconds -f $feature -r -o fig8-9.csv $program"
-    "$mutation_dir"/mutation-randoop.sh -t "$tseconds" -f "$feature" -r -o fig8-9.csv "$program"
+    "$GRT_TESTING_ROOT"/mutation-randoop.sh -t "$tseconds" -f "$feature" -r -o fig8-9.csv "$program"
   fi
 }
 
@@ -123,4 +131,4 @@ printf "%s\n" "${TASKS[@]}" | parallel -j $NUM_CORES --colsep ' ' run_task
 # Figure Generation
 #===============================================================================
 
-"$PYTHON_EXECUTABLE" "$MUTATION_DIR"/experiment-scripts/generate-grt-figures.py fig8-9
+"$PYTHON_EXECUTABLE" "$GRT_TESTING_ROOT"/experiment-scripts/generate-grt-figures.py fig8-9
