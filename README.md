@@ -17,11 +17,13 @@ This repository provides scripts and setup files for running both kinds of evalu
 ## Usage Instructions
 
 ### Setup
+
 To set up the environment, refer to the following:
-* `scripts/mutation-prerequisites.md` for mutation analysis 
+* `scripts/mutation-prerequisites.md` for mutation analysis
 * `scripts/defects4j-prerequisites.md` for defect detection
 
 ### Running Scripts
+
 For mutation analysis see:
 * `scripts/mutation-randoop.sh` for Randoop
 * `scripts/mutation-evosuite.sh` for EvoSuite

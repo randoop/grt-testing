@@ -90,6 +90,11 @@ REPLACECALL_JAR=$(realpath "${SCRIPT_DIR}/build/replacecall-4.3.4.jar") # For re
 
 . "$SCRIPT_DIR/usejdk.sh" # Source the usejdk.sh script to enable JDK switching
 usejdk8
+JAVA_VER=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '{sub("^$", "0", $2); print ($1=="1")?$2:$1}')
+if [[ "$JAVA_VER" -ne 8 ]]; then
+  echo "Error: Java 8 required. Set JAVA8_HOME to a JDK 8 installation." >&2
+  exit 2
+fi
 
 #===============================================================================
 # Argument Parsing & Experiment Configuration
@@ -446,7 +451,7 @@ RANDOOP_BASE_COMMAND="java \
 -Xbootclasspath/a:$JACOCO_AGENT_JAR:$REPLACECALL_JAR \
 -javaagent:$JACOCO_AGENT_JAR \
 -javaagent:$REPLACECALL_COMMAND \
--classpath $RANDOOP_CLASSPATH:$RANDOOP_JAR \
+-classpath \"$RANDOOP_CLASSPATH:$RANDOOP_JAR\" \
 randoop.main.Main gentests \
 --testjar=$TARGET_JAR \
 --time-limit=$TIME_LIMIT \
@@ -500,7 +505,7 @@ echo
 mkdir -p "$SCRIPT_DIR/results"
 {
   exec {fd}>> "$SCRIPT_DIR/results/$RESULTS_CSV"
-  flock -n "$fd" || true
+  flock "$fd"
   if [ ! -s "$SCRIPT_DIR/results/$RESULTS_CSV" ]; then
     echo "Version,FileName,TimeLimit,Seed,InstructionCoverage,BranchCoverage,MutationScore" >&"$fd"
   fi
@@ -716,7 +721,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
     # (usually the limit is at least 1024).
     {
       exec {fd}>> "$SCRIPT_DIR/results/$RESULTS_CSV"
-      flock -n "$fd" || true
+      flock "$fd"
       echo "$row" >&"$fd"
       exec {fd}>&-
     }

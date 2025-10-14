@@ -76,6 +76,11 @@ JACOCO_CLI_JAR=$(realpath "${SCRIPT_DIR}/build/jacococli.jar")    # For coverage
 
 . "$SCRIPT_DIR/usejdk.sh" # Source the usejdk.sh script to enable JDK switching
 usejdk8
+JAVA_VER=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '{sub("^$", "0", $2); print ($1=="1")?$2:$1}')
+if [[ "$JAVA_VER" -ne 8 ]]; then
+  echo "Error: Java 8 required. Set JAVA8_HOME to a JDK 8 installation." >&2
+  exit 2
+fi
 
 #===============================================================================
 # Argument Parsing & Experiment Configuration
@@ -399,7 +404,7 @@ TARGET_JAR="$SCRIPT_DIR/build/lib/$UUID/$SUBJECT_PROGRAM.jar"
 EVOSUITE_COMMAND="java \
 -jar $EVOSUITE_JAR \
 -target $TARGET_JAR \
--projectCP $EVOSUITE_CLASSPATH:$EVOSUITE_JAR \
+-projectCP \"$EVOSUITE_CLASSPATH:$EVOSUITE_JAR\" \
 -Dsearch_budget=$TIME_LIMIT \
 -Dreplace_gui=true \
 -Drandom_seed=0"
@@ -414,7 +419,7 @@ echo
 mkdir -p "$SCRIPT_DIR/results"
 {
   exec {fd}>> "$SCRIPT_DIR/results/$RESULTS_CSV"
-  flock -n "$fd" || true
+  flock "$fd"
   if [ ! -s "$SCRIPT_DIR/results/$RESULTS_CSV" ]; then
     echo "Version,FileName,TimeLimit,Seed,InstructionCoverage,BranchCoverage,MutationScore" >&"$fd"
   fi
@@ -565,7 +570,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
   # (usually the limit is at least 1024).
   {
     exec {fd}>> "$SCRIPT_DIR/results/$RESULTS_CSV"
-    flock -n "$fd" || true
+    flock "$fd"
     echo "$row" >&"$fd"
     exec {fd}>&-
   }

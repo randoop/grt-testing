@@ -64,9 +64,18 @@ command -v defects4j > /dev/null 2>&1 || {
   echo "Error: Missing $EVOSUITE_JAR." >&2
   exit 2
 }
+[ -x "$DEFECTS4J_HOME/framework/bin/run_bug_detection.pl" ] || {
+  echo "Error: Missing $DEFECTS4J_HOME/framework/bin/run_bug_detection.pl. Run 'make build/defects4j' or set DEFECTS4J_HOME." >&2
+  exit 2
+}
 
 . "$SCRIPT_DIR/usejdk.sh" # Source the usejdk.sh script to enable JDK switching
 usejdk11
+JAVA_VER=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '{print ($1=="1")?$2:$1}')
+if [[ "$JAVA_VER" -ne 11 ]]; then
+  echo "Error: Java 11 required. Set JAVA11_HOME to a JDK 11 installation." >&2
+  exit 2
+fi
 
 #===============================================================================
 # Argument Parsing & Experiment Configuration
@@ -193,7 +202,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
   # Create the experiment results CSV file with a header row if it doesn’t already exist
   {
     exec {fd}>> "$SCRIPT_DIR/results/$RESULTS_CSV"
-    flock -n "$fd" || true
+    flock "$fd"
     if [ ! -s "$SCRIPT_DIR/results/$RESULTS_CSV" ]; then
       echo "ProjectId,Version,TestSuiteSource,Test,TestClassification,NumTrigger,TimeLimit" >&"$fd"
     fi
@@ -242,12 +251,12 @@ for i in $(seq 1 "$NUM_LOOP"); do
     EVOSUITE_BASE_COMMAND="java \
     -jar $EVOSUITE_JAR \
     -class $CLASS \
-    -projectCP $PROJECT_CP \
+    -projectCP \"$PROJECT_CP\" \
     -seed 0 \
     -Dsearch_budget=$TIME_LIMIT \
     -Dassertion_timeout=$TIME_LIMIT \
-    -Dtest_dir=$TEST_DIR \
-    -Dreport_dir=$REPORT_DIR"
+    -Dtest_dir=\"$TEST_DIR\" \
+    -Dreport_dir=\"$REPORT_DIR\""
 
     if [ "$VERBOSE" -eq 1 ]; then
       echo "EvoSuite command:"
@@ -292,7 +301,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
   echo "Appending results to output file $RESULTS_CSV..."
   {
     exec {fd}>> "$SCRIPT_DIR/results/$RESULTS_CSV"
-    flock -n "$fd" || true
+    flock "$fd"
     tr -d '\r' < "$RESULT_DIR/bug_detection" | tail -n +2 | awk -v time_limit="$TIME_LIMIT" 'NF > 0 {print $0 "," time_limit}' >&"$fd"
     exec {fd}>&-
   }
