@@ -60,13 +60,6 @@ fi
 # Environment Setup
 #===============================================================================
 
-# Requires Java 8
-JAVA_VER=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '{sub("^$", "0", $2); print $1$2}')
-if [[ "$JAVA_VER" -ne 18 ]]; then
-  echo "Error: Java version 8 is required. Please install it and try again."
-  exit 1
-fi
-
 SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)"
 MAJOR_HOME=$(realpath "${SCRIPT_DIR}/build/major/")                     # Major home directory, for mutation testing
 RANDOOP_JAR=$(realpath "${SCRIPT_DIR}/build/randoop-all-4.3.4.jar")     # Randoop jar file
@@ -74,23 +67,23 @@ JACOCO_AGENT_JAR=$(realpath "${SCRIPT_DIR}/build/jacocoagent.jar")      # For Bl
 JACOCO_CLI_JAR=$(realpath "${SCRIPT_DIR}/build/jacococli.jar")          # For coverage report generation
 REPLACECALL_JAR=$(realpath "${SCRIPT_DIR}/build/replacecall-4.3.4.jar") # For replacing undesired method calls
 
-[ -d "$MAJOR_HOME" ] || { 
+[ -d "$MAJOR_HOME" ] || {
   echo "Error: Missing $MAJOR_HOME." >&2
   exit 2
 }
-[ -f "$RANDOOP_JAR" ] || { 
+[ -f "$RANDOOP_JAR" ] || {
   echo "Error: Missing $RANDOOP_JAR." >&2
   exit 2
 }
-[ -f "$JACOCO_AGENT_JAR" ] || { 
+[ -f "$JACOCO_AGENT_JAR" ] || {
   echo "Error: Missing $JACOCO_AGENT_JAR." >&2
   exit 2
 }
-[ -f "$JACOCO_CLI_JAR" ] || { 
+[ -f "$JACOCO_CLI_JAR" ] || {
   echo "Error: Missing $JACOCO_CLI_JAR." >&2
   exit 2
 }
-[ -f "$REPLACECALL_JAR" ] || { 
+[ -f "$REPLACECALL_JAR" ] || {
   echo "Error: Missing $REPLACECALL_JAR." >&2
   exit 2
 }
@@ -724,7 +717,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
     {
       exec {fd}>> "$SCRIPT_DIR/results/$RESULTS_CSV"
       flock -n "$fd" || true
-      echo -e "$row" >> "$RESULTS_CSV"
+      echo "$row" >&"$fd"
       exec {fd}>&-
     }
 

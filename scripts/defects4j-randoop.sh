@@ -55,36 +55,25 @@ set -o pipefail
 # Environment Setup
 #===============================================================================
 
-# Requires Java 11
-JAVA_VER=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '{
-  if ($1 == "1") {
-    print $2
-  } else {
-    print $1
-  }
-}')
-
-if [[ "$JAVA_VER" -ne 11 ]]; then
-  echo "Error: $0 requires Java 11, found ${JAVA_VER}"
-  exit 2
-fi
-
 SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)"
 DEFECTS4J_HOME=$(realpath "${SCRIPT_DIR}/build/defects4j/")             # Defects4j home directory
 RANDOOP_JAR=$(realpath "${SCRIPT_DIR}/build/randoop-all-4.3.4.jar")     # Randoop jar file
 JACOCO_AGENT_JAR=$(realpath "${SCRIPT_DIR}/build/jacocoagent.jar")      # For Bloodhound
 REPLACECALL_JAR=$(realpath "${SCRIPT_DIR}/build/replacecall-4.3.4.jar") # For replacing undesired method calls
 
-command -v defects4j >/dev/null 2>&1 || { echo "Error: defects4j not on PATH." >&2; exit 2; }
-[ -f "$RANDOOP_JAR" ] || { 
+command -v defects4j >/dev/null 2>&1 || {
+  echo "Error: defects4j not on PATH." >&2
+  exit 2
+}
+[ -f "$RANDOOP_JAR" ] || {
   echo "Error: Missing $RANDOOP_JAR." >&2
   exit 2
 }
-[ -f "$JACOCO_AGENT_JAR" ] || { 
+[ -f "$JACOCO_AGENT_JAR" ] || {
   echo "Error: Missing $JACOCO_AGENT_JAR." >&2
   exit 2
 }
-[ -f "$REPLACECALL_JAR" ] || { 
+[ -f "$REPLACECALL_JAR" ] || {
   echo "Error: Missing $REPLACECALL_JAR." >&2 
   exit 2
 }

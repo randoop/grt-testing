@@ -56,27 +56,20 @@ fi
 # Environment Setup
 #===============================================================================
 
-# Requires Java 8
-JAVA_VER=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '{sub("^$", "0", $2); print $1$2}')
-if [[ "$JAVA_VER" -ne 18 ]]; then
-  echo "Error: Java version 8 is required. Please install it and try again."
-  exit 1
-fi
-
 SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)"
 MAJOR_HOME=$(realpath "${SCRIPT_DIR}/build/major/")               # Major home directory, for mutation testing
 EVOSUITE_JAR=$(realpath "${SCRIPT_DIR}/build/evosuite-1.2.0.jar") # EvoSuite jar file
 JACOCO_CLI_JAR=$(realpath "${SCRIPT_DIR}/build/jacococli.jar")    # For coverage report generation
 
-[ -d "$MAJOR_HOME" ] || { 
+[ -d "$MAJOR_HOME" ] || {
   echo "Error: Missing $MAJOR_HOME." >&2
   exit 2
 }
-[ -f "$EVOSUITE_JAR" ] || { 
+[ -f "$EVOSUITE_JAR" ] || {
   echo "Error: Missing $EVOSUITE_JAR." >&2
   exit 2
 }
-[ -f "$JACOCO_CLI_JAR" ] || { 
+[ -f "$JACOCO_CLI_JAR" ] || {
   echo "Error: Missing $JACOCO_CLI_JAR." >&2
   exit 2
 }
@@ -573,7 +566,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
   {
     exec {fd}>> "$SCRIPT_DIR/results/$RESULTS_CSV"
     flock -n "$fd" || true
-    echo -e "$row" >> "$RESULTS_CSV"
+    echo "$row" >&"$fd"
     exec {fd}>&-
   }
 

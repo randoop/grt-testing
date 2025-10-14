@@ -52,26 +52,18 @@ set -o pipefail
 # Environment Setup
 #===============================================================================
 
-# Requires Java 11
-JAVA_VER=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '{
-  if ($1 == "1") {
-    print $2
-  } else {
-    print $1
-  }
-}')
-
-if [[ "$JAVA_VER" -ne 11 ]]; then
-  echo "Error: $0 requires Java 11, found ${JAVA_VER}"
-  exit 2
-fi
-
 SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)"
 DEFECTS4J_HOME=$(realpath "${SCRIPT_DIR}/build/defects4j/")       # Defects4j home directory
 EVOSUITE_JAR=$(realpath "${SCRIPT_DIR}/build/evosuite-1.2.0.jar") # EvoSuite jar file
 
-command -v defects4j >/dev/null 2>&1 || { echo "Error: defects4j not on PATH." >&2; exit 2; }
-[ -f "$EVOSUITE_JAR" ] || { echo "Error: Missing $EVOSUITE_JAR." >&2; exit 2; }
+command -v defects4j >/dev/null 2>&1 || {
+  echo "Error: defects4j not on PATH." >&2
+  exit 2
+}
+[ -f "$EVOSUITE_JAR" ] || {
+  echo "Error: Missing $EVOSUITE_JAR." >&2
+  exit 2
+}
 
 . "$SCRIPT_DIR/usejdk.sh" # Source the usejdk.sh script to enable JDK switching
 usejdk11
@@ -200,7 +192,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
 
   # Create the experiment results CSV file with a header row if it doesn’t already exist
   {
-    exec {fd}>>"$SCRIPT_DIR/results/$RESULTS_CSV"
+    exec {fd}>> "$SCRIPT_DIR/results/$RESULTS_CSV"
     flock -n "$fd" || true
     if [ ! -s "$SCRIPT_DIR/results/$RESULTS_CSV" ]; then
       echo "ProjectId,Version,TestSuiteSource,Test,TestClassification,NumTrigger,TimeLimit" >&"$fd"
@@ -299,7 +291,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
 
   echo "Appending results to output file $RESULTS_CSV..."
   {
-    exec {fd}>>"$SCRIPT_DIR/results/$RESULTS_CSV"
+    exec {fd}>> "$SCRIPT_DIR/results/$RESULTS_CSV"
     flock -n "$fd" || true
     tr -d '\r' < "$RESULT_DIR/bug_detection" | tail -n +2 | awk -v time_limit="$TIME_LIMIT" 'NF > 0 {print $0 "," time_limit}' >&"$fd"
     exec {fd}>&-
