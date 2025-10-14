@@ -61,7 +61,7 @@ RANDOOP_JAR=$(realpath "${SCRIPT_DIR}/build/randoop-all-4.3.4.jar")     # Randoo
 JACOCO_AGENT_JAR=$(realpath "${SCRIPT_DIR}/build/jacocoagent.jar")      # For Bloodhound
 REPLACECALL_JAR=$(realpath "${SCRIPT_DIR}/build/replacecall-4.3.4.jar") # For replacing undesired method calls
 
-command -v defects4j >/dev/null 2>&1 || {
+command -v defects4j > /dev/null 2>&1 || {
   echo "Error: defects4j not on PATH." >&2
   exit 2
 }
@@ -74,7 +74,7 @@ command -v defects4j >/dev/null 2>&1 || {
   exit 2
 }
 [ -f "$REPLACECALL_JAR" ] || {
-  echo "Error: Missing $REPLACECALL_JAR." >&2 
+  echo "Error: Missing $REPLACECALL_JAR." >&2
   exit 2
 }
 

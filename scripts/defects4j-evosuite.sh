@@ -56,7 +56,7 @@ SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)"
 DEFECTS4J_HOME=$(realpath "${SCRIPT_DIR}/build/defects4j/")       # Defects4j home directory
 EVOSUITE_JAR=$(realpath "${SCRIPT_DIR}/build/evosuite-1.2.0.jar") # EvoSuite jar file
 
-command -v defects4j >/dev/null 2>&1 || {
+command -v defects4j > /dev/null 2>&1 || {
   echo "Error: defects4j not on PATH." >&2
   exit 2
 }
