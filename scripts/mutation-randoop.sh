@@ -517,9 +517,9 @@ else
 fi
 
 if [[ -n "${command_suffix[$SUBJECT_PROGRAM]}" ]]; then
-   # shellcheck disable=SC2206
-   suffix_parts=(${command_suffix[$SUBJECT_PROGRAM]})
-   RANDOOP_BASE_COMMAND+=( "${suffix_parts[@]}" )
+  # shellcheck disable=SC2206
+  suffix_parts=(${command_suffix[$SUBJECT_PROGRAM]})
+  RANDOOP_BASE_COMMAND+=( "${suffix_parts[@]}" )
 fi
 
 #===============================================================================
