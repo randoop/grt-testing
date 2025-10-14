@@ -5,8 +5,8 @@
 # Switch to Java 8
 usejdk8() {
   if [ -z "$JAVA8_HOME" ]; then
-    echo "Error: JAVA8_HOME is not set."
-    exit 1
+    echo "Error: JAVA8_HOME is not set." >&2
+    return 1
   fi
   export JAVA_HOME="$JAVA8_HOME"
   export PATH="$JAVA_HOME/bin:$PATH"
@@ -16,8 +16,8 @@ usejdk8() {
 # Switch to Java 11
 usejdk11() {
   if [ -z "$JAVA11_HOME" ]; then
-    echo "Error: JAVA11_HOME is not set."
-    exit 1
+    echo "Error: JAVA11_HOME is not set." >&2
+    return 1
   fi
   export JAVA_HOME="$JAVA11_HOME"
   export PATH="$JAVA_HOME/bin:$PATH"

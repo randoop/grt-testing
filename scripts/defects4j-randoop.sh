@@ -321,10 +321,10 @@ for i in $(seq 1 "$NUM_LOOP"); do
   )
 
   if [ "$VERBOSE" -eq 1 ]; then
-      echo "Randoop command:"
-      echo "${RANDOOP_COMMAND[@]}"
-      echo
-    fi
+    echo "Randoop command:"
+    echo "${RANDOOP_COMMAND[@]}"
+    echo
+  fi
 
   cd "$RESULT_DIR"
   "${RANDOOP_COMMAND[@]}"

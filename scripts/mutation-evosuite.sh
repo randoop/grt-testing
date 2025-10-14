@@ -148,7 +148,7 @@ if [[ "$RESULTS_CSV" == */* ]]; then
   exit 2
 fi
 [[ "$RESULTS_CSV" == *.csv ]] || {
-  echo "Error: -o must end with .csv"
+  echo "Error: -o must end with .csv" >&2
   exit 2
 }
 
@@ -409,7 +409,7 @@ esac
 EVOSUITE_CLASSPATH="$(echo "$SCRIPT_DIR/build/lib/$UUID/"*.jar | tr ' ' ':')"
 TARGET_JAR="$SCRIPT_DIR/build/lib/$UUID/$SUBJECT_PROGRAM.jar"
 
-EVOSUITE_COMMAND=(
+EVOSUITE_BASE_COMMAND=(
   java
   -jar "$EVOSUITE_JAR"
   -target "$TARGET_JAR"
@@ -476,7 +476,8 @@ for i in $(seq 1 "$NUM_LOOP"); do
 
   cd "$RESULT_DIR"
 
-  EVOSUITE_COMMAND+=( 
+  EVOSUITE_COMMAND=(
+    "${EVOSUITE_BASE_COMMAND[@]}"
     -Dtest_dir="$TEST_DIRECTORY"
     -Dreport_dir="$REPORT_DIRECTORY"
   )
