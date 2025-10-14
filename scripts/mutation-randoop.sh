@@ -505,7 +505,7 @@ else
 fi
 
 RANDOOP_BASE_COMMAND+=(
-  ${command_suffix[$SUBJECT_PROGRAM]}
+  "${command_suffix[$SUBJECT_PROGRAM]}"
 )
 
 #===============================================================================
@@ -627,7 +627,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
     RANDOOP_COMMAND=(
       "${RANDOOP_BASE_COMMAND[@]}"
       --junit-output-dir="$TEST_DIRECTORY"
-      $FEATURE_FLAG
+      "$FEATURE_FLAG"
     )
 
     "${RANDOOP_COMMAND[@]}"
