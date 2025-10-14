@@ -12,7 +12,7 @@ all: \
     build/randoop \
     build/randoop-all-4.3.4.jar \
     build/replacecall-4.3.4.jar \
-	build/defects4j \
+    build/defects4j \
     results
 
 build/jacoco.jar:
