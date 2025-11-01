@@ -1,7 +1,21 @@
 # Annotated Subject Program JARs
 
 This folder holds the subject JARs after we run Checker Framework whole-program
-inference to add inferred purity annotations.
+inference and rewrite the sources with purity annotations. Compared to
+`subject-programs/jars/`, the compiled bytecode here is the same, but the
+underlying Java files now carry `@Pure`, `@SideEffectFree`, `@Impure`, and
+related qualifiers from `org.checkerframework.framework.qual`. No other code or
+resources are altered.
+
+### Why the annotations matter
+
+GRT’s fuzzing strategy is impurity-driven. The `GRT_FUZZING` feature in
+`scripts/mutation-randoop.sh` loads these annotated artifacts and, for each
+method, reads whether it is pure (no state change) or impure (mutates receiver,
+arguments, or global state). During fuzzing we prioritise impure calls to shake
+up an object’s state before exercising additional API entry points. That yields
+many more distinct runtime states than repeatedly calling pure methods, which
+in turn helps Randoop uncover deeper behaviours and tricky branch conditions.
 
 ## Rebuilding an annotated JAR
 
