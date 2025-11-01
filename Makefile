@@ -48,6 +48,13 @@ ifneq ($(SH_SCRIPTS),)
 	@${CHECKBASHISMS} -l ${SH_SCRIPTS}
 endif
 
+style-fix: markdownlint-fix
+markdownlint-fix:
+	markdownlint-cli2 --fix .
+style-check: markdownlint-check
+markdownlint-check:
+	markdownlint-cli2 .
+
 showvars:
 	@echo "PYTHON_FILES=${PYTHON_FILES}"
 	@echo "PYTHON_FILES_TO_CHECK=${PYTHON_FILES_TO_CHECK}"
