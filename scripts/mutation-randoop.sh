@@ -448,14 +448,17 @@ esac
 # Method Call Replacement Setup
 #===============================================================================
 
-# Path to the replacement file for the replacecall agent.
+# Path to the replacement and exclusion files for the replacecall agent.
 REPLACEMENT_FILE_PATH="$SCRIPT_DIR/program-config/$SUBJECT_PROGRAM/replacecall-replacements.txt"
+EXCLUSION_FILE_PATH="$SCRIPT_DIR/program-config/$SUBJECT_PROGRAM/replacecall-exclusions.txt"
 
-# Configure method call replacements to avoid undesired behaviors during test
+# Configure method call replacements and/or exclusions to avoid undesired behaviors during test
 # generation.
 # Map subject programs to their respective replacement files.
 declare -A replacement_files=(
   # Do not wait for user input
+  ["easymock-3.2"]="=--dont-transform=$EXCLUSION_FILE_PATH"
+  ["javax.mail-1.5.1"]="=--dont-transform=$EXCLUSION_FILE_PATH"
   ["jcommander-1.35"]="=--replacement_file=$REPLACEMENT_FILE_PATH"
 )
 REPLACECALL_COMMAND="$REPLACECALL_JAR${replacement_files[$SUBJECT_PROGRAM]}"

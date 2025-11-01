@@ -1,0 +1,3 @@
+com.sun1.mail.imap.
+com.sun1.mail.pop3.
+com.sun1.mail.util.
