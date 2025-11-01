@@ -11,8 +11,10 @@ Testing](GRT_Program-Analysis-Guided_Random_Testing.pdf)"
 
 In the GRT paper, two methods of evaluation are used:
 
-1. **Mutation analysis** – measures how well generated tests kill artificially seeded faults (mutants).
-2. **Defect detection** – measures the ability of generated tests to detect real-world faults in subject programs.
+1. **Mutation analysis** measures how well generated tests kill artificially
+  seeded faults (mutants).
+2. **Defect detection** measures the ability of generated tests to detect
+  known real-world defects.
 
 This repository provides scripts and setup files for running both kinds of evaluation.
 
