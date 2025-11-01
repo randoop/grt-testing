@@ -32,6 +32,3 @@ The compiled subject programs used by the GRT paper appear in the
 
 To obtain the sources of the subject programs, see
 `subject-programs/README.build`.
-
-<!--  LocalWords:  GRT
- -->
