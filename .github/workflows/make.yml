@@ -1,8 +1,6 @@
 name: Run make under CI
 
-on:
-  - push
-  - pull_request
+on: [push, pull_request]
 
 jobs:
   build:
@@ -20,5 +18,7 @@ jobs:
           sudo pip install mypy
       - name: Install shellcheck and checkbashisms
         run: sudo apt install shfmt shellcheck devscripts
+      - name: Install markdownlint
+        run: npm install markdownlint-cli2 --global
       - name: style check
         run: make style-check
