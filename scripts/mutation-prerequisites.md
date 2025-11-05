@@ -17,13 +17,14 @@
    make -C scripts
    ```
 
-3. If using Randoop, use the development version (the latest commit) rather than a released version. Skip this step if only using EvoSuite.
+2. If using Randoop, use the development version (the latest commit) rather than
+   a released version. Skip this step if only using EvoSuite.
 
    ```sh
    make -C scripts randoop-from-source
    ```
 
-4. To get all subject programs, run:
+3. To get all subject programs, run:
 
    ```sh
    cd scripts

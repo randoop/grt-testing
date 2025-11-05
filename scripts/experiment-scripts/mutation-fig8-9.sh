@@ -39,11 +39,7 @@
 SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)"
 GRT_TESTING_ROOT="$(realpath "$SCRIPT_DIR"/../)"
 
-PYTHON_EXECUTABLE=$(command -v python3 2> /dev/null || command -v python 2> /dev/null)
-if [ -z "$PYTHON_EXECUTABLE" ]; then
-  echo "Error: Python is not installed." >&2
-  exit 1
-fi
+. "$SCRIPT_DIR"/common.sh
 
 pip install pandas
 pip install matplotlib
@@ -73,15 +69,7 @@ FEATURES=(
   "ORIENTEERING"
 )
 
-if command -v nproc > /dev/null 2>&1; then
-  NPROC=$(nproc)
-elif command -v getconf > /dev/null 2>&1; then
-  NPROC=$(getconf _NPROCESSORS_ONLN)
-else
-  NPROC=1
-fi
-NUM_CORES=$((NPROC - 4))
-if [ "$NUM_CORES" -lt 1 ]; then NUM_CORES=1; fi
+NUM_CORES=$(num_cores)
 echo "$(basename "$0"): Running $NUM_CORES concurrent processes."
 
 #===============================================================================
@@ -120,7 +108,7 @@ run_task() {
 export -f run_task
 
 # Run all tasks in parallel.
-printf "%s\n" "${TASKS[@]}" | parallel -j $NUM_CORES --colsep ' ' run_task
+printf "%s\n" "${TASKS[@]}" | parallel -j "$NUM_CORES" --colsep ' ' run_task
 
 #===============================================================================
 # Figure Generation

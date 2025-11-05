@@ -63,10 +63,10 @@ endif
 
 style-fix: markdownlint-fix
 markdownlint-fix:
-	markdownlint-cli2 --fix .
+	markdownlint-cli2 --fix "**/*.md" "#node_modules"
 style-check: markdownlint-check
 markdownlint-check:
-	markdownlint-cli2 .
+	markdownlint-cli2 "**/*.md" "#node_modules"
 
 showvars:
 	@echo "PYTHON_FILES=${PYTHON_FILES}"
