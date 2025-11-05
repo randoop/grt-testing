@@ -56,6 +56,8 @@ fi
 # Environment Setup
 #===============================================================================
 
+Generator=EvoSuite
+generator=evosuite
 SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)"
 MAJOR_HOME=$(realpath "${SCRIPT_DIR}/build/major/")               # Major home directory, for mutation testing
 EVOSUITE_JAR=$(realpath "${SCRIPT_DIR}/build/evosuite-1.2.0.jar") # EvoSuite jar file
@@ -65,14 +67,15 @@ JACOCO_CLI_JAR=$(realpath "${SCRIPT_DIR}/build/jacococli.jar")    # For coverage
   echo "Error: Missing $MAJOR_HOME." >&2
   exit 2
 }
-[ -f "$EVOSUITE_JAR" ] || {
-  echo "Error: Missing $EVOSUITE_JAR." >&2
-  exit 2
+
+require_file() {
+  [ -f "$1" ] || {
+    echo "Error: Missing $1." >&2
+    exit 2
+  }
 }
-[ -f "$JACOCO_CLI_JAR" ] || {
-  echo "Error: Missing $JACOCO_CLI_JAR." >&2
-  exit 2
-}
+require_file "$EVOSUITE_JAR"
+require_file "$JACOCO_CLI_JAR"
 
 . "$SCRIPT_DIR/usejdk.sh" # Source the usejdk.sh script to enable JDK switching
 usejdk8
@@ -422,7 +425,7 @@ EVOSUITE_BASE_COMMAND=(
 #===============================================================================
 # Build System Preparation
 #===============================================================================
-echo "Using EvoSuite to generate tests."
+echo "Using ${Generator} to generate tests."
 echo
 
 # Create the experiment results CSV file with a header row if it doesn't already exist.
@@ -447,7 +450,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
   FILE_SUFFIX="$SUBJECT_PROGRAM-EVOSUITE-$UUID"
 
   # Test directory for each iteration.
-  TEST_DIRECTORY="$SCRIPT_DIR/build/evosuite-tests/$FILE_SUFFIX"
+  TEST_DIRECTORY="$SCRIPT_DIR/build/$generator-tests/$FILE_SUFFIX"
   rm -rf "$TEST_DIRECTORY"
   mkdir -p "$TEST_DIRECTORY"
 
@@ -476,13 +479,13 @@ for i in $(seq 1 "$NUM_LOOP"); do
 
   cd "$RESULT_DIR"
 
-  EVOSUITE_COMMAND=(
+  GENERATOR_COMMAND=(
     "${EVOSUITE_BASE_COMMAND[@]}"
     -Dtest_dir="$TEST_DIRECTORY"
     -Dreport_dir="$REPORT_DIRECTORY"
   )
 
-  "${EVOSUITE_COMMAND[@]}"
+  "${GENERATOR_COMMAND[@]}"
 
   # After test generation, for JSAP-2.1, we need to remove the ant.jar from the classpath
   if [[ "$SUBJECT_PROGRAM" == "JSAP-2.1" ]]; then
@@ -493,7 +496,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
   # Coverage & Mutation Analysis
   #===============================================================================
 
-  buildfile=build-evosuite.xml
+  buildfile="build-$generator.xml"
 
   echo
   echo "Compiling and mutating subject program..."
