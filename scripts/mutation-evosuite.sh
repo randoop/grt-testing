@@ -12,7 +12,7 @@
 # Directories and files:
 # - `build/evosuite-tests*`: EvoSuite-created test suites.
 # - `build/bin`: Compiled tests and code.
-# - `results/$OUTPUT_FILE.csv`: CSV file containing summary statistics for each iteration (see -o flag)
+# - `results/$RESULTS_CSV`: CSV file containing summary statistics for each iteration (see -o flag)
 # - `results/`: everything else specific to the most recent iteration.
 
 #------------------------------------------------------------------------------
@@ -23,7 +23,7 @@
 #------------------------------------------------------------------------------
 # Options (command-line arguments):
 #------------------------------------------------------------------------------
-USAGE_STRING="usage: mutation-evosuite.sh [-h] [-v] [-r] [-o output_file] [-t total_time] [-c time_per_class] [-n num_iterations] TEST-CASE-NAME
+USAGE_STRING="usage: mutation-evosuite.sh [-h] [-v] [-r] [-o RESULTS_CSV] [-t total_time] [-c time_per_class] [-n num_iterations] TEST-CASE-NAME
   -h    Displays this help message.
   -v    Enables verbose mode.
   -r    Redirect EvoSuite and Major output to results/result/mutation_output.txt.
@@ -91,7 +91,7 @@ while getopts ":hvro:t:c:n:" opt; do
       REDIRECT=1
       ;;
     o)
-      OUTPUT_FILE="$OPTARG"
+      RESULTS_CSV="$OPTARG"
       ;;
     t)
       # Total experiment time, mutually exclusive with SECONDS_PER_CLASS
@@ -122,7 +122,7 @@ done
 
 shift $((OPTIND - 1))
 
-if [[ -z "$OUTPUT_FILE" ]]; then
+if [[ -z "$RESULTS_CSV" ]]; then
   echo "No -o command-line argument given."
   exit 2
 fi
@@ -395,9 +395,9 @@ echo
 # Handle relative and absolute output files; make sure output file exists.
 RESULTS_DIR="$SCRIPT_DIR/results"
 mkdir -p "$RESULTS_DIR"
-OUTPUT_FILE=$(cd "$RESULTS_DIR" && realpath "$OUTPUT_FILE")
-if [ ! -f "$OUTPUT_FILE" ]; then
-  echo -e "Version,FileName,TimeLimit,Seed,InstructionCoverage,BranchCoverage,MutationScore" > "$OUTPUT_FILE"
+RESULTS_CSV=$(cd "$RESULTS_DIR" && realpath "$RESULTS_CSV")
+if [ ! -f "$RESULTS_CSV" ]; then
+  echo -e "Version,FileName,TimeLimit,Seed,InstructionCoverage,BranchCoverage,MutationScore" > "$RESULTS_CSV"
 fi
 
 #===============================================================================
@@ -539,10 +539,10 @@ for i in $(seq 1 "$NUM_LOOP"); do
     LOGGED_TIME="$SECONDS_PER_CLASS"
   fi
   row="EVOSUITE,$(basename "$SRC_JAR"),$LOGGED_TIME,0,$instruction_coverage,$branch_coverage,$mutation_score"
-  # $OUTPUT_FILE is a csv file that contains a record of each pass.
+  # $RESULTS_CSV is a csv file that contains a record of each pass.
   # On Unix, ">>" is generally atomic as long as the content is small enough
   # (usually the limit is at least 1024).
-  echo -e "$row" >> "$OUTPUT_FILE"
+  echo -e "$row" >> "$RESULTS_CSV"
 
   # Copy the test suites to results directory
   echo "Copying test suites to results directory..."
