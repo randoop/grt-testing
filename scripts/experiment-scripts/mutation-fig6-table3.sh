@@ -33,7 +33,7 @@
 #===============================================================================
 
 SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)"
-MUTATION_DIR="$(realpath "$SCRIPT_DIR"/../)"
+GRT_TESTING_ROOT="$(realpath "$SCRIPT_DIR"/../)"
 
 PYTHON_EXECUTABLE=$(command -v python3 2> /dev/null || command -v python 2> /dev/null)
 if [ -z "$PYTHON_EXECUTABLE" ]; then
@@ -46,14 +46,14 @@ pip install matplotlib
 pip install seaborn
 
 # Clean up previous run artifacts
-rm -rf "$MUTATION_DIR"/build/bin/*
-rm -rf "$MUTATION_DIR"/build/randoop-tests/*
-rm -rf "$MUTATION_DIR"/build/evosuite-tests/*
-rm -rf "$MUTATION_DIR"/build/evosuite-report/*
-rm -rf "$MUTATION_DIR"/build/target/*
-rm -rf "$MUTATION_DIR"/build/lib/*
-rm -f "$MUTATION_DIR"/results/fig6-table3.pdf
-rm -f "$MUTATION_DIR"/results/fig6-table3.csv
+rm -rf "$GRT_TESTING_ROOT"/build/bin/*
+rm -rf "$GRT_TESTING_ROOT"/build/randoop-tests/*
+rm -rf "$GRT_TESTING_ROOT"/build/evosuite-tests/*
+rm -rf "$GRT_TESTING_ROOT"/build/evosuite-report/*
+rm -rf "$GRT_TESTING_ROOT"/build/target/*
+rm -rf "$GRT_TESTING_ROOT"/build/lib/*
+rm -f "$GRT_TESTING_ROOT"/results/fig6-table3.pdf
+rm -f "$GRT_TESTING_ROOT"/results/fig6-table3.csv
 
 #===============================================================================
 # The GRT paper's parameters are as follows:
@@ -82,7 +82,7 @@ for cseconds in "${SECONDS_PER_CLASS[@]}"; do
   for program in "${SUBJECT_PROGRAMS[@]}"; do
     for mode in "${MODES[@]}"; do
       for _ in $(seq 1 "$NUM_LOOP"); do
-        TASKS+=("$MUTATION_DIR $cseconds $program $mode")
+        TASKS+=("$GRT_TESTING_ROOT $cseconds $program $mode")
       done
     done
   done
@@ -93,19 +93,19 @@ done
 # Each run's standard output is redirected to mutation_output.txt within its corresponding results subdirectory.
 # Other related files (e.g., jacoco.exec, mutants.log, major.log) are also stored there.
 run_task() {
-  mutation_dir=$1
+  GRT_TESTING_ROOT=$1
   cseconds=$2
   program=$3
   mode=$4
   if [ "$mode" == "EVOSUITE" ]; then
     echo "Running: mutation-evosuite.sh -c $cseconds -r -o fig6-table3.csv $program"
-    "$mutation_dir"/mutation-evosuite.sh -c "$cseconds" -r -o fig6-table3.csv "$program"
+    "$GRT_TESTING_ROOT"/mutation-evosuite.sh -c "$cseconds" -r -o fig6-table3.csv "$program"
   elif [ "$mode" == "GRT" ]; then
     echo "Running (GRT): mutation-randoop.sh -c $cseconds -f BLOODHOUND,ORIENTEERING,DETECTIVE,GRT_FUZZING,ELEPHANT_BRAIN,CONSTANT_MINING -r -o fig6-table3.csv $program"
-    "$mutation_dir"/mutation-randoop.sh -c "$cseconds" -f BLOODHOUND,ORIENTEERING,DETECTIVE,GRT_FUZZING,ELEPHANT_BRAIN,CONSTANT_MINING -r -o fig6-table3.csv "$program"
+    "$GRT_TESTING_ROOT"/mutation-randoop.sh -c "$cseconds" -f BLOODHOUND,ORIENTEERING,DETECTIVE,GRT_FUZZING,ELEPHANT_BRAIN,CONSTANT_MINING -r -o fig6-table3.csv "$program"
   elif [ "$mode" == "BASELINE" ]; then
     echo "Running (Baseline): mutation-randoop.sh -c $cseconds -f BASELINE -r -o fig6-table3.csv $program"
-    "$mutation_dir"/mutation-randoop.sh -c "$cseconds" -f BASELINE -r -o fig6-table3.csv "$program"
+    "$GRT_TESTING_ROOT"/mutation-randoop.sh -c "$cseconds" -f BASELINE -r -o fig6-table3.csv "$program"
   else
     echo "Invalid mode $mode. Please use GRT, EVOSUITE, or BASELINE."
   fi
@@ -120,4 +120,4 @@ printf "%s\n" "${TASKS[@]}" | parallel -j $NUM_CORES --colsep ' ' run_task
 # Figure Generation
 #===============================================================================
 
-"$PYTHON_EXECUTABLE" "$MUTATION_DIR"/experiment-scripts/generate-grt-figures.py fig6-table3
+"$PYTHON_EXECUTABLE" "$GRT_TESTING_ROOT"/experiment-scripts/generate-grt-figures.py fig6-table3
