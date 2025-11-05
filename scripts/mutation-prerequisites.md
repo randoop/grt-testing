@@ -14,23 +14,11 @@
    export JAVA11_HOME=/path/to/your/java11
    ```
 
-2. Obtain the mutation programs, some dependencies, and the source code for the
-   subject programs:
+2. Obtain dependencies and subject programs:
 
    ```sh
    make -C scripts
-   ```
-
-3. If using Randoop, use the development version (the latest commit) rather than
-   a released version. Skip this step if only using EvoSuite.
-
-   ```sh
    make -C scripts randoop-from-source
-   ```
-
-4. To get all subject programs, run:
-
-   ```sh
    cd scripts
    ./get-all-subject-src.sh
    ```
