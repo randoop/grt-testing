@@ -45,13 +45,8 @@ pip install pandas
 pip install matplotlib
 pip install seaborn
 
-# Clean up previous run artifacts
-rm -rf "$GRT_TESTING_ROOT"/build/bin/*
-rm -rf "$GRT_TESTING_ROOT"/build/randoop-tests/*
-rm -rf "$GRT_TESTING_ROOT"/build/evosuite-tests/*
-rm -rf "$GRT_TESTING_ROOT"/build/evosuite-report/*
-rm -rf "$GRT_TESTING_ROOT"/build/target/*
-rm -rf "$GRT_TESTING_ROOT"/build/lib/*
+# Clean up previous run artifacts.
+make -C "$GRT_TESTING_ROOT" clean
 rm -f "$GRT_TESTING_ROOT"/results/fig6-table3.pdf
 rm -f "$GRT_TESTING_ROOT"/results/fig6-table3.csv
 

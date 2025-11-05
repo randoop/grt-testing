@@ -1,5 +1,18 @@
 all: style-fix style-check
 
+clean:
+	rm -rf "$GRT_TESTING_ROOT"/build/bin/*
+	rm -rf "$GRT_TESTING_ROOT"/build/evosuite-report/*
+	rm -rf "$GRT_TESTING_ROOT"/build/evosuite-tests/*
+	rm -rf "$GRT_TESTING_ROOT"/build/lib/*
+	rm -rf "$GRT_TESTING_ROOT"/build/randoop-tests/*
+	rm -rf "$GRT_TESTING_ROOT"/build/target/*
+
+
+###########################################################################
+### Style
+###
+
 style-fix: python-style-fix shell-style-fix
 style-check: python-style-check python-typecheck shell-style-check
 

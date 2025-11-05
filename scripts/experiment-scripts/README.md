@@ -5,10 +5,12 @@
 This folder contains scripts designed for running the GRT experiments as presented in the paper
 "[GRT: Program-Analysis-Guided Random Testing](GRT_Program-Analysis-Guided_Random_Testing.pdf)"
 
-These scripts automate the execution of various configurations of the mutation analysis and defect detection driver scripts, collect results, and generate the corresponding figures and tables used in the evaluation.
+These scripts execute various configurations of the mutation analysis and defect detection driver scripts, collect results, and generate the corresponding figures and tables.
 
 ### Setup
+
 To set up the environment, refer to the following:
+
 * `scripts/mutation-prerequisites.md` for mutation analysis 
 * `scripts/defects4j-prerequisites.md` for defect detection
 
