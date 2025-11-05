@@ -425,7 +425,7 @@ EVOSUITE_BASE_COMMAND=(
 echo "Using EvoSuite to generate tests."
 echo
 
-# Create the experiment results CSV file with a header row if it doesn’t already exist
+# Create the experiment results CSV file with a header row if it doesn't already exist.
 mkdir -p "$SCRIPT_DIR/results"
 {
   exec {fd}>> "$SCRIPT_DIR/results/$RESULTS_CSV"

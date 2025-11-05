@@ -257,7 +257,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
     exec 1>> "$RESULT_DIR/defects4j_output.txt" 2>&1
   fi
 
-  # Create the experiment results CSV file with a header row if it doesn’t already exist
+  # Create the experiment results CSV file with a header row if it doesn't already exist.
   {
     exec {fd}>> "$SCRIPT_DIR/results/$RESULTS_CSV"
     flock "$fd"
