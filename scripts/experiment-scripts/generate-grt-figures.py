@@ -276,8 +276,6 @@ def generate_table_4(df: pd.DataFrame) -> mpl.figure.Figure:
 
     # Mark each bug (Version) as detected if ANY test case for it fails
     df['Detected'] = df['TestClassification'] == 'fail'
-
-    # Group by bug to detect if it was caught
     bug_detection = (
         df.groupby(['ProjectId', 'Version', 'TimeLimit', 'TestSuiteSource'])['Detected']
         .any()

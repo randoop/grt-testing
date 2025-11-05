@@ -9,7 +9,7 @@ specifically for comparison with
 the results presented in the paper "[GRT: Program-Analysis-Guided Random
 Testing](GRT_Program-Analysis-Guided_Random_Testing.pdf)"
 
-In the GRT paper, two methods of evaluation are used:
+The GRT paper uses two methods of evaluation:
 
 1. **Mutation analysis** measures how well generated tests kill artificially
   seeded faults (mutants).
