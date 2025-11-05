@@ -378,13 +378,15 @@ esac
 EVOSUITE_CLASSPATH="$(echo "$SCRIPT_DIR/build/lib/$UUID/"*.jar | tr ' ' ':')"
 TARGET_JAR="$SCRIPT_DIR/build/lib/$UUID/$SUBJECT_PROGRAM.jar"
 
-EVOSUITE_COMMAND="java \
--jar $EVOSUITE_JAR \
--target $TARGET_JAR \
--projectCP $EVOSUITE_CLASSPATH:$EVOSUITE_JAR \
--Dsearch_budget=$TIME_LIMIT \
--Dreplace_gui=true \
--Drandom_seed=0"
+EVOSUITE_BASE_COMMAND=(
+  java
+  -jar "$EVOSUITE_JAR"
+  -target "$TARGET_JAR"
+  -projectCP "$EVOSUITE_CLASSPATH:$EVOSUITE_JAR"
+  -Dsearch_budget="$TIME_LIMIT"
+  -Drandom_seed=0
+  -Dreplace_gui=true
+)
 
 #===============================================================================
 # Build System Preparation
@@ -440,7 +442,13 @@ for i in $(seq 1 "$NUM_LOOP"); do
 
   cd "$RESULT_DIR"
 
-  $EVOSUITE_COMMAND -Dtest_dir="$TEST_DIRECTORY" -Dreport_dir="$REPORT_DIRECTORY"
+  EVOSUITE_COMMAND=(
+    "${EVOSUITE_BASE_COMMAND[@]}"
+    -Dtest_dir="$TEST_DIRECTORY"
+    -Dreport_dir="$REPORT_DIRECTORY"
+  )
+
+  "${EVOSUITE_COMMAND[@]}"
 
   # After test generation, for JSAP-2.1, we need to remove the ant.jar from the classpath
   if [[ "$SUBJECT_PROGRAM" == "JSAP-2.1" ]]; then
