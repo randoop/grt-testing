@@ -41,10 +41,6 @@ GRT_TESTING_ROOT="$(realpath "$SCRIPT_DIR"/../)"
 
 . "$SCRIPT_DIR"/common.sh
 
-pip install pandas
-pip install matplotlib
-pip install seaborn
-
 # Clean up previous run artifacts
 make -C "$GRT_TESTING_ROOT" clean
 rm -f "$GRT_TESTING_ROOT"/results/fig8-9.pdf
