@@ -13,7 +13,7 @@ Testing](GRT_Program-Analysis-Guided_Random_Testing.pdf)"
 
 ### Setup
 
-To set up the environment, refer to the `scripts/mutation-prerequisites.md` file.
+To set up the environment, refer to the `scripts/prerequisites.md` file.
 
 ### Running Scripts
 
