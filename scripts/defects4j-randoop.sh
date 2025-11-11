@@ -45,7 +45,7 @@ USAGE_STRING="usage: defects4j-randoop.sh -b id -o RESULTS_CSV [-f features] [-t
 #------------------------------------------------------------------------------
 # Prerequisites:
 #------------------------------------------------------------------------------
-# See file `defects4j-prerequisites.md`.
+# See file `prerequisites.md`.
 
 # Fail this script on errors.
 set -e

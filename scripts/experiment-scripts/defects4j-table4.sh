@@ -28,7 +28,7 @@
 #------------------------------------------------------------------------------
 # Prerequisites:
 #------------------------------------------------------------------------------
-# See file `defects4j-prerequisites.md`.
+# See file `prerequisites.md`.
 #
 #===============================================================================
 
@@ -40,10 +40,6 @@ if [ -z "$PYTHON_EXECUTABLE" ]; then
   echo "Error: Python is not installed." >&2
   exit 1
 fi
-
-pip install pandas
-pip install matplotlib
-pip install seaborn
 
 # Clean up previous run artifacts
 rm -rf "$GRT_TESTING_ROOT"/build/defects4j-src/*

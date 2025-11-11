@@ -12,10 +12,31 @@ figures and tables.
 
 ### Setup
 
-To set up the environment, refer to the following:
+To set up the environment, refer to:
 
-* `scripts/mutation-prerequisites.md` for mutation analysis
-* `scripts/defects4j-prerequisites.md` for defect detection
+* `scripts/prerequisites.md` for all prerequisites and setup instructions
+
+#### Python Dependencies
+
+Before running any experiment scripts, ensure the following Python packages are installed:
+
+* `pandas`
+* `matplotlib`
+* `seaborn`
+
+Install these packages using your preferred Python package manager. For example:
+
+**With pip:**
+
+```bash
+pip install pandas matplotlib seaborn
+```
+
+**With uv:**
+
+```bash
+uv pip install pandas matplotlib seaborn
+```
 
 ### Running Scripts
 

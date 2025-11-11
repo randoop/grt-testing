@@ -42,7 +42,7 @@ USAGE_STRING="usage: defects4j-evosuite.sh -b id -o RESULTS_CSV [-t total_time] 
 #------------------------------------------------------------------------------
 # Prerequisites:
 #------------------------------------------------------------------------------
-# See file `defects4j-prerequisites.md`.
+# See file `prerequisites.md`.
 
 # Fail this script on errors.
 set -e

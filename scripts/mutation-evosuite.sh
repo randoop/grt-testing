@@ -41,7 +41,7 @@ USAGE_STRING="usage: mutation-evosuite.sh [-h] [-v] [-r] [-o RESULTS_CSV] [-t to
 #------------------------------------------------------------------------------
 # Prerequisites:
 #------------------------------------------------------------------------------
-# See file `mutation-prerequisites.md`.
+# See file `prerequisites.md`.
 
 # Fail this script on errors.
 set -e

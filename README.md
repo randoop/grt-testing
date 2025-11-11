@@ -22,10 +22,9 @@ This repository provides scripts and setup files for running both kinds of evalu
 
 ### Setup
 
-To set up the environment, refer to the following:
+To set up the environment, refer to:
 
-* `scripts/mutation-prerequisites.md` for mutation analysis
-* `scripts/defects4j-prerequisites.md` for defect detection
+* `scripts/prerequisites.md` for all prerequisites and setup instructions
 
 ### Running Scripts
 
