@@ -4,10 +4,14 @@
 
 Different scripts require different Java versions:
 
-* **Defect detection scripts** (via [Defects4J](https://github.com/rjust/defects4j)) require **Java 11**
-* **Mutation analysis scripts** (via [Major](https://github.com/rjust/major)) require **Java 8**
+* **Defect scripts** (via [Defects4J](https://github.com/rjust/defects4j))
+require **Java 11**
+* **Mutation scripts** (via [Major](https://github.com/rjust/major))
+require **Java 8**
 
-To allow automatic switching between Java versions, set the following environment variables in your shell configuration file (e.g., `.bashrc`, `.zshrc`, or `.bash_profile`):
+To allow automatic switching between Java versions, set the following
+environment variables in your shell configuration file
+(e.g., `.bashrc`, `.zshrc`, or `.bash_profile`):
 
 ```sh
 export JAVA8_HOME=/path/to/your/java8
@@ -39,10 +43,12 @@ cd scripts
 
 ## Adding Defects4J to PATH
 
-For defect detection scripts, add Defects4J's executables to your PATH in the shell session where you run the scripts:
+For defect detection scripts, add Defects4J's executables to your PATH in
+the shell session where you run the scripts:
 
 ```sh
 export PATH=$PATH:"path2defects4j"/framework/bin
 ```
 
-> "path2defects4j" points to the directory which Defects4J is in; it most likely will look like "currentdirectory/build/defects4j".
+> "path2defects4j" points to the directory which Defects4J is in; it most
+likely will look like "currentdirectory/build/defects4j".
