@@ -26,17 +26,17 @@ shell script. For example, to generate **Figure 7**, use:
 
 Each script is documented at the top of the file with:
 
-- What it generates (figure/table)
-- What input parameters or configuration it expects
-- What output files it will produce and where
+* What it generates (figure/table)
+* What input parameters or configuration it expects
+* What output files it will produce and where
 
 ### Output
 
 Each experiment script writes its output to the `results/` directory. This includes:
 
-- `results/[experiment].csv`: the raw collected data from multiple
+* `results/[experiment].csv`: the raw collected data from multiple
   `mutation-randoop.sh` and/or `mutation-evosuite.sh` runs.
-- `results/[experiment].pdf`: the final rendered figure(s) and/or table(s) for
+* `results/[experiment].pdf`: the final rendered figure(s) and/or table(s) for
   the experiment.
 
 **Note:** Running an experiment script will overwrite any existing results for
