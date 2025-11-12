@@ -42,7 +42,7 @@ USAGE_STRING="usage: mutation-randoop.sh [-h] [-v] [-r] [-f features] [-a] [-o R
 #------------------------------------------------------------------------------
 # Prerequisites:
 #------------------------------------------------------------------------------
-# See file `mutation-prerequisites.md`.
+# See file `prerequisites.md`.
 
 # Fail this script on errors.
 set -e
