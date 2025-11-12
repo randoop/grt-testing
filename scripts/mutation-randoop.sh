@@ -88,7 +88,7 @@ require_file "$REPLACECALL_JAR"
 usejdk8
 JAVA_VER=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '{sub("^$", "0", $2); print ($1=="1")?$2:$1}')
 if [[ "$JAVA_VER" -ne 8 ]]; then
-  echo "Error: Java 8 required. Set JAVA8_HOME to a JDK 8 installation." >&2
+  echo "Error: Java 8 is required. Set JAVA8_HOME to a JDK 8 installation." >&2
   exit 2
 fi
 

@@ -73,7 +73,7 @@ command -v defects4j > /dev/null 2>&1 || {
 usejdk11
 JAVA_VER=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '{print ($1=="1")?$2:$1}')
 if [[ "$JAVA_VER" -ne 11 ]]; then
-  echo "Error: Java 11 required. Set JAVA11_HOME to a JDK 11 installation." >&2
+  echo "Error: Java 11 is required. Set JAVA11_HOME to a JDK 11 installation." >&2
   exit 2
 fi
 
