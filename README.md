@@ -22,9 +22,7 @@ This repository provides scripts and setup files for running both kinds of evalu
 
 ### Setup
 
-To set up the environment, refer to:
-
-* `scripts/prerequisites.md` for all prerequisites and setup instructions
+To set up the environment, refer to the `scripts/prerequisites.md` file.
 
 ### Running Scripts
 

@@ -24,13 +24,10 @@ export JAVA11_HOME=/path/to/your/java11
 * **Subversion (svn)** ≥ 1.8
 * **Perl** ≥ 5.12
 * **cpanm** (Perl module installer)
-
-> `cpanm` is required to install Perl dependencies used by Defects4J.
-> Install it using the following command:
->
-> ```sh
-> curl -L https://cpanmin.us | perl - App::cpanminus
-> ```
+  To install `cpanm`:
+  ```sh
+  curl -L https://cpanmin.us | perl - App::cpanminus
+  ```
 
 ## Obtaining Dependencies and Subject Programs
 

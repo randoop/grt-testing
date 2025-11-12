@@ -12,9 +12,7 @@ figures and tables.
 
 ### Setup
 
-To set up the environment, refer to:
-
-* `scripts/prerequisites.md` for all prerequisites and setup instructions
+To set up the environment, refer to the `scripts/prerequisites.md` file.
 
 #### Python Dependencies
 
