@@ -23,15 +23,15 @@
 #------------------------------------------------------------------------------
 # Options (command-line arguments):
 #------------------------------------------------------------------------------
-USAGE_STRING="usage: mutation-evosuite.sh [-h] [-v] [-r] [-o RESULTS_CSV] [-t total_time] [-c time_per_class] [-n num_iterations] TEST-CASE-NAME
-  -h    Displays this help message.
-  -v    Enables verbose mode.
-  -r    Redirect EvoSuite and Major output to results/result/mutation_output.txt.
+USAGE_STRING="usage: mutation-evosuite.sh [-o RESULTS_CSV] [-t total_time] [-c time_per_class] [-n num_iterations] [-r] [-v] [-h] TEST-CASE-NAME
   -o N  Csv output filename; should end in \".csv\"; if relative, should not include a directory name.
   -t N  Total time limit for test generation (in seconds).
   -c N  Per-class time limit (in seconds, default: 2s/class).
         Mutually exclusive with -t.
   -n N  Number of iterations to run the experiment (default: 1).
+  -r    Redirect logs and diagnostics to results/result/mutation_output.txt.
+  -v    Enables verbose mode.
+  -h    Displays this help message.
   TEST-CASE-NAME is the name of a jar file in ../subject-programs/, without .jar.
   Example: commons-lang3-3.0"
 
