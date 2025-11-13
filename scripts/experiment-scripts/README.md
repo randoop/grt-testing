@@ -15,28 +15,6 @@ evaluation.
 
 To set up the environment, refer to the `scripts/prerequisites.md` file.
 
-#### Python Dependencies
-
-Before running any experiment scripts, ensure the following Python packages are installed:
-
-* `pandas`
-* `matplotlib`
-* `seaborn`
-
-Install these packages using your preferred Python package manager. For example:
-
-**With pip:**
-
-```bash
-pip install pandas matplotlib seaborn
-```
-
-**With uv:**
-
-```bash
-uv pip install pandas matplotlib seaborn
-```
-
 ### Running Scripts
 
 To generate the desired figures or tables from the paper, run the corresponding

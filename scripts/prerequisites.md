@@ -1,6 +1,65 @@
 # Prerequisites for running the scripts
 
-## Java Versions Setup
+## Required Tools
+
+* **Python** 3
+* **Git** ≥ 1.9
+* **Subversion (svn)** ≥ 1.8
+* **Perl** ≥ 5.12
+* **cpanm** (Perl module installer)
+  To install `cpanm`:
+
+  ```sh
+  curl -L https://cpanmin.us | perl - App::cpanminus
+  ```
+
+### Python Dependencies
+
+Before running any experiment scripts, ensure the following Python packages are installed:
+
+* `pandas`
+* `matplotlib`
+* `seaborn`
+
+Install these packages using your preferred Python package manager. For example:
+
+**With pip:**
+
+```bash
+pip install pandas matplotlib seaborn
+```
+
+**With uv:**
+
+```bash
+uv pip install pandas matplotlib seaborn
+```
+
+## Obtaining Dependencies and Subject Programs
+
+```sh
+make -C scripts
+make -C scripts randoop-from-source
+cd scripts
+./get-all-subject-src.sh
+```
+
+## Environment variables
+
+### Adding Defects4J to PATH
+
+Add Defects4J's executables to your PATH in
+the shell session where you run the scripts:
+
+```sh
+export PATH=$PATH:"path2defects4j"/framework/bin
+```
+
+> "path2defects4j" points to the directory which Defects4J is in; it most
+likely will look like "currentdirectory/build/defects4j".
+
+
+### Java Versions Setup
 
 Different scripts require different Java versions:
 
@@ -17,36 +76,3 @@ environment variables in your shell configuration file
 export JAVA8_HOME=/path/to/your/java8
 export JAVA11_HOME=/path/to/your/java11
 ```
-
-## Required Tools
-
-* **Git** ≥ 1.9
-* **Subversion (svn)** ≥ 1.8
-* **Perl** ≥ 5.12
-* **cpanm** (Perl module installer)
-  To install `cpanm`:
-
-  ```sh
-  curl -L https://cpanmin.us | perl - App::cpanminus
-  ```
-
-## Obtaining Dependencies and Subject Programs
-
-```sh
-make -C scripts
-make -C scripts randoop-from-source
-cd scripts
-./get-all-subject-src.sh
-```
-
-## Adding Defects4J to PATH
-
-For defect detection scripts, add Defects4J's executables to your PATH in
-the shell session where you run the scripts:
-
-```sh
-export PATH=$PATH:"path2defects4j"/framework/bin
-```
-
-> "path2defects4j" points to the directory which Defects4J is in; it most
-likely will look like "currentdirectory/build/defects4j".
