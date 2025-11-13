@@ -23,10 +23,7 @@
 #------------------------------------------------------------------------------
 # Options (command-line arguments):
 #------------------------------------------------------------------------------
-USAGE_STRING="usage: mutation-randoop.sh [-h] [-v] [-r] [-f features] [-a] [-o RESULTS_CSV] [-t total_time] [-c time_per_class] [-n num_iterations] TEST-CASE-NAME
-  -h    Displays this help message.
-  -v    Enables verbose mode.
-  -r    Redirect Randoop and Major output to results/result/mutation_output.txt.
+USAGE_STRING="usage: mutation-randoop.sh [-f features] [-a] [-o RESULTS_CSV] [-t total_time] [-c time_per_class] [-n num_iterations] [-r] [-v] [-h] TEST-CASE-NAME
   -f    Specify the Randoop features to use.
         Available features: BASELINE, BLOODHOUND, ORIENTEERING, BLOODHOUND_AND_ORIENTEERING, DETECTIVE, GRT_FUZZING, ELEPHANT_BRAIN, CONSTANT_MINING.
         example usage: -f BASELINE,BLOODHOUND
@@ -36,6 +33,9 @@ USAGE_STRING="usage: mutation-randoop.sh [-h] [-v] [-r] [-f features] [-a] [-o R
   -c N  Per-class time limit (in seconds, default: 2s/class).
         Mutually exclusive with -t.
   -n N  Number of iterations to run the experiment (default: 1).
+  -r    Redirect logs and diagnostics to results/result/mutation_output.txt.
+  -v    Enables verbose mode.
+  -h    Displays this help message.
   TEST-CASE-NAME is the name of a jar file in ../subject-programs/, without .jar.
   Example: commons-lang3-3.0"
 
