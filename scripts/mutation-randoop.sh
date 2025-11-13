@@ -124,12 +124,12 @@ while getopts ":hvrf:ao:t:c:n:" opt; do
       NUM_LOOP="$OPTARG"
       ;;
     \?)
-      echo "Invalid option: -$OPTARG" >&2
+      echo "${SCRIPT_NAME}: invalid option: -$OPTARG" >&2
       echo "$USAGE_STRING"
       exit 2
       ;;
     :)
-      echo "Option -$OPTARG requires an argument." >&2
+      echo "${SCRIPT_NAME}: option -$OPTARG requires an argument." >&2
       echo "$USAGE_STRING"
       exit 2
       ;;

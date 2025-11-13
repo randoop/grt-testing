@@ -52,7 +52,7 @@ set -o pipefail
 JAVA_VER=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '{sub("^$", "0", $2); print $1$2}')
 if [[ "$JAVA_VER" -ne 18 ]]; then
   echo "Error: Java version 8 is required. Please install it and try again."
-  exit 1
+  exit 2
 fi
 
 Generator=EvoSuite
@@ -111,12 +111,12 @@ while getopts ":hvro:t:c:n:" opt; do
       NUM_LOOP="$OPTARG"
       ;;
     \?)
-      echo "Invalid option: -$OPTARG" >&2
+      echo "${SCRIPT_NAME}: invalid option: -$OPTARG" >&2
       echo "$USAGE_STRING"
       exit 2
       ;;
     :)
-      echo "Option -$OPTARG requires an argument." >&2
+      echo "${SCRIPT_NAME}: option -$OPTARG requires an argument." >&2
       echo "$USAGE_STRING"
       exit 2
       ;;
