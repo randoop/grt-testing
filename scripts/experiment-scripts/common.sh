@@ -3,7 +3,7 @@
 PYTHON_EXECUTABLE=$(command -v python3 2> /dev/null || command -v python 2> /dev/null)
 if [ -z "$PYTHON_EXECUTABLE" ]; then
   echo "Error: Python is not installed." >&2
-  exit 1
+  exit 2
 fi
 
 # shellcheck disable=SC2034

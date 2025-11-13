@@ -113,12 +113,12 @@ while getopts ":hvro:t:c:n:" opt; do
     \?)
       echo "Invalid option: -$OPTARG" >&2
       echo "$USAGE_STRING"
-      exit 1
+      exit 2
       ;;
     :)
       echo "Option -$OPTARG requires an argument." >&2
       echo "$USAGE_STRING"
-      exit 1
+      exit 2
       ;;
   esac
 done
@@ -132,7 +132,7 @@ fi
 
 # Enforce that mutually exclusive options are not bundled together
 if [[ -n "$TOTAL_TIME" ]] && [[ -n "$SECONDS_PER_CLASS" ]]; then
-  echo "Options -t and -c cannot be used together in any form (e.g., -t -c)."
+  echo "${SCRIPT_NAME}: Options -t and -c cannot be used together in any form (e.g., -t -c)."
   exit 2
 fi
 
@@ -519,7 +519,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
     PYTHON_EXECUTABLE=$(command -v python3 2> /dev/null || command -v python 2> /dev/null)
     if [ -z "$PYTHON_EXECUTABLE" ]; then
       echo "Error: Python is not installed." >&2
-      exit 1
+      exit 2
     fi
     "$PYTHON_EXECUTABLE" "$SCRIPT_DIR"/convert_test_runners.py "$TEST_DIRECTORY" --mode evosuite-to-randoop
   fi

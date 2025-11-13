@@ -56,7 +56,7 @@ set -o pipefail
 JAVA_VER=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '{sub("^$", "0", $2); print $1$2}')
 if [[ "$JAVA_VER" -ne 18 ]]; then
   echo "Error: Java version 8 is required. Please install it and try again."
-  exit 1
+  exit 2
 fi
 
 Generator=Randoop
@@ -126,12 +126,12 @@ while getopts ":hvrf:ao:t:c:n:" opt; do
     \?)
       echo "Invalid option: -$OPTARG" >&2
       echo "$USAGE_STRING"
-      exit 1
+      exit 2
       ;;
     :)
       echo "Option -$OPTARG requires an argument." >&2
       echo "$USAGE_STRING"
-      exit 1
+      exit 2
       ;;
   esac
 done
@@ -139,13 +139,13 @@ done
 shift $((OPTIND - 1))
 
 if [[ -z "$RESULTS_CSV" ]]; then
-  echo "No -o command-line argument given."
+  echo "${SCRIPT_NAME}: No -o command-line argument given."
   exit 2
 fi
 
 # Enforce that mutually exclusive options are not bundled together
 if [[ -n "$TOTAL_TIME" ]] && [[ -n "$SECONDS_PER_CLASS" ]]; then
-  echo "Options -t and -c cannot be used together in any form (e.g., -t -c)."
+  echo "${SCRIPT_NAME}: Options -t and -c cannot be used together in any form (e.g., -t -c)."
   exit 2
 fi
 
@@ -167,8 +167,8 @@ fi
 # validate
 for feat in "${RANDOOP_FEATURES[@]}"; do
   if [[ ! " ${ALL_RANDOOP_FEATURES[*]} " =~ ${feat} ]]; then
-    echo "ERROR: unknown feature: $feat"
-    exit 1
+    echo "${SCRIPT_NAME}: error: unknown feature: $feat"
+    exit 2
   fi
 done
 
@@ -670,7 +670,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
       PYTHON_EXECUTABLE=$(command -v python3 2> /dev/null || command -v python 2> /dev/null)
       if [ -z "$PYTHON_EXECUTABLE" ]; then
         echo "Error: Python is not installed." >&2
-        exit 1
+        exit 2
       fi
       "$PYTHON_EXECUTABLE" "$SCRIPT_DIR"/convert_test_runners.py "$TEST_DIRECTORY" --mode randoop-to-evosuite
     fi
