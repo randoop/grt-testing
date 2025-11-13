@@ -274,7 +274,7 @@ def generate_table_4(df: pd.DataFrame) -> mpl.figure.Figure:
     df.columns = [col.strip() for col in df.columns]
     df['TestClassification'] = df['TestClassification'].str.strip().str.lower()
 
-    # Mark each bug (Version) as detected if ANY test case for it fails
+    # Mark each bug (Version) as detected if ANY test case for it fails.
     df['Detected'] = df['TestClassification'] == 'fail'
     bug_detection = (
         df.groupby(['ProjectId', 'Version', 'TimeLimit', 'TestSuiteSource'])['Detected']
@@ -282,7 +282,7 @@ def generate_table_4(df: pd.DataFrame) -> mpl.figure.Figure:
         .reset_index()
     )
 
-    # Now count how many bugs were detected per (ProjectId, TimeLimit, TestSuiteSource)
+    # Count how many bugs were detected per (ProjectId, TimeLimit, TestSuiteSource).
     summary = (
         bug_detection.groupby(['ProjectId', 'TimeLimit', 'TestSuiteSource'])['Detected']
         .sum()
@@ -290,7 +290,7 @@ def generate_table_4(df: pd.DataFrame) -> mpl.figure.Figure:
         .rename(columns={'Detected': 'FaultsDetected'})
     )
 
-    # Pivot for better tabular display
+    # Pivot for better tabular display.
     table_data = summary.pivot_table(
         index=['ProjectId', 'TimeLimit'],
         columns='TestSuiteSource',
@@ -298,11 +298,11 @@ def generate_table_4(df: pd.DataFrame) -> mpl.figure.Figure:
         fill_value=0,
     ).reset_index()
 
-    # Create figure and table
+    # Create figure and table.
     fig = plt.figure(figsize=(10, 6))
     plt.axis("off")
 
-    # Table headers
+    # Table headers.
     headers = ["Project", "Time"] + list(table_data.columns[2:])
     cell_data = [headers] + table_data.values.tolist()
 

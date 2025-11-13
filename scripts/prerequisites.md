@@ -27,13 +27,13 @@ Install these packages using your preferred Python package manager. For example:
 
 **With pip:**
 
-```bash
+```sh
 pip install pandas matplotlib seaborn
 ```
 
 **With uv:**
 
-```bash
+```sh
 uv pip install pandas matplotlib seaborn
 ```
 

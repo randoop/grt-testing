@@ -26,13 +26,13 @@ Install these packages using your preferred Python package manager. For example:
 
 **With pip:**
 
-```bash
+```sh
 pip install pandas matplotlib seaborn
 ```
 
 **With uv:**
 
-```bash
+```sh
 uv pip install pandas matplotlib seaborn
 ```
 
@@ -41,13 +41,13 @@ uv pip install pandas matplotlib seaborn
 To generate the desired figures or tables from the paper, run the corresponding
 shell script. For example, to generate **Figure 7**, use:
 
-```bash
+```sh
 ./mutation-fig7.sh
 ```
 
 * To generate **Table 4 (defect detection)**:
 
-```bash
+```sh
 ./defects4j-table4.sh
 ```
 
