@@ -65,24 +65,15 @@ command -v defects4j > /dev/null 2>&1 || {
   echo "${SCRIPT_NAME}: error: defects4j not on PATH." >&2
   exit 2
 }
-[ -f "$RANDOOP_JAR" ] || {
-  echo "${SCRIPT_NAME}: error: Missing $RANDOOP_JAR." >&2
-  exit 2
-}
-[ -f "$JACOCO_AGENT_JAR" ] || {
-  echo "${SCRIPT_NAME}: error: Missing $JACOCO_AGENT_JAR." >&2
-  exit 2
-}
-[ -f "$REPLACECALL_JAR" ] || {
-  echo "${SCRIPT_NAME}: error: Missing $REPLACECALL_JAR." >&2
-  exit 2
-}
+require_file "$RANDOOP_JAR"
+require_file "$JACOCO_AGENT_JAR"
+require_file "$REPLACECALL_JAR"
 [ -x "$DEFECTS4J_HOME/framework/bin/run_bug_detection.pl" ] || {
   echo "${SCRIPT_NAME}: error: Missing $DEFECTS4J_HOME/framework/bin/run_bug_detection.pl. Run 'make build/defects4j' or set DEFECTS4J_HOME." >&2
   exit 2
 }
 
-. "$SCRIPT_DIR/usejdk.sh" # Source the usejdk.sh script to enable JDK switching
+. "$SCRIPT_DIR/defs.sh" # Define shell functions.
 usejdk11
 JAVA_VER=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '{print ($1=="1")?$2:$1}')
 if [[ "$JAVA_VER" -ne 11 ]]; then
@@ -167,14 +158,7 @@ if [[ -z "$RESULTS_CSV" ]]; then
   echo "No -o command-line argument given."
   exit 2
 fi
-if [[ "$RESULTS_CSV" == */* ]]; then
-  echo "${SCRIPT_NAME}: error: -o expects a filename only (no paths). Given: $RESULTS_CSV" >&2
-  exit 2
-fi
-[[ "$RESULTS_CSV" == *.csv ]] || {
-  echo "${SCRIPT_NAME}: error: -o must end with .csv" >&2
-  exit 2
-}
+require_csv_basename "$RESULTS_CSV"
 
 if [[ -z "$BUG_ID" ]]; then
   echo "${SCRIPT_NAME}: error: Bug ID (-b) not specified."
@@ -199,6 +183,7 @@ FEATURE_FLAGS=(
   ["BASELINE"]=""
 )
 
+# Convert feature names to Randoop command-line options.
 EXPANDED_FEATURE_FLAGS=()
 for feat in "${RANDOOP_FEATURES[@]}"; do
   if [[ "${FEATURE_FLAGS[$feat]+exists}" ]]; then

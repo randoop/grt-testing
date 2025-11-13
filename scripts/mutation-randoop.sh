@@ -63,23 +63,14 @@ JACOCO_AGENT_JAR=$(realpath "${SCRIPT_DIR}/build/jacocoagent.jar")      # For Bl
 JACOCO_CLI_JAR=$(realpath "${SCRIPT_DIR}/build/jacococli.jar")          # For coverage report generation
 REPLACECALL_JAR=$(realpath "${SCRIPT_DIR}/build/replacecall-4.3.4.jar") # For replacing undesired method calls
 
-[ -d "$MAJOR_HOME" ] || {
-  echo "${SCRIPT_NAME}: error: Missing $MAJOR_HOME." >&2
-  exit 2
-}
+. "$SCRIPT_DIR/defs.sh" # Define shell functions.
 
-require_file() {
-  [ -f "$1" ] || {
-    echo "${SCRIPT_NAME}: error: Missing $1." >&2
-    exit 2
-  }
-}
+require_directory "$MAJOR_HOME"
 require_file "$RANDOOP_JAR"
 require_file "$JACOCO_AGENT_JAR"
 require_file "$JACOCO_CLI_JAR"
 require_file "$REPLACECALL_JAR"
 
-. "$SCRIPT_DIR/usejdk.sh" # Source the usejdk.sh script to enable JDK switching
 usejdk8
 JAVA_VER=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '{sub("^$", "0", $2); print ($1=="1")?$2:$1}')
 if [[ "$JAVA_VER" -ne 8 ]]; then
@@ -156,14 +147,7 @@ if [[ -z "$RESULTS_CSV" ]]; then
   echo "No -o command-line argument given."
   exit 2
 fi
-if [[ "$RESULTS_CSV" == */* ]]; then
-  echo "${SCRIPT_NAME}: error: -o expects a filename only (no paths). Given: $RESULTS_CSV" >&2
-  exit 2
-fi
-[[ "$RESULTS_CSV" == *.csv ]] || {
-  echo "${SCRIPT_NAME}: error: -o must end with .csv" >&2
-  exit 2
-}
+require_csv_basename "$RESULTS_CSV"
 
 if [[ -n "$FEATURES_OPT" ]]; then
   IFS=',' read -r -a RANDOOP_FEATURES <<< "$FEATURES_OPT"
@@ -182,6 +166,7 @@ FEATURE_FLAGS=(
   ["BASELINE"]=""
 )
 
+# Convert feature names to Randoop command-line options.
 EXPANDED_FEATURE_FLAGS=()
 for feat in "${RANDOOP_FEATURES[@]}"; do
   if [[ "${FEATURE_FLAGS[$feat]+exists}" ]]; then

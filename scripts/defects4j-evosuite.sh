@@ -69,7 +69,7 @@ command -v defects4j > /dev/null 2>&1 || {
   exit 2
 }
 
-. "$SCRIPT_DIR/usejdk.sh" # Source the usejdk.sh script to enable JDK switching
+. "$SCRIPT_DIR/defs.sh" # Define shell functions.
 usejdk11
 JAVA_VER=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '{print ($1=="1")?$2:$1}')
 if [[ "$JAVA_VER" -ne 11 ]]; then
@@ -151,14 +151,7 @@ if [[ -z "$RESULTS_CSV" ]]; then
   echo "No -o command-line argument given."
   exit 2
 fi
-if [[ "$RESULTS_CSV" == */* ]]; then
-  echo "${SCRIPT_NAME}: error: -o expects a filename only (no paths). Given: $RESULTS_CSV" >&2
-  exit 2
-fi
-[[ "$RESULTS_CSV" == *.csv ]] || {
-  echo "${SCRIPT_NAME}: error: -o must end with .csv"
-  exit 2
-}
+require_csv_basename "$RESULTS_CSV"
 
 if [[ -z "$BUG_ID" ]]; then
   echo "${SCRIPT_NAME}: error: Bug ID (-b) not specified."

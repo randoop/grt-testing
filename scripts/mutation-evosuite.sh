@@ -58,21 +58,12 @@ MAJOR_HOME=$(realpath "${SCRIPT_DIR}/build/major/")               # Major home d
 EVOSUITE_JAR=$(realpath "${SCRIPT_DIR}/build/evosuite-1.2.0.jar") # EvoSuite jar file
 JACOCO_CLI_JAR=$(realpath "${SCRIPT_DIR}/build/jacococli.jar")    # For coverage report generation
 
-[ -d "$MAJOR_HOME" ] || {
-  echo "${SCRIPT_NAME}: error: Missing $MAJOR_HOME." >&2
-  exit 2
-}
+. "$SCRIPT_DIR/defs.sh" # Define shell functions.
 
-require_file() {
-  [ -f "$1" ] || {
-    echo "${SCRIPT_NAME}: error: Missing $1." >&2
-    exit 2
-  }
-}
+require_directory "$MAJOR_HOME"
 require_file "$EVOSUITE_JAR"
 require_file "$JACOCO_CLI_JAR"
 
-. "$SCRIPT_DIR/usejdk.sh" # Source the usejdk.sh script to enable JDK switching
 usejdk8
 JAVA_VER=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '{sub("^$", "0", $2); print ($1=="1")?$2:$1}')
 if [[ "$JAVA_VER" -ne 8 ]]; then
@@ -146,14 +137,7 @@ if [[ -z "$RESULTS_CSV" ]]; then
   echo "${SCRIPT_NAME}: No -o command-line argument given."
   exit 2
 fi
-if [[ "$RESULTS_CSV" == */* ]]; then
-  echo "${SCRIPT_NAME}: error: -o expects a filename only (no paths). Given: $RESULTS_CSV" >&2
-  exit 2
-fi
-[[ "$RESULTS_CSV" == *.csv ]] || {
-  echo "${SCRIPT_NAME}: error: -o must end with .csv" >&2
-  exit 2
-}
+require_csv_basename "$RESULTS_CSV"
 
 # Enforce that mutually exclusive options are not bundled together
 if [[ -n "$TOTAL_TIME" ]] && [[ -n "$SECONDS_PER_CLASS" ]]; then
