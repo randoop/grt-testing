@@ -33,8 +33,7 @@ USAGE_STRING="usage: defects4j-evosuite.sh -b id -o RESULTS_CSV [-t total_time] 
   -c N  Per-class time limit (in seconds, default: 2s/class).
         Mutually exclusive with -t.
   -n N  Number of iterations to run the experiment (default: 1).
-  -r    Redirect program logs and diagnostic messages
-        to results/result/defects4j_output.txt.
+  -r    Redirect logs and diagnostics to results/result/defects4j_output.txt.
   -v    Enables verbose mode.
   -h    Displays this help message.
   PROJECT-ID is the name of a Project Identifier in Defects4J (e.g., Lang)."
@@ -198,7 +197,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
   mkdir -p "$FIXED_WORK_DIR" "$TEST_DIR" "$REPORT_DIR" "$RESULT_DIR"
   touch "$RELEVANT_CLASSES_FILE"
 
-  # Handle optional redirection of logs/diagnostic messages
+  # Handle optional redirection of logs/diagnostic messages.
   # (if -r is specified, send logs to results/result/defects4j_output.txt)
   if [[ "$REDIRECT" -eq 1 ]]; then
     touch "$RESULT_DIR/defects4j_output.txt"

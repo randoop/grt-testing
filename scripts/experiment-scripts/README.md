@@ -51,7 +51,7 @@ shell script. For example, to generate **Figure 7**, use:
 ./defects4j-table4.sh
 ```
 
-Each script is documented at the top of the file with:
+Each script is documented at the top of its file with:
 
 * What it generates (figure/table)
 * What input parameters or configuration it expects
