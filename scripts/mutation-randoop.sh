@@ -74,7 +74,7 @@ require_file "$REPLACECALL_JAR"
 usejdk8
 JAVA_VER=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '{sub("^$", "0", $2); print ($1=="1")?$2:$1}')
 if [[ "$JAVA_VER" -ne 8 ]]; then
-  echo "${SCRIPT_NAME}: error: Java 8 is required. Set JAVA8_HOME to a JDK 8 installation." >&2
+  echo "Error: Java 8 is required. Set JAVA8_HOME to a JDK 8 installation." >&2
   exit 2
 fi
 
@@ -129,14 +129,14 @@ while getopts ":hvrf:o:t:c:n:" opt; do
       NUM_LOOP="$OPTARG"
       ;;
     \?)
-      echo "Invalid option: -$OPTARG" >&2
+      echo "${SCRIPT_NAME}: invalid option: -$OPTARG" >&2
       echo "$USAGE_STRING"
-      exit 1
+      exit 2
       ;;
     :)
-      echo "Option -$OPTARG requires an argument." >&2
+      echo "${SCRIPT_NAME}: option -$OPTARG requires an argument." >&2
       echo "$USAGE_STRING"
-      exit 1
+      exit 2
       ;;
   esac
 done
@@ -144,7 +144,7 @@ done
 shift $((OPTIND - 1))
 
 if [[ -z "$RESULTS_CSV" ]]; then
-  echo "No -o command-line argument given."
+  echo "${SCRIPT_NAME}: No -o command-line argument given."
   exit 2
 fi
 require_csv_basename "$RESULTS_CSV"
@@ -183,7 +183,7 @@ done
 
 # Enforce that mutually exclusive options are not bundled together
 if [[ -n "$TOTAL_TIME" ]] && [[ -n "$SECONDS_PER_CLASS" ]]; then
-  echo "Options -t and -c cannot be used together in any form (e.g., -t -c)."
+  echo "${SCRIPT_NAME}: Options -t and -c cannot be used together in any form (e.g., -t -c)."
   exit 2
 fi
 
