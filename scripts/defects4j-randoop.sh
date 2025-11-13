@@ -55,29 +55,30 @@ set -o pipefail
 #===============================================================================
 
 SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)"
+SCRIPT_NAME=$(basename -- "$0")
 DEFECTS4J_HOME=$(realpath "${SCRIPT_DIR}/build/defects4j/")             # Defects4j home directory
 RANDOOP_JAR=$(realpath "${SCRIPT_DIR}/build/randoop-all-4.3.4.jar")     # Randoop jar file
 JACOCO_AGENT_JAR=$(realpath "${SCRIPT_DIR}/build/jacocoagent.jar")      # For Bloodhound
 REPLACECALL_JAR=$(realpath "${SCRIPT_DIR}/build/replacecall-4.3.4.jar") # For replacing undesired method calls
 
 command -v defects4j > /dev/null 2>&1 || {
-  echo "Error: defects4j not on PATH." >&2
+  echo "${SCRIPT_NAME}: error: defects4j not on PATH." >&2
   exit 2
 }
 [ -f "$RANDOOP_JAR" ] || {
-  echo "Error: Missing $RANDOOP_JAR." >&2
+  echo "${SCRIPT_NAME}: error: Missing $RANDOOP_JAR." >&2
   exit 2
 }
 [ -f "$JACOCO_AGENT_JAR" ] || {
-  echo "Error: Missing $JACOCO_AGENT_JAR." >&2
+  echo "${SCRIPT_NAME}: error: Missing $JACOCO_AGENT_JAR." >&2
   exit 2
 }
 [ -f "$REPLACECALL_JAR" ] || {
-  echo "Error: Missing $REPLACECALL_JAR." >&2
+  echo "${SCRIPT_NAME}: error: Missing $REPLACECALL_JAR." >&2
   exit 2
 }
 [ -x "$DEFECTS4J_HOME/framework/bin/run_bug_detection.pl" ] || {
-  echo "Error: Missing $DEFECTS4J_HOME/framework/bin/run_bug_detection.pl. Run 'make build/defects4j' or set DEFECTS4J_HOME." >&2
+  echo "${SCRIPT_NAME}: error: Missing $DEFECTS4J_HOME/framework/bin/run_bug_detection.pl. Run 'make build/defects4j' or set DEFECTS4J_HOME." >&2
   exit 2
 }
 
@@ -85,7 +86,7 @@ command -v defects4j > /dev/null 2>&1 || {
 usejdk11
 JAVA_VER=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '{print ($1=="1")?$2:$1}')
 if [[ "$JAVA_VER" -ne 11 ]]; then
-  echo "Error: Java 11 is required. Set JAVA11_HOME to a JDK 11 installation." >&2
+  echo "${SCRIPT_NAME}: error: Java 11 is required. Set JAVA11_HOME to a JDK 11 installation." >&2
   exit 2
 fi
 
@@ -167,16 +168,16 @@ if [[ -z "$RESULTS_CSV" ]]; then
   exit 2
 fi
 if [[ "$RESULTS_CSV" == */* ]]; then
-  echo "Error: -o expects a filename only (no paths). Given: $RESULTS_CSV" >&2
+  echo "${SCRIPT_NAME}: error: -o expects a filename only (no paths). Given: $RESULTS_CSV" >&2
   exit 2
 fi
 [[ "$RESULTS_CSV" == *.csv ]] || {
-  echo "Error: -o must end with .csv" >&2
+  echo "${SCRIPT_NAME}: error: -o must end with .csv" >&2
   exit 2
 }
 
 if [[ -z "$BUG_ID" ]]; then
-  echo "Error: Bug ID (-b) not specified."
+  echo "${SCRIPT_NAME}: error: Bug ID (-b) not specified."
   echo "$USAGE_STRING"
   exit 2
 fi
@@ -206,7 +207,7 @@ for feat in "${RANDOOP_FEATURES[@]}"; do
       EXPANDED_FEATURE_FLAGS+=("$flag")
     fi
   else
-    echo "ERROR: unknown feature '$feat'"
+    echo "${SCRIPT_NAME}: error: unknown feature '$feat'"
     echo "Valid features are: ${!FEATURE_FLAGS[*]}"
     exit 2
   fi
@@ -216,7 +217,7 @@ done
 PROJECT_ID="$1"
 
 if [[ -z "$PROJECT_ID" ]]; then
-  echo "Error: PROJECT-ID is required." >&2
+  echo "${SCRIPT_NAME}: error: PROJECT-ID is required." >&2
   echo "$USAGE_STRING"
   exit 2
 fi

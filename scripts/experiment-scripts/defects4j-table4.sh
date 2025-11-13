@@ -33,6 +33,7 @@
 #===============================================================================
 
 SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)"
+SCRIPT_NAME=$(basename -- "$0")
 GRT_TESTING_ROOT="$(realpath "$SCRIPT_DIR"/../)"
 
 PYTHON_EXECUTABLE=$(command -v python3 2> /dev/null || command -v python 2> /dev/null)
@@ -73,7 +74,7 @@ else
 fi
 NUM_CORES=$((NPROC - 4))
 if [ "$NUM_CORES" -lt 1 ]; then NUM_CORES=1; fi
-echo "$(basename "$0"): Running $NUM_CORES concurrent processes."
+echo "${SCRIPT_NAME}: Running $NUM_CORES concurrent processes."
 
 #===============================================================================
 # Task Generation & Execution

@@ -49,11 +49,6 @@ USAGE_STRING="usage: mutation-randoop.sh [-f features] [-o RESULTS_CSV] [-t tota
 set -e
 set -o pipefail
 
-if [ $# -eq 0 ]; then
-  echo "$0: $USAGE_STRING"
-  exit 1
-fi
-
 #===============================================================================
 # Environment Setup
 #===============================================================================
@@ -61,6 +56,7 @@ fi
 Generator=Randoop
 generator=randoop
 SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)"
+SCRIPT_NAME=$(basename -- "$0")
 MAJOR_HOME=$(realpath "${SCRIPT_DIR}/build/major/")                     # Major home directory, for mutation testing
 RANDOOP_JAR=$(realpath "${SCRIPT_DIR}/build/randoop-all-4.3.4.jar")     # Randoop jar file
 JACOCO_AGENT_JAR=$(realpath "${SCRIPT_DIR}/build/jacocoagent.jar")      # For Bloodhound
@@ -68,13 +64,13 @@ JACOCO_CLI_JAR=$(realpath "${SCRIPT_DIR}/build/jacococli.jar")          # For co
 REPLACECALL_JAR=$(realpath "${SCRIPT_DIR}/build/replacecall-4.3.4.jar") # For replacing undesired method calls
 
 [ -d "$MAJOR_HOME" ] || {
-  echo "Error: Missing $MAJOR_HOME." >&2
+  echo "${SCRIPT_NAME}: error: Missing $MAJOR_HOME." >&2
   exit 2
 }
 
 require_file() {
   [ -f "$1" ] || {
-    echo "Error: Missing $1." >&2
+    echo "${SCRIPT_NAME}: error: Missing $1." >&2
     exit 2
   }
 }
@@ -87,13 +83,18 @@ require_file "$REPLACECALL_JAR"
 usejdk8
 JAVA_VER=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '{sub("^$", "0", $2); print ($1=="1")?$2:$1}')
 if [[ "$JAVA_VER" -ne 8 ]]; then
-  echo "Error: Java 8 is required. Set JAVA8_HOME to a JDK 8 installation." >&2
+  echo "${SCRIPT_NAME}: error: Java 8 is required. Set JAVA8_HOME to a JDK 8 installation." >&2
   exit 2
 fi
 
 #===============================================================================
 # Argument Parsing & Experiment Configuration
 #===============================================================================
+
+if [ $# -eq 0 ]; then
+  echo "${SCRIPT_NAME}: $USAGE_STRING"
+  exit 2
+fi
 
 NUM_LOOP=1      # Number of experiment runs (10 in GRT paper)
 VERBOSE=0       # Verbose option
@@ -156,11 +157,11 @@ if [[ -z "$RESULTS_CSV" ]]; then
   exit 2
 fi
 if [[ "$RESULTS_CSV" == */* ]]; then
-  echo "Error: -o expects a filename only (no paths). Given: $RESULTS_CSV" >&2
+  echo "${SCRIPT_NAME}: error: -o expects a filename only (no paths). Given: $RESULTS_CSV" >&2
   exit 2
 fi
 [[ "$RESULTS_CSV" == *.csv ]] || {
-  echo "Error: -o must end with .csv" >&2
+  echo "${SCRIPT_NAME}: error: -o must end with .csv" >&2
   exit 2
 }
 
@@ -189,7 +190,7 @@ for feat in "${RANDOOP_FEATURES[@]}"; do
       EXPANDED_FEATURE_FLAGS+=("$flag")
     fi
   else
-    echo "ERROR: unknown feature '$feat'"
+    echo "${SCRIPT_NAME}: error: unknown feature '$feat'"
     echo "Valid features are: ${!FEATURE_FLAGS[*]}"
     exit 2
   fi
@@ -210,7 +211,7 @@ fi
 SUBJECT_PROGRAM="$1"
 
 if [[ -z "$SUBJECT_PROGRAM" ]]; then
-  echo "Error: SUBJECT-PROGRAM is required." >&2
+  echo "${SCRIPT_NAME}: error: SUBJECT-PROGRAM is required." >&2
   echo "$USAGE_STRING"
   exit 2
 fi

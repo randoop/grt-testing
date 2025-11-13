@@ -52,19 +52,20 @@ set -o pipefail
 #===============================================================================
 
 SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)"
+SCRIPT_NAME=$(basename -- "$0")
 DEFECTS4J_HOME=$(realpath "${SCRIPT_DIR}/build/defects4j/")       # Defects4j home directory
 EVOSUITE_JAR=$(realpath "${SCRIPT_DIR}/build/evosuite-1.2.0.jar") # EvoSuite jar file
 
 command -v defects4j > /dev/null 2>&1 || {
-  echo "Error: defects4j not on PATH." >&2
+  echo "${SCRIPT_NAME}: error: defects4j not on PATH." >&2
   exit 2
 }
 [ -f "$EVOSUITE_JAR" ] || {
-  echo "Error: Missing $EVOSUITE_JAR." >&2
+  echo "${SCRIPT_NAME}: error: Missing $EVOSUITE_JAR." >&2
   exit 2
 }
 [ -x "$DEFECTS4J_HOME/framework/bin/run_bug_detection.pl" ] || {
-  echo "Error: Missing $DEFECTS4J_HOME/framework/bin/run_bug_detection.pl. Run 'make build/defects4j' or set DEFECTS4J_HOME." >&2
+  echo "${SCRIPT_NAME}: error: Missing $DEFECTS4J_HOME/framework/bin/run_bug_detection.pl. Run 'make build/defects4j' or set DEFECTS4J_HOME." >&2
   exit 2
 }
 
@@ -72,7 +73,7 @@ command -v defects4j > /dev/null 2>&1 || {
 usejdk11
 JAVA_VER=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '{print ($1=="1")?$2:$1}')
 if [[ "$JAVA_VER" -ne 11 ]]; then
-  echo "Error: Java 11 is required. Set JAVA11_HOME to a JDK 11 installation." >&2
+  echo "${SCRIPT_NAME}: error: Java 11 is required. Set JAVA11_HOME to a JDK 11 installation." >&2
   exit 2
 fi
 
@@ -151,16 +152,16 @@ if [[ -z "$RESULTS_CSV" ]]; then
   exit 2
 fi
 if [[ "$RESULTS_CSV" == */* ]]; then
-  echo "Error: -o expects a filename only (no paths). Given: $RESULTS_CSV" >&2
+  echo "${SCRIPT_NAME}: error: -o expects a filename only (no paths). Given: $RESULTS_CSV" >&2
   exit 2
 fi
 [[ "$RESULTS_CSV" == *.csv ]] || {
-  echo "Error: -o must end with .csv"
+  echo "${SCRIPT_NAME}: error: -o must end with .csv"
   exit 2
 }
 
 if [[ -z "$BUG_ID" ]]; then
-  echo "Error: Bug ID (-b) not specified."
+  echo "${SCRIPT_NAME}: error: Bug ID (-b) not specified."
   echo "$USAGE_STRING"
   exit 2
 fi
@@ -169,7 +170,7 @@ fi
 PROJECT_ID="$1"
 
 if [[ -z "$PROJECT_ID" ]]; then
-  echo "Error: PROJECT-ID is required." >&2
+  echo "${SCRIPT_NAME}: error: PROJECT-ID is required." >&2
   echo "$USAGE_STRING"
   exit 2
 fi
