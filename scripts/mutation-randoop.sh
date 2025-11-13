@@ -12,7 +12,7 @@
 # Directories and files:
 # - `build/randoop-tests*`: Randoop-created test suites.
 # - `build/bin`: Compiled tests and code.
-# - `results/$OUTPUT_FILE.csv`: CSV file containing summary statistics for each iteration (see -o flag)
+# - `results/$RESULTS_CSV`: CSV file containing summary statistics for each iteration (see -o flag)
 # - `results/`: everything else specific to the most recent iteration.
 
 #------------------------------------------------------------------------------
@@ -23,7 +23,7 @@
 #------------------------------------------------------------------------------
 # Options (command-line arguments):
 #------------------------------------------------------------------------------
-USAGE_STRING="usage: mutation-randoop.sh [-h] [-v] [-r] [-f features] [-a] [-o output_file] [-t total_time] [-c time_per_class] [-n num_iterations] TEST-CASE-NAME
+USAGE_STRING="usage: mutation-randoop.sh [-h] [-v] [-r] [-f features] [-a] [-o RESULTS_CSV] [-t total_time] [-c time_per_class] [-n num_iterations] TEST-CASE-NAME
   -h    Displays this help message.
   -v    Enables verbose mode.
   -r    Redirect Randoop and Major output to results/result/mutation_output.txt.
@@ -42,7 +42,7 @@ USAGE_STRING="usage: mutation-randoop.sh [-h] [-v] [-r] [-f features] [-a] [-o o
 #------------------------------------------------------------------------------
 # Prerequisites:
 #------------------------------------------------------------------------------
-# See file `mutation-prerequisites.md`.
+# See file `prerequisites.md`.
 
 # Fail this script on errors.
 set -e
@@ -64,6 +64,8 @@ if [[ "$JAVA_VER" -ne 18 ]]; then
   exit 1
 fi
 
+Generator=Randoop
+generator=randoop
 SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)"
 MAJOR_HOME=$(realpath "${SCRIPT_DIR}/build/major/")                                                # Major home directory, for mutation testing
 RANDOOP_JAR=$(realpath "${SCRIPT_DIR}/build/randoop-all-4.3.4.jar")                                # Randoop jar file
@@ -105,7 +107,7 @@ while getopts ":hvrf:ao:t:c:n:" opt; do
       ABLATION=true
       ;;
     o)
-      OUTPUT_FILE="$OPTARG"
+      RESULTS_CSV="$OPTARG"
       ;;
     t)
       # Total experiment time, mutually exclusive with SECONDS_PER_CLASS
@@ -136,7 +138,7 @@ done
 
 shift $((OPTIND - 1))
 
-if [[ -z "$OUTPUT_FILE" ]]; then
+if [[ -z "$RESULTS_CSV" ]]; then
   echo "No -o command-line argument given."
   exit 2
 fi
@@ -426,17 +428,21 @@ REPLACECALL_COMMAND="$REPLACECALL_JAR${replacement_files[$SUBJECT_PROGRAM]}"
 RANDOOP_CLASSPATH="$(echo "$SCRIPT_DIR/build/lib/$UUID/"*.jar | tr ' ' ':')"
 TARGET_JAR="$SCRIPT_DIR/build/lib/$UUID/$SUBJECT_PROGRAM.jar"
 
-RANDOOP_BASE_COMMAND="java \
--Xbootclasspath/a:$JACOCO_AGENT_JAR:$REPLACECALL_JAR \
--javaagent:$JACOCO_AGENT_JAR \
--javaagent:$REPLACECALL_COMMAND \
--classpath $RANDOOP_CLASSPATH:$RANDOOP_JAR:$CHECKER_QUAL_JAR \
-randoop.main.Main gentests \
---testjar=$TARGET_JAR \
---time-limit=$TIME_LIMIT \
---deterministic=false \
---no-error-revealing-tests=true \
---randomseed=0"
+RANDOOP_BASE_COMMAND=(
+  java
+  -Xbootclasspath/a:"$JACOCO_AGENT_JAR:$REPLACECALL_JAR"
+  -javaagent:"$JACOCO_AGENT_JAR"
+  -javaagent:"$REPLACECALL_COMMAND"
+  -classpath "$RANDOOP_CLASSPATH:$RANDOOP_JAR:$CHECKER_QUAL_JAR"
+  randoop.main.Main
+  gentests
+  --testjar="$TARGET_JAR"
+  --time-limit="$TIME_LIMIT"
+  --deterministic=false
+  --no-error-revealing-tests=true
+  --randomseed=0
+  "${EXPANDED_FEATURE_FLAGS[@]}"
+)
 
 # Add special command suffixes for specific subject programs
 declare -A command_suffix=(
@@ -472,20 +478,24 @@ else
   command_suffix["fixsuite-r48"]="--specifications=$SCRIPT_DIR/program-specs/fixsuite-r48-specs.json"
 fi
 
-RANDOOP_COMMAND="$RANDOOP_BASE_COMMAND ${command_suffix[$SUBJECT_PROGRAM]}"
+if [[ -n "${command_suffix[$SUBJECT_PROGRAM]}" ]]; then
+  # shellcheck disable=SC2206
+  suffix_parts=(${command_suffix[$SUBJECT_PROGRAM]})
+  RANDOOP_BASE_COMMAND+=("${suffix_parts[@]}")
+fi
 
 #===============================================================================
 # Build System Preparation
 #===============================================================================
-echo "Using Randoop to generate tests."
+echo "Using ${Generator} to generate tests."
 echo
 
 # Handle relative and absolute output files; make sure output file exists.
 RESULTS_DIR="$SCRIPT_DIR/results"
 mkdir -p "$RESULTS_DIR"
-OUTPUT_FILE=$(cd "$RESULTS_DIR" && realpath "$OUTPUT_FILE")
-if [ ! -f "$OUTPUT_FILE" ]; then
-  echo -e "Version,FileName,TimeLimit,Seed,InstructionCoverage,BranchCoverage,MutationScore" > "$OUTPUT_FILE"
+RESULTS_CSV=$(cd "$RESULTS_DIR" && realpath "$RESULTS_CSV")
+if [ ! -f "$RESULTS_CSV" ]; then
+  echo -e "Version,FileName,TimeLimit,Seed,InstructionCoverage,BranchCoverage,MutationScore" > "$RESULTS_CSV"
 fi
 
 #===============================================================================
@@ -509,7 +519,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
     FILE_SUFFIX="$SUBJECT_PROGRAM-$FEATURE_NAME-$UUID"
 
     # Test directory for each iteration.
-    TEST_DIRECTORY="$SCRIPT_DIR/build/randoop-tests/$FILE_SUFFIX"
+    TEST_DIRECTORY="$SCRIPT_DIR/build/$generator-tests/$FILE_SUFFIX"
     rm -rf "$TEST_DIRECTORY"
     mkdir -p "$TEST_DIRECTORY"
 
@@ -587,7 +597,12 @@ for i in $(seq 1 "$NUM_LOOP"); do
     cd "$RESULT_DIR"
 
     # shellcheck disable=SC2086 # FEATURE_FLAG may contain multiple arguments.
-    $RANDOOP_COMMAND --junit-output-dir=$TEST_DIRECTORY $FEATURE_FLAG
+    GENERATOR_COMMAND=(
+      "${RANDOOP_BASE_COMMAND[@]}"
+      --junit-output-dir="$TEST_DIRECTORY"
+    )
+
+    "${GENERATOR_COMMAND[@]}"
 
     # Remove jacoco.exec file generated by Randoop
     rm -rf "$RESULT_DIR/jacoco.exec"
@@ -601,7 +616,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
     # Coverage & Mutation Analysis
     #===============================================================================
 
-    buildfile=build-randoop.xml
+    buildfile="build-$generator.xml"
 
     echo
     echo "Compiling and mutating subject program..."
@@ -692,10 +707,10 @@ for i in $(seq 1 "$NUM_LOOP"); do
       LOGGED_TIME="$SECONDS_PER_CLASS"
     fi
     row="$FEATURE_NAME,$(basename "$SRC_JAR"),$LOGGED_TIME,0,$instruction_coverage,$branch_coverage,$mutation_score"
-    # $OUTPUT_FILE is a csv file that contains a record of each pass.
+    # $RESULTS_CSV is a csv file that contains a record of each pass.
     # On Unix, ">>" is generally atomic as long as the content is small enough
     # (usually the limit is at least 1024).
-    echo -e "$row" >> "$OUTPUT_FILE"
+    echo -e "$row" >> "$RESULTS_CSV"
 
     # Copy the test suites to results directory
     echo "Copying test suites to results directory..."

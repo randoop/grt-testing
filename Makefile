@@ -1,5 +1,18 @@
 all: style-fix style-check
 
+clean:
+	rm -rf "$GRT_TESTING_ROOT"/build/bin/*
+	rm -rf "$GRT_TESTING_ROOT"/build/evosuite-report/*
+	rm -rf "$GRT_TESTING_ROOT"/build/evosuite-tests/*
+	rm -rf "$GRT_TESTING_ROOT"/build/lib/*
+	rm -rf "$GRT_TESTING_ROOT"/build/randoop-tests/*
+	rm -rf "$GRT_TESTING_ROOT"/build/target/*
+
+
+###########################################################################
+### Style
+###
+
 style-fix: python-style-fix shell-style-fix
 style-check: python-style-check python-typecheck shell-style-check
 
@@ -50,10 +63,10 @@ endif
 
 style-fix: markdownlint-fix
 markdownlint-fix:
-	markdownlint-cli2 --fix .
+	markdownlint-cli2 --fix "**/*.md" "#node_modules"
 style-check: markdownlint-check
 markdownlint-check:
-	markdownlint-cli2 .
+	markdownlint-cli2 "**/*.md" "#node_modules"
 
 showvars:
 	@echo "PYTHON_FILES=${PYTHON_FILES}"
