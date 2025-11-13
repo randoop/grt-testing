@@ -48,11 +48,6 @@ USAGE_STRING="usage: mutation-randoop.sh [-f features] [-a] [-o RESULTS_CSV] [-t
 set -e
 set -o pipefail
 
-if [ $# -eq 0 ]; then
-  echo "$0: $USAGE_STRING"
-  exit 1
-fi
-
 #===============================================================================
 # Environment Setup
 #===============================================================================
@@ -67,6 +62,7 @@ fi
 Generator=Randoop
 generator=randoop
 SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)"
+SCRIPT_NAME=$(basename -- "$0")
 MAJOR_HOME=$(realpath "${SCRIPT_DIR}/build/major/")                     # Major home directory, for mutation testing
 RANDOOP_JAR=$(realpath "${SCRIPT_DIR}/build/randoop-all-4.3.4.jar")     # Randoop jar file
 JACOCO_AGENT_JAR=$(realpath "${SCRIPT_DIR}/build/jacocoagent.jar")      # For Bloodhound
@@ -76,6 +72,11 @@ REPLACECALL_JAR=$(realpath "${SCRIPT_DIR}/build/replacecall-4.3.4.jar") # For re
 #===============================================================================
 # Argument Parsing & Experiment Configuration
 #===============================================================================
+
+if [ $# -eq 0 ]; then
+  echo "${SCRIPT_NAME}: $USAGE_STRING"
+  exit 2
+fi
 
 NUM_LOOP=1      # Number of experiment runs (10 in GRT paper)
 VERBOSE=0       # Verbose option

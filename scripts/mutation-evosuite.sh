@@ -44,11 +44,6 @@ USAGE_STRING="usage: mutation-evosuite.sh [-o RESULTS_CSV] [-t total_time] [-c t
 set -e
 set -o pipefail
 
-if [ $# -eq 0 ]; then
-  echo "$0: $USAGE_STRING"
-  exit 1
-fi
-
 #===============================================================================
 # Environment Setup
 #===============================================================================
@@ -63,6 +58,7 @@ fi
 Generator=EvoSuite
 generator=evosuite
 SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)"
+SCRIPT_NAME=$(basename -- "$0")
 MAJOR_HOME=$(realpath "${SCRIPT_DIR}/build/major/")               # Major home directory, for mutation testing
 EVOSUITE_JAR=$(realpath "${SCRIPT_DIR}/build/evosuite-1.2.0.jar") # EvoSuite jar file
 JACOCO_CLI_JAR=$(realpath "${SCRIPT_DIR}/build/jacococli.jar")    # For coverage report generation
@@ -70,6 +66,11 @@ JACOCO_CLI_JAR=$(realpath "${SCRIPT_DIR}/build/jacococli.jar")    # For coverage
 #===============================================================================
 # Argument Parsing & Experiment Configuration
 #===============================================================================
+
+if [ $# -eq 0 ]; then
+  echo "${SCRIPT_NAME}: $USAGE_STRING"
+  exit 2
+fi
 
 NUM_LOOP=1      # Number of experiment runs (10 in GRT paper)
 VERBOSE=0       # Verbose option
@@ -125,7 +126,7 @@ done
 shift $((OPTIND - 1))
 
 if [[ -z "$RESULTS_CSV" ]]; then
-  echo "No -o command-line argument given."
+  echo "${SCRIPT_NAME}: No -o command-line argument given."
   exit 2
 fi
 
