@@ -10,33 +10,11 @@ These scripts execute various configurations of the mutation analysis and defect
 detection driver scripts, collect results, and generate the corresponding
 figures and tables.
 
-### Setup
+## Setup
 
 To set up the environment, refer to the `scripts/prerequisites.md` file.
 
-#### Python Dependencies
-
-Before running any experiment scripts, ensure the following Python packages are installed:
-
-* `pandas`
-* `matplotlib`
-* `seaborn`
-
-Install these packages using your preferred Python package manager. For example:
-
-**With pip:**
-
-```sh
-pip install pandas matplotlib seaborn
-```
-
-**With uv:**
-
-```sh
-uv pip install pandas matplotlib seaborn
-```
-
-### Running Scripts
+## Running Scripts
 
 To generate the desired figures or tables from the paper, run the corresponding
 shell script. For example, to generate **Figure 7**, use:
@@ -45,7 +23,7 @@ shell script. For example, to generate **Figure 7**, use:
 ./mutation-fig7.sh
 ```
 
-* To generate **Table 4 (defect detection)**:
+To generate **Table 4 (defect detection)**:
 
 ```sh
 ./defects4j-table4.sh
@@ -57,7 +35,7 @@ Each script is documented at the top of its file with:
 * What input parameters or configuration it expects
 * What output files it will produce and where
 
-### Output
+## Output
 
 Each experiment script writes its output to the `results/` directory. This includes:
 

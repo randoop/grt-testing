@@ -42,11 +42,8 @@ if [ -z "$PYTHON_EXECUTABLE" ]; then
   exit 1
 fi
 
-# Clean up previous run artifacts
-rm -rf "$GRT_TESTING_ROOT"/build/defects4j-src/*
-rm -rf "$GRT_TESTING_ROOT"/build/randoop-tests/*
-rm -rf "$GRT_TESTING_ROOT"/build/evosuite-tests/*
-rm -rf "$GRT_TESTING_ROOT"/build/evosuite-report/*
+# Clean up previous run artifacts.
+make -C "$GRT_TESTING_ROOT" clean
 rm -f "$GRT_TESTING_ROOT"/results/table4.pdf
 rm -f "$GRT_TESTING_ROOT"/results/table4.csv
 

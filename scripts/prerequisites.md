@@ -73,6 +73,6 @@ export JAVA11_HOME=/path/to/your/java11
 This is needed because different scripts require different Java versions:
 
 * **Defect scripts** (via [Defects4J](https://github.com/rjust/defects4j))
-require **Java 11**.
+  require **Java 11**.
 * **Mutation scripts** (via [Major](https://github.com/rjust/major))
-require **Java 8**.
+  require **Java 8**.

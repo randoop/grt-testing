@@ -561,10 +561,11 @@ for i in $(seq 1 "$NUM_LOOP"); do
     exec 1>> "$RESULT_DIR"/mutation_output.txt 2>&1
   fi
 
-  # We cd into the result directory because Randoop generates jacoco.exec in the
-  # directory in which it is run. This is a concurrency issue since multiple
-  # runs will output a jacoco file to the exact same spot. Each result directory
-  # is unique to each instance of this script.
+  # We cd into the result directory (which is unique to each execution
+  # of this script) because Randoop generates `jacoco.exec` in the
+  # directory in which it is run. Otherwise, there would be a
+  # concurrency issue since multiple runs will output a jacoco file to
+  # the exact same spot.
   cd "$RESULT_DIR"
 
   GENERATOR_COMMAND=(
