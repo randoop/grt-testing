@@ -67,11 +67,12 @@ fi
 Generator=Randoop
 generator=randoop
 SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)"
-MAJOR_HOME=$(realpath "${SCRIPT_DIR}/build/major/")                     # Major home directory, for mutation testing
-RANDOOP_JAR=$(realpath "${SCRIPT_DIR}/build/randoop-all-4.3.4.jar")     # Randoop jar file
-JACOCO_AGENT_JAR=$(realpath "${SCRIPT_DIR}/build/jacocoagent.jar")      # For Bloodhound
-JACOCO_CLI_JAR=$(realpath "${SCRIPT_DIR}/build/jacococli.jar")          # For coverage report generation
-REPLACECALL_JAR=$(realpath "${SCRIPT_DIR}/build/replacecall-4.3.4.jar") # For replacing undesired method calls
+MAJOR_HOME=$(realpath "${SCRIPT_DIR}/build/major/")                                                # Major home directory, for mutation testing
+RANDOOP_JAR=$(realpath "${SCRIPT_DIR}/build/randoop-all-4.3.4.jar")                                # Randoop jar file
+JACOCO_AGENT_JAR=$(realpath "${SCRIPT_DIR}/build/jacocoagent.jar")                                 # For Bloodhound
+JACOCO_CLI_JAR=$(realpath "${SCRIPT_DIR}/build/jacococli.jar")                                     # For coverage report generation
+REPLACECALL_JAR=$(realpath "${SCRIPT_DIR}/build/replacecall-4.3.4.jar")                            # For replacing undesired method calls
+CHECKER_QUAL_JAR=$(realpath "${SCRIPT_DIR}/build/checker-framework/checker/dist/checker-qual.jar") # For Randoop Impurity
 
 #===============================================================================
 # Argument Parsing & Experiment Configuration
@@ -190,7 +191,13 @@ echo
 SRC_BASE_DIR="$(realpath "$SCRIPT_DIR/../subject-programs/src/$SUBJECT_PROGRAM")"
 
 # Path to the jar file of the subject program.
-SRC_JAR=$(realpath "$SCRIPT_DIR/../subject-programs/$SUBJECT_PROGRAM.jar")
+if [[ " ${RANDOOP_FEATURES[*]} " =~ "GRT_FUZZING" ]]; then
+  # If randoop features contain "GRT_FUZZING", use annotated subject program jar.
+  SRC_JAR=$(realpath "$SCRIPT_DIR/../subject-programs/annotated-jars/$SUBJECT_PROGRAM.jar")
+else
+  # Else, use the original subject program jar.
+  SRC_JAR=$(realpath "$SCRIPT_DIR/../subject-programs/jars/$SUBJECT_PROGRAM.jar")
+fi
 
 # Number of classes in given jar file.
 NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
@@ -323,7 +330,7 @@ case "$SUBJECT_PROGRAM" in
       "$SRC_BASE_DIR/lib/jaxen-core.jar" \
       "$SRC_BASE_DIR/lib/jaxen-jdom.jar" \
       "$SRC_BASE_DIR/lib/saxpath.jar" \
-      "$SCRIPT_DIR/../subject-programs/jaxen-1.1.6.jar"
+      "$SCRIPT_DIR/../subject-programs/jars/jaxen-1.1.6.jar"
     ;;
 
   "joda-time-2.3")
@@ -426,7 +433,7 @@ RANDOOP_BASE_COMMAND=(
   -Xbootclasspath/a:"$JACOCO_AGENT_JAR:$REPLACECALL_JAR"
   -javaagent:"$JACOCO_AGENT_JAR"
   -javaagent:"$REPLACECALL_COMMAND"
-  -classpath "$RANDOOP_CLASSPATH:$RANDOOP_JAR"
+  -classpath "$RANDOOP_CLASSPATH:$RANDOOP_JAR:$CHECKER_QUAL_JAR"
   randoop.main.Main
   gentests
   --testjar="$TARGET_JAR"
