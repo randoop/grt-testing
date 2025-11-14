@@ -56,6 +56,8 @@ SCRIPT_NAME=$(basename -- "$0")
 DEFECTS4J_HOME=$(realpath "${SCRIPT_DIR}/build/defects4j/")       # Defects4j home directory
 EVOSUITE_JAR=$(realpath "${SCRIPT_DIR}/build/evosuite-1.2.0.jar") # EvoSuite jar file
 
+. "$SCRIPT_DIR/defs.sh" # Define shell functions.
+
 command -v defects4j > /dev/null 2>&1 || {
   echo "${SCRIPT_NAME}: error: defects4j not on PATH." >&2
   exit 2
@@ -69,7 +71,6 @@ command -v defects4j > /dev/null 2>&1 || {
   exit 2
 }
 
-. "$SCRIPT_DIR/defs.sh" # Define shell functions.
 usejdk11
 JAVA_VER=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '{print ($1=="1")?$2:$1}')
 if [[ "$JAVA_VER" -ne 11 ]]; then
@@ -201,14 +202,10 @@ for i in $(seq 1 "$NUM_LOOP"); do
   fi
 
   # Create the experiment results CSV file with a header row if it doesn't already exist.
-  {
-    exec {fd}>> "$SCRIPT_DIR/results/$RESULTS_CSV"
-    flock "$fd"
-    if [ ! -s "$SCRIPT_DIR/results/$RESULTS_CSV" ]; then
-      echo "ProjectId,Version,TestSuiteSource,Test,TestClassification,NumTrigger,TimeLimit" >&"$fd"
-    fi
-    exec {fd}>&-
-  }
+  append_csv \
+  "$SCRIPT_DIR/results/$RESULTS_CSV" \
+  "ProjectId,Version,TestSuiteSource,Test,TestClassification,NumTrigger,TimeLimit" \
+  true
 
   #===============================================================================
   # Checkout and Setup Defects4J Project
@@ -302,12 +299,10 @@ for i in $(seq 1 "$NUM_LOOP"); do
   #===============================================================================
 
   echo "Appending results to output file $RESULTS_CSV..."
-  {
-    exec {fd}>> "$SCRIPT_DIR/results/$RESULTS_CSV"
-    flock "$fd"
-    tr -d '\r' < "$RESULT_DIR/bug_detection" | tail -n +2 | awk -v time_limit="$TIME_LIMIT" 'NF > 0 {print $0 "," time_limit}' >&"$fd"
-    exec {fd}>&-
-  }
+  append_csv \
+  "$SCRIPT_DIR/results/$RESULTS_CSV" \
+  "ProjectId,Version,TestSuiteSource,Test,TestClassification,NumTrigger,TimeLimit" \
+  "tr -d '\r' < \"$RESULT_DIR/bug_detection\" | tail -n +2 | awk -v time_limit=\"$TIME_LIMIT\" 'NF > 0 {print \$0 \",\" time_limit}'"
 
   if [[ "$REDIRECT" -eq 1 ]]; then
     exec 1>&3 2>&4

@@ -13,7 +13,7 @@ This script supports generation of the following figures:
 - Figure 7: Branch coverage distribution by GRT component.
 - Figures 8-9: Line plots showing the progression of branch coverage over time for each GRT
   component on two hand-picked subject programs.
-- Table IV: Number of real faults detected by GRT, Randoop, and EvoSuite on four Defects4J subject programs 
+- Table IV: Number of real bugs detected by GRT, Randoop, and EvoSuite on four Defects4J projects 
   under different time budgets (120s, 300s, and 600s). Results are aggregated over 10 runs per fault.  
 
 Usage (for reference only):

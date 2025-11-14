@@ -515,14 +515,10 @@ echo
 
 # Create the experiment results CSV file with a header row if it doesn't already exist.
 mkdir -p "$SCRIPT_DIR/results"
-{
-  exec {fd}>> "$SCRIPT_DIR/results/$RESULTS_CSV"
-  flock "$fd"
-  if [ ! -s "$SCRIPT_DIR/results/$RESULTS_CSV" ]; then
-    echo "Version,FileName,TimeLimit,Seed,InstructionCoverage,BranchCoverage,MutationScore" >&"$fd"
-  fi
-  exec {fd}>&-
-}
+append_csv \
+  "$SCRIPT_DIR/results/$RESULTS_CSV" \
+  "Version,FileName,TimeLimit,Seed,InstructionCoverage,BranchCoverage,MutationScore" \
+  true
 
 #===============================================================================
 # Test Generation & Execution
@@ -679,12 +675,10 @@ for i in $(seq 1 "$NUM_LOOP"); do
   fi
   row="$FEATURE_SUFFIX,$(basename "$SRC_JAR"),$LOGGED_TIME,0,$instruction_coverage,$branch_coverage,$mutation_score"
   # $RESULTS_CSV is updated under an exclusive flock via a dedicated fd to prevent interleaving.
-  {
-    exec {fd}>> "$SCRIPT_DIR/results/$RESULTS_CSV"
-    flock "$fd"
-    echo "$row" >&"$fd"
-    exec {fd}>&-
-  }
+  append_csv \
+  "$SCRIPT_DIR/results/$RESULTS_CSV" \
+  "ProjectId,Version,TestSuiteSource,Test,TestClassification,NumTrigger,TimeLimit" \
+  "echo \"$row\""
 
   # Copy the test suites to results directory
   echo "Copying test suites to results directory..."

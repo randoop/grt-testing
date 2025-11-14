@@ -2,6 +2,27 @@
 
 # This file defines shell functions.
 
+append_csv() {
+  local csv_file="$1"
+  local header="$2"
+  shift 2
+
+  {
+    exec {fd}>>"$csv_file"
+    flock "$fd"
+
+    # Write header if file is empty
+    if [ ! -s "$csv_file" ]; then
+      echo "$header" >&"$fd"
+    fi
+
+    # Run the caller's commands inside the file lock
+    eval "$@" >&"$fd"
+
+    exec {fd}>&-
+  }
+}
+
 require_file() {
   [ -f "$1" ] || {
     echo "${SCRIPT_NAME}: error: Missing file $1" >&2
@@ -21,7 +42,7 @@ require_csv_basename() {
     echo "${SCRIPT_NAME}: error: -o expects a filename only (no paths). Given: $1" >&2
     exit 2
   fi
-  if [[ "$1" == *.csv ]]; then
+  if [[ "$1" != *.csv ]]; then
     echo "${SCRIPT_NAME}: error: -o must end with .csv.  Given: $1" >&2
     exit 2
   fi
