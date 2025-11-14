@@ -51,6 +51,8 @@ set -o pipefail
 # Environment Setup
 #===============================================================================
 
+Generator=EvoSuite
+generator=evosuite
 SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)"
 SCRIPT_NAME=$(basename -- "$0")
 DEFECTS4J_HOME=$(realpath "${SCRIPT_DIR}/build/defects4j/")       # Defects4j home directory
@@ -169,7 +171,7 @@ if [[ -z "$PROJECT_ID" ]]; then
   exit 2
 fi
 
-echo "Running defect detection on $PROJECT_ID for bug $BUG_ID with EvoSuite..."
+echo "Running defect detection on $PROJECT_ID for bug $BUG_ID with ${Generator}..."
 echo
 
 #===============================================================================
@@ -179,8 +181,8 @@ echo
 FILE_SUFFIX="$PROJECT_ID-EVOSUITE-$UUID"
 
 FIXED_WORK_DIR="$SCRIPT_DIR/build/defects4j-src/$PROJECT_ID-${BUG_ID}f/$FILE_SUFFIX"
-TEST_DIR="$SCRIPT_DIR/build/evosuite-tests/$FILE_SUFFIX"
-REPORT_DIR="$SCRIPT_DIR/build/evosuite-report/$FILE_SUFFIX"
+TEST_DIR="$SCRIPT_DIR/build/${generator}-tests/$FILE_SUFFIX"
+REPORT_DIR="$SCRIPT_DIR/build/${generator}-report/$FILE_SUFFIX"
 RELEVANT_CLASSES_FILE="$TEST_DIR/relevant_classes.txt"
 RESULT_DIR="$SCRIPT_DIR/results/$FILE_SUFFIX"
 
@@ -193,10 +195,10 @@ for i in $(seq 1 "$NUM_LOOP"); do
   touch "$RELEVANT_CLASSES_FILE"
 
   # Handle optional redirection of logs/diagnostic messages.
-  # (if -r is specified, send logs to results/result/defects4j_output.txt)
+  # (if -r is specified, send output to results/result/defects4j_output.txt)
   if [[ "$REDIRECT" -eq 1 ]]; then
     touch "$RESULT_DIR/defects4j_output.txt"
-    echo "Redirecting logs to $RESULT_DIR/defects4j_output.txt..."
+    echo "Redirecting output to $RESULT_DIR/defects4j_output.txt..."
     exec 3>&1 4>&2
     exec 1>> "$RESULT_DIR/defects4j_output.txt" 2>&1
   fi
@@ -244,7 +246,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
   # Test Generation
   #===============================================================================
 
-  echo "Generating tests with EvoSuite..."
+  echo "Generating tests with ${Generator}..."
   while IFS= read -r CLASS; do
     EVOSUITE_COMMAND=(
       java
@@ -259,7 +261,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
     )
 
     if [ "$VERBOSE" -eq 1 ]; then
-      echo "EvoSuite command:"
+      echo "${Generator} command:"
       echo "${EVOSUITE_COMMAND[@]}"
       echo
     fi
@@ -275,10 +277,12 @@ for i in $(seq 1 "$NUM_LOOP"); do
   # Run Bug Detection
   #===============================================================================
 
+  TAR_SUFFIX="${generator}"
+
   # run_bug_detection.pl expects a tar.bz2 file of the tests
   (
     cd "$TEST_DIR" \
-      && tar -cjf "${PROJECT_ID}-${BUG_ID}f-evosuite.tar.bz2" . \
+      && tar -cjf "${PROJECT_ID}-${BUG_ID}f-${TAR_SUFFIX}.tar.bz2" . \
       || {
         rc=$?
         if [ $rc -eq 1 ]; then echo "Warning ignored: tar returned code 1"; else exit $rc; fi

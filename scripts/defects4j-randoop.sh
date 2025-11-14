@@ -54,6 +54,8 @@ set -o pipefail
 # Environment Setup
 #===============================================================================
 
+Generator=Randoop
+generator=randoop
 SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)"
 SCRIPT_NAME=$(basename -- "$0")
 DEFECTS4J_HOME=$(realpath "${SCRIPT_DIR}/build/defects4j/")             # Defects4j home directory
@@ -208,7 +210,7 @@ if [[ -z "$PROJECT_ID" ]]; then
   exit 2
 fi
 
-echo "Running defect detection on $PROJECT_ID for bug $BUG_ID with Randoop..."
+echo "Running defect detection on $PROJECT_ID for bug $BUG_ID with ${Generator}..."
 echo
 
 #===============================================================================
@@ -222,7 +224,7 @@ FEATURE_SUFFIX=$(
 FILE_SUFFIX="$PROJECT_ID-$FEATURE_SUFFIX-$UUID"
 
 FIXED_WORK_DIR="$SCRIPT_DIR/build/defects4j-src/$PROJECT_ID-${BUG_ID}f/$FILE_SUFFIX"
-TEST_DIR="$SCRIPT_DIR/build/randoop-tests/$FILE_SUFFIX"
+TEST_DIR="$SCRIPT_DIR/build/${generator}-tests/$FILE_SUFFIX"
 RELEVANT_CLASSES_FILE="$TEST_DIR/relevant_classes.txt"
 RESULT_DIR="$SCRIPT_DIR/results/$FILE_SUFFIX"
 
@@ -235,7 +237,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
   touch "$RELEVANT_CLASSES_FILE"
 
   # Handle optional redirection of logs/diagnostic messages.
-  # (if -r is specified, send logs to results/result/defects4j_output.txt)
+  # (if -r is specified, send output to results/result/defects4j_output.txt)
   if [[ "$REDIRECT" -eq 1 ]]; then
     touch "$RESULT_DIR/defects4j_output.txt"
     echo "Redirecting output to $RESULT_DIR/defects4j_output.txt..."
@@ -283,7 +285,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
   # Test Generation
   #===============================================================================
 
-  echo "Generating tests with Randoop..."
+  echo "Generating tests with ${Generator}..."
   RANDOOP_COMMAND=(
     java
     -Xbootclasspath/a:"$JACOCO_AGENT_JAR:$REPLACECALL_JAR"
@@ -303,7 +305,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
   )
 
   if [ "$VERBOSE" -eq 1 ]; then
-    echo "Randoop command:"
+    echo "${Generator} command:"
     echo "${RANDOOP_COMMAND[@]}"
     echo
   fi
