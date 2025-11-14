@@ -4,7 +4,7 @@ This script is **not intended to be run directly**.  Instead, use one of these s
     ./mutation-fig6-table3.sh
     ./mutation-fig7.sh
     ./mutation-fig8-9.sh
-    ./defect-table4.sh
+    ./defects4j-table4.sh
 
 This script supports generation of the following figures:
 

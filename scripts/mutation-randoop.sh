@@ -677,7 +677,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
   # $RESULTS_CSV is updated under an exclusive flock via a dedicated fd to prevent interleaving.
   append_csv \
     "$SCRIPT_DIR/results/$RESULTS_CSV" \
-    "ProjectId,Version,TestSuiteSource,Test,TestClassification,NumTrigger,TimeLimit" \
+    "Version,FileName,TimeLimit,Seed,InstructionCoverage,BranchCoverage,MutationScore" \
     "echo \"$row\""
 
   # Copy the test suites to results directory

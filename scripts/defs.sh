@@ -17,6 +17,7 @@ append_csv() {
     fi
 
     # Run the caller's commands inside the file lock
+    # shellcheck disable=SC2294
     eval "$@" >&"$fd"
 
     exec {fd}>&-
