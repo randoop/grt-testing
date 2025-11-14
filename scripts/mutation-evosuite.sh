@@ -566,9 +566,9 @@ for i in $(seq 1 "$NUM_LOOP"); do
   row="$Generator,$(basename "$SRC_JAR"),$LOGGED_TIME,0,$instruction_coverage,$branch_coverage,$mutation_score"
   # $RESULTS_CSV is updated under an exclusive flock via a dedicated fd to prevent interleaving.
   append_csv \
-  "$SCRIPT_DIR/results/$RESULTS_CSV" \
-  "ProjectId,Version,TestSuiteSource,Test,TestClassification,NumTrigger,TimeLimit" \
-  "echo \"$row\""
+    "$SCRIPT_DIR/results/$RESULTS_CSV" \
+    "ProjectId,Version,TestSuiteSource,Test,TestClassification,NumTrigger,TimeLimit" \
+    "echo \"$row\""
 
   # Copy the test suites to results directory
   echo "Copying test suites to results directory..."

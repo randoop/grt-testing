@@ -8,7 +8,7 @@ append_csv() {
   shift 2
 
   {
-    exec {fd}>>"$csv_file"
+    exec {fd}>> "$csv_file"
     flock "$fd"
 
     # Write header if file is empty

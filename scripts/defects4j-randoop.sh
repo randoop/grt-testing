@@ -245,9 +245,9 @@ for i in $(seq 1 "$NUM_LOOP"); do
 
   # Create the experiment results CSV file with a header row if it doesn't already exist.
   append_csv \
-  "$SCRIPT_DIR/results/$RESULTS_CSV" \
-  "ProjectId,Version,TestSuiteSource,Test,TestClassification,NumTrigger,TimeLimit" \
-  true
+    "$SCRIPT_DIR/results/$RESULTS_CSV" \
+    "ProjectId,Version,TestSuiteSource,Test,TestClassification,NumTrigger,TimeLimit" \
+    true
 
   #===============================================================================
   # Checkout and Setup Defects4J Project
@@ -351,9 +351,9 @@ for i in $(seq 1 "$NUM_LOOP"); do
 
   echo "Appending results to output file $RESULTS_CSV..."
   append_csv \
-  "$SCRIPT_DIR/results/$RESULTS_CSV" \
-  "ProjectId,Version,TestSuiteSource,Test,TestClassification,NumTrigger,TimeLimit" \
-  "tr -d '\r' < \"$RESULT_DIR/bug_detection\" | tail -n +2 | awk -v time_limit=\"$TIME_LIMIT\" 'NF > 0 {print \$0 \",\" time_limit}'"
+    "$SCRIPT_DIR/results/$RESULTS_CSV" \
+    "ProjectId,Version,TestSuiteSource,Test,TestClassification,NumTrigger,TimeLimit" \
+    "tr -d '\r' < \"$RESULT_DIR/bug_detection\" | tail -n +2 | awk -v time_limit=\"$TIME_LIMIT\" 'NF > 0 {print \$0 \",\" time_limit}'"
 
   if [[ "$REDIRECT" -eq 1 ]]; then
     exec 1>&3 2>&4
