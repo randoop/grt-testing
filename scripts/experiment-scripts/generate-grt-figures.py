@@ -4,6 +4,7 @@ This script is **not intended to be run directly**.  Instead, use one of these s
     ./mutation-fig6-table3.sh
     ./mutation-fig7.sh
     ./mutation-fig8-9.sh
+    ./defects4j-table4.sh
 
 This script supports generation of the following figures:
 
@@ -12,9 +13,11 @@ This script supports generation of the following figures:
 - Figure 7: Branch coverage distribution by GRT component.
 - Figures 8-9: Line plots showing the progression of branch coverage over time for each GRT
   component on two hand-picked subject programs.
+- Table IV: Number of real bugs detected by GRT, Randoop, and EvoSuite on four Defects4J projects 
+  under different time budgets (120s, 300s, and 600s). Results are aggregated over 10 runs per fault.  
 
 Usage (for reference only):
-    python generate-grt-figures.py { fig6-table3 | fig7 | fig8-9 }
+    python generate-grt-figures.py { fig6-table3 | fig7 | fig8-9 | table4 }
 """
 
 
@@ -34,12 +37,17 @@ def main():
     """Parse arguments, load and process data, and save the selected figure type."""
     parser = argparse.ArgumentParser(description="Generate figures from coverage data.")
     parser.add_argument(
-        "figure", choices=["fig6-table3", "fig7", "fig8-9"], help="Figure to generate"
+        "figure", choices=["fig6-table3", "fig7", "fig8-9", "table4"], help="Figure to generate"
     )
     args = parser.parse_args()
 
-    df = average_over_loops(load_data(f"../results/{args.figure}.csv"))
-    save_to_pdf(df, args.figure)
+    raw_df = load_data(f"../results/{args.figure}.csv")
+
+    if args.figure == "table4":
+        save_to_pdf(raw_df, args.figure)
+    else:
+        df = average_over_loops(raw_df)
+        save_to_pdf(df, args.figure)
 
 
 def load_data(csv_file: str) -> pd.DataFrame:
@@ -252,6 +260,60 @@ def generate_fig_8_9(df: pd.DataFrame) -> list[mpl.figure.Figure]:
 
     return figures
 
+def generate_table_4(df: pd.DataFrame) -> mpl.figure.Figure:
+    """
+    Generate Table IV: Number of real faults detected by each tool (GRT, Randoop, EvoSuite)
+    on different subject programs under different time budgets.
+
+    Args:
+        df: Raw data loaded from the CSV for table4.
+
+    Returns:
+        Matplotlib Figure object containing the table.
+    """
+    df.columns = [col.strip() for col in df.columns]
+    df['TestClassification'] = df['TestClassification'].str.strip().str.lower()
+
+    # Mark each bug (Version) as detected if ANY test case for it fails.
+    df['Detected'] = df['TestClassification'] == 'fail'
+    bug_detection = (
+        df.groupby(['ProjectId', 'Version', 'TimeLimit', 'TestSuiteSource'])['Detected']
+        .any()
+        .reset_index()
+    )
+
+    # Count how many bugs were detected per (ProjectId, TimeLimit, TestSuiteSource).
+    summary = (
+        bug_detection.groupby(['ProjectId', 'TimeLimit', 'TestSuiteSource'])['Detected']
+        .sum()
+        .reset_index()
+        .rename(columns={'Detected': 'FaultsDetected'})
+    )
+
+    # Pivot for better tabular display.
+    table_data = summary.pivot_table(
+        index=['ProjectId', 'TimeLimit'],
+        columns='TestSuiteSource',
+        values='FaultsDetected',
+        fill_value=0,
+    ).reset_index()
+
+    # Create figure and table.
+    fig = plt.figure(figsize=(10, 6))
+    plt.axis("off")
+
+    # Table headers.
+    headers = ["Project", "Time"] + list(table_data.columns[2:])
+    cell_data = [headers] + table_data.values.tolist()
+
+    table = plt.table(cellText=cell_data, loc="center", cellLoc="center")
+    table.auto_set_font_size(False)
+    table.set_fontsize(10)
+    table.scale(1, 1.5)
+
+    fig.suptitle("Table IV: Real Faults Detected by Tool and Time Budget", fontsize=16, weight="bold")
+    return fig
+
 
 def save_to_pdf(df: pd.DataFrame, fig_type: str):
     """
@@ -269,7 +331,6 @@ def save_to_pdf(df: pd.DataFrame, fig_type: str):
             pdf.savefig(table_3)
             plt.close(table_3)
 
-
             fig_6 = generate_fig_6(df)
             pdf.savefig(fig_6)
             plt.close(fig_6)
@@ -284,6 +345,11 @@ def save_to_pdf(df: pd.DataFrame, fig_type: str):
             for fig in figs:
                 pdf.savefig(fig)
                 plt.close(fig)
+
+        elif fig_type == "table4":
+            fig = generate_table_4(df)
+            pdf.savefig(fig)
+            plt.close(fig)
 
         else:
             print("Unknown figure type. Use one of: fig6-table3, fig7, fig8-9.")

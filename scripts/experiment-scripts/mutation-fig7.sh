@@ -37,7 +37,7 @@ SCRIPT_NAME=$(basename -- "$0")
 GRT_TESTING_ROOT="$(realpath "$SCRIPT_DIR"/../)"
 . "$SCRIPT_DIR"/common.sh
 
-# Clean up previous run artifacts
+# Clean up previous run artifacts.
 make -C "$GRT_TESTING_ROOT" clean
 rm -f "$GRT_TESTING_ROOT"/results/fig7.pdf
 rm -f "$GRT_TESTING_ROOT"/results/fig7.csv

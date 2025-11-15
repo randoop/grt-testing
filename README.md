@@ -9,6 +9,15 @@ specifically for comparison with
 the results presented in the paper "[GRT: Program-Analysis-Guided Random
 Testing](GRT_Program-Analysis-Guided_Random_Testing.pdf)"
 
+The GRT paper uses two methods of evaluation:
+
+1. **Mutation analysis** measures how well generated tests kill artificially
+  seeded faults (mutants).
+2. **Defect detection** measures the ability of generated tests to detect
+  known real-world defects.
+
+This repository provides scripts and setup files for running both kinds of evaluation.
+
 ## Usage Instructions
 
 ### Setup
@@ -17,9 +26,15 @@ To set up the environment, refer to the `scripts/prerequisites.md` file.
 
 ### Running Scripts
 
-For prerequisities, refer to `scripts/mutation-prerequisities.md`.
-For instructions on using the scripts, refer to `scripts/mutation-randoop.sh`
-for Randoop and `scripts/mutation-evosuite.sh` for EvoSuite.
+For mutation analysis see:
+
+* `scripts/mutation-randoop.sh` for Randoop
+* `scripts/mutation-evosuite.sh` for EvoSuite
+
+For defect detection see:
+
+* `scripts/defects4j-randoop.sh` for Randoop
+* `scripts/defects4j-evosuite.sh` for EvoSuite
 
 ### Running GRT Experiments
 

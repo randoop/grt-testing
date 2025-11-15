@@ -24,7 +24,9 @@
 # Options (command-line arguments):
 #------------------------------------------------------------------------------
 USAGE_STRING="usage: mutation-evosuite.sh [-o RESULTS_CSV] [-t total_time] [-c time_per_class] [-n num_iterations] [-r] [-v] [-h] TEST-CASE-NAME
-  -o N  Csv output filename; should end in \".csv\"; if relative, should not include a directory name.
+  -o N  Write experiment results to this CSV file (N should end in '.csv').
+        If the file does not exist, a header row will be created automatically.
+        Paths are not allowed; only a filename may be given.
   -t N  Total time limit for test generation (in seconds).
   -c N  Per-class time limit (in seconds, default: 2s/class).
         Mutually exclusive with -t.
@@ -48,13 +50,6 @@ set -o pipefail
 # Environment Setup
 #===============================================================================
 
-# Requires Java 8
-JAVA_VER=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '{sub("^$", "0", $2); print $1$2}')
-if [[ "$JAVA_VER" -ne 18 ]]; then
-  echo "Error: Java version 8 is required. Please install it and try again."
-  exit 2
-fi
-
 Generator=EvoSuite
 generator=evosuite
 SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)"
@@ -62,6 +57,19 @@ SCRIPT_NAME=$(basename -- "$0")
 MAJOR_HOME=$(realpath "${SCRIPT_DIR}/build/major/")               # Major home directory, for mutation testing
 EVOSUITE_JAR=$(realpath "${SCRIPT_DIR}/build/evosuite-1.2.0.jar") # EvoSuite jar file
 JACOCO_CLI_JAR=$(realpath "${SCRIPT_DIR}/build/jacococli.jar")    # For coverage report generation
+
+. "$SCRIPT_DIR/defs.sh" # Define shell functions.
+
+require_directory "$MAJOR_HOME"
+require_file "$EVOSUITE_JAR"
+require_file "$JACOCO_CLI_JAR"
+
+usejdk8
+JAVA_VER=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '{sub("^$", "0", $2); print ($1=="1")?$2:$1}')
+if [[ "$JAVA_VER" -ne 8 ]]; then
+  echo "Error: Java 8 is required. Set JAVA8_HOME to a JDK 8 installation." >&2
+  exit 2
+fi
 
 #===============================================================================
 # Argument Parsing & Experiment Configuration
@@ -129,6 +137,7 @@ if [[ -z "$RESULTS_CSV" ]]; then
   echo "${SCRIPT_NAME}: No -o command-line argument given."
   exit 2
 fi
+require_csv_basename "$RESULTS_CSV"
 
 # Enforce that mutually exclusive options are not bundled together
 if [[ -n "$TOTAL_TIME" ]] && [[ -n "$SECONDS_PER_CLASS" ]]; then
@@ -143,6 +152,12 @@ fi
 
 # Name of the subject program.
 SUBJECT_PROGRAM="$1"
+
+if [[ -z "$SUBJECT_PROGRAM" ]]; then
+  echo "${SCRIPT_NAME}: error: SUBJECT-PROGRAM is required." >&2
+  echo "$USAGE_STRING"
+  exit 2
+fi
 
 ANT="ant"
 
@@ -397,13 +412,12 @@ EVOSUITE_BASE_COMMAND=(
 echo "Using ${Generator} to generate tests."
 echo
 
-# Handle relative and absolute output files; make sure output file exists.
-RESULTS_DIR="$SCRIPT_DIR/results"
-mkdir -p "$RESULTS_DIR"
-RESULTS_CSV=$(cd "$RESULTS_DIR" && realpath "$RESULTS_CSV")
-if [ ! -f "$RESULTS_CSV" ]; then
-  echo -e "Version,FileName,TimeLimit,Seed,InstructionCoverage,BranchCoverage,MutationScore" > "$RESULTS_CSV"
-fi
+# Create the experiment results CSV file with a header row if it doesn't already exist.
+mkdir -p "$SCRIPT_DIR/results"
+append_csv \
+  "$SCRIPT_DIR/results/$RESULTS_CSV" \
+  "Version,FileName,TimeLimit,Seed,InstructionCoverage,BranchCoverage,MutationScore" \
+  true
 
 #===============================================================================
 # Test Generation & Execution
@@ -549,11 +563,12 @@ for i in $(seq 1 "$NUM_LOOP"); do
   else
     LOGGED_TIME="$SECONDS_PER_CLASS"
   fi
-  row="EVOSUITE,$(basename "$SRC_JAR"),$LOGGED_TIME,0,$instruction_coverage,$branch_coverage,$mutation_score"
-  # $RESULTS_CSV is a csv file that contains a record of each pass.
-  # On Unix, ">>" is generally atomic as long as the content is small enough
-  # (usually the limit is at least 1024).
-  echo -e "$row" >> "$RESULTS_CSV"
+  row="$Generator,$(basename "$SRC_JAR"),$LOGGED_TIME,0,$instruction_coverage,$branch_coverage,$mutation_score"
+  # $RESULTS_CSV is updated under an exclusive flock via a dedicated fd to prevent interleaving.
+  append_csv \
+    "$SCRIPT_DIR/results/$RESULTS_CSV" \
+    "Version,FileName,TimeLimit,Seed,InstructionCoverage,BranchCoverage,MutationScore" \
+    "echo \"$row\""
 
   # Copy the test suites to results directory
   echo "Copying test suites to results directory..."
