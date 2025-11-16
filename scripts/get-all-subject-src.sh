@@ -5,10 +5,11 @@
 # latest changes.
 
 SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)"
+SCRIPT_NAME=$(basename -- "$0")
 
 SUBJECT_SRC_DIR="${SCRIPT_DIR}/../subject-programs/src"
 mkdir -p "${SUBJECT_SRC_DIR}"
-cd "${SUBJECT_SRC_DIR}" || (echo "Directory does not exist: ${SUBJECT_SRC_DIR}" && exit 2)
+cd "${SUBJECT_SRC_DIR}" || (echo "${SCRIPT_NAME}: error: directory does not exist: ${SUBJECT_SRC_DIR}" && exit 2)
 
 grt_clone() {
   printf '%s:' "$1"

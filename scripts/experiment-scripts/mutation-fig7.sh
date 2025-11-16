@@ -33,14 +33,11 @@
 #===============================================================================
 
 SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)"
+SCRIPT_NAME=$(basename -- "$0")
 GRT_TESTING_ROOT="$(realpath "$SCRIPT_DIR"/../)"
 . "$SCRIPT_DIR"/common.sh
 
-pip install pandas
-pip install matplotlib
-pip install seaborn
-
-# Clean up previous run artifacts
+# Clean up previous run artifacts.
 make -C "$GRT_TESTING_ROOT" clean
 rm -f "$GRT_TESTING_ROOT"/results/fig7.pdf
 rm -f "$GRT_TESTING_ROOT"/results/fig7.csv
@@ -65,7 +62,7 @@ FEATURES=(
 )
 
 NUM_CORES=$(num_cores)
-echo "$(basename "$0"): Running $NUM_CORES concurrent processes."
+echo "${SCRIPT_NAME}: Running $NUM_CORES concurrent processes."
 
 #===============================================================================
 # Task Generation & Execution

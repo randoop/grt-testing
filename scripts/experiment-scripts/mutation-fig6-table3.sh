@@ -33,13 +33,10 @@
 #===============================================================================
 
 SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)"
+SCRIPT_NAME=$(basename -- "$0")
 GRT_TESTING_ROOT="$(realpath "$SCRIPT_DIR"/../)"
 
 . "$SCRIPT_DIR"/common.sh
-
-pip install pandas
-pip install matplotlib
-pip install seaborn
 
 # Clean up previous run artifacts.
 make -C "$GRT_TESTING_ROOT" clean
@@ -62,7 +59,7 @@ SUBJECT_PROGRAMS=(
 MODES=(BASELINE EVOSUITE)
 
 NUM_CORES=$(num_cores)
-echo "$(basename "$0"): Running $NUM_CORES concurrent processes."
+echo "${SCRIPT_NAME}: Running $NUM_CORES concurrent processes."
 
 #===============================================================================
 # Task Generation & Execution
@@ -97,7 +94,8 @@ run_task() {
     echo "Running (Baseline): mutation-randoop.sh -c $cseconds -f BASELINE -r -o fig6-table3.csv $program"
     "$GRT_TESTING_ROOT"/mutation-randoop.sh -c "$cseconds" -f BASELINE -r -o fig6-table3.csv "$program"
   else
-    echo "Invalid mode $mode. Please use GRT, EVOSUITE, or BASELINE."
+    echo "${SCRIPT_NAME}: Invalid mode $mode. Please use GRT, EVOSUITE, or BASELINE."
+    exit 2
   fi
 }
 

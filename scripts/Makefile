@@ -13,6 +13,7 @@ all: \
     build/randoop \
     build/randoop-all-4.3.4.jar \
     build/replacecall-4.3.4.jar \
+    build/defects4j \
     results
 
 build/jacoco.jar:
@@ -78,6 +79,10 @@ build/checker-framework/checker/dist/checker-qual.jar:
 	unzip -o checker-framework-$${CFVER}.zip && \
 	rm -rf checker-framework && \
 	mv checker-framework-$${CFVER} checker-framework
+
+build/defects4j:
+	mkdir -p build
+	cd build && git clone https://github.com/rjust/defects4j && cd defects4j && cpanm --installdeps . && ./init.sh
 
 results:
 	mkdir -p results
