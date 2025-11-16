@@ -220,14 +220,20 @@ echo
 # Path to the base directory of the source code.
 SRC_BASE_DIR="$(realpath "$SCRIPT_DIR/../subject-programs/src/$SUBJECT_PROGRAM")"
 
-# Path to the jar file of the subject program.
-if [[ -n "${FEATURE_FLAGS[GRT_FUZZING]}" ]]; then
+if [[ " ${RANDOOP_FEATURES[*]} " =~ " GRT_FUZZING " ]]; then
+  echo "hi"
   # If randoop features contain "GRT_FUZZING", use annotated subject program jar.
-  SRC_JAR=$(realpath "$SCRIPT_DIR/../subject-programs/annotated-jars/$SUBJECT_PROGRAM.jar")
-else
+  ANNOTATED_JAR="$SCRIPT_DIR/../subject-programs/annotated-jars/$SUBJECT_PROGRAM.jar"
+  if [ ! -f "$ANNOTATED_JAR" ]; then
+    echo "${SCRIPT_NAME}: error: GRT_FUZZING enabled but annotated JAR not found: $ANNOTATED_JAR" >&2
+    exit 2
+  fi
+  SRC_JAR=$(realpath "$ANNOTATED_JAR")
+ else
+  echo "hi2"
   # Else, use the original subject program jar.
   SRC_JAR=$(realpath "$SCRIPT_DIR/../subject-programs/jars/$SUBJECT_PROGRAM.jar")
-fi
+ fi
 
 # Number of classes in given jar file.
 NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
