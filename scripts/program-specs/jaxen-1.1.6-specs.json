@@ -139,5 +139,32 @@
     ],
     "post": [],
     "throws": []
+  },
+  {
+    "operation": {
+      "classname": "org.jaxen.expr.DefaultFilterExpr",
+      "name": "asBoolean",
+      "parameterTypes": [
+        "org.jaxen.Context"
+      ]
+    },
+    "identifiers": {
+      "parameters": [
+        "context"
+      ],
+      "receiverName": "receiver",
+      "returnName": "result"
+    },
+    "pre": [
+      {
+        "description": "The node set of context must have size greater than 0",
+        "guard": {
+          "condition": "context.getNodeSet().size() > 0",
+          "description": "The node set of context must have size greater than 0"
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
   }
 ]
