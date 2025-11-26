@@ -10,6 +10,7 @@
 * **Perl** ≥ 5.12
 * **cpanm** (Perl module installer)
   To install `cpanm`:
+
   ```sh
   curl -L https://cpanmin.us | perl - App::cpanminus
   ```
@@ -34,7 +35,9 @@ pip install pandas matplotlib seaborn
 
 ```sh
 uv pip install pandas matplotlib seaborn
-```## Obtaining Dependencies and Subject Programs
+```
+
+## Obtaining Dependencies and Subject Programs
 
 ```sh
 make -C scripts
@@ -52,8 +55,8 @@ the shell session where you run the scripts:
 export PATH=$PATH:"PATH2DEFECTS4J"/framework/bin
 ```
 
-> "PATH2DEFECTS4J" points to the directory which Defects4J is in; it most
->likely will look like "currentdirectory/build/defects4j".
+where "PATH2DEFECTS4J" points to the directory which Defects4J is in; it most
+likely will look like "currentdirectory/build/defects4j".
 
 ### Java Versions Setup
 
