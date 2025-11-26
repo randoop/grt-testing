@@ -21,7 +21,7 @@ The `GRT_FUZZING` feature in `scripts/mutation-randoop.sh` loads these annotated
 3. **Set up inference tooling** – Point your environment at the local Checker
    Framework build:
 
-   ```bash
+   ```sh
    export CHECKERFRAMEWORK=/path/to/grt-testing/scripts/build/checker-framework/checker
    export PATH="$CHECKERFRAMEWORK/../annotation-file-utilities/bin:$PATH"
    export JAVAC_JAR="$CHECKERFRAMEWORK/dist/javac.jar"
@@ -34,7 +34,7 @@ The `GRT_FUZZING` feature in `scripts/mutation-randoop.sh` loads these annotated
        `mvn -q dependency:build-classpath -Dmdep.outputFile=target/wpi-classpath.txt`.
 5. **Run inference** – From the subject directory, execute:
 
-   ```bash
+   ```sh
    $CHECKERFRAMEWORK/bin/infer-and-annotate.sh \
      "org.checkerframework.framework.util.PurityChecker" \
      "$RUNTIME_CLASSPATH" \
@@ -46,7 +46,7 @@ The `GRT_FUZZING` feature in `scripts/mutation-randoop.sh` loads these annotated
 
 ### Worked example (a4j-1.0b)
 
-```bash
+```sh
 cd subject-programs/src/a4j-1.0b
 ant createJar                              # build the baseline JAR
 export CHECKERFRAMEWORK=...                # reuse the env vars above
