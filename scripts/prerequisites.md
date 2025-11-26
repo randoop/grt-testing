@@ -25,13 +25,13 @@ Before running any experiment scripts, ensure the following Python packages are 
 
 Install these packages using your preferred Python package manager. For example:
 
-**With pip:**
+**With `pip`:**
 
 ```sh
 pip install pandas matplotlib seaborn
 ```
 
-**With uv:**
+**With `uv`:**
 
 ```sh
 uv pip install pandas matplotlib seaborn
@@ -46,19 +46,17 @@ cd scripts
 ./get-all-subject-src.sh
 ```
 
-## Environment variables
+## Adding Defects4J to PATH
 
-### Adding Defects4J to PATH
-
-Add Defects4J's executables to your PATH in
+For defect detection scripts, add Defects4J's executables to your PATH in
 the shell session where you run the scripts:
 
 ```sh
 export PATH=$PATH:"PATH2DEFECTS4J"/framework/bin
 ```
 
-> "PATH2DEFECTS4J" points to the directory which Defects4J is in; it most
-> likely will look like "currentdirectory/build/defects4j".
+where "PATH2DEFECTS4J" points to the directory which Defects4J is in; it most
+likely will look like "currentdirectory/build/defects4j".
 
 ### Java Versions Setup
 
