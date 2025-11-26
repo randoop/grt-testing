@@ -6,12 +6,11 @@ This folder contains scripts designed for running the GRT experiments as
 presented in the paper "[GRT: Program-Analysis-Guided Random
 Testing](GRT_Program-Analysis-Guided_Random_Testing.pdf)"
 
-These scripts automate the execution of various configurations of the
-`mutation-randoop.sh` and `mutation-evosuite.sh` driver scripts, collect
-results, and generate the corresponding figures and tables used in the
-evaluation.
+These scripts execute various configurations of the mutation analysis and defect
+detection driver scripts, collect results, and generate the corresponding
+figures and tables.
 
-### Setup
+## Setup
 
 To set up the environment, refer to the `scripts/prerequisites.md` file.
 
@@ -42,17 +41,23 @@ uv pip install pandas matplotlib seaborn
 To generate the desired figures or tables from the paper, run the corresponding
 shell script. For example, to generate **Figure 7**, use:
 
-```bash
+```sh
 ./mutation-fig7.sh
 ```
 
-Each script is documented at the top of the file with:
+To generate **Table 4 (defect detection)**:
+
+```sh
+./defects4j-table4.sh
+```
+
+Each script is documented at the top of its file with:
 
 * What it generates (figure/table)
 * What input parameters or configuration it expects
 * What output files it will produce and where
 
-### Output
+## Output
 
 Each experiment script writes its output to the `results/` directory. This includes:
 

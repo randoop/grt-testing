@@ -6,8 +6,8 @@
 # subject programs.
 
 # Change to the directory this script resides in.
-script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$script_dir" || exit 1
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR" || exit 1
 
 echo "Cleaning scripts/ directory..."
 mkdir -p temp
