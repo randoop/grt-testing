@@ -1,0 +1,264 @@
+# The post-extract-command is run in the directory into which the code was
+# extracted -- that is, in the parent directory of the code itself.
+---
+project: Amazon AWS 4 Java
+version: 1.0b
+dir: a4j-1.0b
+source: https://sourceforge.net/projects/a4j/files/latest/download/a4j-1.0b1.zip
+post-extract-command: mv a4j a4j-1.0b
+build-dir: .
+build-command: ant createJar
+jar-dir: dist
+---
+project: ASM
+version: 5.0.1
+dir: asm-5.0.1
+source: https://repo1.maven.org/maven2/org/ow2/asm/asm/5.0.1/asm-5.0.1-sources.jar
+extraction-dir: asm-5.0.1
+post-extract-command: mkdir -p asm-5.0.1/src/main/java && mv asm-5.0.1/org asm-5.0.1/src/main/java/
+build-dir: .
+build-command: mvn -B clean package -Dmaven.test.failure.ignore -Dmaven.javadoc.skip 2>&1 | tee mvn-output.txt
+jar-dir: target
+---
+project: Apache BCEL
+version: 5.2
+dir: bcel-5.2
+source: https://github.com/apache/commons-bcel/archive/refs/tags/BCEL_5_2.zip
+post-extract-command: mv commons-bcel-BCEL_5_2 bcel-5.2
+build-dir: .
+build-command: ant jar
+jar-dir: target
+---
+project: ClassViewer
+version: 5.0.5b
+dir: ClassViewer-5.0.5b
+source: svn checkout -r 28 --quiet https://svn.code.sf.net/p/classviewer/code/trunk ClassViewer-5.0.5b
+build-dir: .
+build-command: ant build
+jar-dir: .
+---
+project: Apache Commons Cli
+version: 1.2
+dir: commons-cli-1.2
+source: https://archive.apache.org/dist/commons/cli/source/commons-cli-1.2-src.zip
+post-extract-command: mv commons-cli-1.2-src commons-cli-1.2
+build-dir: .
+build-command: mvn -B clean package -Dmaven.test.failure.ignore -Dmaven.javadoc.skip 2>&1 | tee mvn-output.txt
+jar-dir: target
+---
+project: Apache C. Codec
+version: 1.9
+dir: commons-codec-1.9
+source: https://archive.apache.org/dist/commons/codec/source/commons-codec-1.9-src.zip
+post-extract-command: mv commons-codec-1.9-src commons-codec-1.9
+build-dir: .
+build-command: mvn -B clean package -Dmaven.test.failure.ignore -Dmaven.javadoc.skip 2>&1 | tee mvn-output.txt
+jar-dir: target
+---
+project: Apache C. Collection
+version: 4.0
+dir: commons-collections4-4.0
+source: https://archive.apache.org/dist/commons/collections/source/commons-collections4-4.0-src.zip
+post-extract-command: mv commons-collections4-4.0-src commons-collections4-4.0
+build-dir: .
+build-command: mvn -B clean package -Dmaven.test.failure.ignore -Dmaven.javadoc.skip 2>&1 | tee mvn-output.txt
+jar-dir: target
+---
+project: Apache C. Compress
+version: 1.8
+dir: commons-compress-1.8
+source: https://archive.apache.org/dist/commons/compress/source/commons-compress-1.8-src.zip
+post-extract-command: mv commons-compress-1.8-src commons-compress-1.8
+build-dir: .
+build-command: mvn -B clean package -Dmaven.test.failure.ignore -Dmaven.javadoc.skip 2>&1 | tee mvn-output.txt
+jar-dir: target
+---
+project: Apache C. Lang
+version: 3.0
+dir: commons-lang3-3.0
+source: https://archive.apache.org/dist/commons/lang/source/commons-lang3-3.0-src.zip
+post-extract-command: mv commons-lang3-3.0-src commons-lang3-3.0
+build-dir: .
+build-command: mvn -B clean package -Dmaven.test.failure.ignore -Dmaven.javadoc.skip 2>&1 | tee mvn-output.txt
+jar-dir: target
+---
+project: Apache C. Math
+version: 3.2
+dir: commons-math3-3.2
+source: https://archive.apache.org/dist/commons/math/source/commons-math3-3.2-src.zip
+post-extract-command: mv commons-math3-3.2-src commons-math3-3.2
+build-dir: .
+build-command: mvn -B clean package -Dmaven.test.failure.ignore -Dmaven.javadoc.skip 2>&1 | tee mvn-output.txt
+jar-dir: target
+---
+project: Apache C. Primitive
+version: 1.0
+dir: commons-primitives-1.0
+source: https://archive.apache.org/dist/commons/primitives/source/commons-primitives-1.0-src.zip
+build-dir: .
+build-command: ant jar         
+jar-dir: target
+---
+project: Dcparseargs
+version: 10/2008
+dir: dcParseArgs-10.2008
+source: https://sourceforge.net/projects/dcparseargs/files/Source/First%20upload/dcParseArgs_src.tar.bz2
+post-extract-command: mv dcParseArgs dcParseArgs-10.2008
+build-dir: .
+build-command: ant createJar
+jar-dir: dist
+---
+project: Easymock
+version: 3.2
+dir: easymock-3.2
+source: https://github.com/easymock/easymock/archive/refs/tags/easymock-3.2.zip
+post-extract-command: mv easymock-easymock-3.2 easymock-3.2
+build-dir: .
+build-command: mvn -B clean package -Dmaven.test.failure.ignore -Dmaven.javadoc.skip 2>&1 | tee mvn-output.txt
+jar-dir: easymock/target
+---
+project: Fixsuite
+version: R48
+dir: fixsuite-r48
+source: svn checkout --quiet https://svn.code.sf.net/p/fixsuite/code/trunk fixsuite-r48
+build-dir: .
+build-command: ant jar         
+jar-dir: jar
+---
+project: Guava
+version: 16.0.1
+dir: guava-16.0.1
+source: https://repo1.maven.org/maven2/com/google/guava/guava/16.0.1/guava-16.0.1-sources.jar
+post-extract-command: mkdir src && mv com src/
+build-dir: .
+build-command: mvn -B clean package -Dmaven.test.failure.ignore -Dmaven.javadoc.skip 2>&1 | tee mvn-output.txt
+jar-dir: target
+---
+project: Hamcrest-core
+version: 1.3
+dir: hamcrest-core-1.3
+source: https://github.com/hamcrest/JavaHamcrest/archive/refs/tags/hamcrest-java-1.3.zip
+post-extract-command: mv JavaHamcrest-hamcrest-java-1.3 hamcrest-core-1.3
+build-dir: .
+build-command: ant core        
+jar-dir: build
+---
+project: Javassit
+version: 3.19
+dir: javassist-3.19
+source: https://github.com/jboss-javassist/javassist/archive/refs/tags/rel_3_19_0_ga.zip
+post-extract-command: mv javassist-rel_3_19_0_ga javassist-3.19
+build-dir: .
+build-command: ant jar         
+jar-dir: .
+---
+project: Javax Mail
+version: 1.5.1
+dir: javax.mail-1.5.1
+source: https://repo1.maven.org/maven2/com/sun/mail/javax.mail/1.5.1/javax.mail-1.5.1-sources.jar
+extraction-dir: javax.mail-1.5.1
+post-extract-command: mkdir -p javax.mail-1.5.1/src/java/main && mv javax.mail-1.5.1/com javax.mail-1.5.1/javax javax.mail-1.5.1/src/main/java/
+build-dir: .
+build-command: mvn -B clean package -Dmaven.test.failure.ignore -Dmaven.javadoc.skip 2>&1 | tee mvn-output.txt
+jar-dir: target
+---
+project: Jaxen
+version: 1.1.6
+dir: jaxen-1.1.6
+source: https://repo1.maven.org/maven2/jaxen/jaxen/1.1.6/jaxen-1.1.6-sources.jar
+post-extract-command: mkdir -p jaxen-1.1.6/src/java/main && mv jaxen-1.1.6/org jaxen-1.1.6/src/java/main/
+build-dir: .
+build-command: mvn -B clean package -Dmaven.test.failure.ignore -Dmaven.javadoc.skip 2>&1 | tee mvn-output.txt
+jar-dir: target
+---
+project: Jcommander
+version: 1.35
+dir: jcommander-1.35
+source: git clone --depth 1 --branch jcommander-1.35 -c advice.detachedHead=false git@github.com:cbeust/jcommander.git jcommander-1.35
+build-dir: .
+build-command: mvn -B clean package -Dmaven.test.failure.ignore -Dmaven.javadoc.skip 2>&1 | tee mvn-output.txt
+jar-dir: target
+---
+project: Jdom
+version: 1.0
+dir: jdom-1.0
+source: https://www.jdom.org/dist/binary/archive/jdom-1.0.zip
+build-dir: .
+build-command: ./build.sh      
+jar-dir: build
+---
+project: Joda Time
+version: 2.3
+dir: joda-time-2.3
+source: https://github.com/JodaOrg/joda-time/archive/refs/tags/v2.3.zip
+build-dir: .
+build-command: mvn -B clean package -Dmaven.test.failure.ignore -Dmaven.javadoc.skip 2>&1 | tee mvn-output.txt
+jar-dir: target
+---
+project: Java Simple Arg. Parser
+version: 2.1
+dir: JSAP-2.1
+source: https://sourceforge.net/projects/jsap/files/jsap/2.1/JSAP-2.1-src.zip
+build-dir: .
+build-command: ant jar         
+jar-dir: dist
+---
+project: Java View Control
+version: 1.1
+dir: jvc-1.1
+source: https://sourceforge.net/projects/javaviewcontrol/files/javaviewcontrol/jvc-1.1/jvc-1.1.tar.gz
+build-dir: .
+build-command: ant tools       
+jar-dir: dist
+---
+project: Multi-User Dungeon server                                                                                              
+version: R16
+dir: nekomud-r16
+source: svn checkout --quiet https://svn.code.sf.net/p/nekomud/code/trunk nekomud-r16
+build-dir: .
+build-command: ant
+jar-dir: dist
+---
+project: Pmd DCD
+version: 5.2.2
+dir: pmd-core-5.2.2
+source: git clone --depth 1 --branch pmd_releases/5.2.2 -c advice.detachedHead=false https://github.com/pmd/pmd.git pmd-core-5.2.2
+post-extract-command: rm -rf pmd-core-5.2.2/maven-plugin-pmd-build pmd-core-5.2.2/pmd-cpp pmd-core-5.2.2/pmd-cs pmd-core-5.2.2/pmd-dist pmd-core-5.2.2/pmd-fortran pmd-core-5.2.2/pmd-go pmd-core-5.2.2/pmd-java pmd-core-5.2.2/pmd-javascript pmd-core-5.2.2/pmd-jsp pmd-core-5.2.2/pmd-php pmd-core-5.2.2/pmd-plsql pmd-core-5.2.2/pmd-ruby pmd-core-5.2.2/pmd-test pmd-core-5.2.2/pmd-vm pmd-core-5.2.2/pmd-xml
+build-dir: pmd-core
+build-command: mvn -B clean package -Dmaven.test.skip -Dmaven.javadoc.skip -DjavaccBuildNotRequired
+jar-dir: .
+---
+project: SAT4J Core
+version: 2.3.5
+dir: sat4j-core-2.3.5
+source: git clone --depth 1 --branch 2_3_5 -c advice.detachedHead=false https://gitlab.ow2.org/sat4j/sat4j.git sat4j-core-2.3.5
+post-extract-command: rm -rf sat4j-core-2.3.5/org.sat4j.br4cp sat4j-core-2.3.5/org.sat4j.csp sat4j-core-2.3.5/org.sat4j.csp.xmlparser sat4j-core-2.3.5/org.sat4j.intervalorders sat4j-core-2.3.5/org.sat4j.maxsat sat4j-core-2.3.5/org.sat4j.pb sat4j-core-2.3.5/org.sat4j.sat sat4j-core-2.3.5/org.sat4j.scala sat4j-core-2.3.5/org.sat4j.sudoku
+build-dir: .
+build-command: mvn -B clean package -Dmaven.test.failure.ignore -Dmaven.javadoc.skip 2>&1 | tee mvn-output.txt
+jar-dir: org.sat4j.core/target
+---
+project: Apache Shiro-core
+version: 1.2.6
+dir: shiro-core-1.2.3
+source: https://archive.apache.org/dist/shiro/1.2.3/shiro-root-1.2.3-source-release.zip
+post-extract-command: mv shiro-root-1.2.3 shiro-core-1.2.3
+build-dir: core
+build-command: mvn -B clean package -Dmaven.test.failure.ignore -Dmaven.javadoc.skip 2>&1 | tee mvn-output.txt
+jar-dir: target
+---
+project: Slf4j-api
+version: 1.7.12
+dir: slf4j-api-1.7.12
+source: https://github.com/qos-ch/slf4j/archive/refs/tags/v_1.7.12.zip
+build-dir: slf4j-api
+build-command: mvn -B clean package -Dmaven.test.failure.ignore -Dmaven.javadoc.skip 2>&1 | tee mvn-output.txt
+jar-dir: target
+---
+project: Tiny Sql
+version: 2.26
+dir: tiny-sql-2.26
+source: https://sourceforge.net/projects/tinysql/files/tinySQL2.26/V2.26/tinySQL-2.26.zip
+post-extract-command: mv tinySQL-2 tiny-sql-2.26
+build-dir: .
+build-command: ./build.sh
+jar-dir: classes

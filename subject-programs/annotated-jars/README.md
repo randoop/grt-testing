@@ -1,6 +1,6 @@
 # Annotated Subject Program JARs
 
-This folder holds subject JARs with purity annotations:  `@Pure`,
+This folder holds subject `.jar` files with purity annotations:  `@Pure`,
 `@SideEffectFree`, `@Impure`, and related qualifiers from
 `org.checkerframework.framework.qual` Compared to `subject-programs/jars/`, the
 compiled bytecode here is the same, but the class files have purity
@@ -16,25 +16,36 @@ The annotations provide the information it needs.
 
 ## Rebuilding an annotated JAR
 
-1. **Fetch sources**: Run `scripts/get-all-subject-src.sh` to populate
+1. **Fetch sources**: From the top level (`../../`), run
+   `scripts/get-all-subject-src.sh` to populate
    `subject-programs/src/<subject-program>/`.
-2. **Build the plain JAR**: In the subject directory, run the build command
-   found in `subject-programs/README.build`. The result lands in
-   `subject-programs/jars/` or the subject's usual build folder.
-3. **Set up inference tooling**: Point your environment at the local Checker
+
+2. **Set up inference tooling**: Point your environment at the local Checker
    Framework build:
 
    ```sh
    export CHECKERFRAMEWORK=/path/to/grt-testing/scripts/build/checker-framework
    export PATH="$CHECKERFRAMEWORK/annotation-file-utilities/bin:$PATH"
-   export JAVAC_JAR="$CHECKERFRAMEWORK/checker/dist/javac.jar"
    ```
 
-4. **Set the classpath**: Start with the JAR you just built, then
-   append any dependencies:
-   - Ant projects usually ship extra JARs in a local `jars/` or `lib/` folder.
-   - Maven projects can generate a classpath with
-     `mvn -q dependency:build-classpath -Dmdep.outputFile=target/wpi-classpath.txt`.
+3. **Build the plain JAR**: Run `subject-programs/buildall.sh`.
+   The resulting jar appears in `subject-programs/jars/`
+   or the subject's usual build folder.
+
+Now, do the following per project:
+
+4. **Create the classpath**: Create a file `wpi-classpath.txt` with the
+   project's dependencies, one per line.
+   
+   This command tries `mvn`; if that doesn't work, assume that the Ant ships
+   extra JARs in a local `jars/` or `lib/` folder.
+
+   ```sh
+   if ! mvn -q dependency:build-classpath -Dmdep.outputFile=wpi-classpath.txt; then
+     find jars -name '*.jar' > wpi-classpath.txt
+     find lib -name '*.jar' >> wpi-classpath.txt
+   ```
+      
 5. **Run inference**: From the subject directory, execute:
 
    ```sh
@@ -45,6 +56,7 @@ The annotations provide the information it needs.
    ```
 
    The script rewrites the sources in place with the inferred annotations.
+
 6. **Rebuild**: Repeat the command from step 2 to produce an annotated JAR.
    Copy it to this folder.
 

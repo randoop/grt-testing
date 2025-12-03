@@ -16,7 +16,9 @@ Thumbs.db
 
 # subdirectory with source repositories
 tests/src
-subject-programs/src
+subject-programs/src-grt
+subject-programs/src-upstream
+subject-programs/src-upstream-OLD
 
 # subdirectory created by scripts/mutation-randoop.sh and scripts/mutation-evosuite.sh
 scripts/jarfiles
@@ -27,3 +29,4 @@ checkbashisms
 
 # output from runnin jacoco
 jacoco.exec
+
