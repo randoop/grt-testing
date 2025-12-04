@@ -22,5 +22,7 @@ jobs:
         run: npm install markdownlint-cli2 --global
       - name: style check
         run: |
+          pwd
+          ls -a
           source .venv/bin/activate
           make style-check
