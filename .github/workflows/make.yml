@@ -12,12 +12,12 @@ jobs:
           show-progress: false
       - name: Install Python tools
         run: |
-          sudo apt-get update
-          sudo apt-get -y install pipx
+          sudo apt-get -q update
+          sudo apt-get -yq install pipx
           sudo pipx install ruff
           sudo pip install mypy
       - name: Install shellcheck and checkbashisms
-        run: sudo apt install shfmt shellcheck devscripts
+        run: sudo apt -yq install shfmt shellcheck devscripts
       - name: Install markdownlint
         run: npm install markdownlint-cli2 --global
       - name: style check
