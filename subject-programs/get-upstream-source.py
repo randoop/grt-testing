@@ -30,7 +30,7 @@ for project in yaml_data:
     source = project["source"]
     proj_dir = project["dir"]
     project_dir = src_upstream_dir / proj_dir
-    if pathlib.Path(project_dir).is_dir():
+    if project_dir.is_dir():
         print("Skipping", proj_dir, "because it exists.")
         continue
     print("About to get", source)
