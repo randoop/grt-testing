@@ -9,68 +9,75 @@ clean:
 	rm -rf "$GRT_TESTING_ROOT"/build/target/*
 
 
-###########################################################################
-### Style
+###
+### Code style
 ###
 
-style-fix: python-style-fix shell-style-fix
-style-check: python-style-check python-typecheck shell-style-check
+# Dependencies are defined below.
+style-fix:
+style-check:
 
-PYTHON_FILES:=$(wildcard *.py) $(wildcard **/*.py) $(shell grep -r -l --exclude='*.py' --exclude='*~' --exclude='*.tar' --exclude=gradlew --exclude-dir=.git '^\#! \?\(/bin/\|/usr/bin/env \)python')
-PYTHON_FILES_TO_CHECK:=$(filter-out ${lcb_runner},${PYTHON_FILES})
+style-fix: markdownlint-fix
+markdownlint-fix:
+	@markdownlint-cli2 --fix "**/*.md" "#node_modules"
+style-check: markdownlint-check
+markdownlint-check:
+	@markdownlint-cli2 "**/*.md" "#node_modules"
+
+style-fix: python-style-fix
+style-check: python-style-check python-typecheck
+PYTHON_FILES:=$(wildcard **/*.py) $(shell grep -r -l --exclude-dir=.git --exclude-dir=.venv --exclude='*.py' --exclude='#*' --exclude='*~' --exclude='*.tar' --exclude=gradlew --exclude=lcb_runner '^\#! \?\(/bin/\|/usr/bin/\|/usr/bin/env \)python')
 python-style-fix:
-ifneq (${PYTHON_FILES_TO_CHECK},)
-	@ruff --version
-	@ruff format ${PYTHON_FILES_TO_CHECK}
-	@ruff -q check ${PYTHON_FILES_TO_CHECK} --fix
+ifneq (${PYTHON_FILES},)
+#	@uvx ruff --version
+	@uvx ruff format ${PYTHON_FILES}
+	@uvx ruff check ${PYTHON_FILES} --fix
 endif
 python-style-check:
-ifneq (${PYTHON_FILES_TO_CHECK},)
-	@ruff --version
-	@ruff -q format --check ${PYTHON_FILES_TO_CHECK}
-	@ruff -q check ${PYTHON_FILES_TO_CHECK}
+ifneq (${PYTHON_FILES},)
+#	@uvx ruff --version
+	@uvx ruff format --check ${PYTHON_FILES}
+	@uvx ruff check ${PYTHON_FILES}
 endif
 python-typecheck:
-ifneq (${PYTHON_FILES_TO_CHECK},)
-	@mypy --strict --install-types --non-interactive ${PYTHON_FILES_TO_CHECK} > /dev/null 2>&1 || true
-	mypy --strict --ignore-missing-imports ${PYTHON_FILES_TO_CHECK}
+ifneq (${PYTHON_FILES},)
+	@uv run ty check
 endif
+showvars::
+	@echo "PYTHON_FILES=${PYTHON_FILES}"
 
-SH_SCRIPTS   := $(shell grep -r -l --exclude='#*' --exclude='*~' --exclude='*.tar' --exclude=gradlew --exclude-dir=.git --exclude-dir=build --exclude-dir=subject-programs '^\#! \?\(/bin/\|/usr/bin/env \)sh')
-BASH_SCRIPTS := $(shell grep -r -l --exclude='#*' --exclude='*~' --exclude='*.tar' --exclude=gradlew --exclude-dir=.git --exclude-dir=build --exclude-dir=subject-programs '^\#! \?\(/bin/\|/usr/bin/env \)bash')
+style-fix: shell-style-fix
+style-check: shell-style-check
+SH_SCRIPTS   := $(shell grep -r -l --exclude-dir=.git --exclude-dir=.plume-scripts --exclude-dir=build --exclude-dir=subject-programs --exclude='#*' --exclude='*~' --exclude='*.tar' --exclude=gradlew '^\#! \?\(/bin/\|/usr/bin/env \)sh'   | grep -v addrfilter | grep -v cronic-orig | grep -v mail-stackoverflow.sh | sort)
+BASH_SCRIPTS := $(shell grep -r -l --exclude-dir=.git --exclude-dir=.plume-scripts --exclude-dir=build --exclude-dir=subject-programs --exclude='#*' --exclude='*~' --exclude='*.tar' --exclude=gradlew '^\#! \?\(/bin/\|/usr/bin/env \)bash' | grep -v addrfilter | grep -v cronic-orig | grep -v mail-stackoverflow.sh | sort)
 CHECKBASHISMS := $(shell if command -v checkbashisms > /dev/null ; then \
-	  echo "checkbashisms" ; \
-	else \
-	  mkdir -p scripts/build && \
-	  (cd scripts/build && \
-	    wget -q -N https://homes.cs.washington.edu/~mernst/software/checkbashisms && \
-	    chmod +x ./checkbashisms ) && \
-	  echo "./scripts/build/checkbashisms" ; \
-	fi)
+  echo "checkbashisms" ; \
+else \
+  wget -q -N https://homes.cs.washington.edu/~mernst/software/checkbashisms && \
+  mv checkbashisms .checkbashisms && \
+  chmod +x ./.checkbashisms && \
+  echo "./.checkbashisms" ; \
+fi)
+SHFMT_EXISTS := $(shell command -v shfmt 2> /dev/null)
 shell-style-fix:
 ifneq ($(SH_SCRIPTS)$(BASH_SCRIPTS),)
+ifdef SHFMT_EXISTS
 	@shfmt -w -i 2 -ci -bn -sr ${SH_SCRIPTS} ${BASH_SCRIPTS}
+endif
 	@shellcheck -x -P SCRIPTDIR --format=diff ${SH_SCRIPTS} ${BASH_SCRIPTS} | patch -p1
 endif
 shell-style-check:
 ifneq ($(SH_SCRIPTS)$(BASH_SCRIPTS),)
+ifdef SHFMT_EXISTS
 	@shfmt -d -i 2 -ci -bn -sr ${SH_SCRIPTS} ${BASH_SCRIPTS}
+endif
 	@shellcheck -x -P SCRIPTDIR --format=gcc ${SH_SCRIPTS} ${BASH_SCRIPTS}
 endif
 ifneq ($(SH_SCRIPTS),)
 	@${CHECKBASHISMS} -l ${SH_SCRIPTS}
 endif
-
-style-fix: markdownlint-fix
-markdownlint-fix:
-	markdownlint-cli2 --fix "**/*.md" "#node_modules"
-style-check: markdownlint-check
-markdownlint-check:
-	markdownlint-cli2 "**/*.md" "#node_modules"
-
-showvars:
-	@echo "PYTHON_FILES=${PYTHON_FILES}"
-	@echo "PYTHON_FILES_TO_CHECK=${PYTHON_FILES_TO_CHECK}"
+showvars::
 	@echo "SH_SCRIPTS=${SH_SCRIPTS}"
 	@echo "BASH_SCRIPTS=${BASH_SCRIPTS}"
 	@echo "CHECKBASHISMS=${CHECKBASHISMS}"
+	@echo "SHFMT_EXISTS=${SHFMT_EXISTS}"

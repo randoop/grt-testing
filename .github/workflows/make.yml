@@ -10,12 +10,10 @@ jobs:
         with:
           fetch-depth: 1
           show-progress: false
-      - name: install ruff
-        run: |
-          sudo apt update
-          sudo apt -y install pipx
-          sudo pipx install ruff
-          sudo pip install mypy
+
+      - name: Install Python `uv`
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+
       - name: Install shellcheck and checkbashisms
         run: sudo apt install shfmt shellcheck devscripts
       - name: Install markdownlint
