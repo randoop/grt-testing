@@ -1,6 +1,6 @@
-Before running any Python scripts in this directory:
+Run Python scripts in this directory via:
 
-uv add pyyaml
+uv run SCRIPTNAME
 
 
 This directory contains compiled versions (jar files) of projects that the GRT
