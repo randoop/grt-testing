@@ -21,22 +21,26 @@ style-check: python-style-check python-typecheck shell-style-check
 
 PYTHON_FILES:=$(wildcard *.py) $(wildcard **/*.py) $(shell grep -r -l --exclude='*.py' --exclude='*~' --exclude='*.tar' --exclude=gradlew --exclude-dir=.git '^\#! \?\(/bin/\|/usr/bin/env \)python')
 PYTHON_FILES_TO_CHECK:=$(filter-out ${lcb_runner},${PYTHON_FILES})
+RUFF := $(shell if command -v ruff > /dev/null ; then \
+	  echo "ruff" ; \
+	else \
+	  echo "~/.local/bin/ruff" ; \
+	fi)
 python-style-fix:
 ifneq (${PYTHON_FILES_TO_CHECK},)
-	@ruff --version
-	@ruff format ${PYTHON_FILES_TO_CHECK}
-	@ruff -q check ${PYTHON_FILES_TO_CHECK} --fix
+	@uvx ruff --version
+	@uvx ruff format ${PYTHON_FILES_TO_CHECK}
+	@uvx ruff -q check ${PYTHON_FILES_TO_CHECK} --fix
 endif
 python-style-check:
 ifneq (${PYTHON_FILES_TO_CHECK},)
-	@ruff --version
-	@ruff -q format --check ${PYTHON_FILES_TO_CHECK}
-	@ruff -q check ${PYTHON_FILES_TO_CHECK}
+	@uvx ruff --version
+	@uvx ruff -q format --check ${PYTHON_FILES_TO_CHECK}
+	@uvx ruff -q check ${PYTHON_FILES_TO_CHECK}
 endif
 python-typecheck:
 ifneq (${PYTHON_FILES_TO_CHECK},)
-	@mypy --strict --install-types --non-interactive ${PYTHON_FILES_TO_CHECK} > /dev/null 2>&1 || true
-	mypy --strict --ignore-missing-imports ${PYTHON_FILES_TO_CHECK}
+	uv run ty check
 endif
 
 SH_SCRIPTS   := $(shell grep -r -l --exclude='#*' --exclude='*~' --exclude='*.tar' --exclude=gradlew --exclude-dir=.git --exclude-dir=build --exclude-dir=subject-programs '^\#! \?\(/bin/\|/usr/bin/env \)sh')

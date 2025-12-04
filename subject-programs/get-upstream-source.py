@@ -7,7 +7,6 @@ import shlex
 import subprocess
 import tarfile
 import zipfile
-from pathlib import Path
 from urllib.request import urlretrieve
 
 import yaml
@@ -36,7 +35,7 @@ for project in yaml_data:
         continue
     print("About to get", source)
     if source.startswith("http"):
-        basename = Path.name(source)
+        basename = source.name
         archive_path = src_upstream_dir / basename
         dest_dir = src_upstream_dir
         key = "extraction-dir"
@@ -53,16 +52,18 @@ for project in yaml_data:
             with tarfile.open(archive_path, "r:gz") as tar:
                 tar.extractall(path=dest_dir)
         else:
-        else:
-            raise Exception(f"Unknown archive type: {source}")
+            raise Exception("Unknown archive type: " + source)
     else:
         command = shlex.split(source)
         print("command = ", command)
-        completed_process = subprocess.run(command, cwd=src_upstream_dir, capture_output=True, text=True)
+        completed_process = subprocess.run(
+            command, cwd=src_upstream_dir, capture_output=True, text=True
+        )
         if completed_process.returncode != 0:
             print("stdout", completed_process.stdout)
             print("stderr", completed_process.stderr)
-            raise Exception(f"Command failed: {' '.join(command)}")
+            msg = f"Command failed: {' '.join(command)}"
+            raise Exception(msg)
     key = "post-extract-command"
     if key in project:
         commands = project[key].split(" && ")

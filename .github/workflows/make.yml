@@ -19,7 +19,6 @@ jobs:
       - name: Install Python tools
         run: |
           curl -LsSf https://astral.sh/uv/install.sh | sh
-          uv tool install mypy
           uv tool install ruff
       - name: style check
         run: |
