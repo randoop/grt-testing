@@ -10,19 +10,17 @@ jobs:
         with:
           fetch-depth: 1
           show-progress: false
-      - name: Install Python tools
-        run: |
-          sudo apt-get -q update
-          sudo apt-get -yq install pipx
-          sudo pipx install ruff
-          sudo pip install mypy
       - name: Install shellcheck and checkbashisms
-        run: sudo apt -yq install shfmt shellcheck devscripts
+        run: |
+          sudo apt -q update
+          sudo apt -yq install shfmt shellcheck devscripts
       - name: Install markdownlint
         run: npm install markdownlint-cli2 --global
+      - name: Install Python tools
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          uv tool install mypy
+          uv tool install ruff
       - name: style check
         run: |
-          pwd
-          ls -a
-          source .venv/bin/activate
           make style-check
