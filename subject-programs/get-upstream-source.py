@@ -52,7 +52,8 @@ for project in yaml_data:
             with tarfile.open(archive_path, "r:gz") as tar:
                 tar.extractall(path=dest_dir)
         else:
-            raise Exception("What type of archive file?", source)
+        else:
+            raise Exception(f"Unknown archive type: {source}")
     else:
         command = source.split()
         print("command = ", command)
