@@ -1,11 +1,15 @@
-# The post-extract-command is run in the directory into which the code was
-# extracted -- that is, in the parent directory of the code itself.
+# Fields:
+# * extraction-dir is relative to subject-programs/src-upstream/.
+#   It is optional.
+# * post-extract-command is run in subject-programs/src-upstream/
+#   -- that is, in the parent directory of the code itself.
 ---
 project: Amazon AWS 4 Java
 version: 1.0b
 dir: a4j-1.0b
 source: https://sourceforge.net/projects/a4j/files/latest/download/a4j-1.0b1.zip
-post-extract-command: mv a4j a4j-1.0b
+post-extract-command: mv a4j a4j-1.0b && rm -rf a4j-1.0b/src/net/kencochrane/a4j/file/CVS a4j-1.0b/src/net/kencochrane/a4j/beans/CVS a4j-1.0b/src/net/kencochrane/a4j/util/CVS a4j-1.0b/src/net/kencochrane/a4j/data/CVS a4j-1.0b/src/net/kencochrane/a4j/CVS a4j-1.0b/src/net/kencochrane/a4j/DAO/CVS a4j-1.0b/src/net/kencochrane/CVS a4j-1.0b/src/net/CVS a4j-1.0b/src/CVS a4j-1.0b/docs/javadocs/net/kencochrane/a4j/file/CVS a4j-1.0b/docs/javadocs/net/kencochrane/a4j/beans/CVS a4j-1.0b/docs/javadocs/net/kencochrane/a4j/util/CVS a4j-1.0b/docs/javadocs/net/kencochrane/a4j/data/CVS a4j-1.0b/docs/javadocs/net/kencochrane/a4j/CVS a4j-1.0b/docs/javadocs/net/kencochrane/a4j/DAO/CVS a4j-1.0b/docs/javadocs/net/kencochrane/CVS a4j-1.0b/docs/javadocs/net/CVS a4j-1.0b/docs/javadocs/CVS a4j-1.0b/docs/javadocs/index-files/CVS a4j-1.0b/docs/CVS a4j-1.0b/config/CVS a4j-1.0b/examples/src/CVS a4j-1.0b/examples/CVS a4j-1.0b/jars/CVS a4j-1.0b/CVS
+# && /home/mernst/bin/src/plume-scripts/preplace seller.s\b sellers a4j-1.0b
 build-dir: .
 build-command: ant createJar
 jar-dir: dist
@@ -15,7 +19,7 @@ version: 5.0.1
 dir: asm-5.0.1
 source: https://repo1.maven.org/maven2/org/ow2/asm/asm/5.0.1/asm-5.0.1-sources.jar
 extraction-dir: asm-5.0.1
-post-extract-command: mkdir -p asm-5.0.1/src/main/java && mv asm-5.0.1/org asm-5.0.1/src/main/java/
+post-extract-command: mkdir -p asm-5.0.1/src/main/java && mv asm-5.0.1/org asm-5.0.1/src/main/java/ && /home/mernst/bin/src/plume-scripts/preplace org\.objectweb\.asm org1.objectweb.asm asm-5.0.1 && /home/mernst/bin/src/plume-scripts/preplace org\.apache\.xalan org1.apache.xalan asm-5.0.1 && /home/mernst/bin/src/plume-scripts/preplace § Section asm-5.0.1
 build-dir: .
 build-command: mvn -B clean package -Dmaven.test.failure.ignore -Dmaven.javadoc.skip 2>&1 | tee mvn-output.txt
 jar-dir: target
@@ -33,6 +37,7 @@ project: ClassViewer
 version: 5.0.5b
 dir: ClassViewer-5.0.5b
 source: svn checkout -r 28 --quiet https://svn.code.sf.net/p/classviewer/code/trunk ClassViewer-5.0.5b
+post-extract-command: rm -rf ClassViewer-5.0.5b/.svn
 build-dir: .
 build-command: ant build
 jar-dir: .
@@ -86,7 +91,7 @@ project: Apache C. Math
 version: 3.2
 dir: commons-math3-3.2
 source: https://archive.apache.org/dist/commons/math/source/commons-math3-3.2-src.zip
-post-extract-command: mv commons-math3-3.2-src commons-math3-3.2
+post-extract-command: mv commons-math3-3.2-src commons-math3-3.2 && rm -rf commons-math3-3.2/src/main/resources/data commons-math3-3.2/src/main/resources/META-INF commons-math3-3.2/src/main/resources/templates commons-math3-3.2/src/site/resources/userguide
 build-dir: .
 build-command: mvn -B clean package -Dmaven.test.failure.ignore -Dmaven.javadoc.skip 2>&1 | tee mvn-output.txt
 jar-dir: target
@@ -103,7 +108,7 @@ project: Dcparseargs
 version: 10/2008
 dir: dcParseArgs-10.2008
 source: https://sourceforge.net/projects/dcparseargs/files/Source/First%20upload/dcParseArgs_src.tar.bz2
-post-extract-command: mv dcParseArgs dcParseArgs-10.2008
+post-extract-command: mv dcParseArgs dcParseArgs-10.2008 && rm -rf dcParseArgs-10.2008/src/de/devcity/.svn dcParseArgs-10.2008/src/de/devcity/parseargs/arguments/.svn dcParseArgs-10.2008/src/de/devcity/parseargs/.svn dcParseArgs-10.2008/src/de/.svn dcParseArgs-10.2008/src/.svn dcParseArgs-10.2008/testsrc/de/devcity/.svn dcParseArgs-10.2008/testsrc/de/devcity/parseargs/.svn dcParseArgs-10.2008/testsrc/de/.svn dcParseArgs-10.2008/testsrc/.svn dcParseArgs-10.2008/.svn dcParseArgs-10.2008/.settings/.svn
 build-dir: .
 build-command: ant createJar
 jar-dir: dist
@@ -121,6 +126,7 @@ project: Fixsuite
 version: R48
 dir: fixsuite-r48
 source: svn checkout --quiet https://svn.code.sf.net/p/fixsuite/code/trunk fixsuite-r48
+post-extract-command: rm -rf fixsuite-r48/.svn fixsuite-r48/model
 build-dir: .
 build-command: ant jar         
 jar-dir: jar
@@ -129,7 +135,8 @@ project: Guava
 version: 16.0.1
 dir: guava-16.0.1
 source: https://repo1.maven.org/maven2/com/google/guava/guava/16.0.1/guava-16.0.1-sources.jar
-post-extract-command: mkdir src && mv com src/
+extraction-dir: guava-16.0.1
+post-extract-command: mkdir guava-16.0.1/src && mv guava-16.0.1/com guava-16.0.1/src/com
 build-dir: .
 build-command: mvn -B clean package -Dmaven.test.failure.ignore -Dmaven.javadoc.skip 2>&1 | tee mvn-output.txt
 jar-dir: target
@@ -157,7 +164,7 @@ version: 1.5.1
 dir: javax.mail-1.5.1
 source: https://repo1.maven.org/maven2/com/sun/mail/javax.mail/1.5.1/javax.mail-1.5.1-sources.jar
 extraction-dir: javax.mail-1.5.1
-post-extract-command: mkdir -p javax.mail-1.5.1/src/java/main && mv javax.mail-1.5.1/com javax.mail-1.5.1/javax javax.mail-1.5.1/src/main/java/
+post-extract-command: mkdir -p javax.mail-1.5.1/src/main/java && mv javax.mail-1.5.1/com javax.mail-1.5.1/javax javax.mail-1.5.1/src/main/java/ && /home/mernst/bin/src/plume-scripts/preplace com\.sun\.mail com.sun1.mail javax.mail-1.5.1  && /home/mernst/bin/src/plume-scripts/preplace javax\.mail javax1.mail javax.mail-1.5.1
 build-dir: .
 build-command: mvn -B clean package -Dmaven.test.failure.ignore -Dmaven.javadoc.skip 2>&1 | tee mvn-output.txt
 jar-dir: target
@@ -166,6 +173,7 @@ project: Jaxen
 version: 1.1.6
 dir: jaxen-1.1.6
 source: https://repo1.maven.org/maven2/jaxen/jaxen/1.1.6/jaxen-1.1.6-sources.jar
+extraction-dir: jaxen-1.1.6
 post-extract-command: mkdir -p jaxen-1.1.6/src/java/main && mv jaxen-1.1.6/org jaxen-1.1.6/src/java/main/
 build-dir: .
 build-command: mvn -B clean package -Dmaven.test.failure.ignore -Dmaven.javadoc.skip 2>&1 | tee mvn-output.txt
@@ -175,6 +183,7 @@ project: Jcommander
 version: 1.35
 dir: jcommander-1.35
 source: git clone --depth 1 --branch jcommander-1.35 -c advice.detachedHead=false git@github.com:cbeust/jcommander.git jcommander-1.35
+post-extract-command: rm -rf jcommander-1.35/.git
 build-dir: .
 build-command: mvn -B clean package -Dmaven.test.failure.ignore -Dmaven.javadoc.skip 2>&1 | tee mvn-output.txt
 jar-dir: target
@@ -215,6 +224,7 @@ project: Multi-User Dungeon server
 version: R16
 dir: nekomud-r16
 source: svn checkout --quiet https://svn.code.sf.net/p/nekomud/code/trunk nekomud-r16
+post-extract-command: rm -rf $(findfile .svn ClassViewer-5.0.5b)
 build-dir: .
 build-command: ant
 jar-dir: dist
@@ -223,7 +233,7 @@ project: Pmd DCD
 version: 5.2.2
 dir: pmd-core-5.2.2
 source: git clone --depth 1 --branch pmd_releases/5.2.2 -c advice.detachedHead=false https://github.com/pmd/pmd.git pmd-core-5.2.2
-post-extract-command: rm -rf pmd-core-5.2.2/maven-plugin-pmd-build pmd-core-5.2.2/pmd-cpp pmd-core-5.2.2/pmd-cs pmd-core-5.2.2/pmd-dist pmd-core-5.2.2/pmd-fortran pmd-core-5.2.2/pmd-go pmd-core-5.2.2/pmd-java pmd-core-5.2.2/pmd-javascript pmd-core-5.2.2/pmd-jsp pmd-core-5.2.2/pmd-php pmd-core-5.2.2/pmd-plsql pmd-core-5.2.2/pmd-ruby pmd-core-5.2.2/pmd-test pmd-core-5.2.2/pmd-vm pmd-core-5.2.2/pmd-xml
+post-extract-command: rm -rf pmd-core-5.2.2/.git pmd-core-5.2.2/maven-plugin-pmd-build pmd-core-5.2.2/pmd-cpp pmd-core-5.2.2/pmd-cs pmd-core-5.2.2/pmd-dist pmd-core-5.2.2/pmd-fortran pmd-core-5.2.2/pmd-go pmd-core-5.2.2/pmd-java pmd-core-5.2.2/pmd-javascript pmd-core-5.2.2/pmd-jsp pmd-core-5.2.2/pmd-php pmd-core-5.2.2/pmd-plsql pmd-core-5.2.2/pmd-ruby pmd-core-5.2.2/pmd-test pmd-core-5.2.2/pmd-vm pmd-core-5.2.2/pmd-xml
 build-dir: pmd-core
 build-command: mvn -B clean package -Dmaven.test.skip -Dmaven.javadoc.skip -DjavaccBuildNotRequired
 jar-dir: .
@@ -232,7 +242,7 @@ project: SAT4J Core
 version: 2.3.5
 dir: sat4j-core-2.3.5
 source: git clone --depth 1 --branch 2_3_5 -c advice.detachedHead=false https://gitlab.ow2.org/sat4j/sat4j.git sat4j-core-2.3.5
-post-extract-command: rm -rf sat4j-core-2.3.5/org.sat4j.br4cp sat4j-core-2.3.5/org.sat4j.csp sat4j-core-2.3.5/org.sat4j.csp.xmlparser sat4j-core-2.3.5/org.sat4j.intervalorders sat4j-core-2.3.5/org.sat4j.maxsat sat4j-core-2.3.5/org.sat4j.pb sat4j-core-2.3.5/org.sat4j.sat sat4j-core-2.3.5/org.sat4j.scala sat4j-core-2.3.5/org.sat4j.sudoku
+post-extract-command: rm -rf sat4j-core-2.3.5/.git sat4j-core-2.3.5/org.sat4j.br4cp sat4j-core-2.3.5/org.sat4j.csp sat4j-core-2.3.5/org.sat4j.csp.xmlparser sat4j-core-2.3.5/org.sat4j.intervalorders sat4j-core-2.3.5/org.sat4j.maxsat sat4j-core-2.3.5/org.sat4j.pb sat4j-core-2.3.5/org.sat4j.sat sat4j-core-2.3.5/org.sat4j.scala sat4j-core-2.3.5/org.sat4j.sudoku
 build-dir: .
 build-command: mvn -B clean package -Dmaven.test.failure.ignore -Dmaven.javadoc.skip 2>&1 | tee mvn-output.txt
 jar-dir: org.sat4j.core/target
@@ -250,6 +260,7 @@ project: Slf4j-api
 version: 1.7.12
 dir: slf4j-api-1.7.12
 source: https://github.com/qos-ch/slf4j/archive/refs/tags/v_1.7.12.zip
+post-extract-command: mv slf4j-v_1.7.12 slf4j-api-1.7.12 && rm -rf slf4j-api-1.7.12/integration slf4j-api-1.7.12/jcl-over-slf4j slf4j-api-1.7.12/jul-to-slf4j slf4j-api-1.7.12/log4j-over-slf4j slf4j-api-1.7.12/osgi-over-slf4j slf4j-api-1.7.12/slf4j-android slf4j-api-1.7.12/slf4j-ext slf4j-api-1.7.12/slf4j-jcl slf4j-api-1.7.12/slf4j-jdk14 slf4j-api-1.7.12/slf4j-log4j12 slf4j-api-1.7.12/slf4j-migrator slf4j-api-1.7.12/slf4j-nop slf4j-api-1.7.12/slf4j-simple slf4j-api-1.7.12/slf4j-site slf4j-api-1.7.12/src && /home/mernst/bin/src/plume-scripts/preplace org\.slf4j\. org1.slf4j. slf4j-api-1.7.12 && /home/mernst/bin/src/plume-scripts/preplace org\.slf4j; org1.slf4j; slf4j-api-1.7.12
 build-dir: slf4j-api
 build-command: mvn -B clean package -Dmaven.test.failure.ignore -Dmaven.javadoc.skip 2>&1 | tee mvn-output.txt
 jar-dir: target
@@ -258,7 +269,7 @@ project: Tiny Sql
 version: 2.26
 dir: tiny-sql-2.26
 source: https://sourceforge.net/projects/tinysql/files/tinySQL2.26/V2.26/tinySQL-2.26.zip
-post-extract-command: mv tinySQL-2 tiny-sql-2.26
+post-extract-command: mv tinySQL-2 tiny-sql-2.26 && rm -f tiny-sql-2.26/src/com/sqlmagic/tinysql/junk
 build-dir: .
 build-command: ./build.sh
 jar-dir: classes

@@ -18,7 +18,11 @@ Thumbs.db
 tests/src
 subject-programs/src-grt
 subject-programs/src-upstream
+# temporary
 subject-programs/src-upstream-OLD
+subject-programs/src-upstream-GOOD
+subject-programs/src-grt-SAVE
+subject-programs/files.diff
 
 # subdirectory created by scripts/mutation-randoop.sh and scripts/mutation-evosuite.sh
 scripts/jarfiles
