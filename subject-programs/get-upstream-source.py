@@ -57,7 +57,7 @@ for project in yaml_data:
     else:
         command = source.split()
         print("command = ", command)
-        completed_process = subprocess.run(command, cwd=src_upstream_dir)
+        completed_process = subprocess.run(command, cwd=src_upstream_dir, capture_output=True, text=True)
         if completed_process.returncode != 0:
             print("stdout", completed_process.stdout)
             print("stderr", completed_process.stderr)
