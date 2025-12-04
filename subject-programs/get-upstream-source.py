@@ -3,6 +3,7 @@
 """Obtains the upstream sources and leaves them in `subject-programs/src-upstream`."""
 
 import pathlib
+import shlex
 import subprocess
 import tarfile
 import zipfile
@@ -54,7 +55,7 @@ for project in yaml_data:
         else:
             raise Exception("What type of archive file?", source)
     else:
-        command = source.split()
+        command = shlex.split(source)
         print("command = ", command)
         completed_process = subprocess.run(command, cwd=src_upstream_dir)
         if completed_process.returncode != 0:
@@ -65,7 +66,7 @@ for project in yaml_data:
     if key in project:
         commands = project[key].split(" && ")
         for command_unsplit in commands:
-            command = command_unsplit.split()
+            command = shlex.split(command_unsplit)
             print("dir =", src_upstream_dir)
             print("command =", command)
             completed_process = subprocess.run(command, cwd=src_upstream_dir)
