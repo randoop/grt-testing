@@ -61,7 +61,7 @@ for project in yaml_data:
         if completed_process.returncode != 0:
             print("stdout", completed_process.stdout)
             print("stderr", completed_process.stderr)
-            raise Exception("command failed: ", command)
+            raise Exception(f"Command failed: {' '.join(command)}")
     key = "post-extract-command"
     if key in project:
         commands = project[key].split(" && ")
