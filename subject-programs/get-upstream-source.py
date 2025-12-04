@@ -1,21 +1,22 @@
 #!/usr/bin/env python3
 
-from urllib.request import urlretrieve
-import bz2
-import os
-import shutil
+"""Obtains the upstream sources and leaves them in `subject-programs/src-upstream`."""
+
+import pathlib
 import subprocess
 import tarfile
-import yaml
 import zipfile
-import pathlib
+from pathlib import Path
+from urllib.request import urlretrieve
 
+import yaml
 from yaml.loader import SafeLoader
+
 # open yaml file in read
 
 script_directory = pathlib.Path(__file__).parent.resolve()
 
-with open(script_directory / "build-info.yaml", "r") as f:
+with pathlib.Path(script_directory / "build-info.yaml").open() as f:
     yaml_data = list(yaml.load_all(f, Loader=SafeLoader))
 
 src_upstream_dir = script_directory / "src-upstream"
@@ -27,24 +28,21 @@ src_upstream_dir.mkdir(exist_ok=True)
 
 for project in yaml_data:
     source = project["source"]
-    dir = project["dir"]
-    project_dir = src_upstream_dir / dir
-    if os.path.isdir(project_dir):
-        print("Skipping", dir, "because it exists.")
+    proj_dir = project["dir"]
+    project_dir = src_upstream_dir / proj_dir
+    if pathlib.Path(project_dir).is_dir():
+        print("Skipping", proj_dir, "because it exists.")
         continue
     print("About to get", source)
     if source.startswith("http"):
-        basename = os.path.basename(source)
+        basename = Path.name(source)
         archive_path = src_upstream_dir / basename
         dest_dir = src_upstream_dir
         key = "extraction-dir"
         if key in project:
             dest_dir = src_upstream_dir / project[key]
         urlretrieve(source, archive_path)
-        if source.endswith(".zip"):
-            with zipfile.ZipFile(archive_path, "r") as zf:
-                zf.extractall(dest_dir)
-        elif source.endswith(".jar"):
+        if source.endswith((".zip", ".jar")):
             with zipfile.ZipFile(archive_path, "r") as zf:
                 zf.extractall(dest_dir)
         elif source.endswith(".tar.bz2"):
@@ -76,4 +74,4 @@ for project in yaml_data:
                 print("stderr", completed_process.stderr)
                 raise Exception("command failed: ", command)
     if source.startswith("http"):
-        os.rename(archive_path, src_upstream_dir / project["dir"] / basename)
+        pathlib.Path(archive_path).rename(src_upstream_dir / proj_dir / basename)
