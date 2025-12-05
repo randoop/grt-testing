@@ -16,39 +16,44 @@ clean:
 ### Style
 ###
 
-style-fix: python-style-fix shell-style-fix
-style-check: python-style-check python-typecheck shell-style-check
+# Dependencies appear below.
+style-fix:
+style-check:
 
-PYTHON_FILES:=$(wildcard *.py) $(wildcard **/*.py) $(shell grep -r -l --exclude='*.py' --exclude='*~' --exclude='*.tar' --exclude=gradlew --exclude-dir=.git '^\#! \?\(/bin/\|/usr/bin/env \)python')
-PYTHON_FILES_TO_CHECK:=$(filter-out ${lcb_runner},${PYTHON_FILES})
+style-fix: python-style-fix
+style-check: python-style-check python-typecheck
+PYTHON_FILES:=$(wildcard **/*.py) $(shell grep -r -l --exclude='*.py' --exclude='#*' --exclude='*~' --exclude='*.tar' --exclude=gradlew --exclude=lcb_runner --exclude-dir=.git --exclude-dir=.venv '^\#! \?\(/bin/\|/usr/bin/\|/usr/bin/env \)python')
 python-style-fix:
-ifneq (${PYTHON_FILES_TO_CHECK},)
+ifneq (${PYTHON_FILES},)
 	@uvx ruff --version
-	@uvx ruff format ${PYTHON_FILES_TO_CHECK}
-	@uvx ruff -q check ${PYTHON_FILES_TO_CHECK} --fix
+	@uvx ruff format ${PYTHON_FILES}
+	@uvx ruff -q check ${PYTHON_FILES} --fix
 endif
 python-style-check:
-ifneq (${PYTHON_FILES_TO_CHECK},)
+ifneq (${PYTHON_FILES},)
 	@uvx ruff --version
-	@uvx ruff -q format --check ${PYTHON_FILES_TO_CHECK}
-	@uvx ruff -q check ${PYTHON_FILES_TO_CHECK}
+	@uvx ruff -q format --check ${PYTHON_FILES}
+	@uvx ruff -q check ${PYTHON_FILES}
 endif
 python-typecheck:
-ifneq (${PYTHON_FILES_TO_CHECK},)
-	uv run ty check
+ifneq (${PYTHON_FILES},)
+	@uv run ty check -q
 endif
+showvars::
+	@echo "PYTHON_FILES=${PYTHON_FILES}"
 
+style-fix: shell-style-fix
+style-check: shell-style-check
 SH_SCRIPTS   := $(shell grep -r -l --exclude='#*' --exclude='*~' --exclude='*.tar' --exclude=gradlew --exclude-dir=.git --exclude-dir=build --exclude-dir=subject-programs '^\#! \?\(/bin/\|/usr/bin/env \)sh')
 BASH_SCRIPTS := $(shell grep -r -l --exclude='#*' --exclude='*~' --exclude='*.tar' --exclude=gradlew --exclude-dir=.git --exclude-dir=build --exclude-dir=subject-programs '^\#! \?\(/bin/\|/usr/bin/env \)bash')
 CHECKBASHISMS := $(shell if command -v checkbashisms > /dev/null ; then \
-	  echo "checkbashisms" ; \
-	else \
-	  mkdir -p scripts/build && \
-	  (cd scripts/build && \
-	    wget -q -N https://homes.cs.washington.edu/~mernst/software/checkbashisms && \
-	    chmod +x ./checkbashisms ) && \
-	  echo "./scripts/build/checkbashisms" ; \
-	fi)
+  echo "checkbashisms" ; \
+else \
+  wget -q -N https://homes.cs.washington.edu/~mernst/software/checkbashisms && \
+  mv checkbashisms .checkbashisms && \
+  chmod +x ./.checkbashisms && \
+  echo "./.checkbashisms" ; \
+fi)
 shell-style-fix:
 ifneq ($(SH_SCRIPTS)$(BASH_SCRIPTS),)
 	@shfmt -w -i 2 -ci -bn -sr ${SH_SCRIPTS} ${BASH_SCRIPTS}
@@ -62,6 +67,10 @@ endif
 ifneq ($(SH_SCRIPTS),)
 	@${CHECKBASHISMS} -l ${SH_SCRIPTS}
 endif
+showvars::
+	@echo "SH_SCRIPTS=${SH_SCRIPTS}"
+	@echo "BASH_SCRIPTS=${BASH_SCRIPTS}"
+	@echo "CHECKBASHISMS=${CHECKBASHISMS}"
 
 style-fix: markdownlint-fix
 markdownlint-fix:
@@ -69,10 +78,3 @@ markdownlint-fix:
 style-check: markdownlint-check
 markdownlint-check:
 	markdownlint-cli2 "**/*.md" "#node_modules"
-
-showvars:
-	@echo "PYTHON_FILES=${PYTHON_FILES}"
-	@echo "PYTHON_FILES_TO_CHECK=${PYTHON_FILES_TO_CHECK}"
-	@echo "SH_SCRIPTS=${SH_SCRIPTS}"
-	@echo "BASH_SCRIPTS=${BASH_SCRIPTS}"
-	@echo "CHECKBASHISMS=${CHECKBASHISMS}"
