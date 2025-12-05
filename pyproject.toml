@@ -1,5 +1,9 @@
+[build-system]
+requires = ["uv_build >= 0.9.11, <0.10.0"]
+build-backend = "uv_build"
+
 [project]
-name = "grt-testing-branch-main"
+name = "grt-testing"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -7,6 +11,7 @@ requires-python = ">=3.14"
 dependencies = [
     "matplotlib>=3.10.7",
     "pandas>=2.3.3",
+    "pyyaml>=6.0.3",
     "seaborn>=0.13.2",
 ]
 
@@ -14,3 +19,4 @@ dependencies = [
 dev = [
     "ty>=0.0.1a31",
 ]
+# dynamic = ["version"]

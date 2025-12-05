@@ -8,6 +8,9 @@ clean:
 	rm -rf "$GRT_TESTING_ROOT"/build/randoop-tests/*
 	rm -rf "$GRT_TESTING_ROOT"/build/target/*
 
+.plume-scripts:
+	git clone -q https://github.com/plume-lib/plume-scripts.git .plume-scripts
+
 
 ###
 ### Code style
@@ -18,9 +21,9 @@ style-fix:
 style-check:
 
 style-fix: markdownlint-fix
+style-check: markdownlint-check
 markdownlint-fix:
 	@markdownlint-cli2 --fix "**/*.md" "#node_modules"
-style-check: markdownlint-check
 markdownlint-check:
 	@markdownlint-cli2 "**/*.md" "#node_modules"
 
