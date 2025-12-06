@@ -14,8 +14,9 @@ jobs:
       - name: Install Python `uv`
         run: curl -LsSf https://astral.sh/uv/install.sh | sh
 
+      - run: sudo apt update
       - name: Install shellcheck and checkbashisms
-        run: sudo apt install shfmt shellcheck devscripts
+        run: sudo apt -y install shfmt shellcheck devscripts
       - name: Install markdownlint
         run: npm install markdownlint-cli2 --global
       - name: style check
