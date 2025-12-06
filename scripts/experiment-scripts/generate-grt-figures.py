@@ -24,13 +24,13 @@ import argparse
 import sys
 
 import matplotlib as mpl
+
+mpl.use("Agg")  # For headless environments (without GUI); execute before `import matplotlib.figure`
 import matplotlib.figure
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 from matplotlib.backends.backend_pdf import PdfPages
-
-mpl.use("Agg")  # For headless environments (without GUI)
 
 
 def main():
