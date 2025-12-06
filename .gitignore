@@ -27,3 +27,5 @@ checkbashisms
 
 # output from runnin jacoco
 jacoco.exec
+
+.plume-scripts/

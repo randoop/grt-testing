@@ -1,5 +1,5 @@
-"""
-This script defines utilities to generate plots and tables based on coverage and mutation score.
+"""Define utilities to generate plots and tables based on coverage and mutation score.
+
 This script is **not intended to be run directly**.  Instead, use one of these scripts:
     ./mutation-fig6-table3.sh
     ./mutation-fig7.sh
@@ -14,20 +14,19 @@ This script supports generation of the following figures:
 - Figures 8-9: Line plots showing the progression of branch coverage over time for each GRT
   component on two hand-picked subject programs.
 - Table IV: Number of real bugs detected by GRT, Randoop, and EvoSuite on four Defects4J projects
-  under different time budgets (120s, 300s, and 600s). Results are aggregated over 10 runs per fault.
+  under different time budgets (120s, 300s, 600s). Results are aggregated over 10 runs per fault.
 
 Usage (for reference only):
     python generate-grt-figures.py { fig6-table3 | fig7 | fig8-9 | table4 }
 """
 
-import matplotlib as mpl
-import pandas as pd
-
 import argparse
 import sys
 
+import matplotlib as mpl
 import matplotlib.figure
 import matplotlib.pyplot as plt
+import pandas as pd
 import seaborn as sns
 from matplotlib.backends.backend_pdf import PdfPages
 
@@ -52,8 +51,7 @@ def main():
 
 
 def load_data(csv_file: str) -> pd.DataFrame:
-    """
-    Load a CSV file containing coverage and mutation score data.
+    """Load a CSV file containing coverage and mutation score data.
 
     Args:
         csv_file: Path to the CSV file.
@@ -95,7 +93,6 @@ def generate_table_3(df: pd.DataFrame) -> mpl.figure.Figure:
     Returns:
         The composite figure representing Table III.
     """
-
     grouped = (
         df.groupby(["Version", "TimeLimit"])
         .agg(
@@ -258,8 +255,9 @@ def generate_fig_8_9(df: pd.DataFrame) -> list[mpl.figure.Figure]:
 
 
 def generate_table_4(df: pd.DataFrame) -> mpl.figure.Figure:
-    """
-    Generate Table IV: Number of real faults detected by each tool (GRT, Randoop, EvoSuite)
+    """Generate Table IV.
+
+    Table IV is: Number of real faults detected by each tool (GRT, Randoop, EvoSuite)
     on different subject programs under different time budgets.
 
     Args:
@@ -300,8 +298,8 @@ def generate_table_4(df: pd.DataFrame) -> mpl.figure.Figure:
     plt.axis("off")
 
     # Table headers.
-    headers = ["Project", "Time"] + list(table_data.columns[2:])
-    cell_data = [headers] + table_data.values.tolist()
+    headers = ["Project", "Time", *list(table_data.columns[2:])]
+    cell_data = [headers, *table_data.to_numpy().tolist()]
 
     table = plt.table(cellText=cell_data, loc="center", cellLoc="center")
     table.auto_set_font_size(False)
@@ -315,8 +313,7 @@ def generate_table_4(df: pd.DataFrame) -> mpl.figure.Figure:
 
 
 def save_to_pdf(df: pd.DataFrame, fig_type: str):
-    """
-    Save a figure/table of the given type to a PDF file.
+    """Save a figure/table of the given type to a PDF file.
 
     Args:
         df: Data averaged over repeated runs (output of `average_over_loops`).
