@@ -14,7 +14,7 @@ figures and tables.
 
 To set up the environment, refer to the `scripts/prerequisites.md` file.
 
-## Running Scripts
+### Running Scripts
 
 To generate the desired figures or tables from the paper, run the corresponding
 shell script. For example, to generate **Figure 7**, use:
