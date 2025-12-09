@@ -1,5 +1,5 @@
-"""
-This script defines utilities to generate plots and tables based on coverage and mutation score.
+"""Define utilities to generate plots and tables based on coverage and mutation score.
+
 This script is **not intended to be run directly**.  Instead, use one of these scripts:
     ./mutation-fig6-table3.sh
     ./mutation-fig7.sh
@@ -13,22 +13,22 @@ This script supports generation of the following figures:
 - Figure 7: Branch coverage distribution by GRT component.
 - Figures 8-9: Line plots showing the progression of branch coverage over time for each GRT
   component on two hand-picked subject programs.
-- Table IV: Number of real bugs detected by GRT, Randoop, and EvoSuite on four Defects4J projects 
-  under different time budgets (120s, 300s, and 600s). Results are aggregated over 10 runs per fault.  
+- Table IV: Number of real bugs detected by GRT, Randoop, and EvoSuite on four Defects4J projects
+  under different time budgets (120s, 300s, 600s). Results are aggregated over 10 runs per fault.
 
 Usage (for reference only):
     python generate-grt-figures.py { fig6-table3 | fig7 | fig8-9 | table4 }
 """
 
-
-import matplotlib as mpl
-import pandas as pd
-
-mpl.use("Agg")  # For headless environments (without GUI)
 import argparse
 import sys
 
+import matplotlib as mpl
+
+mpl.use("Agg")  # For headless environments (without GUI); execute before `import matplotlib.figure`
+import matplotlib.figure
 import matplotlib.pyplot as plt
+import pandas as pd
 import seaborn as sns
 from matplotlib.backends.backend_pdf import PdfPages
 
@@ -51,8 +51,7 @@ def main():
 
 
 def load_data(csv_file: str) -> pd.DataFrame:
-    """
-    Load a CSV file containing coverage and mutation score data.
+    """Load a CSV file containing coverage and mutation score data.
 
     Args:
         csv_file: Path to the CSV file.
@@ -76,13 +75,10 @@ def average_over_loops(df: pd.DataFrame) -> pd.DataFrame:
     Returns:
         Data averaged over repeated runs, retaining one row per (tool, timelimit, subject).
     """
-    return df.groupby(['Version', 'TimeLimit', 'FileName'], as_index=False).agg(
-        {
-        'InstructionCoverage': 'mean',
-        'BranchCoverage': 'mean',
-        'MutationScore': 'mean'
-        }
+    return df.groupby(["Version", "TimeLimit", "FileName"], as_index=False).agg(
+        {"InstructionCoverage": "mean", "BranchCoverage": "mean", "MutationScore": "mean"}
     )
+
 
 def generate_table_3(df: pd.DataFrame) -> mpl.figure.Figure:
     """Generate data for Table III: Average coverage and mutation scores per (tool, timelimit) pair.
@@ -97,7 +93,6 @@ def generate_table_3(df: pd.DataFrame) -> mpl.figure.Figure:
     Returns:
         The composite figure representing Table III.
     """
-
     grouped = (
         df.groupby(["Version", "TimeLimit"])
         .agg(
@@ -191,7 +186,7 @@ def generate_fig_6(df: pd.DataFrame) -> mpl.figure.Figure:
         y=1.12,
     )
 
-    fig.tight_layout(rect=[0, 0, 1, 0.95])
+    fig.tight_layout(rect=(0, 0, 1, 0.95))
 
     return fig
 
@@ -231,9 +226,7 @@ def generate_fig_8_9(df: pd.DataFrame) -> list[mpl.figure.Figure]:
     """
     sns.set_theme(style="whitegrid")
     grouped = (
-        df.groupby(["FileName", "TimeLimit", "Version"])["BranchCoverage"]
-        .mean()
-        .reset_index()
+        df.groupby(["FileName", "TimeLimit", "Version"])["BranchCoverage"].mean().reset_index()
     )
     figures = []
     for subject in grouped["FileName"].unique():
@@ -260,9 +253,11 @@ def generate_fig_8_9(df: pd.DataFrame) -> list[mpl.figure.Figure]:
 
     return figures
 
+
 def generate_table_4(df: pd.DataFrame) -> mpl.figure.Figure:
-    """
-    Generate Table IV: Number of real faults detected by each tool (GRT, Randoop, EvoSuite)
+    """Generate Table IV.
+
+    Table IV is: Number of real faults detected by each tool (GRT, Randoop, EvoSuite)
     on different subject programs under different time budgets.
 
     Args:
@@ -272,29 +267,29 @@ def generate_table_4(df: pd.DataFrame) -> mpl.figure.Figure:
         Matplotlib Figure object containing the table.
     """
     df.columns = [col.strip() for col in df.columns]
-    df['TestClassification'] = df['TestClassification'].str.strip().str.lower()
+    df["TestClassification"] = df["TestClassification"].str.strip().str.lower()
 
     # Mark each bug (Version) as detected if ANY test case for it fails.
-    df['Detected'] = df['TestClassification'] == 'fail'
+    df["Detected"] = df["TestClassification"] == "fail"
     bug_detection = (
-        df.groupby(['ProjectId', 'Version', 'TimeLimit', 'TestSuiteSource'])['Detected']
+        df.groupby(["ProjectId", "Version", "TimeLimit", "TestSuiteSource"])["Detected"]
         .any()
         .reset_index()
     )
 
     # Count how many bugs were detected per (ProjectId, TimeLimit, TestSuiteSource).
     summary = (
-        bug_detection.groupby(['ProjectId', 'TimeLimit', 'TestSuiteSource'])['Detected']
+        bug_detection.groupby(["ProjectId", "TimeLimit", "TestSuiteSource"])["Detected"]
         .sum()
         .reset_index()
-        .rename(columns={'Detected': 'FaultsDetected'})
+        .rename(columns={"Detected": "FaultsDetected"})
     )
 
     # Pivot for better tabular display.
     table_data = summary.pivot_table(
-        index=['ProjectId', 'TimeLimit'],
-        columns='TestSuiteSource',
-        values='FaultsDetected',
+        index=["ProjectId", "TimeLimit"],
+        columns="TestSuiteSource",
+        values="FaultsDetected",
         fill_value=0,
     ).reset_index()
 
@@ -303,21 +298,22 @@ def generate_table_4(df: pd.DataFrame) -> mpl.figure.Figure:
     plt.axis("off")
 
     # Table headers.
-    headers = ["Project", "Time"] + list(table_data.columns[2:])
-    cell_data = [headers] + table_data.values.tolist()
+    headers = ["Project", "Time", *list(table_data.columns[2:])]
+    cell_data = [headers, *table_data.to_numpy().tolist()]
 
     table = plt.table(cellText=cell_data, loc="center", cellLoc="center")
     table.auto_set_font_size(False)
     table.set_fontsize(10)
     table.scale(1, 1.5)
 
-    fig.suptitle("Table IV: Real Faults Detected by Tool and Time Budget", fontsize=16, weight="bold")
+    fig.suptitle(
+        "Table IV: Real Faults Detected by Tool and Time Budget", fontsize=16, weight="bold"
+    )
     return fig
 
 
 def save_to_pdf(df: pd.DataFrame, fig_type: str):
-    """
-    Save a figure/table of the given type to a PDF file.
+    """Save a figure/table of the given type to a PDF file.
 
     Args:
         df: Data averaged over repeated runs (output of `average_over_loops`).
@@ -356,7 +352,6 @@ def save_to_pdf(df: pd.DataFrame, fig_type: str):
             sys.exit(1)
 
     print(f"PDF saved as '{pdf_filename}'")
-
 
 
 if __name__ == "__main__":
