@@ -34,4 +34,4 @@ checkbashisms
 # output from running jacoco
 jacoco.exec
 
-.plume-scripts
+.plume-scripts/
