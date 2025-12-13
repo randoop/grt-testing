@@ -1,0 +1,85 @@
+[
+  {
+    "operation": {
+      "classname": "org.sat4j.core.VecInt",
+      "name": "VecInt",
+      "parameterTypes": [
+        "int",
+        "int"
+      ]
+    },
+    "identifiers": {
+      "parameters": [
+        "size",
+        "pad"
+      ],
+      "receiverName": "receiver",
+      "returnName": "result"
+    },
+    "pre": [
+      {
+        "description": "Size parameter should not be too large",
+        "guard": {
+          "condition": "size >= 0 && size <= 200",
+          "description": "Size parameter should not be too large"
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  },
+  {
+    "operation": {
+      "classname": "org.sat4j.core.VecInt",
+      "name": "VecInt",
+      "parameterTypes": [
+        "int"
+      ]
+    },
+    "identifiers": {
+      "parameters": [
+        "size"
+      ],
+      "receiverName": "receiver",
+      "returnName": "result"
+    },
+    "pre": [
+      {
+        "description": "Size parameter should not be too large",
+        "guard": {
+          "condition": "size >= 0 && size <= 200",
+          "description": "Size parameter should not be too large"
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  },
+  {
+    "operation": {
+      "classname": "org.sat4j.core.VecInt",
+      "name": "subset",
+      "parameterTypes": [
+        "int"
+      ]
+    },
+    "identifiers": {
+      "parameters": [
+        "cardinal"
+      ],
+      "receiverName": "receiver",
+      "returnName": "result"
+    },
+    "pre": [
+      {
+        "description": "Input to subset should not be too large",
+        "guard": {
+          "condition": "cardinal >= 1 && cardinal <= 3",
+          "description": "Input to subset should not be too large"
+        }
+      }
+    ],
+    "post": [],
+    "throws": []
+  }
+]
