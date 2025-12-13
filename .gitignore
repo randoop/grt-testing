@@ -28,5 +28,8 @@ checkbashisms
 # output from runnin jacoco
 jacoco.exec
 
-.plume-scripts/
+# For code formatting
+.plume-scripts
+.markdownlint-cli2.yaml
 .pymarkdown
+.ruff.toml
