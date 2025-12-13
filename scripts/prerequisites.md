@@ -54,7 +54,7 @@ Add Defects4J's executables to your PATH in
 the shell session where you run the scripts:
 
 ```sh
-export PATH=$PATH:"PATH2DEFECTS4J"/framework/bin
+export PATH="$PATH":"$PATH2DEFECTS4J/framework/bin"
 ```
 
 > "PATH2DEFECTS4J" points to the directory which Defects4J is in; it most
