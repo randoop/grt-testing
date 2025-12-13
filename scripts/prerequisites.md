@@ -2,13 +2,13 @@
 
 ## Required Tools
 
-* **Java 8**
-* **Java 11**
-* **Python** 3
-* **Git** ≥ 1.9
-* **Subversion (svn)** ≥ 1.8
-* **Perl** ≥ 5.12
-* **cpanm** (Perl module installer)
+* Java 8
+* Java 11
+* Python 3
+* Git ≥ 1.9
+* Subversion (svn) ≥ 1.8
+* Perl ≥ 5.12
+* cpanm (Perl module installer)
   To install `cpanm`:
 
   ```sh
@@ -23,15 +23,15 @@ Before running any experiment scripts, ensure the following Python packages are 
 * `matplotlib`
 * `seaborn`
 
-Install these packages using your preferred Python package manager. For example:
+Install these packages using your preferred Python package manager.
 
-**With `pip`:**
+#### With pip
 
 ```sh
 pip install pandas matplotlib seaborn
 ```
 
-**With `uv`:**
+#### With uv
 
 ```sh
 uv pip install pandas matplotlib seaborn

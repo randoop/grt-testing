@@ -490,6 +490,7 @@ declare -A command_suffix=(
   # Force termination if a test case takes too long to execute
   ["commons-math3-3.2"]="--usethreads=true"
   ["nekomud-r16"]="--omit-methods=^net\.sourceforge\.nekomud\.service\.NetworkService\.stop\(\)$"
+  ["sat4j-core-2.3.5"]="--specifications=$SCRIPT_DIR/program-specs/sat4j-core-2.3.5-specs.json --omit-methods=^org\.sat4j\.minisat\.constraints\.cnf\.OriginalBinaryClause\.toConstraint\(\)$|^org\.sat4j\.minisat\.constraints\.card\.AtLeast\.learnt\(\)$ --usethreads=true"
   ["tiny-sql-2.26"]="--specifications=$SCRIPT_DIR/program-specs/tiny-sql-2.26-specs.json"
 )
 
@@ -498,7 +499,7 @@ if [ -z "$DISPLAY" ] && [ "$SUBJECT_PROGRAM" == "fixsuite-r48" ]; then
   echo "Running in headless mode. Avoiding spec for fixsuite-r48..."
 else
   # Only add fixsuite-r48 specification if not headless
-  command_suffix["fixsuite-r48"]="--specifications=$SCRIPT_DIR/program-specs/fixsuite-r48-specs.json"
+  command_suffix["fixsuite-r48"]="--specifications=$SCRIPT_DIR/program-specs/fixsuite-r48-specs.json --omit-classes=^org\.fixsuite\.message\.LibrarySuite$"
 fi
 
 if [[ -n "${command_suffix[$SUBJECT_PROGRAM]}" ]]; then

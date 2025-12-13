@@ -12,7 +12,7 @@ jobs:
           show-progress: false
 
       - name: Install Python `uv`
-        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+        uses: astral-sh/setup-uv@v7
 
       - run: sudo apt update
       - name: Install shellcheck and checkbashisms
