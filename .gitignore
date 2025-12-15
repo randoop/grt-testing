@@ -34,8 +34,5 @@ checkbashisms
 # output from running jacoco
 jacoco.exec
 
-# For code formatting
+# Obtained via Git
 .plume-scripts
-.markdownlint-cli2.yaml
-.pymarkdown
-.ruff.toml
