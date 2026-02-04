@@ -33,6 +33,7 @@
         <javac includeantruntime="true" 
                srcdir="${src}"
                destdir="${bindir}"
+               encoding="UTF-8"
                debug="yes">
             <classpath>
                 <pathelement location="${major.jar}"/>
@@ -47,6 +48,7 @@
         <javac includeantruntime="true" 
                srcdir="${src}"
                destdir="${targetdir}/classes"
+               encoding="UTF-8"
                debug="yes">
             <classpath refid="project.classpath"/>
         </javac>
@@ -57,6 +59,7 @@
         <javac includeantruntime="true"
                srcdir="${test}"
                destdir="${bindir}"
+               encoding="UTF-8"
                debug="yes">
                <classpath refid="project.classpath"/>
         </javac>
@@ -67,6 +70,7 @@
         <javac includeantruntime="true"
                srcdir="${test}"
                destdir="${targetdir}/test-classes"
+               encoding="UTF-8"
                debug="yes">
                <classpath refid="project.classpath"/>
         </javac>
