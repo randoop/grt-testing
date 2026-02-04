@@ -85,16 +85,19 @@ run_task() {
   program=$3
   mode=$4
   if [ "$mode" == "EVOSUITE" ]; then
-    echo "Running: mutation-evosuite.sh -c $cseconds -r -o fig6-table3.csv $program"
+    echo "mutation-fig6-table3.sh: Running: mutation-evosuite.sh -c $cseconds -r -o fig6-table3.csv $program"
     "$GRT_TESTING_ROOT"/mutation-evosuite.sh -c "$cseconds" -r -o fig6-table3.csv "$program"
+    echo "mutation-fig6-table3.sh: Done: mutation-evosuite.sh -c $cseconds -r -o fig6-table3.csv $program"
   elif [ "$mode" == "GRT" ]; then
-    echo "Running (GRT): mutation-randoop.sh -c $cseconds -f BLOODHOUND,ORIENTEERING,DETECTIVE,GRT_FUZZING,ELEPHANT_BRAIN,CONSTANT_MINING -r -o fig6-table3.csv $program"
+    echo "mutation-fig6-table3.sh: Running (GRT): mutation-randoop.sh -c $cseconds -f BLOODHOUND,ORIENTEERING,DETECTIVE,GRT_FUZZING,ELEPHANT_BRAIN,CONSTANT_MINING -r -o fig6-table3.csv $program"
     "$GRT_TESTING_ROOT"/mutation-randoop.sh -c "$cseconds" -f BLOODHOUND,ORIENTEERING,DETECTIVE,GRT_FUZZING,ELEPHANT_BRAIN,CONSTANT_MINING -r -o fig6-table3.csv "$program"
+    echo "mutation-fig6-table3.sh: Done (GRT): mutation-randoop.sh -c $cseconds -f BLOODHOUND,ORIENTEERING,DETECTIVE,GRT_FUZZING,ELEPHANT_BRAIN,CONSTANT_MINING -r -o fig6-table3.csv $program"
   elif [ "$mode" == "BASELINE" ]; then
-    echo "Running (Baseline): mutation-randoop.sh -c $cseconds -f BASELINE -r -o fig6-table3.csv $program"
+    echo "mutation-fig6-table3.sh: Running (Baseline): mutation-randoop.sh -c $cseconds -f BASELINE -r -o fig6-table3.csv $program"
     "$GRT_TESTING_ROOT"/mutation-randoop.sh -c "$cseconds" -f BASELINE -r -o fig6-table3.csv "$program"
+    echo "mutation-fig6-table3.sh: Done (Baseline): mutation-randoop.sh -c $cseconds -f BASELINE -r -o fig6-table3.csv $program"
   else
-    echo "${SCRIPT_NAME}: Invalid mode $mode. Please use GRT, EVOSUITE, or BASELINE."
+    echo "mutation-fig6-table3.sh: Invalid mode $mode. Please use GRT, EVOSUITE, or BASELINE."
     exit 2
   fi
 }
