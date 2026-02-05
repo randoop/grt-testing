@@ -27,6 +27,7 @@
         <javac includeantruntime="true"
                srcdir="${src}"
                destdir="${bindir}"
+               encoding="UTF-8"
                debug="yes">
             <classpath>
                 <pathelement path="${major.jar}"/>
@@ -41,6 +42,7 @@
         <javac includeantruntime="true"
                srcdir="${src}"
                destdir="${targetdir}/classes"
+               encoding="UTF-8"
                debug="yes">
             <classpath>
                 <fileset dir="${libdir}" includes="*.jar"/>
@@ -53,6 +55,7 @@
         <javac includeantruntime="true"
                srcdir="${test}"
                destdir="${bindir}"
+               encoding="UTF-8"
                debug="yes">
             <classpath>
                 <fileset dir="${libdir}" includes="*.jar"/>
@@ -65,6 +68,7 @@
         <javac includeantruntime="true"
                srcdir="${test}"
                destdir="${targetdir}/test-classes"
+               encoding="UTF-8"
                debug="yes">
             <classpath>
                 <fileset dir="${libdir}" includes="*.jar"/>

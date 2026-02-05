@@ -2,7 +2,7 @@
 
 # This file defines shell functions.
 
-append_csv() {
+function append_csv() {
   local csv_file="$1"
   local header="$2"
   shift 2
@@ -24,21 +24,21 @@ append_csv() {
   }
 }
 
-require_file() {
+function require_file() {
   [ -f "$1" ] || {
     echo "${SCRIPT_NAME}: error: Missing file $1" >&2
     exit 2
   }
 }
 
-require_directory() {
+function require_directory() {
   [ -d "$1" ] || {
     echo "${SCRIPT_NAME}: error: Missing directory $1" >&2
     exit 2
   }
 }
 
-require_csv_basename() {
+function require_csv_basename() {
   if [[ "$1" == */* ]]; then
     echo "${SCRIPT_NAME}: error: -o expects a filename only (no paths). Given: $1" >&2
     exit 2
@@ -50,7 +50,7 @@ require_csv_basename() {
 }
 
 # Switch to Java 8.
-usejdk8() {
+function usejdk8() {
   if [ -z "$JAVA8_HOME" ]; then
     echo "Error: JAVA8_HOME is not set." >&2
     return 1
@@ -61,7 +61,7 @@ usejdk8() {
 }
 
 # Switch to Java 11.
-usejdk11() {
+function usejdk11() {
   if [ -z "$JAVA11_HOME" ]; then
     echo "Error: JAVA11_HOME is not set." >&2
     return 1

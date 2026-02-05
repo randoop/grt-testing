@@ -23,12 +23,12 @@ Before running any experiment scripts, ensure the following Python packages are 
 * `matplotlib`
 * `seaborn`
 
-Install these packages using your preferred Python package manager.
+Install these packages using your preferred Python package manager.  Examples follow.
 
 #### With pip
 
 ```sh
-pip install pandas matplotlib seaborn
+python -m pip install pandas matplotlib seaborn
 ```
 
 #### With uv
@@ -39,26 +39,25 @@ uv pip install pandas matplotlib seaborn
 
 ## Obtaining Dependencies and Subject Programs
 
+Run from this directory (from the top level, do `cd scripts` first):
+
 ```sh
-make -C scripts
-make -C scripts randoop-from-source
-cd scripts
+make && \
+make randoop-from-source && \
 ./get-all-subject-src.sh
 ```
 
-## Environment variables
+## Adding Defects4J to PATH
 
-### Adding Defects4J to PATH
-
-Add Defects4J's executables to your PATH in
+For defect detection scripts, add Defects4J's executables to your PATH in
 the shell session where you run the scripts:
 
 ```sh
-export PATH=$PATH:"PATH2DEFECTS4J"/framework/bin
+export PATH="$PATH":"$PATH2DEFECTS4J/framework/bin"
 ```
 
-> "PATH2DEFECTS4J" points to the directory which Defects4J is in; it most
-> likely will look like "currentdirectory/build/defects4j".
+where "PATH2DEFECTS4J" points to the directory which Defects4J is in; it most
+likely will look like "currentdirectory/build/defects4j".
 
 ### Java Versions Setup
 
