@@ -4,6 +4,9 @@
 # subject-programs/src/. If the repository already exists, it pulls the
 # latest changes.
 
+# Fail this script on errors.
+set -e
+
 SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)"
 SCRIPT_NAME=$(basename -- "$0")
 

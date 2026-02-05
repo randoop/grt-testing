@@ -1,5 +1,8 @@
 #!/bin/sh
-set -eu
+
+# Fail this script on errors.
+set -e
+set -u
 
 # Directory of this script.
 SCRIPT_DIR=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)
