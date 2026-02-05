@@ -39,7 +39,7 @@ GRT_TESTING_ROOT="$(realpath "$SCRIPT_DIR"/../)"
 . "$SCRIPT_DIR"/common.sh
 
 # Clean up previous run artifacts.
-make -C "$GRT_TESTING_ROOT" clean
+make -C "$GRT_TESTING_ROOT" experiment-clean
 rm -f "$GRT_TESTING_ROOT"/results/fig6-table3.pdf
 rm -f "$GRT_TESTING_ROOT"/results/fig6-table3.csv
 
