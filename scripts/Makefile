@@ -81,5 +81,13 @@ results:
 clean:
 	rm -rf build results evosuite-tests evosuite-report target libs
 
+experiment-clean:
+	rm -rf build/bin/*
+	rm -rf build/randoop-tests/*
+	rm -rf build/evosuite-tests/*
+	rm -rf build/evosuite-report/*
+	rm -rf build/target/*
+	rm -rf build/lib/*
+
 src:
 	get-all-subject-src.sh
