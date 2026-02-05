@@ -40,6 +40,7 @@ SUBJECT_PROGRAMS=(
   "tiny-sql-2.26"
 )
 
+# This returns the number of cores to use, which is less than the number of cores that exist.
 num_cores() {
   if command -v nproc > /dev/null 2>&1; then
     NPROC=$(nproc)

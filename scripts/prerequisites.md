@@ -23,12 +23,12 @@ Before running any experiment scripts, ensure the following Python packages are 
 * `matplotlib`
 * `seaborn`
 
-Install these packages using your preferred Python package manager.
+Install these packages using your preferred Python package manager.  Examples follow.
 
 #### With pip
 
 ```sh
-pip install pandas matplotlib seaborn
+python -m pip install pandas matplotlib seaborn
 ```
 
 #### With uv
@@ -39,10 +39,11 @@ uv pip install pandas matplotlib seaborn
 
 ## Obtaining Dependencies and Subject Programs
 
+Run from this directory (from the top level, do `cd scripts` first):
+
 ```sh
-make -C scripts
-make -C scripts randoop-from-source
-cd scripts
+make && \
+make randoop-from-source && \
 ./get-all-subject-src.sh
 ```
 

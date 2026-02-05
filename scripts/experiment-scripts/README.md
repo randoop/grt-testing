@@ -17,16 +17,13 @@ To set up the environment, refer to the `scripts/prerequisites.md` file.
 ### Running Scripts
 
 To generate the desired figures or tables from the paper, run the corresponding
-shell script. For example, to generate **Figure 7**, use:
-
-```sh
-./mutation-fig7.sh
-```
-
-To generate **Table 4 (defect detection)**:
+shell script, from this directory.
 
 ```sh
 ./defects4j-table4.sh
+./mutation-fig6-table3.sh
+./mutation-fig7.sh
+./mutation-fig8-9.sh
 ```
 
 Each script is documented at the top of its file with:
