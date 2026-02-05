@@ -529,8 +529,10 @@ for i in $(seq 1 "$NUM_LOOP"); do
   # This is because the EvoSuite runner inteferes with the bytecode manipulation done by Major,
   # resulting in a lot of methods being excluded from mutation analysis.
   # We use a Python script to convert the tests.
-  if [ "$SUBJECT_PROGRAM" == "jdom-1.0" ]; then
-    PYTHON_EXECUTABLE=$(command -v python3 2> /dev/null || command -v python 2> /dev/null)
+  if [[ "$SUBJECT_PROGRAM" == "jdom-1.0" ||
+        "$SUBJECT_PROGRAM" == "dcParseArgs-10.2008" ||
+        "$SUBJECT_PROGRAM" == "nekomud-r16" ]]; then
+    PYTHON_EXECUTABLE=$(command -v python3 2>/dev/null || command -v python 2>/dev/null)
     if [ -z "$PYTHON_EXECUTABLE" ]; then
       echo "Error: Python is not installed." >&2
       exit 2
