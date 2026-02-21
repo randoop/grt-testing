@@ -32,6 +32,10 @@
 #
 #===============================================================================
 
+# Fail this script on errors.
+set -e
+set -o pipefail
+
 SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)"
 SCRIPT_NAME=$(basename -- "$0")
 GRT_TESTING_ROOT="$(realpath "$SCRIPT_DIR"/../)"
