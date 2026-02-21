@@ -5,6 +5,10 @@
 # as running mutation scripts may create many new files due to execution of
 # subject programs.
 
+# Fail this script on errors.
+set -e
+set -o pipefail
+
 # Change to the directory this script resides in.
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR" || exit 1
