@@ -56,6 +56,7 @@ set -o pipefail
 Generator=Randoop
 generator=randoop
 SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)"
+SCRIPT_NAME=$(basename -- "$0")
 MAJOR_HOME=$(realpath "${SCRIPT_DIR}/build/major/")                                                # Major home directory, for mutation testing
 RANDOOP_JAR=$(realpath "${SCRIPT_DIR}/build/randoop-all-4.3.4.jar")                                # Randoop jar file
 JACOCO_AGENT_JAR=$(realpath "${SCRIPT_DIR}/build/jacocoagent.jar")                                 # For Bloodhound

@@ -22,5 +22,4 @@ jobs:
       - name: Install Python `uv`
         run: curl -LsSf https://astral.sh/uv/install.sh | sh
       - name: style check
-        run: |
-          make style-check
+        run: make style-check
