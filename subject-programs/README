@@ -1,3 +1,8 @@
+Run Python scripts in this directory via:
+
+uv run SCRIPTNAME
+
+
 This directory contains compiled versions (jar files) of projects that the GRT
 paper used as subject programs.  The paper's Table II lists 32 projects.  We
 have located 30 of them.

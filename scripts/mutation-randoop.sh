@@ -57,11 +57,12 @@ Generator=Randoop
 generator=randoop
 SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)"
 SCRIPT_NAME=$(basename -- "$0")
-MAJOR_HOME=$(realpath "${SCRIPT_DIR}/build/major/")                     # Major home directory, for mutation testing
-RANDOOP_JAR=$(realpath "${SCRIPT_DIR}/build/randoop-all-4.3.4.jar")     # Randoop jar file
-JACOCO_AGENT_JAR=$(realpath "${SCRIPT_DIR}/build/jacocoagent.jar")      # For Bloodhound
-JACOCO_CLI_JAR=$(realpath "${SCRIPT_DIR}/build/jacococli.jar")          # For coverage report generation
-REPLACECALL_JAR=$(realpath "${SCRIPT_DIR}/build/replacecall-4.3.4.jar") # For replacing undesired method calls
+MAJOR_HOME=$(realpath "${SCRIPT_DIR}/build/major/")                                                # Major home directory, for mutation testing
+RANDOOP_JAR=$(realpath "${SCRIPT_DIR}/build/randoop-all-4.3.4.jar")                                # Randoop jar file
+JACOCO_AGENT_JAR=$(realpath "${SCRIPT_DIR}/build/jacocoagent.jar")                                 # For Bloodhound
+JACOCO_CLI_JAR=$(realpath "${SCRIPT_DIR}/build/jacococli.jar")                                     # For coverage report generation
+REPLACECALL_JAR=$(realpath "${SCRIPT_DIR}/build/replacecall-4.3.4.jar")                            # For replacing undesired method calls
+CHECKER_QUAL_JAR=$(realpath "${SCRIPT_DIR}/build/checker-framework/checker/dist/checker-qual.jar") # For Randoop Impurity
 
 . "$SCRIPT_DIR/defs.sh" # Define shell functions.
 
@@ -70,6 +71,7 @@ require_file "$RANDOOP_JAR"
 require_file "$JACOCO_AGENT_JAR"
 require_file "$JACOCO_CLI_JAR"
 require_file "$REPLACECALL_JAR"
+require_file "$CHECKER_QUAL_JAR"
 
 \usejdk8
 JAVA_VER=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '{sub("^$", "0", $2); print ($1=="1")?$2:$1}')
@@ -219,8 +221,18 @@ echo
 # Path to the base directory of the source code.
 SRC_BASE_DIR="$(realpath "$SCRIPT_DIR/../subject-programs/src/$SUBJECT_PROGRAM")"
 
-# Path to the jar file of the subject program.
-SRC_JAR=$(realpath "$SCRIPT_DIR/../subject-programs/$SUBJECT_PROGRAM.jar")
+if [[ " ${RANDOOP_FEATURES[*]} " =~ " GRT_FUZZING " ]]; then
+  # If randoop features contain "GRT_FUZZING", use annotated subject program jar.
+  ANNOTATED_JAR="$SCRIPT_DIR/../subject-programs/annotated-jars/$SUBJECT_PROGRAM.jar"
+  if [ ! -f "$ANNOTATED_JAR" ]; then
+    echo "${SCRIPT_NAME}: error: GRT_FUZZING enabled but annotated JAR not found: $ANNOTATED_JAR" >&2
+    exit 2
+  fi
+  SRC_JAR=$(realpath "$ANNOTATED_JAR")
+else
+  # Else, use the original subject program jar.
+  SRC_JAR=$(realpath "$SCRIPT_DIR/../subject-programs/jars/$SUBJECT_PROGRAM.jar")
+fi
 
 # Number of classes in given jar file.
 NUM_CLASSES=$(jar -tf "$SRC_JAR" | grep -c '.class')
@@ -353,7 +365,7 @@ case "$SUBJECT_PROGRAM" in
       "$SRC_BASE_DIR/lib/jaxen-core.jar" \
       "$SRC_BASE_DIR/lib/jaxen-jdom.jar" \
       "$SRC_BASE_DIR/lib/saxpath.jar" \
-      "$SCRIPT_DIR/../subject-programs/jaxen-1.1.6.jar"
+      "$SCRIPT_DIR/../subject-programs/jars/jaxen-1.1.6.jar"
     ;;
 
   "joda-time-2.3")
@@ -456,7 +468,7 @@ RANDOOP_BASE_COMMAND=(
   -Xbootclasspath/a:"$JACOCO_AGENT_JAR:$REPLACECALL_JAR"
   -javaagent:"$JACOCO_AGENT_JAR"
   -javaagent:"$REPLACECALL_COMMAND"
-  -classpath "$RANDOOP_CLASSPATH:$RANDOOP_JAR"
+  -classpath "$RANDOOP_CLASSPATH:$RANDOOP_JAR:$CHECKER_QUAL_JAR"
   randoop.main.Main
   gentests
   --testjar="$TARGET_JAR"
