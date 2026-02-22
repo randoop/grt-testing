@@ -61,7 +61,7 @@ EVOSUITE_JAR=$(realpath "${SCRIPT_DIR}/build/evosuite-1.2.0.jar") # EvoSuite jar
 . "$SCRIPT_DIR/defs.sh" # Define shell functions.
 
 command -v defects4j > /dev/null 2>&1 || {
-  echo "${SCRIPT_NAME}: error: defects4j not on PATH." >&2
+  echo "${SCRIPT_NAME}: error: defects4j not on PATH. Please refer to prerequisites.md." >&2
   exit 2
 }
 [ -f "$EVOSUITE_JAR" ] || {

@@ -14,6 +14,8 @@ all: \
     build/randoop-all-4.3.4.jar \
     build/replacecall-4.3.4.jar \
     build/defects4j \
+	randoop-from-source \
+	src \
     results
 
 build/jacoco.jar:

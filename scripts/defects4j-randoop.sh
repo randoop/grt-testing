@@ -66,7 +66,7 @@ REPLACECALL_JAR=$(realpath "${SCRIPT_DIR}/build/replacecall-4.3.4.jar") # For re
 . "$SCRIPT_DIR/defs.sh" # Define shell functions.
 
 command -v defects4j > /dev/null 2>&1 || {
-  echo "${SCRIPT_NAME}: error: defects4j not on PATH." >&2
+  echo "${SCRIPT_NAME}: error: defects4j not on PATH. Please refer to prerequisites.md." >&2
   exit 2
 }
 require_file "$RANDOOP_JAR"

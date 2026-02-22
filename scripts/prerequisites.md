@@ -42,9 +42,7 @@ uv pip install pandas matplotlib seaborn
 Run from this directory (from the top level, do `cd scripts` first):
 
 ```sh
-make && \
-make randoop-from-source && \
-./get-all-subject-src.sh
+make
 ```
 
 ## Adding Defects4J to PATH
