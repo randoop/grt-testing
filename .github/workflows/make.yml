@@ -11,6 +11,11 @@ jobs:
           fetch-depth: 1
           show-progress: false
 
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
       - name: Install Python `uv`
         uses: astral-sh/setup-uv@v7
 
@@ -21,5 +26,7 @@ jobs:
         run: npm install markdownlint-cli2 --global
       - name: Install Python `uv`
         run: curl -LsSf https://astral.sh/uv/install.sh | sh
+      - name: Sync Python dependencies
+        run: uv sync --all-groups
       - name: style check
         run: make style-check
