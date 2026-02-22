@@ -20,4 +20,7 @@ dev = [
     "pyyaml>=6.0.3",
     "ty>=0.0.1a31",
 ]
+[tool.uv]
+package = false
+
 # dynamic = ["version"]

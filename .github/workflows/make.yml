@@ -27,6 +27,6 @@ jobs:
       - name: Install Python `uv`
         run: curl -LsSf https://astral.sh/uv/install.sh | sh
       - name: Sync Python dependencies
-        run: uv sync --all-groups
+        run: uv sync --all-groups --no-install-project
       - name: style check
         run: make style-check
