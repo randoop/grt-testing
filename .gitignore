@@ -16,9 +16,10 @@ Thumbs.db
 
 # subdirectory with source repositories
 tests/src
+subject-programs/src
+# temporary
 subject-programs/src-grt/
 subject-programs/src-upstream/
-# temporary
 subject-programs/src-upstream-OLD/
 subject-programs/src-upstream-GOOD/
 subject-programs/src-grt-SAVE/
