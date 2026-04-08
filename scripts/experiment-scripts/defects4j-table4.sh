@@ -73,7 +73,7 @@ elif command -v getconf > /dev/null 2>&1; then
 else
   NPROC=1
 fi
-NUM_CORES=$((NPROC - 4))
+NUM_CORES=$((NPROC / 4))
 if [ "$NUM_CORES" -lt 1 ]; then NUM_CORES=1; fi
 echo "${SCRIPT_NAME}: Running $NUM_CORES concurrent processes."
 
