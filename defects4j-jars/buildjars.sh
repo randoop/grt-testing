@@ -145,7 +145,7 @@ for PROJECT_ID in "${PROJECT_IDS[@]}"; do
     "$CHECKERFRAMEWORK"/checker/bin/infer-and-annotate.sh \
       org.checkerframework.framework.util.PurityChecker \
       "$CLASS_DIR" \
-      $(find "$SRC_DIR" -name "*.java") \
+      "$(find "$SRC_DIR" -name "*.java")" \
       > "$LOG_FILE" 2>&1
 
     #--------------------------------------------------------------------------
