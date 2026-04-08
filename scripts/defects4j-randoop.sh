@@ -31,7 +31,7 @@ USAGE_STRING="usage: defects4j-randoop.sh -b id -o RESULTS_CSV [-f features] [-t
         Paths are not allowed; only a filename may be given.
   -f    Specify the features to use.
         Available features: BASELINE, BLOODHOUND, ORIENTEERING, DETECTIVE, GRT_FUZZING, ELEPHANT_BRAIN, CONSTANT_MINING.
-        example usage: -f BASELINE,BLOODHOUND
+        example usage: -f BLOODHOUND,ORIENTEERING
   -t N  Total time limit for test generation (in seconds).
   -c N  Per-class time limit (in seconds, default: 2s/class).
         Mutually exclusive with -t.
@@ -62,6 +62,7 @@ DEFECTS4J_HOME=$(realpath "${SCRIPT_DIR}/build/defects4j/")             # Defect
 RANDOOP_JAR=$(realpath "${SCRIPT_DIR}/build/randoop-all-4.3.4.jar")     # Randoop jar file
 JACOCO_AGENT_JAR=$(realpath "${SCRIPT_DIR}/build/jacocoagent.jar")      # For Bloodhound
 REPLACECALL_JAR=$(realpath "${SCRIPT_DIR}/build/replacecall-4.3.4.jar") # For replacing undesired method calls
+CHECKER_QUAL_JAR=$(realpath "${SCRIPT_DIR}/build/checker-framework/checker/dist/checker-qual.jar") # For impurity
 
 . "$SCRIPT_DIR/defs.sh" # Define shell functions.
 
@@ -72,6 +73,7 @@ command -v defects4j > /dev/null 2>&1 || {
 require_file "$RANDOOP_JAR"
 require_file "$JACOCO_AGENT_JAR"
 require_file "$REPLACECALL_JAR"
+require_file "$CHECKER_QUAL_JAR"
 [ -x "$DEFECTS4J_HOME/framework/bin/run_bug_detection.pl" ] || {
   echo "${SCRIPT_NAME}: error: Missing $DEFECTS4J_HOME/framework/bin/run_bug_detection.pl. Run 'make build/defects4j' or set DEFECTS4J_HOME." >&2
   exit 2
@@ -179,10 +181,10 @@ declare -A FEATURE_FLAGS
 FEATURE_FLAGS=(
   ["BLOODHOUND"]="--method-selection=BLOODHOUND"
   ["ORIENTEERING"]="--input-selection=ORIENTEERING"
-  ["DETECTIVE"]="--demand-driven=true"
-  ["GRT_FUZZING"]="--grt-fuzzing=true"
+  ["DETECTIVE"]="--call-non-sut-methods=true"
   ["ELEPHANT_BRAIN"]="--cast-to-run-time-type=true"
   ["CONSTANT_MINING"]="--constant-mining=true"
+  ["IMPURITY"]="--grt-fuzzing=true"
   ["BASELINE"]=""
 )
 
@@ -260,6 +262,20 @@ for i in $(seq 1 "$NUM_LOOP"); do
 
   PROJECT_CP=$(defects4j export -p cp.compile -w "$FIXED_WORK_DIR")
 
+  # Build effective classpath for IMPURITY
+  if [[ " ${RANDOOP_FEATURES[*]} " =~ " IMPURITY " ]]; then
+    echo "Configuring classpath for IMPURITY feature..."
+    ANNOTATED_JAR=$(realpath "$SCRIPT_DIR/../defects4j-jars/$PROJECT_ID/$PROJECT_ID-b${BUG_ID}.jar")
+    require_file "$ANNOTATED_JAR"
+    # Extract only .jar entries safely (no failure if none found)
+    LIB_CP=$(printf '%s\n' "$PROJECT_CP" | tr ':' '\n' | awk '/\.jar$/ {print}' | paste -sd ':')
+    EFFECTIVE_CP="${ANNOTATED_JAR}"
+    [[ -n "$LIB_CP" ]] && EFFECTIVE_CP+=":$LIB_CP"
+    EFFECTIVE_CP+=":$RANDOOP_JAR:$CHECKER_QUAL_JAR"
+  else
+    EFFECTIVE_CP="${PROJECT_CP}:${RANDOOP_JAR}"
+  fi
+
   # Export fault-relevant classes
   defects4j export -p classes.relevant -w "$FIXED_WORK_DIR" > "$RELEVANT_CLASSES_FILE"
 
@@ -291,7 +307,7 @@ for i in $(seq 1 "$NUM_LOOP"); do
     -Xbootclasspath/a:"$JACOCO_AGENT_JAR:$REPLACECALL_JAR"
     -javaagent:"$JACOCO_AGENT_JAR"
     -javaagent:"$REPLACECALL_JAR"
-    -classpath "$PROJECT_CP:$RANDOOP_JAR"
+    -classpath "$EFFECTIVE_CP"
     randoop.main.Main
     gentests
     --classlist="$RELEVANT_CLASSES_FILE"
