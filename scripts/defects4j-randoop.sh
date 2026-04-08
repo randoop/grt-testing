@@ -58,10 +58,10 @@ Generator=Randoop
 generator=randoop
 SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)"
 SCRIPT_NAME=$(basename -- "$0")
-DEFECTS4J_HOME=$(realpath "${SCRIPT_DIR}/build/defects4j/")             # Defects4j home directory
-RANDOOP_JAR=$(realpath "${SCRIPT_DIR}/build/randoop-all-4.3.4.jar")     # Randoop jar file
-JACOCO_AGENT_JAR=$(realpath "${SCRIPT_DIR}/build/jacocoagent.jar")      # For Bloodhound
-REPLACECALL_JAR=$(realpath "${SCRIPT_DIR}/build/replacecall-4.3.4.jar") # For replacing undesired method calls
+DEFECTS4J_HOME=$(realpath "${SCRIPT_DIR}/build/defects4j/")                                        # Defects4j home directory
+RANDOOP_JAR=$(realpath "${SCRIPT_DIR}/build/randoop-all-4.3.4.jar")                                # Randoop jar file
+JACOCO_AGENT_JAR=$(realpath "${SCRIPT_DIR}/build/jacocoagent.jar")                                 # For Bloodhound
+REPLACECALL_JAR=$(realpath "${SCRIPT_DIR}/build/replacecall-4.3.4.jar")                            # For replacing undesired method calls
 CHECKER_QUAL_JAR=$(realpath "${SCRIPT_DIR}/build/checker-framework/checker/dist/checker-qual.jar") # For impurity
 
 . "$SCRIPT_DIR/defs.sh" # Define shell functions.
