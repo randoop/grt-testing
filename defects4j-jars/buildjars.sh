@@ -86,6 +86,7 @@ PROJECT_IDS=(
 
 # Map each project to bug IDs. Supports comma-separated IDs and ranges.
 # Example: "1-26" or "1,3,5-8".
+# These come from the "Active bug ids" at https://github.com/rjust/defects4j .
 declare -A PROJECT_BUG_SPECS=(
   [Chart]="1-26"
   ["Cli"]="1-5,7-40"
