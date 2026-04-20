@@ -17,10 +17,8 @@
 # You must then build/package each project independently (often with Ant),
 # because project-specific build logic differs.
 #
-# Typical output target jar name:
-#   defects4j-jars/<PROJECT_ID>/<PROJECT_ID>-b<BUG_ID>.jar
-# Example:
-#   defects4j-jars/Lang/Lang-b1.jar
+# For build documentation (project + bug groups), refer to:
+#   defects4j-jars/BUILD_MATRIX.md
 #
 # Why manual per-project build is still needed
 # --------------------------------------------
@@ -46,7 +44,8 @@
 # 2) Run:
 #      ./buildjars.sh
 # 3) For each checked out project under build/defects4j-src/, perform
-#    project-specific build + jar packaging manually.
+#    project-specific build + jar packaging manually, following:
+#      defects4j-jars/BUILD_MATRIX.md
 #
 # Notes
 # -----
@@ -54,6 +53,8 @@
 #     build/defects4j-src/<PROJECT>-<BUG>f/checker.log
 # - BUG specs are expanded from ranges like:
 #     "1-5,7,10-12"
+# - Use defects4j-jars/BUILD_MATRIX.md to document build commands and any
+#   special handling for project/bug groups.
 #===============================================================================
 
 # Environment setup
@@ -145,7 +146,7 @@ for PROJECT_ID in "${PROJECT_IDS[@]}"; do
     # Output is logged to checker.log for diagnostics.
     "$CHECKERFRAMEWORK"/checker/bin/infer-and-annotate.sh \
       org.checkerframework.framework.util.PurityChecker \
-      "$CLASS_DIR" \
+      "$SCRIPT_DIR/../scripts/build/junit-4.12.jar:$CLASS_DIR" \
       "$(find "$SRC_DIR" -name "*.java")" \
       > "$LOG_FILE" 2>&1
 
@@ -168,8 +169,8 @@ for PROJECT_ID in "${PROJECT_IDS[@]}"; do
     #   5) Package compiled classes into:
     #        $SCRIPT_DIR/<PROJECT_ID>/<PROJECT_ID>-b<BUG_ID>.jar
     #
-    # Keep per-project notes/scripts as needed; there is no single universal
-    # build command that works for all Defects4J projects.
+    # Keep BUILD_MATRIX.md up to date with project/bug build recipes; there is
+    # no single universal build command that works for all Defects4J projects.
     #--------------------------------------------------------------------------
 
   done < <(expand_bug_ids "$BUG_SPEC")
