@@ -23,7 +23,7 @@
 #------------------------------------------------------------------------------
 # Options (command-line arguments):
 #------------------------------------------------------------------------------
-USAGE_STRING="usage: mutation-randoop.sh [-f features] [-o RESULTS_CSV] [-t total_time] [-c time_per_class] [-n num_iterations] [-r] [-v] [-h] TEST-CASE-NAME
+USAGE_STRING="usage: mutation-randoop.sh [-f features] [-o RESULTS_CSV] [-t total_time] [-c time_per_class] [-n num_iterations] [-s] [-r] [-v] [-h] TEST-CASE-NAME
   -f    Specify the Randoop features to use.
         Available features: BASELINE, BLOODHOUND, ORIENTEERING, DETECTIVE, GRT_FUZZING, ELEPHANT_BRAIN, CONSTANT_MINING.
         example usage: -f BASELINE,BLOODHOUND
@@ -34,6 +34,7 @@ USAGE_STRING="usage: mutation-randoop.sh [-f features] [-o RESULTS_CSV] [-t tota
   -c N  Per-class time limit (in seconds, default: 2s/class).
         Mutually exclusive with -t.
   -n N  Number of iterations to run the experiment (default: 1).
+  -s    Skip mutation analysis (only run test generation and coverage).
   -r    Redirect logs and diagnostics to results/result/mutation_output.txt.
   -v    Enables verbose mode.
   -h    Displays this help message.
@@ -92,10 +93,11 @@ fi
 NUM_LOOP=1      # Number of experiment runs (10 in GRT paper)
 VERBOSE=0       # Verbose option
 REDIRECT=0      # Redirect output to mutation_output.txt
+SKIP_MUTATION=0 # Skip mutation analysis
 UUID=$(uuidgen) # Generate a unique identifier per instance
 
 # Parse command-line arguments
-while getopts ":hvrf:o:t:c:n:" opt; do
+while getopts ":hvrsf:o:t:c:n:" opt; do
   case ${opt} in
     h)
       # Display help message
@@ -109,6 +111,10 @@ while getopts ":hvrf:o:t:c:n:" opt; do
     r)
       # Redirect output to a log file
       REDIRECT=1
+      ;;
+    s)
+      # Skip mutation analysis
+      SKIP_MUTATION=1
       ;;
     f)
       FEATURES_OPT="$OPTARG"
@@ -161,10 +167,10 @@ declare -A FEATURE_FLAGS
 FEATURE_FLAGS=(
   ["BLOODHOUND"]="--method-selection=BLOODHOUND"
   ["ORIENTEERING"]="--input-selection=ORIENTEERING"
-  ["DETECTIVE"]="--demand-driven=true"
+  ["DETECTIVE"]="--call-non-sut-methods=true"
   ["GRT_FUZZING"]="--grt-fuzzing=true"
   ["ELEPHANT_BRAIN"]="--cast-to-run-time-type=true"
-  ["CONSTANT_MINING"]="--constant-mining=true"
+  ["CONSTANT_MINING"]="--literal-tfidf=true --literal-tfidf-probability=1.0 --include-superclass-literals=true"
   ["BASELINE"]=""
 )
 
@@ -174,7 +180,10 @@ for feat in "${RANDOOP_FEATURES[@]}"; do
   if [[ "${FEATURE_FLAGS[$feat]+exists}" ]]; then
     flag="${FEATURE_FLAGS[$feat]}"
     if [[ -n "$flag" ]]; then
-      EXPANDED_FEATURE_FLAGS+=("$flag")
+      # Split multi-argument feature strings into separate array entries
+      # shellcheck disable=SC2206
+      split_flags=($flag)
+      EXPANDED_FEATURE_FLAGS+=("${split_flags[@]}")
     fi
   else
     echo "${SCRIPT_NAME}: error: unknown feature '$feat'"
@@ -610,6 +619,13 @@ for i in $(seq 1 "$NUM_LOOP"); do
   "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/${buildfile} -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -Dtargetdir="$COVERAGE_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" compile.mutation
   "$MAJOR_HOME"/bin/ant -f "$SCRIPT_DIR"/program-config/"$1"/${buildfile} -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dmutator="mml:$MAJOR_HOME/mml/all.mml.bin" -Dsrc="$JAVA_SRC_DIR" -Dtargetdir="$COVERAGE_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" compile.jacoco
 
+  PYTHON_EXECUTABLE=$(command -v python3 2> /dev/null || command -v python 2> /dev/null)
+  if [ -z "$PYTHON_EXECUTABLE" ]; then
+    echo "Error: Python is not installed." >&2
+    exit 2
+  fi
+  "$PYTHON_EXECUTABLE" "$SCRIPT_DIR"/trim_mutants.py "$RESULT_DIR/mutants.log"
+
   echo
   echo "Compiling tests..."
   if [[ "$VERBOSE" -eq 1 ]]; then
@@ -653,28 +669,30 @@ for i in $(seq 1 "$NUM_LOOP"); do
   # proper isolation and compatibility for accurate mutant coverage.
 
   if [ "$SUBJECT_PROGRAM" == "hamcrest-core-1.3" ]; then
-    PYTHON_EXECUTABLE=$(command -v python3 2> /dev/null || command -v python 2> /dev/null)
-    if [ -z "$PYTHON_EXECUTABLE" ]; then
-      echo "Error: Python is not installed." >&2
-      exit 1
-    fi
     "$PYTHON_EXECUTABLE" "$SCRIPT_DIR"/convert_test_runners.py "$TEST_DIRECTORY" --mode randoop-to-evosuite
   fi
 
-  echo
-  echo "Running tests with mutation analysis..."
-  if [[ "$VERBOSE" -eq 1 ]]; then
-    echo command:
-    echo "$MAJOR_HOME"/bin/"$ANT" -f "$SCRIPT_DIR"/program-config/"$1"/${buildfile} -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" mutation.test
-  fi
-  echo
-  "$MAJOR_HOME"/bin/"$ANT" -f "$SCRIPT_DIR"/program-config/"$1"/${buildfile} -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" mutation.test
+  # Run mutation analysis unless -s flag is set
+  if [[ "$SKIP_MUTATION" -eq 0 ]]; then
+    echo
+    echo "Running tests with mutation analysis..."
+    if [[ "$VERBOSE" -eq 1 ]]; then
+      echo command:
+      echo "$MAJOR_HOME"/bin/"$ANT" -f "$SCRIPT_DIR"/program-config/"$1"/${buildfile} -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" mutation.test
+    fi
+    echo
+    "$MAJOR_HOME"/bin/"$ANT" -f "$SCRIPT_DIR"/program-config/"$1"/${buildfile} -Dbasedir="$SCRIPT_DIR" -Dbindir="$SCRIPT_DIR/build/bin/$FILE_SUFFIX" -Dresultdir="$RESULT_DIR" -Dtest="$TEST_DIRECTORY" -Dlibdir="$SCRIPT_DIR/build/lib/$UUID" mutation.test
 
-  # Calculate Mutation Score
-  mutants_generated=$(awk -F, 'NR==2 {print $1}' "$RESULT_DIR"/summary.csv)
-  mutants_killed=$(awk -F, 'NR==2 {print $4}' "$RESULT_DIR"/summary.csv)
-  mutation_score=$(echo "scale=4; $mutants_killed / $mutants_generated * 100" | bc)
-  mutation_score=$(printf "%.2f" "$mutation_score")
+    # Calculate Mutation Score
+    mutants_generated=$(awk -F, 'NR==2 {print $2}' "$RESULT_DIR"/summary.csv)
+    mutants_killed=$(awk -F, 'NR==2 {print $4}' "$RESULT_DIR"/summary.csv)
+    mutation_score=$(echo "scale=4; $mutants_killed / $mutants_generated * 100" | bc)
+    mutation_score=$(printf "%.2f" "$mutation_score")
+  else
+    echo
+    echo "Skipping mutation analysis (use -s flag)."
+    mutation_score="N/A"
+  fi
 
   echo "Instruction Coverage: $instruction_coverage%"
   echo "Branch Coverage: $branch_coverage%"

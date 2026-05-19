@@ -87,6 +87,7 @@
                testOrder="sort_methods"
                serializedMapsFile="${resultdir}/preprocessing.ser"
                mutantsLogFile="${resultdir}/mutants.log"
+               excludeMutantsFile="${resultdir}/exclude_mutants.txt"
                summaryFile="${resultdir}/summary.csv"
                mutantDetailsFile="${resultdir}/details.csv"
                covMapFile="${resultdir}/covMap.csv"
