@@ -49,7 +49,7 @@
     </target>
 
 <!-- Target to compile the test suite (for mutation analysis) -->
-    <target name="compile.mutation.tests" description="Compile all tests" depends="compile.mutation">
+    <target name="compile.mutation.tests" description="Compile all tests">
         <javac includeantruntime="true"
                srcdir="${test}"
                destdir="${bindir}"
@@ -74,7 +74,7 @@
 
 
 <!-- The adapted mutation test target -->
-    <target name="mutation.test" description="Run mutation analysis for all unit test cases" depends="compile.mutation.tests">
+    <target name="mutation.test" description="Run mutation analysis for all unit test cases">
         <echo message="Running mutation analysis ..."/>
         <junit printsummary="false"
                showoutput="false"

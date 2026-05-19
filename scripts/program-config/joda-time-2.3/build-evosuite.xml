@@ -95,7 +95,7 @@
             </classpath>
             <batchtest fork="false">
                 <fileset dir="${test}">
-                    <include name="${test.pattern}" />
+                    <include name="**/*Test*.java" />
                     <exclude name="**/*_scaffolding.java" />
                 </fileset>
             </batchtest>
