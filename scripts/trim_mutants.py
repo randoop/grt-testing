@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Create an exclude list for redundant mutants from a mutants.log file.
+"""Create an exclude list for redundant mutants from a mutants.log file.
 
 This script reduces the number of mutants by identifying mutants to exclude,
 keeping only a limited number per method while preserving diverse mutation operators.
@@ -15,7 +14,11 @@ from pathlib import Path
 
 
 def parse_mutant_line(line):
-    """Parse a mutant line and extract key information."""
+    """Parse a mutant line and extract key information.
+
+    Returns:
+        dict: Dictionary with 'id', 'operator', 'method', and 'line' keys, or None if parsing fails.
+    """
     parts = line.strip().split(":")
     if len(parts) < 7:
         return None
@@ -36,10 +39,14 @@ def parse_mutant_line(line):
 
 
 def group_mutants_by_method(mutants_file):
-    """Group mutants by their method identifier."""
+    """Group mutants by their method identifier.
+
+    Returns:
+        dict: Dictionary mapping method identifiers to lists of mutant dictionaries.
+    """
     method_mutants = defaultdict(list)
 
-    with open(mutants_file, "r") as f:
+    with Path(mutants_file).open("r") as f:
         for line in f:
             mutant = parse_mutant_line(line)
             if mutant:
@@ -49,13 +56,15 @@ def group_mutants_by_method(mutants_file):
 
 
 def select_diverse_mutants(mutants, max_per_method=3):
-    """
-    Select a limited number of mutants per method, preferring diversity.
+    """Select a limited number of mutants per method, preferring diversity.
 
     Strategy:
     1. Group by mutation operator
     2. Select one mutant from each operator type until we hit the limit
     3. If we still have room, add more mutants round-robin style
+
+    Returns:
+        list: List of selected mutant dictionaries.
     """
     if len(mutants) <= max_per_method:
         return mutants
@@ -94,8 +103,7 @@ def select_diverse_mutants(mutants, max_per_method=3):
 
 
 def trim_mutants(input_file, output_file, max_per_method=3, verbose=False):
-    """
-    Create an exclude list for mutants to reduce redundancy.
+    """Create an exclude list for mutants to reduce redundancy.
 
     Args:
         input_file: Path to input mutants.log
@@ -129,9 +137,8 @@ def trim_mutants(input_file, output_file, max_per_method=3, verbose=False):
     excluded_ids = sorted(all_ids - selected_ids)
 
     # Write excluded mutant IDs to file
-    with open(output_file, "w") as f:
-        for mutant_id in excluded_ids:
-            f.write(f"{mutant_id}\n")
+    with Path(output_file).open("w") as f:
+        f.writelines(f"{mutant_id}\n" for mutant_id in excluded_ids)
 
     if verbose:
         print(f"\nMutants to keep: {len(selected_mutants)}")
@@ -142,6 +149,7 @@ def trim_mutants(input_file, output_file, max_per_method=3, verbose=False):
 
 
 def main():
+    """Trim mutants from a mutants.log file."""
     parser = argparse.ArgumentParser(
         description="Create an exclude list for redundant mutants from a mutants.log file"
     )
