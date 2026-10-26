@@ -42,16 +42,18 @@ build/randoop:
 	mkdir -p build
 	cd build && git clone git@github.com:randoop/randoop.git
 
-randoop-from-source:
+# The prerequisite prevents `make -j` from running two recipes in build/randoop at once.
+randoop-from-source: build/replacecall-4.3.4.jar
 	cd build/randoop && \
 	git pull && \
 	./gradlew shadowJar && \
 	mv -f build/libs/randoop-all-4.3.4.jar ..
 
-build/replacecall-4.3.4.jar:
-	LATEST_RELEASE=$$(curl -s https://api.github.com/repos/randoop/grt-replacecall/releases/latest | grep -o '"tag_name": "[^"]*' | cut -d'"' -f4) && \
-	wget "https://github.com/randoop/grt-replacecall/releases/download/$${LATEST_RELEASE}/replacecall-4.3.4.jar" && \
-	mv replacecall-4.3.4.jar build/
+build/replacecall-4.3.4.jar: build/randoop
+	cd build/randoop && \
+	git pull && \
+	./gradlew :replacecall:shadowJar && \
+	cp -f replacecall/build/libs/replacecall-4.3.4.jar ..
 
 build/evosuite-1.2.0.jar:
 	mkdir -p build

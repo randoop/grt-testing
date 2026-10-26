@@ -460,11 +460,12 @@ EXCLUSION_FILE_PATH="$SCRIPT_DIR/program-config/$SUBJECT_PROGRAM/replacecall-exc
 # Map subject programs to their respective replacement files.
 declare -A replacement_files=(
   # Do not wait for user input
-  ["easymock-3.2"]="=--dont-transform=$EXCLUSION_FILE_PATH"
-  ["javax.mail-1.5.1"]="=--dont-transform=$EXCLUSION_FILE_PATH"
-  ["jcommander-1.35"]="=--replacement_file=$REPLACEMENT_FILE_PATH"
+  ["easymock-3.2"]="--dont-transform=$EXCLUSION_FILE_PATH"
+  ["javax.mail-1.5.1"]="--dont-transform=$EXCLUSION_FILE_PATH"
+  ["jcommander-1.35"]="--replacement-file=$REPLACEMENT_FILE_PATH"
 )
-REPLACECALL_COMMAND="$REPLACECALL_JAR${replacement_files[$SUBJECT_PROGRAM]}"
+# Do not replace System.exit, which the replacecall agent replaces by default.
+REPLACECALL_COMMAND="$REPLACECALL_JAR=--disable-default-replacement=java.lang.System.exit(int) ${replacement_files[$SUBJECT_PROGRAM]:-}"
 
 #===============================================================================
 # Test generator command configuration
