@@ -95,7 +95,7 @@
                 <fileset dir="${libdir}" includes="*.jar"/>
             </classpath>
             <jvmarg value="-Xbootclasspath/a:${basedir}/build/replacecall-4.3.4.jar"/>
-            <jvmarg value="-javaagent:${basedir}/build/replacecall-4.3.4.jar=--replacement-file=${replacement-file}"/>
+            <jvmarg value="-javaagent:${basedir}/build/replacecall-4.3.4.jar=--replacement-file=${replacement-file} --disable-default-replacement=java.lang.System.exit(int)"/>
             <batchtest fork="false">
                 <fileset dir="${test}">
                     <include name="**/*Test*.java"/>
@@ -125,7 +125,7 @@
                 <fileset dir="${libdir}" includes="*.jar"/>
             </classpath>
             <jvmarg value="-Xbootclasspath/a:${basedir}/build/replacecall-4.3.4.jar"/>
-            <jvmarg value="-javaagent:${basedir}/build/replacecall-4.3.4.jar=--replacement-file=${replacement-file}"/>
+            <jvmarg value="-javaagent:${basedir}/build/replacecall-4.3.4.jar=--replacement-file=${replacement-file} --disable-default-replacement=java.lang.System.exit(int)"/>
             <batchtest>
                 <fileset dir="${test}">
                     <include name="**/*Test*.java" />
